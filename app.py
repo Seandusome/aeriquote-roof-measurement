@@ -96,13 +96,13 @@ HTML = r"""<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>ShingleXtra Roof Assessment</title>
+<title>AeriQuote Roof Measurement & Estimate</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{--green:#1677c8;--green2:#102a43;--orange:#d62828;--dark:#17212b;--gold:#b58720;--bg:#f1f5f9;--line:#d9e3ea;--muted:#5b6770;--house:#2d6cdf;--garage:#18a7a0;--manual:#d97706;--warn:#fff5da}
+:root{--green:#1456c0;--green2:#0b1739;--orange:#e35b21;--dark:#111827;--gold:#e35b21;--bg:#f3f6fa;--line:#d8e0eb;--muted:#5f6b7a;--house:#1456c0;--garage:#1596d2;--manual:#e35b21;--warn:#fff4e8}
 *{box-sizing:border-box} body{font-family:Arial,sans-serif;background:var(--bg);margin:0;color:var(--dark)}
 .wrap{max-width:1560px;margin:14px auto;padding:0 12px}.card{background:#fff;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.08);overflow:hidden}
-.header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.brand{display:flex;align-items:center;gap:13px}.brand img{width:78px;height:78px;object-fit:contain}.brand h1{margin:0;color:var(--green2);font-size:27px}.sub{color:var(--muted);margin-top:3px}.badge{background:#edf7f0;color:var(--green2);border:1px solid #cfe5d5;padding:8px 11px;border-radius:999px;font-weight:800;font-size:12px}
+.header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.brand{display:flex;align-items:center;gap:13px}.brand img.aeriquote-main-logo{width:390px;height:auto;max-height:92px;object-fit:contain;object-position:left center}.aeri-wordmark{font-size:34px;font-weight:900;letter-spacing:-1.5px;line-height:1}.aeri-wordmark .aeri{color:#090d18}.aeri-wordmark .quote{color:#1456c0}.aeri-wordmark .pointer{color:#e35b21;font-size:22px;vertical-align:5px;margin-left:-7px}.aeri-tag{font-size:10px;font-weight:900;letter-spacing:3.2px;color:#111827;margin-top:6px}.brand h1{margin:0;color:var(--green2);font-size:27px}.sub{color:var(--muted);margin-top:3px}.badge{background:#edf7f0;color:var(--green2);border:1px solid #cfe5d5;padding:8px 11px;border-radius:999px;font-weight:800;font-size:12px}
 .setup{padding:13px 20px;background:#fbfcfb;border-bottom:1px solid var(--line)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px} label{font-weight:800;display:block;margin:4px 0 5px} input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5ce;border-radius:8px;font-size:14px;font-family:inherit}textarea{min-height:70px;resize:vertical}.small{font-size:12px;color:var(--muted)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{background:var(--green);color:#fff;border:0;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer}button.secondary{background:#fff;color:var(--green);border:1px solid var(--green)}button.orange{background:var(--manual)}button.ghost{background:#f3f6f4;color:var(--dark);border:1px solid var(--line)}button.danger{background:#fff;color:#a12622;border:1px solid #d8a7a4}button:disabled{opacity:.45;cursor:not-allowed}
 .status{padding:9px 20px;font-weight:800}.ok{color:var(--green)}.error{color:#a12622}.warn{color:#8a5a08}
@@ -188,10 +188,10 @@ HTML = r"""<!doctype html>
 </style></head>
 <body>
 <div class="wrap"><div class="card">
- <div class="header"><div class="brand"><img src="/static/shinglextra-logo-inline.jpg"><div><h1>SHINGLEXTRA — Roof Assessment</h1><div class="sub">Measure the roof. Add another roof if needed. Set the price. Create the estimate.</div></div></div><div style="display:flex;gap:8px;align-items:center">{% if IS_HEAD_OFFICE %}<button type="button" class="secondary" onclick="window.location.href='/head-office/dealers'">DEALER MANAGEMENT</button>{% endif %}{% if IS_DEALER_OWNER %}<button type="button" class="secondary" onclick="window.location.href='/dealer-employees'">EMPLOYEES</button>{% endif %}<button type="button" class="secondary" onclick="openEstimateHistory()">PREVIOUS ESTIMATES</button><button type="button" class="ghost" onclick="window.location.href='/logout'">LOG OUT</button></div></div>
+ <div class="header"><div class="brand"><img class="aeriquote-main-logo" src="/static/aeriquote-logo.png" alt="AeriQuote - Roof Measurement & Estimate Software"></div><div style="display:flex;gap:8px;align-items:center">{% if IS_HEAD_OFFICE %}<button type="button" class="secondary" onclick="window.location.href='/head-office/dealers'">DEALER MANAGEMENT</button>{% endif %}{% if IS_DEALER_OWNER %}<button type="button" class="secondary" onclick="window.location.href='/dealer-employees'">EMPLOYEES</button>{% endif %}<button type="button" class="secondary" onclick="openEstimateHistory()">PREVIOUS ESTIMATES</button><button type="button" class="ghost" onclick="window.location.href='/logout'">LOG OUT</button></div></div>
  <div class="stepbar"><div id="progress1" class="stepchip current"><strong><span class="stepnum">1</span>Property</strong>Enter address & load</div><div id="progress2" class="stepchip"><strong><span class="stepnum">2</span>Roof</strong>Check roof measurement</div><div id="progress3" class="stepchip"><strong><span class="stepnum">3</span>Price</strong>Set this job's price</div><div id="progress4" class="stepchip"><strong><span class="stepnum">4</span>Customer</strong>Add customer details</div><div id="progress5" class="stepchip"><strong><span class="stepnum">5</span>Estimate</strong>Create customer estimate</div></div>
  <div class="setup">
-  <div class="stepcard"><h2>STEP 1 — Enter the property</h2><div class="grid2"><div><label>Property Address</label><input id="streetAddress" placeholder="Start typing the address — e.g. 123 Main St, Tampa, FL" value=""><div id="addressAutoStatus" class="small" style="margin-top:5px;color:#176b43;font-weight:700">City, state and ZIP code will fill automatically when Google finds the address.</div><div id="addressParts" style="display:grid;grid-template-columns:1.2fr .55fr .8fr;gap:7px;margin-top:7px"><input id="cityTown" placeholder="City" value=""><select id="propertyProvince" onchange="propertyProvinceChanged()"><option value="">State</option><option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option><option>DC</option></select><input id="postalCode" placeholder="ZIP Code — filled by Google" readonly></div><input id="address" type="hidden"><div id="googleMatch" class="small" style="margin-top:5px;color:#176b43;font-weight:700"></div><div id="propertyVerify" class="small" style="display:none;margin-top:7px;font-weight:700"></div>
+  <div class="stepcard"><h2>STEP 1 — Enter the property</h2><div class="grid2"><div><label>Property Address</label><input id="streetAddress" placeholder="Start typing the address — U.S. or Canada" value=""><div id="addressAutoStatus" class="small" style="margin-top:5px;color:#176b43;font-weight:700">City, state/province and ZIP/postal code will fill automatically when Google finds the address.</div><div id="addressParts" style="display:grid;grid-template-columns:1.2fr .55fr .8fr;gap:7px;margin-top:7px"><input id="cityTown" placeholder="City" value=""><select id="propertyProvince" onchange="propertyProvinceChanged()"><option value="">State / Province</option><optgroup label="United States"><option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option><option>DC</option></optgroup><optgroup label="Canada"><option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option><option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option><option>QC</option><option>SK</option><option>YT</option></optgroup></select><input id="postalCode" placeholder="ZIP / Postal Code — filled by Google" readonly></div><input id="address" type="hidden"><div id="googleMatch" class="small" style="margin-top:5px;color:#176b43;font-weight:700"></div><div id="propertyVerify" class="small" style="display:none;margin-top:7px;font-weight:700"></div>
 <details id="coordinateFallback" style="margin-top:10px;border:1px solid #d9e3dc;border-radius:9px;background:#fafcfb">
 <summary style="cursor:pointer;padding:10px 12px;font-weight:900;color:#5b675f">CAN'T LOCATE THE PROPERTY? USE DROPPED PIN / COORDINATES</summary>
 <div style="padding:0 12px 12px">
@@ -243,7 +243,7 @@ HTML = r"""<!doctype html>
 <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<!-- V11.6.58: dealer polish built directly from VERIFIED V11.6.56. Only dealer-facing version cleanup and the read-only job summary strip were added. Measurement, address, map, outline, dealer branding and PDF capture mechanics are unchanged. -->
+<!-- AERIQUOTE V1 CANADA + USA: dealer polish built directly from VERIFIED V11.6.56. Only dealer-facing version cleanup and the read-only job summary strip were added. Measurement, address, map, outline, dealer branding and PDF capture mechanics are unchanged. -->
 <script>
 let map=L.map('map',{maxZoom:22,zoomControl:true,zoomSnap:.25,zoomDelta:.5}).setView([52.1522,-106.6595],19);
 let skipAddressConflictOnce=false;
@@ -584,9 +584,9 @@ async function loadExactPinAerial(token,targetMap=map){
 async function loadProperty(){
  const enteredStreet=(el('streetAddress')?.value||'').trim(),enteredCity=(el('cityTown')?.value||'').trim(),enteredProvince=propertyLookupProvince(),enteredNumber=enteredStreetNumber();
  const cc=coordinatesEntered();
- if(!cc&&(!enteredStreet||!enteredCity||!enteredProvince)){status('Enter the street address, City and State. Postal code is not required.','error');return}
+ if(!cc&&(!enteredStreet||!enteredCity||!enteredProvince)){status('Enter the street address, City and State/Province. ZIP/postal code is not required.','error');return}
  // Freeze exactly what the dealer entered BEFORE any report/measurement reset can change UI state.
- const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,'USA'].join(', ');
+ const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,propertyCountryFromProvince(enteredProvince)].join(', ');
  resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
  if(cc&&el('googleMatch'))el('googleMatch').textContent='Loading exact coordinates: '+authoritativeAddress;
 const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!address){status('Enter API key and address.','error');return}
@@ -1252,7 +1252,7 @@ function startNewProperty(){
  const hidden=el('address');if(hidden)hidden.value='';
  if(el('googleMatch'))el('googleMatch').textContent='';
  if(el('propertyVerify')){el('propertyVerify').style.display='none';el('propertyVerify').textContent=''}
- if(el('addressAutoStatus'))el('addressAutoStatus').textContent='City, state and ZIP code will fill automatically when Google finds the address.';
+ if(el('addressAutoStatus'))el('addressAutoStatus').textContent='City, state/province and ZIP/postal code will fill automatically when Google finds the address.';
  const defaultPrice=parseFloat(el('price')?.value||0);if(Number.isFinite(defaultPrice)&&defaultPrice>=0&&el('jobPrice'))el('jobPrice').value=defaultPrice.toFixed(2);
  renderSummary();
  status('Ready for the next property. Enter the new address and click LOAD & MEASURE ROOF.','ok');
@@ -1269,6 +1269,8 @@ function clearAddressVerificationState(message='Address changed — enter/confir
  if(el('propertyVerify')){el('propertyVerify').style.display='none';el('propertyVerify').textContent='';}
  if(el('addressAutoStatus')){el('addressAutoStatus').textContent=message;el('addressAutoStatus').style.color='#666';}
 }
+const CANADIAN_PROVINCES=new Set(['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT']);
+function propertyCountryFromProvince(prov){return CANADIAN_PROVINCES.has(String(prov||'').toUpperCase())?'Canada':'USA'}
 function propertyLookupProvince(){
  const selected=(el('propertyProvince')?.value||'').trim();
  if(selected)return selected; // PROPERTY province is authoritative. Dealer profile province is never used for locating a property.
@@ -1278,12 +1280,12 @@ async function previewAddress(){
  const seq=addressPreviewSeq;
  const key="{{GOOGLE_MAPS_API_KEY}}",street=(el('streetAddress')?.value||'').trim();if(!key||!street||street.length<4)return;
  const city=(el('cityTown')?.value||'').trim(),prov=propertyLookupProvince();
- if(!city||!prov){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Enter the City and State. Postal code is not required.';el('addressAutoStatus').style.color='#666'}return}
- const q=[street,city,prov,'USA'].join(', ');
+ if(!city||!prov){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Enter the City and State/Province. ZIP/postal code is not required.';el('addressAutoStatus').style.color='#666'}return}
+ const q=[street,city,prov,propertyCountryFromProvince(prov)].join(', ');
  try{if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Checking '+city+', '+prov+'…';el('addressAutoStatus').style.color='#666'}
   const r=await fetch('/address-preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,address:q,expected_city:city,expected_province:prov,expected_street_number:enteredStreetNumber()})});const d=await r.json();if(seq!==addressPreviewSeq)return;
   if(r.status===409){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='⚠ ADDRESS DOESN\'T MATCH — '+(d.user_error||'Google found a different address.');el('addressAutoStatus').style.color='#9a1f16'}return}
-  if(!r.ok||!d.formatted_address){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google could not verify this exact street, city and state yet.';el('addressAutoStatus').style.color='#9a6700'}return}
+  if(!r.ok||!d.formatted_address){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google could not verify this exact street, city and state/province yet.';el('addressAutoStatus').style.color='#9a6700'}return}
   // Preview is DISPLAY ONLY. It must never overwrite city, province or ZIP code.
   if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google found: '+d.formatted_address;el('addressAutoStatus').style.color='#176b43'}
  }catch(e){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google could not verify this address yet.';el('addressAutoStatus').style.color='#9a6700'}}
@@ -1305,7 +1307,7 @@ function addressTyped(){
   if(el('cityTown'))el('cityTown').value='';
   if(el('propertyProvince'))el('propertyProvince').value='';
   if(el('postalCode'))el('postalCode').value='';
-  clearAddressVerificationState('New address — enter/confirm city and state, then Google will verify it.');
+  clearAddressVerificationState('New address — enter/confirm city and state/province, then Google will verify it.');
   clearTimeout(addressPreviewTimer);addressPreviewTimer=setTimeout(previewAddress,650);
   return;
  }
@@ -1316,7 +1318,7 @@ window.addEventListener('DOMContentLoaded',()=>{loadDealerDefaults();updateUsage
 function buildPropertyAddress(){
  const street=(el('streetAddress')?.value||'').trim(),city=(el('cityTown')?.value||'').trim(),prov=propertyLookupProvince();
  // Postal code is intentionally NEVER included in a property lookup. Google supplies it only after verification.
- const a=[street,city,prov,'USA'].filter(Boolean).join(', ');
+ const a=[street,city,prov,propertyCountryFromProvince(prov)].filter(Boolean).join(', ');
  if(el('address'))el('address').value=a;return a
 }
 function jobPriceChanged(){const jp=el('jobPrice');if(!jp)return;const v=parseFloat(jp.value);if(!Number.isFinite(v)||v<0)return;renderSummary();if(el('reportOverlay')&&el('reportOverlay').style.display==='block')showCustomerEstimate()}
@@ -1417,7 +1419,7 @@ def bearing(lat1,lon1,lat2,lon2):
     return (math.degrees(math.atan2(y,x))+360)%360
 
 
-LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>ShingleXtra Dealer Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style></head><body><div class="box"><h1>ShingleXtra</h1><p>Authorized Dealer Roof Measuring & Estimate Software</p>{% if error %}<div class="err">{{error}}</div>{% endif %}<form method="post"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>DEALER LOGIN</button></form></div></body></html>"""
+LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style></head><body><div class="box"><img src="/static/aeriquote-logo.png" alt="AeriQuote" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto 16px"><p style="text-align:center">Roof Measuring & Estimate Software</p>{% if error %}<div class="err">{{error}}</div>{% endif %}<form method="post"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>DEALER LOGIN</button></form></div></body></html>"""
 
 @app.route("/dealer-login",methods=["GET","POST"])
 def dealer_login():
@@ -1909,13 +1911,15 @@ def usa_address_variants(address):
             if q not in out:out.append(q)
     return out
 
-def google_geocode_first(key,address,components_country=False):
+def google_geocode_first(key,address,components_country=False,expected_province=""):
     last=None
+    canadian={"AB","BC","MB","NB","NL","NS","NT","NU","ON","PE","QC","SK","YT"}
+    is_canada=str(expected_province or "").strip().upper() in canadian
     for q in usa_address_variants(address):
         params={"address":q,"key":key}
         if components_country:
-            params["components"]="country:US"
-            params["region"]="us"
+            params["components"]="country:CA" if is_canada else "country:US"
+            params["region"]="ca" if is_canada else "us"
         gq=urllib.parse.urlencode(params);gs,geo=req_json("https://maps.googleapis.com/maps/api/geocode/json?"+gq);last=(gs,geo,q)
         if gs==200 and geo.get("status")=="OK" and geo.get("results"):return gs,geo,q
     return last if last else (400,{"status":"ZERO_RESULTS"},address)
@@ -1947,10 +1951,10 @@ def address_preview():
     d=request.get_json(silent=True) or {};key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip() # authoritative query is street + city + property province; ZIP code is never sent
     if not key or len(address)<4:return jsonify(error="Address and API key are required."),400
     try:
-        gs,geo,_matched_query=google_geocode_first(key,address,components_country=True)
+        expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
+        gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
         if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Address not found"),404
         g=geo["results"][0];parts=geocode_parts(g)
-        expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
         if address_mismatch(expected_city,expected_province,parts,expected_street_number):
             return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
         return jsonify(formatted_address=g.get("formatted_address"),parts=parts)
@@ -2043,7 +2047,7 @@ def property_data():
     d=request.get_json(silent=True) or {};key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
     if not key or not address:return jsonify(error="API key and address are required."),400
     allowed,used,limit=consume_property_lookup(str(session.get("dealer_id") or ""))
-    if not allowed:return jsonify(error="Property lookup allowance reached.",user_error=f"Your dealership has used all {limit} property lookups. Contact ShingleXtra Head Office to increase the allowance."),403
+    if not allowed:return jsonify(error="Property lookup allowance reached.",user_error=f"Your dealership has used all {limit} property lookups. Contact AeriQuote support to increase the allowance."),403
     try:
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
@@ -2051,10 +2055,10 @@ def property_data():
             if abs(lat)>90 or abs(lng)>180: return jsonify(error="Invalid coordinates.",user_error="Enter valid latitude and longitude coordinates."),400
             formatted=f"{lat:.6f}, {lng:.6f}"
         else:
-            gs,geo,_matched_query=google_geocode_first(key,address,components_country=True)
+            expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
+            gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
             if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Google could not find that address. Check the address and try again.",user_error="Google could not find that address. Check the address and try again."),404
             g=geo["results"][0];parts=geocode_parts(g)
-            expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
             if address_mismatch(expected_city,expected_province,parts,expected_street_number):
                 return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
             loc=g["geometry"]["location"];lat=float(loc["lat"]);lng=float(loc["lng"]);formatted=g.get("formatted_address") or address
@@ -2296,7 +2300,7 @@ def estimate_history_api():
                 estimate_limit=int(dealer_row["estimate_limit"] or 0) if dealer_row else 0
                 estimate_used=int(con.execute("SELECT COUNT(*) AS estimate_count FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["estimate_count"])
                 if estimate_limit>0 and estimate_used>=estimate_limit:
-                    return jsonify(error="Estimate allowance reached.",user_error=f"Your dealership has used all {estimate_limit} estimates. Contact ShingleXtra Head Office to increase the allowance."),403
+                    return jsonify(error="Estimate allowance reached.",user_error=f"Your dealership has used all {estimate_limit} estimates. Contact AeriQuote support to increase the allowance."),403
             created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
             payload_json=json.dumps(d,separators=(",",":"))
             vals=(str(d.get("customer_name") or ""),str(d.get("customer_phone") or ""),str(d.get("customer_email") or ""),address,float(d.get("total_area") or 0),float(d.get("total_price") or 0),payload_json)
