@@ -212,6 +212,33 @@ HTML = r"""<!doctype html>
 @media (max-width:900px){
   .aeri-manual-main-row{gap:10px!important}
 }
+
+/* Dynamic manual main-roof pitch controls — layout only */
+.aeri-dynamic-manual-actions{
+  display:flex!important;
+  align-items:flex-end!important;
+  flex-wrap:wrap!important;
+  column-gap:18px!important;
+  row-gap:10px!important;
+}
+.aeri-dynamic-main-pitch{
+  min-width:210px!important;
+  flex:0 0 210px!important;
+  margin-right:18px!important;
+}
+.aeri-dynamic-main-pitch{
+  white-space:nowrap!important;
+}
+.aeri-dynamic-main-pitch-select{
+  display:block!important;
+  min-width:170px!important;
+  width:170px!important;
+  margin-top:6px!important;
+}
+.aeri-dynamic-finish-measurement{
+  margin-left:12px!important;
+  flex:0 0 auto!important;
+}
 </style>
 <style>
 .estimate-hide-street #reportStreet img,.estimate-hide-street .report-street img{visibility:hidden}
@@ -375,6 +402,28 @@ function translateSnowText(t){
  ];
  let out=t;for(const [a,b] of rules)out=out.replace(a,b);return out
 }
+
+function polishRoofingManualTraceControls(){
+ if(currentBusinessType()!=='roofing')return;
+ const leaves=Array.from(document.querySelectorAll('body *')).filter(x=>!x.children.length && !['SCRIPT','STYLE','OPTION'].includes(x.tagName));
+ const pitchLabel=leaves.find(x=>(x.textContent||'').trim()==='Pitch of Added Roof ⓘ') ||
+                  leaves.find(x=>/^Pitch of Added Roof/i.test((x.textContent||'').trim()));
+ if(!pitchLabel)return;
+ pitchLabel.textContent='Pitch of Main Roof ⓘ';
+ const wrap=pitchLabel.parentElement;
+ if(wrap){
+   wrap.classList.add('aeri-dynamic-main-pitch');
+   const sel=wrap.querySelector('select') || wrap.parentElement?.querySelector('select');
+   if(sel)sel.classList.add('aeri-dynamic-main-pitch-select');
+ }
+ const finish=leaves.find(x=>(x.textContent||'').trim()==='FINISH MEASUREMENT');
+ if(finish){
+   finish.classList.add('aeri-dynamic-finish-measurement');
+   const parent=finish.parentElement;
+   if(parent)parent.classList.add('aeri-dynamic-manual-actions');
+ }
+}
+
 function applyBusinessTerminology(root=document.body){
  const mode=currentBusinessType();
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
@@ -459,9 +508,11 @@ function applyBusinessTerminology(root=document.body){
    document.querySelectorAll('[data-aeri-display]').forEach(x=>{x.style.display=x.dataset.aeriDisplay;delete x.dataset.aeriDisplay});
  }
 }
+ polishRoofingManualTraceControls();
+
 function businessTypeChanged(){applyBusinessTerminology();renderSummary()}
 let _aeriTermTimer=null;
-const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>applyBusinessTerminology(),30)});
+const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>{applyBusinessTerminology();polishRoofingManualTraceControls()},30)});
 document.addEventListener('DOMContentLoaded',()=>{_aeriTermObserver.observe(document.body,{childList:true,subtree:true})});
 
 
