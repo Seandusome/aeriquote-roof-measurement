@@ -290,46 +290,47 @@ function currentBusinessType(){return (el('businessType')&&el('businessType').va
 function translateSnowText(t){
  const rules=[
   [/Main house measured\./gi,'Primary service area measured.'],
-  [/Choose which area outline to edit\. Main house and added areas can be edited separately\. Picture only — measurements and price stay unchanged\./gi,'Choose which service area outline to edit. Primary and additional service areas can be edited separately. Picture only — measurements and price stay unchanged.'],
-  [/Google(?:'|’|&#x27;)s confirmed PRIMARY SERVICE AREA stays in the quote\./gi,'The confirmed PRIMARY SERVICE AREA stays in the quote.'],
-  [/Use this to add or remeasure a additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
-  [/Use this to add or remeasure an additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
   [/Main house measurement is wrong\?/gi,'Primary service area measurement is wrong?'],
-  [/Wrong additional area \/ extra area included\?/gi,'Wrong area included?'],
-  [/not square footage, pitch or price/gi,'not square footage or price'],
-  [/Google Service Area/gi,'Service Area'],
-  [/Google Automatic Measurement — automatic area measurement/gi,'Automatic Area Measurement'],
-  [/Google segment boxes/gi,'measured sections'],
-  [/Actual Roof Outline \(Recommended\)/gi,'Measured Area Outline (Recommended)'],
-  [/Use this to add or remeasure a additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
-  [/Use this to add or remeasure an additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
   [/MAIN HOUSE/g,'PRIMARY SERVICE AREA'],[/Main House/g,'Primary Service Area'],[/main house/g,'primary service area'],
-  [/GARAGE \/ OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage \/ Other Roof/g,'Additional Area'],[/garage \/ other roof/g,'additional area'],
-  [/GARAGE OR OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage or Other Roof/g,'Additional Area'],[/garage or other roof/g,'additional area'],
-  [/WRONG GARAGE \/ EXTRA AREA/g,'WRONG EXTRA AREA'],[/Wrong garage \/ extra area/gi,'Wrong extra area'],
-  [/garage, shed, addition, or other service area/gi,'another driveway, parking lot, sidewalk, or service area'],
+  [/Choose which area outline to edit\.[\s\S]*?Picture only — measurements and price stay unchanged\./gi,'Choose which service area outline to edit. Primary and additional service areas can be edited separately. Picture only — measurements and price stay unchanged.'],
+  [/Google(?:'|’|&#x27;)s confirmed PRIMARY SERVICE AREA stays in the quote\./gi,'The confirmed PRIMARY SERVICE AREA stays in the quote.'],
+  [/Google(?:'|’|&#x27;)s confirmed primary service area stays in the quote\./gi,'The confirmed primary service area stays in the quote.'],
+  [/Use this to add or remeasure (?:a|an) additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
+  [/Use this to add or remeasure a garage, shed, addition, or other (?:shingled structure|service area)\./gi,'Use this to add or remeasure another service area.'],
+  [/Wrong additional area \/ extra area included\?/gi,'Wrong area included?'],
+  [/Wrong garage \/ extra area included\?/gi,'Wrong area included?'],
+  [/not square footage, pitch or price/gi,'not square footage or price'],
   [/garage and other-area corrections/gi,'additional-area corrections'],
   [/garage afterward/gi,'additional area afterward'],
-  [/garage/gi,'additional area'],
+  [/garage, shed, addition, or other service area/gi,'another service area'],
+  [/garage, shed, addition, or other shingled structure/gi,'another service area'],
+  [/GARAGE \/ OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage \/ Other Roof/g,'Additional Area'],[/garage \/ other roof/g,'additional area'],
+  [/GARAGE OR OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage or Other Roof/g,'Additional Area'],[/garage or other roof/g,'additional area'],
+  [/GARAGE/g,'ADDITIONAL AREA'],[/Garage/g,'Additional Area'],[/garage/g,'additional area'],
+  [/SHED/g,'ADDITIONAL AREA'],[/Shed/g,'Additional Area'],[/shed/g,'additional area'],
   [/ADDED ROOF/g,'ADDED AREA'],[/Added Roof/g,'Added Area'],[/added roof/g,'added area'],
   [/EXTRA ROOF/g,'EXTRA AREA'],[/Extra Roof/g,'Extra Area'],[/extra roof/g,'extra area'],
+  [/OTHER ROOF/g,'ADDITIONAL AREA'],[/Other Roof/g,'Additional Area'],[/other roof/g,'additional area'],
   [/ROOFS IN QUOTE/g,'AREAS IN QUOTE'],[/Roofs in Quote/g,'Areas in Quote'],[/roofs in quote/g,'areas in quote'],
-  [/ROOFS/g,'AREAS'],[/Roofs/g,'Areas'],[/roofs/g,'areas'],
   [/ROOF ASSESSMENT/g,'PROPERTY ASSESSMENT'],[/Roof Assessment/g,'Property Assessment'],[/roof assessment/g,'property assessment'],
   [/ROOF MEASUREMENT/g,'AREA MEASUREMENT'],[/Roof Measurement/g,'Area Measurement'],[/roof measurement/g,'area measurement'],
   [/ROOF OUTLINE/g,'AREA OUTLINE'],[/Roof Outline/g,'Area Outline'],[/roof outline/g,'area outline'],
   [/ROOF CORRECTIONS/g,'AREA CORRECTIONS'],[/Roof Corrections/g,'Area Corrections'],[/roof corrections/g,'area corrections'],
   [/ROOF AREA/g,'SERVICE AREA'],[/Roof Area/g,'Service Area'],[/roof area/g,'service area'],
+  [/TREATMENT AREA/g,'SERVICE AREA'],[/Treatment Area/g,'Service Area'],[/treatment area/g,'service area'],
   [/SHINGLED STRUCTURE/g,'SERVICE AREA'],[/Shingled Structure/g,'Service Area'],[/shingled structure/g,'service area'],
   [/SHINGLED ROOF/g,'SERVICE AREA'],[/Shingled Roof/g,'Service Area'],[/shingled roof/g,'service area'],
-  [/OTHER ROOF/g,'ADDITIONAL AREA'],[/Other Roof/g,'Additional Area'],[/other roof/g,'additional area'],
+  [/ROOFS/g,'AREAS'],[/Roofs/g,'Areas'],[/roofs/g,'areas'],
+  [/Actual Roof Outline/gi,'Measured Area Outline'],
+  [/Show Google segment boxes/gi,'Show Measured Sections'],
+  [/pitch labels only/gi,'measurement labels only'],
   [/roof segments/gi,'measured sections'],
   [/area segments/gi,'measured sections'],
   [/pitch included/gi,'automatic area measurement'],
   [/confirm its pitch/gi,'confirm the area'],
   [/confirm the pitch/gi,'confirm the area'],
-  [/pitch labels only/gi,'measurement labels only'],
-  [/Actual Roof Outline/gi,'Measured Area Outline'],
+  [/Google Service Area/gi,'Service Area'],
+  [/Google Automatic Measurement — automatic area measurement/gi,'Automatic Area Measurement'],
   [/ROOF/g,'AREA'],[/Roof/g,'Area'],[/roof/g,'area']
  ];
  let out=t;for(const [a,b] of rules)out=out.replace(a,b);return out
@@ -339,12 +340,29 @@ function applyBusinessTerminology(root=document.body){
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
  nodes.forEach(n=>{
-   const p=n.parentElement;if(!p||['SCRIPT','STYLE','OPTION'].includes(p.tagName))return;
+   const p=n.parentElement;if(!p||['SCRIPT','STYLE'].includes(p.tagName))return;
    if(!_aeriOriginalText.has(n))_aeriOriginalText.set(n,n.nodeValue);
    const base=_aeriOriginalText.get(n);
    n.nodeValue=mode==='snow'?translateSnowText(base):base;
  });
  const snow=mode==='snow';
+ // Central Snow Removal display cleanup for dynamically rendered screens/previews.
+ const snowExact=(selector,pattern,replacement)=>{
+   document.querySelectorAll(selector).forEach(x=>{
+     if(!x.dataset.aeriOriginalHtml)x.dataset.aeriOriginalHtml=x.innerHTML;
+     if(snow && pattern.test(x.textContent||''))x.textContent=replacement;
+     else if(!snow && x.dataset.aeriOriginalHtml)x.innerHTML=x.dataset.aeriOriginalHtml;
+   });
+ };
+ if(snow){
+   document.querySelectorAll('body *').forEach(x=>{
+     if(['SCRIPT','STYLE'].includes(x.tagName)||x.children.length)return;
+     const tx=(x.textContent||'').trim();
+     if(/^Main House$/i.test(tx))x.textContent='Primary Service Area';
+     else if(/Main house and added areas can be edited separately/i.test(tx))x.textContent='Choose which service area outline to edit. Primary and additional service areas can be edited separately. Picture only — measurements and price stay unchanged.';
+     else if(/^Service — Primary Service Area$/i.test(tx))x.textContent='Snow Removal Service — Primary Service Area';
+   });
+ }
  const areaMode=el('outlineMode');
  if(areaMode){
    const opts=Array.from(areaMode.options||[]);
