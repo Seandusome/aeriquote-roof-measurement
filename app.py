@@ -290,6 +290,7 @@ function currentBusinessType(){return (el('businessType')&&el('businessType').va
 function translateSnowText(t){
  const rules=[
   [/Main house measured\./gi,'Primary service area measured.'],
+  [/Choose which area outline to edit\. Main house and added areas can be edited separately\. Picture only — measurements and price stay unchanged\./gi,'Choose which service area outline to edit. Primary and additional service areas can be edited separately. Picture only — measurements and price stay unchanged.'],
   [/Google(?:'|’|&#x27;)s confirmed PRIMARY SERVICE AREA stays in the quote\./gi,'The confirmed PRIMARY SERVICE AREA stays in the quote.'],
   [/Use this to add or remeasure a additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
   [/Use this to add or remeasure an additional area, shed, addition, or other service area\./gi,'Use this to add or remeasure another service area.'],
@@ -1207,7 +1208,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
    const totalArea=calc.area||1;
    structures.forEach(st=>{
      let share=Number(st.total_roof_sqft||0)/totalArea;
-     price+=`<div class="line"><span>Service — ${st.label}</span><b>${money(calc.subtotal*share)}</b></div>`;
+     price+=`<div class="line"><span>${snowReport?'Snow Removal Service — '+(i===0?'Primary Service Area':'Additional Service Area '+i):'Service — '+st.label}</span><b>${money(calc.subtotal*share)}</b></div>`;
    });
    if(hybridUsed){reportManual.forEach((p,i)=>{let share=Number(p.surface_sqft||0)/totalArea;price+=`<div class="line"><span>Service — ${reportManual.length===1?'Added Area':'Added Area '+(i+1)}</span><b>${money(calc.subtotal*share)}</b></div>`})}
  }
