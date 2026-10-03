@@ -289,9 +289,15 @@ const _aeriOriginalText=new WeakMap();
 function currentBusinessType(){return (el('businessType')&&el('businessType').value)||'roofing'}
 function translateSnowText(t){
  const rules=[
-  [/MAIN HOUSE/g,'PRIMARY AREA'],[/Main House/g,'Primary Area'],[/main house/g,'primary area'],
+  [/Main house measured\./gi,'Primary service area measured.'],
+  [/MAIN HOUSE/g,'PRIMARY SERVICE AREA'],[/Main House/g,'Primary Service Area'],[/main house/g,'primary service area'],
   [/GARAGE \/ OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage \/ Other Roof/g,'Additional Area'],[/garage \/ other roof/g,'additional area'],
   [/GARAGE OR OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage or Other Roof/g,'Additional Area'],[/garage or other roof/g,'additional area'],
+  [/WRONG GARAGE \/ EXTRA AREA/g,'WRONG EXTRA AREA'],[/Wrong garage \/ extra area/gi,'Wrong extra area'],
+  [/garage, shed, addition, or other service area/gi,'another driveway, parking lot, sidewalk, or service area'],
+  [/garage and other-area corrections/gi,'additional-area corrections'],
+  [/garage afterward/gi,'additional area afterward'],
+  [/garage/gi,'additional area'],
   [/ADDED ROOF/g,'ADDED AREA'],[/Added Roof/g,'Added Area'],[/added roof/g,'added area'],
   [/EXTRA ROOF/g,'EXTRA AREA'],[/Extra Roof/g,'Extra Area'],[/extra roof/g,'extra area'],
   [/ROOFS IN QUOTE/g,'AREAS IN QUOTE'],[/Roofs in Quote/g,'Areas in Quote'],[/roofs in quote/g,'areas in quote'],
@@ -300,10 +306,17 @@ function translateSnowText(t){
   [/ROOF MEASUREMENT/g,'AREA MEASUREMENT'],[/Roof Measurement/g,'Area Measurement'],[/roof measurement/g,'area measurement'],
   [/ROOF OUTLINE/g,'AREA OUTLINE'],[/Roof Outline/g,'Area Outline'],[/roof outline/g,'area outline'],
   [/ROOF CORRECTIONS/g,'AREA CORRECTIONS'],[/Roof Corrections/g,'Area Corrections'],[/roof corrections/g,'area corrections'],
-  [/ROOF AREA/g,'AREA'],[/Roof Area/g,'Area'],[/roof area/g,'area'],
+  [/ROOF AREA/g,'SERVICE AREA'],[/Roof Area/g,'Service Area'],[/roof area/g,'service area'],
   [/SHINGLED STRUCTURE/g,'SERVICE AREA'],[/Shingled Structure/g,'Service Area'],[/shingled structure/g,'service area'],
   [/SHINGLED ROOF/g,'SERVICE AREA'],[/Shingled Roof/g,'Service Area'],[/shingled roof/g,'service area'],
   [/OTHER ROOF/g,'ADDITIONAL AREA'],[/Other Roof/g,'Additional Area'],[/other roof/g,'additional area'],
+  [/roof segments/gi,'measured sections'],
+  [/area segments/gi,'measured sections'],
+  [/pitch included/gi,'automatic area measurement'],
+  [/confirm its pitch/gi,'confirm the area'],
+  [/confirm the pitch/gi,'confirm the area'],
+  [/pitch labels only/gi,'measurement labels only'],
+  [/Actual Roof Outline/gi,'Measured Area Outline'],
   [/ROOF/g,'AREA'],[/Roof/g,'Area'],[/roof/g,'area']
  ];
  let out=t;for(const [a,b] of rules)out=out.replace(a,b);return out
@@ -318,12 +331,31 @@ function applyBusinessTerminology(root=document.body){
    const base=_aeriOriginalText.get(n);
    n.nodeValue=mode==='snow'?translateSnowText(base):base;
  });
- // Pitch is meaningful for roofing, not snow-removal service-area quoting.
- document.querySelectorAll('.pitch,.pitch-reminder').forEach(x=>{x.style.display=mode==='snow'?'none':''});
- const fb=el('solarFallbackText');
- if(fb&&mode==='snow')fb.textContent='Trace the customer service area on the aerial image, then save the area measurement.';
+ const snow=mode==='snow';
+ // Hide only roof/product-specific display elements for Snow Removal.
+ document.querySelectorAll('.pitch,.pitch-reminder').forEach(x=>{x.style.display=snow?'none':''});
+ if(snow){
+   // Hide visible blocks whose original labels are strictly roof/product specific.
+   document.querySelectorAll('.metric,.structure,.calc>div,.section,.warning,.small,label').forEach(x=>{
+     const txt=(_aeriOriginalText.get(x.firstChild)||x.textContent||'').trim();
+     if(/Roof Pitch|Main Roof Pitch|Multiple Roof Pitches|Coverage per gallon|Estimated product required|pitch included/i.test(txt)){
+       if(!x.dataset.aeriDisplay)x.dataset.aeriDisplay=x.style.display||'';
+       if(/Coverage per gallon|Estimated product required/i.test(txt) && x.parentElement && x.parentElement.classList.contains('calc')){
+         x.style.display='none';
+         const next=x.nextElementSibling;if(next){if(!next.dataset.aeriDisplay)next.dataset.aeriDisplay=next.style.display||'';next.style.display='none'}
+       } else x.style.display='none';
+     }
+   });
+   const fb=el('solarFallbackText');if(fb)fb.textContent='Trace the customer service area on the aerial image, then save the area measurement.';
+ }else{
+   document.querySelectorAll('[data-aeri-display]').forEach(x=>{x.style.display=x.dataset.aeriDisplay;delete x.dataset.aeriDisplay});
+ }
 }
 function businessTypeChanged(){applyBusinessTerminology();renderSummary()}
+let _aeriTermTimer=null;
+const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>applyBusinessTerminology(),30)});
+document.addEventListener('DOMContentLoaded',()=>{_aeriTermObserver.observe(document.body,{childList:true,subtree:true})});
+
 
 function saveDealerDefaults(){const d={name:el('dealerName').value,company:el('dealerCompany')?el('dealerCompany').value:'',email:el('dealerEmail')?el('dealerEmail').value:'',website:el('dealerWebsite')?el('dealerWebsite').value:'',address:el('dealerAddress')?el('dealerAddress').value:'',price:el('price').value,coverage:el('coverage').value,country:el('dealerCountry')?el('dealerCountry').value:'US',businessType:el('businessType')?el('businessType').value:'roofing',province:el('province').value,pricingMode:el('pricingMode').value,discountPct:el('discountPct').value,gst:el('gst').value,pst:el('pst').value,phone:el('dealerPhone').value,marketingEnabled:!!el('marketingEnabled')?.checked,marketingHeading:el('marketingHeading')?.value||'',marketingWarranty:el('marketingWarranty')?.value||'',marketingCtaHeading:el('marketingCtaHeading')?.value||'',marketingCtaText:el('marketingCtaText')?.value||'',benefits:[1,2,3,4,5].map(n=>({icon:el('benefitIcon'+n)?.value||'✓',title:el('benefitTitle'+n)?.value||'',text:el('benefitText'+n)?.value||''}))};localStorage.setItem('sxDealerDefaults',JSON.stringify(d));const savedPrice=parseFloat(d.price);if(Number.isFinite(savedPrice)&&savedPrice>=0&&el('jobPrice'))el('jobPrice').value=savedPrice.toFixed(2);const ds=document.querySelector('details.dealer-settings');if(ds)ds.open=true;const ms=el('marketingSettings');if(ms)ms.open=false;applyBusinessTerminology();renderSummary();el('savedMsg').innerHTML=`<div class="savedmsg"><b>✓ Dealer profile & branding saved.</b> Current quote updated to <b>${money(savedPrice)} / sq. ft.</b>. Your company information and marketing choices will appear on customer estimates.</div>`;const sb=el('saveDealerProfileBtn');if(sb){const old=sb.textContent;sb.textContent='✓ SAVED';sb.classList.add('saved');sb.disabled=true;setTimeout(()=>{sb.textContent=old;sb.classList.remove('saved');sb.disabled=false},2000)}}
 function loadDealerDefaults(){try{const d=JSON.parse(localStorage.getItem('sxDealerDefaults')||'null');if(d){if(d.name!==undefined&&el('dealerName'))el('dealerName').value=d.name;if(d.company!==undefined&&el('dealerCompany'))el('dealerCompany').value=d.company;if(d.email!==undefined&&el('dealerEmail'))el('dealerEmail').value=d.email;if(d.website!==undefined&&el('dealerWebsite'))el('dealerWebsite').value=d.website;if(d.address!==undefined&&el('dealerAddress'))el('dealerAddress').value=d.address;if(d.phone!==undefined&&el('dealerPhone'))el('dealerPhone').value=d.phone;if(el('dealerCountry'))el('dealerCountry').value=d.country||'US';if(el('businessType'))el('businessType').value=d.businessType||'roofing';countryChanged(false);['price','coverage','province','pricingMode','discountPct','gst','pst'].forEach(id=>{if(d[id]!==undefined&&el(id))el(id).value=d[id]});if(d.price!==undefined&&el('jobPrice'))el('jobPrice').value=d.price;if(el('marketingEnabled'))el('marketingEnabled').checked=!!d.marketingEnabled;if(el('marketingHeading'))el('marketingHeading').value=d.marketingHeading||'';if(el('marketingWarranty'))el('marketingWarranty').value=d.marketingWarranty||'';if(el('marketingCtaHeading'))el('marketingCtaHeading').value=d.marketingCtaHeading||'';if(el('marketingCtaText'))el('marketingCtaText').value=d.marketingCtaText||'';(d.benefits||[]).slice(0,5).forEach((b,j)=>{const n=j+1;if(el('benefitIcon'+n))el('benefitIcon'+n).value=b.icon||'✓';if(el('benefitTitle'+n))el('benefitTitle'+n).value=b.title||'';if(el('benefitText'+n))el('benefitText'+n).value=b.text||''})}else if(el('price')&&el('jobPrice'))el('jobPrice').value=el('price').value}catch(e){}const logo=dealerLogoSrc();if(el('dealerLogoPreview')){if(logo){el('dealerLogoPreview').src=logo;el('dealerLogoPreview').style.display='block'}else{el('dealerLogoPreview').removeAttribute('src');el('dealerLogoPreview').style.display='none'}}toggleMarketingEditor();pricingChanged()};applyBusinessTerminology()
