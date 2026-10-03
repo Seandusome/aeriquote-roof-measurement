@@ -239,6 +239,45 @@ HTML = r"""<!doctype html>
   margin-left:12px!important;
   flex:0 0 auto!important;
 }
+
+/* FINAL source-level manual MAIN HOUSE trace layout */
+.manualrow.main-house-trace-row{
+  display:grid!important;
+  grid-template-columns:max-content minmax(180px,220px) max-content max-content max-content!important;
+  align-items:end!important;
+  column-gap:18px!important;
+  row-gap:10px!important;
+}
+.manualrow.main-house-trace-row .main-house-pitch-control{
+  width:100%!important;
+  min-width:180px!important;
+  margin:0!important;
+}
+.manualrow.main-house-trace-row .main-house-pitch-control label{
+  display:block!important;
+  white-space:nowrap!important;
+  margin:0 0 6px!important;
+}
+.manualrow.main-house-trace-row .main-house-pitch-control select{
+  display:block!important;
+  width:100%!important;
+  min-width:180px!important;
+}
+.manualrow.main-house-trace-row #finishTrace{
+  margin-left:0!important;
+  position:static!important;
+  transform:none!important;
+}
+@media(max-width:1050px){
+  .manualrow.main-house-trace-row{
+    grid-template-columns:max-content minmax(180px,220px) max-content!important;
+  }
+  .manualrow.main-house-trace-row #undoTraceBtn,
+  .manualrow.main-house-trace-row #clearManualBtn{
+    grid-row:2;
+  }
+}
+
 </style>
 <style>
 .estimate-hide-street #reportStreet img,.estimate-hide-street .report-street img{visibility:hidden}
@@ -508,11 +547,10 @@ function applyBusinessTerminology(root=document.body){
    document.querySelectorAll('[data-aeri-display]').forEach(x=>{x.style.display=x.dataset.aeriDisplay;delete x.dataset.aeriDisplay});
  }
 }
- polishRoofingManualTraceControls();
 
 function businessTypeChanged(){applyBusinessTerminology();renderSummary()}
 let _aeriTermTimer=null;
-const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>{applyBusinessTerminology();polishRoofingManualTraceControls()},30)});
+const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>applyBusinessTerminology(),30)});
 document.addEventListener('DOMContentLoaded',()=>{_aeriTermObserver.observe(document.body,{childList:true,subtree:true})});
 
 
@@ -587,7 +625,7 @@ async function loadFallbackAerial(token,targetMap=map){
  throw new Error(proxyError||'Could not load Google satellite fallback.')
 }
 function startLocateRoof(){if(!sessionToken||!fallbackMode){status('Load the property first.','error');return}locateRoofMode=true;garageMode=false;roofFixMode=false;status('Click once near the centre of the house roof. We’ll retry Google at that exact location.','warn');if(el('solarFallbackText'))el('solarFallbackText').textContent='Click once near the centre of the HOUSE roof on the aerial.'}
-function setManualUi(pure=false){if(el('manualRoofSummary'))el('manualRoofSummary').textContent=pure?'Manual Measurement — Trace Customer Roof':'Add / Remeasure Garage or Other Roof';if(el('manualRoofWarning'))el('manualRoofWarning').innerHTML=pure?'<b>Manual measurement for this property.</b> Trace the shingled MAIN HOUSE around the customer property pin, then confirm the pitch. 5/12 is only the starting default.':(structures.length?"<b>Google's confirmed MAIN HOUSE stays in the quote.</b> Use this to add or remeasure a garage, shed, addition, or other shingled roof.":'<b>Your manually measured MAIN HOUSE stays in the quote.</b> Use this to add the garage, shed, shop, or another shingled building.');if(el('manualRoofHelp'))el('manualRoofHelp').textContent=pure?'Click each outside corner of the MAIN HOUSE, confirm the pitch, then press FINISH MEASUREMENT.':'Click around only the garage or other roof you want to add, confirm its pitch, then press SAVE & ADD ROOF.';if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue=pure?'Pitch of Main House ':'Pitch of Main Roof ';if(el('traceBtn')&&!traceMode)el('traceBtn').textContent=pure?'START MANUAL MEASUREMENT':'ADD MISSING ROOF';if(el('finishTrace'))el('finishTrace').textContent=pure?'FINISH MEASUREMENT':'SAVE & ADD ROOF';if(el('clearManualBtn'))el('clearManualBtn').textContent=pure?'CLEAR MAIN HOUSE OUTLINE':'CLEAR ADDED ROOF DRAWING';}
+function setManualUi(pure=false){const manualRow=el('traceBtn')?el('traceBtn').closest('.manualrow'):null;if(manualRow)manualRow.classList.toggle('main-house-trace-row',!!pure);if(el('tracePitchControl'))el('tracePitchControl').classList.toggle('main-house-pitch-control',!!pure);if(el('manualRoofSummary'))el('manualRoofSummary').textContent=pure?'Manual Measurement — Trace Customer Roof':'Add / Remeasure Garage or Other Roof';if(el('manualRoofWarning'))el('manualRoofWarning').innerHTML=pure?'<b>Manual measurement for this property.</b> Trace the shingled MAIN HOUSE around the customer property pin, then confirm the pitch. 5/12 is only the starting default.':(structures.length?"<b>Google's confirmed MAIN HOUSE stays in the quote.</b> Use this to add or remeasure a garage, shed, addition, or other shingled roof.":'<b>Your manually measured MAIN HOUSE stays in the quote.</b> Use this to add the garage, shed, shop, or another shingled building.');if(el('manualRoofHelp'))el('manualRoofHelp').textContent=pure?'Click each outside corner of the MAIN HOUSE, confirm the pitch, then press FINISH MEASUREMENT.':'Click around only the garage or other roof you want to add, confirm its pitch, then press SAVE & ADD ROOF.';if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue=pure?'Pitch of Main Roof ':'Pitch of Added Roof ';if(el('traceBtn')&&!traceMode)el('traceBtn').textContent=pure?'START MANUAL MEASUREMENT':'ADD MISSING ROOF';if(el('finishTrace'))el('finishTrace').textContent=pure?'FINISH MEASUREMENT':'SAVE & ADD ROOF';if(el('clearManualBtn'))el('clearManualBtn').textContent=pure?'CLEAR MAIN HOUSE OUTLINE':'CLEAR ADDED ROOF DRAWING';}
 function startManualFallback(){if(!sessionToken||!fallbackMode){status('Load the property first.','error');return}locateRoofMode=false;setManualUi(true);if(el('solarFallbackText'))el('solarFallbackText').textContent='Manual mode: trace the shingled roof and confirm the pitch. Google automatic measurement is unavailable for this property.';status('Manual measurement ready — open the manual roof section, trace the roof, and confirm pitch.','warn');const details=el('manualRoofDetails');if(details)details.open=true;}
 async function retryRoofAt(ll){if(!sessionToken)return;locateRoofMode=false;if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}}clickMarker=L.marker(ll).addTo(map).bindPopup('Checking this roof with Google…').openPopup();try{showLoad(true);status('Checking the selected roof with Google…');const r=await fetch('/locate-building',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:sessionToken,latitude:ll.lat,longitude:ll.lng})}),d=await r.json();if(!r.ok){showSolarFallback(true,'Google still cannot automatically measure this roof. You can click a slightly different spot and retry, or choose MEASURE MANUALLY.');status(d.user_error||'Google automatic measurement is unavailable for this roof.','warn');return}structures=[{...d.main,label:'Main House'}];setManualCorrectionLayout(false);setManualUi(false);if(el('measureSource'))el('measureSource').value='google';if(fallbackLayer){try{map.removeLayer(fallbackLayer)}catch(e){}fallbackLayer=null}if(rgbLayer){try{map.removeLayer(rgbLayer)}catch(e){}rgbLayer=null}let rgb=await loadRaster('/rgb/'+sessionToken);rgbLayer=rgb.layer;mainBounds=rgb.bounds;frameAerial(map,rgb.bounds,0);roofMask=await loadRoofMask('/mask/'+sessionToken);structures[0].outline=outlineFromMask(roofMask,d.main.latitude,d.main.longitude);await loadStandardWideAerial();redrawRoofData();showSolarFallback(false);renderSummary();if(el('garageGuide'))el('garageGuide').innerHTML='<b>Main house measured.</b> If there is another roof to include, click <b>+ ADD GARAGE / OTHER ROOF</b>, then click once on that roof.';if(el('measureClicked'))el('measureClicked').disabled=false;if(el('measureClickedTop'))el('measureClickedTop').disabled=false;status('Main house measured from the roof you selected.','ok')}catch(e){showSolarFallback(true,'Google still cannot automatically measure this roof. Try a slightly different point or choose MEASURE MANUALLY.');status('Google automatic measurement is unavailable for this roof.','warn')}finally{showLoad(false);if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}}}
 
@@ -670,7 +708,7 @@ function clearAdjustedOutline(){adjustedOutline=null;outlineEditMode=false;outli
 function pitchChanged(){if(el('pitchSel').value!=='custom')el('pitchDeg').value=el('pitchSel').value}
 function localPolygonAreaM2(points){if(points.length<3)return 0;const R=6378137,lat0=points.reduce((a,p)=>a+p.lat,0)/points.length*Math.PI/180,xy=points.map(p=>({x:R*(p.lng*Math.PI/180)*Math.cos(lat0),y:R*(p.lat*Math.PI/180)}));let a=0;for(let i=0;i<xy.length;i++){const j=(i+1)%xy.length;a+=xy[i].x*xy[j].y-xy[j].x*xy[i].y}return Math.abs(a)/2}
 function setTraceControls(active){['tracePitchControl','finishTrace','undoTraceBtn','clearManualBtn'].forEach(id=>{if(el(id))el(id).style.display=active?'':'none'})}
-function toggleTrace(){if(traceMode){cancelCurrentTrace();status('Manual trace cancelled.','ok');return}const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;traceMode=true;tracePoints=[];clearTempTrace();setTraceControls(true);if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=mainManual?'Trace the MAIN HOUSE only.':'Trace only the garage or other roof you want to add. The main house stays unchanged.';if(!window.sgPitchReminderShown&&el('pitchReminder')){el('pitchReminder').style.display='block';window.sgPitchReminderShown=true;setTimeout(()=>{if(el('pitchReminder'))el('pitchReminder').style.display='none'},7000)}el('traceBtn').textContent='CANCEL TRACE';el('traceBtn').className='danger';el('traceBanner').style.display='block';el('finishTrace').disabled=true;status(mainManual?'Manual measurement ON — click the outside corners of the MAIN HOUSE.':'Added-roof trace ON — click the outside corners of the garage or other roof.','warn')}
+function toggleTrace(){if(traceMode){cancelCurrentTrace();status('Manual trace cancelled.','ok');return}const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;setManualUi(mainManual);traceMode=true;tracePoints=[];clearTempTrace();setTraceControls(true);if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=mainManual?'Trace the MAIN HOUSE only.':'Trace only the garage or other roof you want to add. The main house stays unchanged.';if(!window.sgPitchReminderShown&&el('pitchReminder')){el('pitchReminder').style.display='block';window.sgPitchReminderShown=true;setTimeout(()=>{if(el('pitchReminder'))el('pitchReminder').style.display='none'},7000)}el('traceBtn').textContent='CANCEL TRACE';el('traceBtn').className='danger';el('traceBanner').style.display='block';el('finishTrace').disabled=true;status(mainManual?'Manual measurement ON — click the outside corners of the MAIN HOUSE.':'Added-roof trace ON — click the outside corners of the garage or other roof.','warn')}
 function addTracePoint(ll){tracePoints.push(ll);let n=tracePoints.length,pt=L.marker(ll,{interactive:false,icon:L.divIcon({className:'',html:`<div class="point-label">${n}</div>`,iconAnchor:[12,12]})}).addTo(map);tempTraceLayers.push(pt);redrawTraceLine();const ready=tracePoints.length>=3;el('finishTrace').disabled=!ready;if(ready){const action=((manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0)?'FINISH MEASUREMENT':'SAVE & ADD ROOF';if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=`<b>✓ Roof traced.</b> Confirm the pitch, then click <b>${action}</b>.`;status('Roof traced — confirm pitch, then save.','ok')}}
 function redrawTraceLine(){tempTraceLayers.filter(x=>x._traceLine).forEach(x=>map.removeLayer(x));tempTraceLayers=tempTraceLayers.filter(x=>!x._traceLine);if(tracePoints.length>=2){let c=[...tracePoints];if(tracePoints.length>=3)c.push(tracePoints[0]);let l=L.polyline(c,{color:'#d97706',weight:4,dashArray:'6,5'}).addTo(map);l._traceLine=true;tempTraceLayers.push(l)}}
 function clearTempTrace(){tempTraceLayers.forEach(x=>{try{map.removeLayer(x)}catch(e){}});tempTraceLayers=[];if(traceSavePopup){try{map.closePopup(traceSavePopup)}catch(e){}traceSavePopup=null}}
