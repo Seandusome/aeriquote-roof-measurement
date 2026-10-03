@@ -1281,6 +1281,13 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(!historicalMode){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
  customerMapBuildTimer=setTimeout(async()=>{try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(historicalMode&&el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Saved property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false}},350);
+
+ // Final business-specific estimate-summary label.
+ if(currentBusinessType()==='roofing'){
+   document.querySelectorAll('#reportCard .line span, #customerEstimate .line span, .report .line span').forEach(x=>{
+     if((x.textContent||'').trim()==='Service — Main House')x.textContent='Roofing Service — Main House';
+   });
+ }
 }
 
 function pdfRoofPointsForTarget(key,snap){
