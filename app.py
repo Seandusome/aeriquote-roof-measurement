@@ -1,6 +1,6 @@
 import re
 # AERIQUOTE V11.6.64 — MEASUREMENT WORKSPACE POLISH
-# Protected V11.6.64 baseline: measurement label cleanup; edge labels offset outside perimeter to reduce pitch-label collisions.
+# Protected V11.6.65 baseline: smart edge-label spacing cleanup; preserve measurement engine and estimate workflow.
 # Measurement calculations, API calls, pricing, estimates and PDF mechanics are unchanged.
 from flask import Flask, request, jsonify, Response, render_template_string, session, redirect
 import urllib.request, urllib.parse, urllib.error
@@ -696,10 +696,12 @@ function drawEdgeMeasurements(points,color,targetMap=map,targetList=overlays,sho
  if(!Array.isArray(points)||points.length<2)return;
  const pts=points.map(p=>L.latLng(p.lat!==undefined?p.lat:p[0],p.lng!==undefined?p.lng:p[1]));
  let edges=[];for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],feet=targetMap.distance(a,b)*3.28084;if(feet>=4)edges.push({a,b,feet,i})}
- const chosen=edges.length<=12?edges:[...edges].sort((a,b)=>b.feet-a.feet).slice(0,12);
- // Keep length labels just outside the roof perimeter so they do not compete with pitch labels.
+ const chosen=[...edges].sort((a,b)=>b.feet-a.feet).slice(0,14);
+ // Smart label placement: prioritize longer edges, move labels farther outside the roof,
+ // and suppress labels that would land on top of another edge label on complex roofs.
  let center=null;try{const cps=pts.map(p=>targetMap.latLngToContainerPoint(p));center=cps.reduce((a,p)=>L.point(a.x+p.x,a.y+p.y),L.point(0,0));center=L.point(center.x/cps.length,center.y/cps.length)}catch(e){}
- chosen.forEach(e=>{let mid=L.latLng((e.a.lat+e.b.lat)/2,(e.a.lng+e.b.lng)/2);try{if(center){const mp=targetMap.latLngToContainerPoint(mid),dx=mp.x-center.x,dy=mp.y-center.y,len=Math.hypot(dx,dy)||1,off=L.point(mp.x+(dx/len)*14,mp.y+(dy/len)*14);mid=targetMap.containerPointToLatLng(off)}}catch(err){}const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="edge-label">${e.feet.toFixed(1)} ft</div>`,iconAnchor:[22,8]})}).addTo(targetMap);targetList.push(lab)});
+ const placed=[];
+ chosen.forEach(e=>{let mid=L.latLng((e.a.lat+e.b.lat)/2,(e.a.lng+e.b.lng)/2),labelPoint=null;try{const mp=targetMap.latLngToContainerPoint(mid);labelPoint=mp;if(center){const dx=mp.x-center.x,dy=mp.y-center.y,len=Math.hypot(dx,dy)||1;labelPoint=L.point(mp.x+(dx/len)*22,mp.y+(dy/len)*22);mid=targetMap.containerPointToLatLng(labelPoint)}}catch(err){}if(labelPoint&&placed.some(p=>Math.hypot(labelPoint.x-p.x,labelPoint.y-p.y)<58))return;if(labelPoint)placed.push(labelPoint);const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="edge-label">${e.feet.toFixed(1)} ft</div>`,iconAnchor:[22,8]})}).addTo(targetMap);targetList.push(lab)});
  if(showCorners&&pts.length<=24)pts.forEach(pt=>{const dot=L.circleMarker(pt,{radius:4,color,weight:2,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(targetMap);targetList.push(dot)});
 }
 function drawSegments(s,kind,targetMap=map,targetList=overlays,skipOutline=false){const color=kind==='house'?'#2d6cdf':'#18a7a0',segs=(s.segments||[]),mode=(el('outlineMode')?el('outlineMode').value:'smart'),showBoxes=(mode==='all');segs.forEach((seg)=>{const b=seg.bounding_box;if(!b||!b.sw||!b.ne)return;if(showBoxes){const rect=L.rectangle([[b.sw.latitude,b.sw.longitude],[b.ne.latitude,b.ne.longitude]],{color,weight:2,fillColor:color,fillOpacity:.08}).addTo(targetMap);targetList.push(rect)}const c=seg.center||{latitude:(b.sw.latitude+b.ne.latitude)/2,longitude:(b.sw.longitude+b.ne.longitude)/2};const lab=L.marker([c.latitude,c.longitude],{interactive:false,icon:L.divIcon({className:'',html:`<div class="seg-label">${seg.pitch_degrees.toFixed(1)}°</div>`,iconAnchor:[24,10]})}).addTo(targetMap);targetList.push(lab)});const visualOutline=(kind==='house'&&outlineEditMode)?null:((kind==='house'&&Array.isArray(adjustedOutline)&&adjustedOutline.length>=3)?adjustedOutline:s.outline);if(!skipOutline&&mode==='smart'&&Array.isArray(visualOutline)&&visualOutline.length>=3){const poly=L.polygon(visualOutline,{color,weight:5,fillColor:color,fillOpacity:.045,interactive:false,lineJoin:'round',smoothFactor:1.35}).addTo(targetMap);targetList.unshift(poly);if(targetMap===map)drawEdgeMeasurements(visualOutline,color,targetMap,targetList,true)}}
