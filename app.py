@@ -243,18 +243,26 @@ HTML = r"""<!doctype html>
   flex:0 0 auto!important;
 }
 
-/* FINAL source-level manual MAIN HOUSE trace layout */
+/* V11.6.78 — stable manual MAIN HOUSE trace layout
+   Keep controls in separate grid areas so pitch and action buttons can never overlap. */
 .manualrow.main-house-trace-row{
   display:grid!important;
-  grid-template-columns:max-content minmax(180px,220px) max-content max-content max-content!important;
+  grid-template-columns:minmax(240px,1fr) minmax(190px,220px) max-content!important;
+  grid-template-areas:
+    "cancel pitch finish"
+    "undo clear clear"!important;
   align-items:end!important;
-  column-gap:18px!important;
-  row-gap:10px!important;
-}
-.manualrow.main-house-trace-row .main-house-pitch-control{
+  gap:12px 18px!important;
   width:100%!important;
-  min-width:180px!important;
+}
+.manualrow.main-house-trace-row #traceBtn{grid-area:cancel;justify-self:start!important}
+.manualrow.main-house-trace-row .main-house-pitch-control{
+  grid-area:pitch;
+  width:100%!important;
+  min-width:190px!important;
   margin:0!important;
+  position:static!important;
+  transform:none!important;
 }
 .manualrow.main-house-trace-row .main-house-pitch-control label{
   display:block!important;
@@ -264,21 +272,32 @@ HTML = r"""<!doctype html>
 .manualrow.main-house-trace-row .main-house-pitch-control select{
   display:block!important;
   width:100%!important;
-  min-width:180px!important;
+  min-width:190px!important;
+  margin:0!important;
 }
 .manualrow.main-house-trace-row #finishTrace{
-  margin-left:0!important;
+  grid-area:finish;
+  justify-self:start!important;
+  margin:0!important;
   position:static!important;
   transform:none!important;
 }
-@media(max-width:1050px){
+.manualrow.main-house-trace-row #undoTraceBtn{grid-area:undo;justify-self:start!important;margin:0!important}
+.manualrow.main-house-trace-row #clearManualBtn{grid-area:clear;justify-self:start!important;margin:0!important}
+/* Neutralize older dynamic positioning classes when this is the main-house trace. */
+.manualrow.main-house-trace-row .aeri-dynamic-main-pitch{
+  min-width:190px!important;
+  flex:initial!important;
+  margin:0!important;
+}
+.manualrow.main-house-trace-row .aeri-dynamic-finish-measurement{margin:0!important;flex:initial!important}
+@media(max-width:900px){
   .manualrow.main-house-trace-row{
-    grid-template-columns:max-content minmax(180px,220px) max-content!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:"cancel" "pitch" "finish" "undo" "clear"!important;
+    align-items:start!important;
   }
-  .manualrow.main-house-trace-row #undoTraceBtn,
-  .manualrow.main-house-trace-row #clearManualBtn{
-    grid-row:2;
-  }
+  .manualrow.main-house-trace-row .main-house-pitch-control{max-width:240px!important}
 }
 
 </style>
