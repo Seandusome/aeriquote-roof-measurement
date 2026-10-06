@@ -1,3 +1,4 @@
+# V11.6.84 — WEBSITE ROUTING FIX
 # V11.6.82 — ACCOUNT / WEBSITE SIGNUP READINESS
 # V11.6.76 — FOCUSED MEASUREMENT INTERFACE
 import re
@@ -1958,14 +1959,28 @@ def create_signup_account():
     return jsonify(id=did,name=name,company=company,email=email,plan=plan,industry=industry,measurement_limit=limit,status="active")
 
 
-# V11.6.83 — integrated public website + trial signup bridge
+# V11.6.84 — integrated public website + trial signup bridge.
+# Use an absolute folder based on app.py so Render can serve the website even if
+# the service working directory differs from the project directory.
+SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
+
+@app.get("/site")
 @app.get("/site/")
 def public_site_home():
-    return send_from_directory("site", "index.html")
+    return send_from_directory(SITE_DIR, "index.html")
 
 @app.get("/site/<path:filename>")
 def public_site_file(filename):
-    return send_from_directory("site", filename)
+    return send_from_directory(SITE_DIR, filename)
+
+# Friendly direct routes used during signup testing.
+@app.get("/trial-signup.html")
+def public_trial_signup_direct():
+    return send_from_directory(SITE_DIR, "trial-signup.html")
+
+@app.get("/roofer-setup.html")
+def public_roofer_setup_direct():
+    return send_from_directory(SITE_DIR, "roofer-setup.html")
 
 @app.post("/api/public/signup")
 def public_signup():
