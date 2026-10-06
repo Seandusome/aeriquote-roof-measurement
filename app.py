@@ -1976,7 +1976,7 @@ EMBEDDED_SITE = {
 def _serve_site_resource(filename):
     disk_path=os.path.join(SITE_DIR, filename)
     if os.path.isfile(disk_path):
-        return _serve_site_resource(filename)
+        return send_from_directory(SITE_DIR, filename)
     item=EMBEDDED_SITE.get(filename)
     if item:
         ctype,b64=item
@@ -1995,7 +1995,7 @@ def public_site_home():
 
 @app.get("/site/<path:filename>")
 def public_site_file(filename):
-    return send_from_directory(SITE_DIR, filename)
+    return _serve_site_resource(filename)
 
 # Friendly direct routes used during signup testing.
 @app.get("/trial-signup.html")
