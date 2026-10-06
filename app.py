@@ -1,6 +1,6 @@
 import re
 # AERIQUOTE V11.6.64 — MEASUREMENT WORKSPACE POLISH
-# Protected V11.6.65 baseline: smart edge-label spacing cleanup; preserve measurement engine and estimate workflow.
+# Protected V11.6.67 baseline: carry clean edge dimensions into customer estimate; preserve measurement engine and estimate workflow.
 # Measurement calculations, API calls, pricing, estimates and PDF mechanics are unchanged.
 from flask import Flask, request, jsonify, Response, render_template_string, session, redirect
 import urllib.request, urllib.parse, urllib.error
@@ -1133,6 +1133,11 @@ async function buildInteractiveCustomerMap(){
      let poly=L.polygon(reportOutlines[key],{color,weight:4,fillColor:color,fillOpacity:.08,interactive:false,lineJoin:'round',smoothFactor:1.5}).addTo(customerMap);
      poly._reportRoofKey=key;customerOverlays.push(poly)
    }
+   // V11.6.67 — CUSTOMER ESTIMATE EDGE DIMENSIONS
+   // Carry the approved perimeter dimensions into the customer estimate aerial.
+   // Keep corners off here so the report stays cleaner than the dealer workspace.
+   const estimateOutline=custom?reportOutlines[key]:((i===0&&Array.isArray(adjustedOutline)&&adjustedOutline.length>=3)?adjustedOutline:st.outline);
+   if(Array.isArray(estimateOutline)&&estimateOutline.length>=3)drawEdgeMeasurements(estimateOutline,i===0?'#2d6cdf':'#18a7a0',customerMap,customerOverlays,false);
  });
  reportManual.forEach((p,i)=>{
    const key=`manual-${i}`,pts=(Array.isArray(reportOutlines[key])&&reportOutlines[key].length>=3)?reportOutlines[key]:p.points;
