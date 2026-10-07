@@ -291,6 +291,8 @@ HTML = r"""<!doctype html>
 .estimate-hide-street #reportStreet img,.estimate-hide-street .report-street img{visibility:hidden}
 .estimate-hide-street #reportStreet,.estimate-hide-street .report-street{background:linear-gradient(135deg,#f3f7f4,#e6efe9);position:relative}
 .estimate-hide-street #reportStreet:after,.estimate-hide-street .report-street:after{content:"PROPERTY ASSESSMENT COMPLETED\A Roof measured using available aerial imagery.";white-space:pre;text-align:center;font-weight:700;color:#174f2b;position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+
+.trial-limit-overlay{display:none;position:fixed;inset:0;background:rgba(10,25,40,.62);z-index:9000;padding:22px;align-items:center;justify-content:center}.trial-limit-overlay.open{display:flex}.trial-limit-card{width:min(560px,100%);background:#fff;border-radius:16px;padding:28px;box-shadow:0 18px 60px #0006;text-align:center}.trial-limit-card h2{margin:0 0 10px;color:#102a43;font-size:28px}.trial-limit-card p{color:#5b6770;line-height:1.55;margin:8px 0}.trial-limit-card .trial-note{font-size:12px;margin-top:12px}.trial-limit-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}.trial-limit-actions a,.trial-limit-actions button{min-height:44px;padding:11px 18px;border-radius:8px;font-weight:900;text-decoration:none}.trial-limit-actions a{background:#f28c28;color:#fff}.trial-limit-actions button{background:#fff;color:#17324d;border:1px solid #cbd5df;cursor:pointer}
 </style><style>
 .estimate-hide-street #rStreet{visibility:hidden}
 .estimate-hide-street .reportPanel:has(#rStreet) .reportBody{min-height:150px;background:linear-gradient(135deg,#f3f7f4,#e6efe9);position:relative}
@@ -366,6 +368,7 @@ HTML = r"""<!doctype html>
 
 <div id="historyModal" class="historyModal"><div class="historyBox"><div class="historyHead"><div><h2 style="margin:0;color:var(--green2)">Previous Estimates</h2><div class="small">Find and reopen a saved estimate or review its earlier versions.</div></div><button class="ghost" onclick="closeEstimateHistory()">CLOSE</button></div><div style="display:flex;gap:8px;margin-top:14px"><input id="historySearch" placeholder="Search customer, address, phone or email" onkeydown="if(event.key==='Enter')searchEstimateHistory()"><button onclick="searchEstimateHistory()">SEARCH</button></div><div class="historyColumns"><div>Customer</div><div>Property</div><div>Date</div><div>Estimate</div><div>Actions</div></div><div id="historyResults" class="historyResults"><div class="small" style="padding:14px 0">Your saved estimates will appear here.</div></div></div></div>
 
+<div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/site/choose-plan.html">VIEW PLANS →</a><button type="button" onclick="closeTrialLimit()">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
 <div id="reportOverlay"><div class="report" style="width:min(1320px,calc(100vw - 44px));">
  <div class="reportHead"><img id="rDealerLogo" class="logo dealerLogo noDealerLogo" alt="Dealer logo"><div><h1 id="rEstimateTitle">Property Measurement &amp; Estimate</h1><div id="rEstimateSubtitle" style="text-align:center;color:#28612f;font-weight:800;margin-top:6px"></div><div id="rEstimateDealerSub" class="reportDealerSub"></div></div><div></div></div>
  <div class="reportMeta"><div><b>Property Address</b><div id="rAddress"></div></div><div><b>Date Prepared</b><div id="rDate"></div></div><div><b>Prepared For</b><div id="rCustomerName">Homeowner</div><div id="rCustomerPhone" class="small"></div><div id="rCustomerEmail" class="small"></div></div></div>
@@ -972,6 +975,7 @@ async function loadExactPinAerial(token,targetMap=map){
  throw new Error(proxyError||'Could not load exact-pin satellite image.');
 }
 
+function showTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.add('open')}function closeTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.remove('open')}
 async function loadProperty(){
  const requestedMeasurementMode=pendingMeasurementMode||measurementViewMode||'auto';
  const enteredStreet=(el('streetAddress')?.value||'').trim(),enteredCity=(el('cityTown')?.value||'').trim(),enteredProvince=propertyLookupProvince(),enteredNumber=enteredStreetNumber();
@@ -986,7 +990,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   status('Loading property…');showLoad(true);resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null}
   removeStaleAerialLayers();
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
-  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d=await r.json();if(!r.ok)throw new Error(d.user_error||d.error||'Property request failed');
+  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d=await r.json();if(!r.ok){if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
@@ -2359,6 +2363,20 @@ def consume_property_lookup(dealer_id):
         con.commit();return True,used+1,limit
     finally:con.close()
 
+
+def reset_trial_usage_for_v1196_testing_once():
+    con=estimate_db()
+    try:
+        con.execute("CREATE TABLE IF NOT EXISTS app_migrations (migration_key TEXT PRIMARY KEY, applied_at TEXT NOT NULL)")
+        key="v11_6_96_trial_test_reset"
+        if con.execute("SELECT 1 FROM app_migrations WHERE migration_key=?",(key,)).fetchone():return
+        con.execute("UPDATE dealer_usage SET property_lookups=0 WHERE dealer_id IN (SELECT id FROM dealers WHERE lower(COALESCE(plan_code,''))='trial')")
+        con.execute("INSERT INTO app_migrations(migration_key,applied_at) VALUES(?,?)",(key,datetime.utcnow().isoformat()))
+        con.commit()
+    finally:con.close()
+
+reset_trial_usage_for_v1196_testing_once()
+
 @app.before_request
 def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
@@ -2586,7 +2604,14 @@ def property_data():
     d=request.get_json(silent=True) or {};key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
     if not key or not address:return jsonify(error="API key and address are required."),400
     allowed,used,limit=consume_property_lookup(str(session.get("dealer_id") or ""))
-    if not allowed:return jsonify(error="Property lookup allowance reached.",user_error=f"Your dealership has used all {limit} property lookups. Contact AeriQuote support to increase the allowance."),403
+    if not allowed:
+        con=estimate_db()
+        try:
+            row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(str(session.get("dealer_id") or ""),)).fetchone()
+            is_trial=bool(row and str(row["plan_code"] or "").lower()=="trial")
+        finally:con.close()
+        if is_trial:return jsonify(error="Free trial complete.",code="trial_limit_reached",user_error="You’ve used all 3 free property measurements included with your AeriQuote trial."),403
+        return jsonify(error="Property lookup allowance reached.",user_error=f"Your account has used all {limit} property measurements included with the current plan."),403
     try:
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
