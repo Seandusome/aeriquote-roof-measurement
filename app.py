@@ -3,7 +3,7 @@
 # V11.6.76 — FOCUSED MEASUREMENT INTERFACE
 import re
 # AERIQUOTE V11.6.74 — MULTI-MEASUREMENT INTERFACE
-# AeriQuote V11.6.71 — Linear quote workflow. Roof measurement engine unchanged.
+# AeriQuote V11.6.91 — SNOW REMOVAL WORKFLOW. Roofing V11.6.90 behavior preserved.
 # Measurement calculations, API calls, pricing, estimates and PDF mechanics are unchanged.
 from flask import Flask, request, jsonify, Response, render_template_string, session, redirect, send_from_directory
 import urllib.request, urllib.parse, urllib.error
@@ -567,6 +567,11 @@ function applyBusinessTerminology(root=document.body){
    }
  });
  if(snow){
+   // Snow Removal uses service-area / linear tools, never roof AutoMeasure.
+   const autoBtn=el('toolAutoBtn'); if(autoBtn)autoBtn.style.display='none';
+   const areaBtn=el('toolAreaBtn'); if(areaBtn){areaBtn.querySelector('b').textContent='AREA';areaBtn.querySelector('small').textContent='Driveways • parking lots • service areas'}
+   const linearBtn=el('toolLinearBtn'); if(linearBtn){linearBtn.querySelector('b').textContent='LINEAR';linearBtn.querySelector('small').textContent='Sidewalks • curbs • access runs'}
+   if(!sessionToken && measurementViewMode==='auto'){pendingMeasurementMode='area';measurementViewMode='area';updatePropertyActionButton();updateMeasurementInterface()}
    // Hide visible blocks whose original labels are strictly roof/product specific.
    document.querySelectorAll('.metric,.structure,.calc>div,.section,.warning,.small,label').forEach(x=>{
      const txt=(_aeriOriginalText.get(x.firstChild)||x.textContent||'').trim();
@@ -580,6 +585,7 @@ function applyBusinessTerminology(root=document.body){
    });
    const fb=el('solarFallbackText');if(fb)fb.textContent='Trace the customer service area on the aerial image, then save the area measurement.';
  }else{
+   const autoBtn=el('toolAutoBtn');if(autoBtn)autoBtn.style.display='';
    document.querySelectorAll('[data-aeri-display]').forEach(x=>{x.style.display=x.dataset.aeriDisplay;delete x.dataset.aeriDisplay});
  }
 }
@@ -595,7 +601,7 @@ function applyOnboardingMarketing(d){if(!d)return;const warranty=(d.marketingWar
 function loadDealerDefaults(){fetch('/api/account/profile').then(r=>r.ok?r.json():null).then(a=>{if(!a)return;const d=a.profile||{};if(!Object.keys(d).length)return;localStorage.setItem('sxDealerDefaults',JSON.stringify(d));if(d.logoData)try{localStorage.setItem('sxDealerLogo',d.logoData)}catch(e){};if(d.name!==undefined&&el('dealerName'))el('dealerName').value=d.name;if(d.company!==undefined&&el('dealerCompany'))el('dealerCompany').value=d.company;if(d.email!==undefined&&el('dealerEmail'))el('dealerEmail').value=d.email;if(d.phone!==undefined&&el('dealerPhone'))el('dealerPhone').value=d.phone;if(d.website!==undefined&&el('dealerWebsite'))el('dealerWebsite').value=d.website;if(d.address!==undefined&&el('dealerAddress'))el('dealerAddress').value=d.address;if(el('dealerCountry'))el('dealerCountry').value=d.country||'US';if(el('businessType'))el('businessType').value=d.businessType||a.industry||'roofing';countryChanged(false);['price','coverage','province','pricingMode','discountPct','gst','pst'].forEach(id=>{if(d[id]!==undefined&&el(id))el(id).value=d[id]});if(d.price!==undefined&&el('jobPrice'))el('jobPrice').value=d.price;applyOnboardingMarketing(d);toggleMarketingEditor();pricingChanged();renderSummary()}).catch(()=>{});try{const d=JSON.parse(localStorage.getItem('sxDealerDefaults')||'null');if(d){if(d.name!==undefined&&el('dealerName'))el('dealerName').value=d.name;if(d.company!==undefined&&el('dealerCompany'))el('dealerCompany').value=d.company;if(d.email!==undefined&&el('dealerEmail'))el('dealerEmail').value=d.email;if(d.website!==undefined&&el('dealerWebsite'))el('dealerWebsite').value=d.website;if(d.address!==undefined&&el('dealerAddress'))el('dealerAddress').value=d.address;if(d.phone!==undefined&&el('dealerPhone'))el('dealerPhone').value=d.phone;if(el('dealerCountry'))el('dealerCountry').value=d.country||'US';if(el('businessType'))el('businessType').value=d.businessType||'roofing';countryChanged(false);['price','coverage','province','pricingMode','discountPct','gst','pst'].forEach(id=>{if(d[id]!==undefined&&el(id))el(id).value=d[id]});if(d.price!==undefined&&el('jobPrice'))el('jobPrice').value=d.price;applyOnboardingMarketing(d);(d.benefits||[]).slice(0,5).forEach((b,j)=>{const n=j+1;if(el('benefitIcon'+n))el('benefitIcon'+n).value=b.icon||'✓';if(el('benefitTitle'+n))el('benefitTitle'+n).value=b.title||'';if(el('benefitText'+n))el('benefitText'+n).value=b.text||''})}else if(el('price')&&el('jobPrice'))el('jobPrice').value=el('price').value}catch(e){}const logo=dealerLogoSrc();if(el('dealerLogoPreview')){if(logo){el('dealerLogoPreview').src=logo;el('dealerLogoPreview').style.display='block'}else{el('dealerLogoPreview').removeAttribute('src');el('dealerLogoPreview').style.display='none'}}toggleMarketingEditor();pricingChanged();clearNewJobCustomer();setTimeout(clearNewJobCustomer,250);setTimeout(clearNewJobCustomer,1000)};applyBusinessTerminology()
 
 function toggleMarketingEditor(){if(el('marketingEditor'))el('marketingEditor').style.display=el('marketingEnabled')?.checked?'block':'none'}
-function applyDealerMarketing(){const enabled=!!el('marketingEnabled')?.checked,panel=el('rMarketingPanel'),benefitsBox=el('rMarketingBenefits'),warranty=el('rMarketingWarranty');if(panel)panel.classList.toggle('marketingHidden',!enabled);if(!enabled){if(el('rCtaHeading'))el('rCtaHeading').textContent='YOUR ESTIMATE';if(el('rCtaText'))el('rCtaText').textContent='';return}if(el('rMarketingHeading'))el('rMarketingHeading').textContent=(el('marketingHeading')?.value||'WHY CHOOSE US').trim();if(benefitsBox){benefitsBox.innerHTML='';[1,2,3,4,5].forEach(n=>{const title=(el('benefitTitle'+n)?.value||'').trim(),txt=(el('benefitText'+n)?.value||'').trim();if(!title&&!txt)return;const row=document.createElement('div');row.className='benefit';const icon=document.createElement('span');icon.className='benefitIcon';icon.textContent=el('benefitIcon'+n)?.value||'✓';const body=document.createElement('div'),b=document.createElement('b');b.textContent=title||'Benefit';body.appendChild(b);if(txt){body.appendChild(document.createElement('br'));const sm=document.createElement('span');sm.className='small';sm.textContent=txt;body.appendChild(sm)}row.appendChild(icon);row.appendChild(body);benefitsBox.appendChild(row)})}const wt=(el('marketingWarranty')?.value||'').trim();if(warranty){warranty.textContent=wt;warranty.classList.toggle('marketingHidden',!wt)}if(el('rCtaHeading'))el('rCtaHeading').textContent=(el('marketingCtaHeading')?.value||'YOUR ESTIMATE').trim();if(el('rCtaText'))el('rCtaText').textContent=(el('marketingCtaText')?.value||'').trim()}
+function applyDealerMarketing(){const enabled=!!el('marketingEnabled')?.checked,panel=el('rMarketingPanel'),benefitsBox=el('rMarketingBenefits'),warranty=el('rMarketingWarranty');if(panel)panel.classList.toggle('marketingHidden',!enabled);if(!enabled){if(el('rCtaHeading'))el('rCtaHeading').textContent='YOUR ESTIMATE';if(el('rCtaText'))el('rCtaText').textContent='';return}if(el('rMarketingHeading'))el('rMarketingHeading').textContent=(el('marketingHeading')?.value||'WHY CHOOSE US').trim();if(benefitsBox){benefitsBox.innerHTML='';[1,2,3,4,5].forEach(n=>{const title=(el('benefitTitle'+n)?.value||'').trim(),txt=(el('benefitText'+n)?.value||'').trim();if(!title&&!txt)return;const row=document.createElement('div');row.className='benefit';const icon=document.createElement('span');icon.className='benefitIcon';icon.textContent=el('benefitIcon'+n)?.value||'✓';const body=document.createElement('div'),b=document.createElement('b');b.textContent=title||'Benefit';body.appendChild(b);if(txt){body.appendChild(document.createElement('br'));const sm=document.createElement('span');sm.className='small';sm.textContent=txt;body.appendChild(sm)}row.appendChild(icon);row.appendChild(body);benefitsBox.appendChild(row)})}let wt=(el('marketingWarranty')?.value||'').trim();if(/^6\s*[-–—]?\s*year\s+transferable\s+warranty$/i.test(wt))wt='6-Year Transferable Warranty';if(warranty){warranty.textContent=wt;warranty.classList.toggle('marketingHidden',!wt)}if(el('rCtaHeading'))el('rCtaHeading').textContent=(el('marketingCtaHeading')?.value||'YOUR ESTIMATE').trim();if(el('rCtaText'))el('rCtaText').textContent=(el('marketingCtaText')?.value||'').trim()}
 function detectProvince(addr){const a=(' '+String(addr||'').toUpperCase().replace(/[.,]/g,' ')+' ');const states={AL:'ALABAMA',AK:'ALASKA',AZ:'ARIZONA',AR:'ARKANSAS',CA:'CALIFORNIA',CO:'COLORADO',CT:'CONNECTICUT',DE:'DELAWARE',FL:'FLORIDA',GA:'GEORGIA',HI:'HAWAII',ID:'IDAHO',IL:'ILLINOIS',IN:'INDIANA',IA:'IOWA',KS:'KANSAS',KY:'KENTUCKY',LA:'LOUISIANA',ME:'MAINE',MD:'MARYLAND',MA:'MASSACHUSETTS',MI:'MICHIGAN',MN:'MINNESOTA',MS:'MISSISSIPPI',MO:'MISSOURI',MT:'MONTANA',NE:'NEBRASKA',NV:'NEVADA',NH:'NEW HAMPSHIRE',NJ:'NEW JERSEY',NM:'NEW MEXICO',NY:'NEW YORK',NC:'NORTH CAROLINA',ND:'NORTH DAKOTA',OH:'OHIO',OK:'OKLAHOMA',OR:'OREGON',PA:'PENNSYLVANIA',RI:'RHODE ISLAND',SC:'SOUTH CAROLINA',SD:'SOUTH DAKOTA',TN:'TENNESSEE',TX:'TEXAS',UT:'UTAH',VT:'VERMONT',VA:'VIRGINIA',WA:'WASHINGTON',WV:'WEST VIRGINIA',WI:'WISCONSIN',WY:'WYOMING',DC:'DISTRICT OF COLUMBIA'};for(const [code,name] of Object.entries(states)){if(new RegExp('\\b'+code+'\\b').test(a)||a.includes(' '+name+' '))return code}return null}
 function updateUsage(){el('usageLine').textContent=`This session — property lookups: ${usage.property} • extra structures: ${usage.structures} • reports: ${usage.reports} • saved assessments: ${usage.saved}`}
 
@@ -2013,19 +2019,21 @@ def public_signup():
     name=str(d.get("name") or "").strip(); company=str(d.get("company") or "").strip()
     email=str(d.get("email") or "").strip().lower(); password=str(d.get("password") or "")
     country=str(d.get("country") or "Canada").strip()
+    industry=str(d.get("industry") or "roofing").strip().lower()
+    if industry not in {"roofing","snow"}: industry="roofing"
     if not name or not company or not email or len(password)<8:
         return jsonify(error="Name, business name, email and a password of at least 8 characters are required."),400
     did=str(uuid.uuid4()); created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()); limit=PLAN_LIMITS["trial"]
-    profile={"name":name,"company":company,"email":email,"country":"CA" if country.lower().startswith("can") else "US","businessType":"roofing"}
+    profile={"name":name,"company":company,"email":email,"country":"CA" if country.lower().startswith("can") else "US","businessType":industry}
     con=estimate_db()
     try:
         if con.execute("SELECT id FROM dealers WHERE LOWER(email)=?",(email,)).fetchone():
             return jsonify(error="An AeriQuote account already exists with that email."),409
-        con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at,plan_code,industry) VALUES(?,?,?,?,?,'active',?,?,?,?,?)",(did,name,email,password_hash(password),"",limit,limit,created,"trial","roofing"))
+        con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at,plan_code,industry) VALUES(?,?,?,?,?,'active',?,?,?,?,?)",(did,name,email,password_hash(password),"",limit,limit,created,"trial",industry))
         con.execute("INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)",(did,json.dumps(profile),created));con.commit()
     finally: con.close()
     session.clear();session["dealer_id"]=did;session["dealer_name"]=name;session["account_type"]="owner"
-    return jsonify(ok=True,redirect="/site/roofer-setup.html",plan="trial",measurement_limit=limit)
+    return jsonify(ok=True,redirect=("/site/snow-setup.html" if industry=="snow" else "/site/roofer-setup.html"),plan="trial",industry=industry,measurement_limit=limit)
 
 
 HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Dealer Management</title>
