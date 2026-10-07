@@ -1,59 +1,74 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AeriQuote — Snow Removal Setup</title>
-<link href="styles.css" rel="stylesheet"/><link href="onboarding.css" rel="stylesheet"/>
-
-<style>
-/* V6.55 — site-wide footer finish only */
-footer{
-  background:#071a3d !important;
-  color:#dce6f3 !important;
-  border-top:0 !important;
-  margin-top:0 !important;
-}
-footer .container{padding-top:42px !important;padding-bottom:26px !important}
-footer h3, footer h4, footer strong{color:#fff !important}
-footer p, footer small{color:#aebbd0 !important}
-footer a{color:#dce6f3 !important;text-decoration:none !important}
-footer a:hover{color:#49a9e8 !important}
-footer img{filter:none}
-footer hr{border:0;border-top:1px solid rgba(255,255,255,.13) !important}
-footer [class*="copy"], footer [class*="bottom"]{color:#94a5bd !important}
-@media(max-width:700px){
-  footer .container{padding-top:34px !important;padding-bottom:22px !important}
-}
-</style>
-
+<link href="styles.css" rel="stylesheet"><link href="onboarding.css" rel="stylesheet">
 </head>
 <body class="setup-page">
-<header class="setup-header"><div class="wrap setup-nav"><a class="logo" href="index.html"><img alt="AeriQuote" src="assets/aeriquote-logo.png"/></a><div class="setup-help">Snow Removal setup  •  Step <span id="stepNum">1</span> of 9</div></div><div class="progress"><i id="progressBar"></i></div></header>
+<header class="setup-header"><div class="wrap setup-nav"><a class="logo" href="index.html"><img alt="AeriQuote" src="assets/aeriquote-logo.png"></a><div class="setup-help">Snow Removal setup • Step <span id="stepNum">1</span> of 9</div></div><div class="progress"><i id="progressBar"></i></div></header>
 <main class="setup-shell"><form id="setupForm" onsubmit="return false">
-<section class="setup-step active" data-step="1"><div class="step-kicker">BUSINESS</div><h1>Tell us about your snow removal business.</h1><p class="lead">AeriQuote will use this information on your account and customer estimates.</p><div class="form-grid two">
-<label>Company Name<input id="companyName" placeholder="ABC Snow Services" type="text"/></label><label>Your Name<input id="contactName" placeholder="John Smith" type="text"/></label><label>Phone<input id="companyPhone" placeholder="306-555-1234" type="tel"/></label><label>Email<input id="companyEmail" placeholder="john@abcsnow.com" type="email"/></label><label>Website <small>Optional</small><input id="companyWebsite" placeholder="www.abcsnow.com" type="text"/></label><label>Country<select id="country"><option>Canada</option><option>United States</option></select></label><label id="regionLabel">Province<select id="region"><option>Saskatchewan</option><option>Alberta</option><option>British Columbia</option><option>Manitoba</option><option>Ontario</option><option>Quebec</option><option>Other</option></select></label>
+<section class="setup-step active" data-step="1"><div class="step-kicker">BUSINESS</div><h1>Tell us about your snow removal business.</h1><p class="lead">AeriQuote will use this information on your customer estimates.</p><div class="form-grid two">
+<label>Company Name<input id="companyName" placeholder="ABC Snow Services"></label><label>Your Name<input id="contactName" placeholder="John Smith"></label>
+<label>Phone<input id="companyPhone" type="tel" placeholder="306-555-1234"></label><label>Email<input id="companyEmail" type="email" placeholder="john@abcsnow.com"></label>
+<label>Website <small>Optional</small><input id="companyWebsite" placeholder="www.abcsnow.com"></label><label>Country<select id="country"><option>Canada</option><option>United States</option></select></label>
+<label id="regionLabel">Province<select id="region"><option>Saskatchewan</option><option>Alberta</option><option>British Columbia</option><option>Manitoba</option><option>Ontario</option><option>Quebec</option><option>Other</option></select></label>
 </div></section>
-<section class="setup-step" data-step="2"><div class="step-kicker">SNOW REMOVAL SERVICES</div><h1>What snow services do you quote?</h1><p class="lead">Choose everything you offer. These choices can become service options when you create an estimate.</p><div class="choice-grid">
-<label class="check-card"><input checked="" type="checkbox"/><span><b>Snow Plowing</b><small>Parking lots, driveways and larger paved areas.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Sidewalk Clearing</b><small>Sidewalks, walkways and building entrances.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Salting / De-Icing</b><small>Salt or de-icing applications for measured service areas.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Sanding</b><small>Traction material application for lots and access areas.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Snow Hauling / Removal</b><small>Off-site snow removal when accumulation requires hauling.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Other Snow Services</b><small>Add your own snow service later.</small></span></label>
+
+<section class="setup-step" data-step="2"><div class="step-kicker">SNOW REMOVAL SERVICES</div><h1>What snow services do you quote?</h1><p class="lead">Choose everything you offer.</p><div class="choice-grid">
+<label class="check-card"><input checked type="checkbox"><span><b>Snow Plowing</b><small>Parking lots, driveways and larger paved areas.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Sidewalk Clearing</b><small>Sidewalks, walkways and building entrances.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Salting / De-Icing</b><small>Salt or de-icing applications.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Sanding</b><small>Traction material application.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Snow Hauling / Removal</b><small>Off-site snow removal.</small></span></label>
 </div></section>
-<section class="setup-step" data-step="3"><div class="step-kicker">PROPERTY TYPES</div><h1>What properties do you normally quote?</h1><p class="lead">This keeps your measurement workflow focused on the properties and service areas you work with.</p><div class="choice-grid">
-<label class="check-card"><input checked="" type="checkbox"/><span><b>Commercial Properties</b><small>Retail, offices and business properties.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Residential Properties</b><small>Homes, driveways and private walkways.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Multi-Family / Condos</b><small>Apartment, condo and townhouse properties.</small></span></label><label class="check-card"><input type="checkbox"/><span><b>Industrial Properties</b><small>Warehouses, yards and larger access areas.</small></span></label>
+
+<section class="setup-step" data-step="3"><div class="step-kicker">PROPERTY TYPES</div><h1>What properties do you normally quote?</h1><div class="choice-grid">
+<label class="check-card"><input checked type="checkbox"><span><b>Commercial Properties</b><small>Retail, offices and business properties.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Residential Properties</b><small>Homes, driveways and private walkways.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Multi-Family / Condos</b><small>Apartment, condo and townhouse properties.</small></span></label>
+<label class="check-card"><input type="checkbox"><span><b>Industrial Properties</b><small>Warehouses, yards and larger access areas.</small></span></label>
 </div></section>
-<section class="setup-step" data-step="4"><div class="step-kicker">PRICING</div><h1>How do you normally price measured snow areas?</h1><p class="lead">Set the default AeriQuote should start with after a service area is measured. You can change the price on any job.</p><div class="radio-stack">
-<label class="radio-card"><input checked="" name="pricing" type="radio" value="sqft"/><span><b>Price per sq. ft.</b><small>AeriQuote calculates from the measured service area.</small></span></label><label class="radio-card"><input name="pricing" type="radio" value="manual"/><span><b>I set each job price manually</b><small>Measure the service areas first, then enter the final job price.</small></span></label>
-</div><label class="price-field" id="defaultPriceField">Default Price per sq. ft.<div><span>$</span><input id="defaultPrice" step=".01" type="number" value="0.10"/></div></label><div class="change-note">This is only your starting price. It can be changed for every estimate.</div></section>
-<section class="setup-step" data-step="5"><div class="step-kicker">ESTIMATE DEFAULTS</div><h1>Set your everyday snow estimate defaults.</h1><p class="lead">These settings help AeriQuote prefill the estimate after you measure the property.</p><div class="form-grid two">
-<label>Measurement Unit<select><option>Square feet (ft²)</option><option>Square metres (m²)</option></select></label><label>Estimate Valid For<select><option>30 days</option><option>15 days</option><option>45 days</option><option>60 days</option></select></label><label>Typical Contract Type<select><option>Per service / per visit</option><option>Seasonal contract</option><option>Monthly contract</option><option>Choose on each estimate</option></select></label><label>Show Measured Area on Customer Estimate<select><option>Yes</option><option>No</option></select></label>
-</div><div class="choice-grid"><label class="check-card"><input checked="" type="checkbox"/><span><b>Include property image</b><small>Show the measured aerial property image on the estimate.</small></span></label><label class="check-card"><input checked="" type="checkbox"/><span><b>Show service areas</b><small>Include measured parking lots, driveways and other selected areas.</small></span></label></div></section>
-<section class="setup-step" data-step="6"><div class="step-kicker">TAXES</div><h1>Set up your taxes.</h1><p class="lead">AeriQuote will use these defaults when calculating estimate totals. You can still adjust them later.</p><div class="tax-box"><div class="form-grid two"><label>Federal Tax %<input id="tax1" step=".01" type="number" value="5"/></label><label>Provincial / State Tax %<input id="tax2" step=".01" type="number" value="6"/></label></div><div class="radio-inline"><label><input checked="" name="taxmode" type="radio"/> Prices before tax</label><label><input name="taxmode" type="radio"/> Taxes included in price</label></div></div></section>
-<section class="setup-step" data-step="7"><div class="step-kicker">BRANDING</div><h1>Brand your customer estimates.</h1><p class="lead">Upload your logo once. AeriQuote will use it on your professional snow removal estimates.</p><div class="brand-layout"><div><label class="upload-box"><input accept="image/png,image/jpeg" id="logoUpload" type="file"/><b>＋ Upload Company Logo</b><small>PNG or JPG works best.</small></label><div class="form-grid"><label>Company Name<input id="brandCompany" placeholder="ABC Snow Services" type="text"/></label><label>Customer Contact Phone<input id="brandPhone" placeholder="306-555-1234" type="text"/></label><label>Customer Contact Email<input id="brandEmail" placeholder="quotes@abcsnow.com" type="text"/></label></div></div><div class="estimate-preview"><div class="preview-logo" id="previewLogo">YOUR LOGO</div><b id="previewCompany">ABC SNOW SERVICES</b><small>Professional Property Measurement &amp; Snow Estimate</small><hr/><span>Service Area</span><strong>28,500 ft²</strong><span>Estimate Total</span><strong>$2,850.00</strong></div></div></section>
-<section class="setup-step" data-step="8"><div class="step-kicker">ESTIMATE MARKETING</div><h1>What should customers see on your estimates?</h1><p class="lead">Start with a clean professional estimate and add the service information that matters to your company.</p><div class="template-choice"><label class="radio-card"><input checked="" name="template" type="radio"/><span><b>Use AeriQuote's professional snow removal template</b><small>Start with ready-to-edit snow service estimate wording.</small></span></label><label class="radio-card"><input name="template" type="radio"/><span><b>Keep my estimate simple</b><small>Use measurement, pricing, company information and minimal sales wording.</small></span></label></div><label class="full-label">Service / Contract Notes <small>Optional</small><textarea id="warrantyStatement" placeholder="Example: snowfall trigger, service timing or seasonal contract details...">Example: We stand behind our snow removal service. Add your company service guarantee or satisfaction policy here.</textarea></label><label class="full-label">Estimate Message <small>Optional</small><textarea id="estimateMessage" placeholder="Why choose your company, equipment, availability or other customer message.">Contact us to schedule snow removal service for your property.</textarea></label><label class="full-label">Call-to-Action Heading<input id="ctaHeading" type="text" value="Schedule Your Snow Removal Service"/></label></section>
-<section class="setup-step" data-step="9"><div class="step-kicker">READY TO MEASURE</div><h1>Your snow removal setup is ready.</h1><p class="lead">AeriQuote now has the defaults it needs to take you from an address to measured service areas and a professional estimate quickly.</p><div class="ready-card"><div><i>✓</i><span><b>Business &amp; Branding</b><small>Your company information is ready for estimates</small></span></div><div><i>✓</i><span><b>Snow Services &amp; Property Types</b><small>Your workflow is tailored to the snow work you quote</small></span></div><div><i>✓</i><span><b>Measurement &amp; Pricing</b><small>Your service-area measurement and pricing defaults are ready</small></span></div><div><i>✓</i><span><b>Taxes &amp; Estimate Defaults</b><small>Your normal estimate settings are ready</small></span></div><div><i>✓</i><span><b>Customer Estimate</b><small>Your branding and customer-facing message are ready</small></span></div></div><div style="margin:18px 0;padding:15px 17px;border:1px solid #d5e9fa;border-radius:12px;background:#f4f9ff;color:#244b72;line-height:1.55"><strong>Best measuring experience: </strong>We recommend using AeriQuote on a desktop or laptop computer. A larger screen provides greater visibility and control when reviewing aerial imagery and measuring property areas. AeriQuote can still be accessed from tablets and mobile devices.</div><button class="finish-demo" id="finishSetup" type="button">MEASURE MY FIRST PROPERTY →</button><p class="demo-note">Your setup will be saved to your AeriQuote account before the measuring system opens.</p></section>
+
+<section class="setup-step" data-step="4"><div class="step-kicker">PRICING</div><h1>How do you normally price measured snow areas?</h1><div class="radio-stack">
+<label class="radio-card"><input checked name="pricing" type="radio" value="sqft"><span><b>Price per sq. ft.</b><small>AeriQuote calculates from the measured service area.</small></span></label>
+<label class="radio-card"><input name="pricing" type="radio" value="manual"><span><b>I set each job price manually</b><small>Measure first, then enter the final job price.</small></span></label>
+</div><label class="price-field" id="defaultPriceField">Default Price per sq. ft.<div><span>$</span><input id="defaultPrice" step=".01" type="number" value="0.10"></div></label></section>
+
+<section class="setup-step" data-step="5"><div class="step-kicker">ESTIMATE DEFAULTS</div><h1>Set your everyday snow estimate defaults.</h1><div class="form-grid two">
+<label>Measurement Unit<select id="measurementUnit"><option>Square feet (ft²)</option><option>Square metres (m²)</option></select></label>
+<label>Estimate Valid For<select id="estimateValid"><option>30 days</option><option>15 days</option><option>45 days</option><option>60 days</option></select></label>
+<label>Typical Contract Type<select id="contractType"><option>Per service / per visit</option><option>Seasonal contract</option><option>Monthly contract</option><option>Choose on each estimate</option></select></label>
+<label>Show Measured Area on Customer Estimate<select id="showMeasured"><option>Yes</option><option>No</option></select></label>
+</div></section>
+
+<section class="setup-step" data-step="6"><div class="step-kicker">TAXES</div><h1>Set up your taxes.</h1><div class="tax-box"><div class="form-grid two">
+<label>Federal Tax %<input id="tax1" step=".01" type="number" value="5"></label><label>Provincial / State Tax %<input id="tax2" step=".01" type="number" value="6"></label>
+</div><div class="radio-inline"><label><input checked name="taxmode" type="radio" value="regular"> Prices before tax</label><label><input name="taxmode" type="radio" value="included"> Taxes included in price</label></div></div></section>
+
+<section class="setup-step" data-step="7"><div class="step-kicker">BRANDING</div><h1>Brand your customer estimates.</h1><div class="brand-layout"><div>
+<label class="upload-box"><input accept="image/png,image/jpeg" id="logoUpload" type="file"><b>＋ Upload Company Logo</b><small>PNG or JPG works best.</small></label>
+<div class="form-grid"><label>Company Name<input id="brandCompany"></label><label>Customer Contact Phone<input id="brandPhone"></label><label>Customer Contact Email<input id="brandEmail"></label></div>
+</div><div class="estimate-preview"><div class="preview-logo" id="previewLogo">YOUR LOGO</div><b id="previewCompany">ABC SNOW SERVICES</b><small>Professional Property Measurement &amp; Snow Estimate</small><hr><span>Service Area</span><strong>28,500 ft²</strong><span>Estimate Total</span><strong>$2,850.00</strong></div></div></section>
+
+<section class="setup-step" data-step="8"><div class="step-kicker">ESTIMATE MARKETING</div><h1>What should customers see on your estimates?</h1>
+<label class="full-label">Service / Contract Notes <small>Optional</small><textarea id="warrantyStatement">We stand behind our snow removal service. Add your company's service guarantee or satisfaction policy here.</textarea></label>
+<label class="full-label">Estimate Message <small>Optional</small><textarea id="estimateMessage">Contact us to schedule snow removal service for your property.</textarea></label>
+<label class="full-label">Call-to-Action Heading<input id="ctaHeading" value="Schedule Your Snow Removal Service"></label></section>
+
+<section class="setup-step" data-step="9"><div class="step-kicker">READY TO MEASURE</div><h1>Your snow removal setup is ready.</h1>
+<p class="lead">AeriQuote now has the defaults it needs to take you from an address to measured service areas and a professional estimate quickly.</p>
+<div class="ready-card"><div><i>✓</i><span><b>Business &amp; Branding</b><small>Your company information is ready for estimates</small></span></div>
+<div><i>✓</i><span><b>Snow Services &amp; Property Types</b><small>Your workflow is tailored to the snow work you quote</small></span></div>
+<div><i>✓</i><span><b>Measurement &amp; Pricing</b><small>Your service-area measurement and pricing defaults are ready</small></span></div>
+<div><i>✓</i><span><b>Taxes &amp; Estimate Defaults</b><small>Your normal estimate settings are ready</small></span></div>
+<div><i>✓</i><span><b>Customer Estimate</b><small>Your branding and customer-facing message are ready</small></span></div></div>
+<div style="margin:18px 0;padding:15px 17px;border:1px solid #d5e9fa;border-radius:12px;background:#f4f9ff;color:#244b72;line-height:1.55"><strong>Best measuring experience: </strong>We recommend using AeriQuote on a desktop or laptop computer.</div>
+<button class="finish-demo" id="finishSetup" type="button">MEASURE MY FIRST PROPERTY →</button>
+<p class="demo-note">Your setup is saved in this browser before the measuring system opens.</p>
+</section>
+
 <div class="setup-actions"><button class="back" id="backBtn" type="button">← Back</button><button class="next" id="nextBtn" type="button">Continue →</button></div>
-</form></main><script src="onboarding.js"></script><footer class="legal-footer"><div class="wrap">
-<div><strong>AeriQuote</strong><br/><span style="font-size:13px;color:#68788d">Property Measurement &amp; Estimate Software</span></div>
-<div><strong>Product</strong><br/><a href="pricing.html">Pricing</a><a href="features.html">Features</a><a href="index.html#industries">Industries</a></div>
-<div><strong>Company</strong><br/><a href="about.html">About</a><a href="contact-support.html">Contact &amp; Support</a><a href="faq.html">FAQ</a></div>
-<div><strong>Legal</strong><br/><a href="terms-of-use.html">Terms of Use</a><a href="privacy-policy.html">Privacy Policy</a><a href="refund-cancellation.html">Refund &amp; Cancellation</a></div>
-</div><div class="wrap" style="padding-top:18px;margin-top:18px;border-top:1px solid #e5ebf2;font-size:13px;color:#68788d">© 2026 AeriQuote. All rights reserved.</div></footer></body></html>
+</form></main>
+<script src="onboarding.js"></script>
+</body></html>
