@@ -369,7 +369,7 @@ HTML = r"""<!doctype html>
 
 <div id="historyModal" class="historyModal"><div class="historyBox"><div class="historyHead"><div><h2 style="margin:0;color:var(--green2)">Previous Estimates</h2><div class="small">Find and reopen a saved estimate or review its earlier versions.</div></div><button class="ghost" onclick="closeEstimateHistory()">CLOSE</button></div><div style="display:flex;gap:8px;margin-top:14px"><input id="historySearch" placeholder="Search customer, address, phone or email" onkeydown="if(event.key==='Enter')searchEstimateHistory()"><button onclick="searchEstimateHistory()">SEARCH</button></div><div class="historyColumns"><div>Customer</div><div>Property</div><div>Date</div><div>Estimate</div><div>Actions</div></div><div id="historyResults" class="historyResults"><div class="small" style="padding:14px 0">Your saved estimates will appear here.</div></div></div></div>
 
-<div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/site/pricing.html?existing=1">VIEW PLANS →</a><button type="button" onclick="window.location.href='/account'">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
+<div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/upgrade-plans">VIEW PLANS →</a><button type="button" onclick="window.location.href='/account'">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
 <div id="reportOverlay"><div class="report" style="width:min(1320px,calc(100vw - 44px));">
  <div class="reportHead"><img id="rDealerLogo" class="logo dealerLogo noDealerLogo" alt="Dealer logo"><div><h1 id="rEstimateTitle">Property Measurement &amp; Estimate</h1><div id="rEstimateSubtitle" style="text-align:center;color:#28612f;font-weight:800;margin-top:6px"></div><div id="rEstimateDealerSub" class="reportDealerSub"></div></div><div></div></div>
  <div class="reportMeta"><div><b>Property Address</b><div id="rAddress"></div></div><div><b>Date Prepared</b><div id="rDate"></div></div><div><b>Prepared For</b><div id="rCustomerName">Homeowner</div><div id="rCustomerPhone" class="small"></div><div id="rCustomerEmail" class="small"></div></div></div>
@@ -2021,6 +2021,30 @@ def public_plans():
     # Guaranteed plan-selection endpoint: served from disk when present,
     # otherwise from the embedded pricing page bundled in app.py.
     return _serve_site_resource("pricing.html")
+
+@app.get("/upgrade-plans")
+def existing_trial_upgrade_plans():
+    """Plan chooser for a signed-in customer whose free trial is complete.
+    This is deliberately separate from the public pricing page so public
+    START FREE TRIAL links remain untouched and no client-side rewrite is needed.
+    """
+    disk_path = os.path.join(SITE_DIR, "pricing.html")
+    if os.path.isfile(disk_path):
+        with open(disk_path, "r", encoding="utf-8") as f:
+            html = f.read()
+    else:
+        item = EMBEDDED_SITE.get("pricing.html")
+        if not item:
+            return Response("Not Found", status=404, content_type="text/plain; charset=utf-8")
+        html = _aq_b64.b64decode(item[1]).decode("utf-8")
+    replacements = {
+        'href="trial-signup.html?plan=basic">START FREE TRIAL →</a>': 'href="/site/checkout.html?plan=basic&existing=1">CHOOSE BASIC →</a>',
+        'href="trial-signup.html?plan=pro">START FREE TRIAL →</a>': 'href="/site/checkout.html?plan=pro&existing=1">CHOOSE PRO →</a>',
+        'href="trial-signup.html?plan=business">START FREE TRIAL →</a>': 'href="/site/checkout.html?plan=business&existing=1">CHOOSE BUSINESS →</a>',
+    }
+    for old, new in replacements.items():
+        html = html.replace(old, new)
+    return Response(html, content_type="text/html; charset=utf-8")
 
 @app.get("/account")
 def trial_account_home():
