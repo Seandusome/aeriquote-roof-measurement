@@ -369,7 +369,7 @@ HTML = r"""<!doctype html>
 
 <div id="historyModal" class="historyModal"><div class="historyBox"><div class="historyHead"><div><h2 style="margin:0;color:var(--green2)">Previous Estimates</h2><div class="small">Find and reopen a saved estimate or review its earlier versions.</div></div><button class="ghost" onclick="closeEstimateHistory()">CLOSE</button></div><div style="display:flex;gap:8px;margin-top:14px"><input id="historySearch" placeholder="Search customer, address, phone or email" onkeydown="if(event.key==='Enter')searchEstimateHistory()"><button onclick="searchEstimateHistory()">SEARCH</button></div><div class="historyColumns"><div>Customer</div><div>Property</div><div>Date</div><div>Estimate</div><div>Actions</div></div><div id="historyResults" class="historyResults"><div class="small" style="padding:14px 0">Your saved estimates will appear here.</div></div></div></div>
 
-<div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/site/choose-plan.html">VIEW PLANS →</a><button type="button" onclick="window.location.href='/account'">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
+<div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/pricing">VIEW PLANS →</a><button type="button" onclick="closeTrialLimit();openEstimateHistory()">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
 <div id="reportOverlay"><div class="report" style="width:min(1320px,calc(100vw - 44px));">
  <div class="reportHead"><img id="rDealerLogo" class="logo dealerLogo noDealerLogo" alt="Dealer logo"><div><h1 id="rEstimateTitle">Property Measurement &amp; Estimate</h1><div id="rEstimateSubtitle" style="text-align:center;color:#28612f;font-weight:800;margin-top:6px"></div><div id="rEstimateDealerSub" class="reportDealerSub"></div></div><div></div></div>
  <div class="reportMeta"><div><b>Property Address</b><div id="rAddress"></div></div><div><b>Date Prepared</b><div id="rDate"></div></div><div><b>Prepared For</b><div id="rCustomerName">Homeowner</div><div id="rCustomerPhone" class="small"></div><div id="rCustomerEmail" class="small"></div></div></div>
@@ -977,7 +977,6 @@ async function loadExactPinAerial(token,targetMap=map){
 }
 
 function showTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.add('open')}function closeTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.remove('open')}
-window.addEventListener('load',()=>{try{if(new URLSearchParams(window.location.search).get('account')==='1')setTimeout(()=>openEstimateHistory(),250)}catch(e){}});
 async function loadProperty(){
  const requestedMeasurementMode=pendingMeasurementMode||measurementViewMode||'auto';
  const enteredStreet=(el('streetAddress')?.value||'').trim(),enteredCity=(el('cityTown')?.value||'').trim(),enteredProvince=propertyLookupProvince(),enteredNumber=enteredStreetNumber();
@@ -2016,16 +2015,10 @@ def public_site_home():
 def public_site_file(filename):
     return _serve_site_resource(filename)
 
-@app.get("/account")
-def trial_account_home():
-    # Return to the signed-in app and open Previous Estimates automatically.
-    return redirect("/?account=1")
-
 @app.get("/pricing")
 @app.get("/pricing.html")
 def public_pricing_direct():
-    # Public pricing page remains available at /pricing.
-    return redirect("/site/pricing.html")
+    return _serve_site_resource("pricing.html")
 
 # Friendly direct routes used during signup testing.
 @app.get("/trial-signup.html")
