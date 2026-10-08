@@ -70,12 +70,21 @@ async function saveSnowSetupLocal(){
  localStorage.setItem('aeriQuoteIndustry','snow');
  return profile;
 }
-if(document.body.classList.contains('setup-page') && /snow-setup\.html/i.test(location.pathname)){
+if(document.body.classList.contains('setup-page') && /snow-setup\\.html/i.test(location.pathname)){
  const finish=document.getElementById('finishSetup');
- finish?.addEventListener('click',async function(){
-   const old=this.textContent;this.disabled=true;this.textContent='OPENING MEASURING SYSTEM…';
-   try{await saveSnowSetupLocal();window.location.assign('/');}
-   catch(e){alert('Could not save setup in this browser. '+(e?.message||''));this.disabled=false;this.textContent=old;}
+ finish?.addEventListener('click',async function(event){
+   event.preventDefault();
+   if(this.dataset.opening==='true')return;
+   const originalText=this.textContent;
+   this.dataset.opening='true';this.disabled=true;this.textContent='OPENING MEASURING SYSTEM…';
+   try{
+     await saveSnowSetupLocal();
+     // Carry the snow industry into the measuring URL as well as localStorage.
+     window.location.assign('/?industry=snow');
+   }catch(e){
+     alert('Could not save setup in this browser. '+(e?.message||''));
+     this.dataset.opening='false';this.disabled=false;this.textContent=originalText;
+   }
  });
 }
 showStep(1);
