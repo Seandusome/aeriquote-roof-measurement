@@ -263,3 +263,8 @@ input,select,textarea,button{max-width:100%;box-sizing:border-box}
   table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
   pre,code{white-space:pre-wrap;overflow-wrap:anywhere}
 }
+
+/* Global AeriQuote header-logo safety: preserve compact navigation on every industry page. */
+header .logo, .nav .logo {display:inline-flex;align-items:center;flex:0 0 auto;max-width:220px;min-width:0}
+header .logo img, .nav .logo img, header img[src*="aeriquote-logo"], .nav img[src*="aeriquote-logo"] {display:block!important;width:220px!important;max-width:100%!important;height:auto!important;max-height:64px!important;object-fit:contain!important}
+@media(max-width:700px){header .logo,.nav .logo{max-width:160px}header .logo img,.nav .logo img,header img[src*="aeriquote-logo"],.nav img[src*="aeriquote-logo"]{width:160px!important;max-height:48px!important}}
