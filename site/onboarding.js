@@ -70,7 +70,7 @@ async function saveSnowSetupLocal(){
  localStorage.setItem('aeriQuoteIndustry','snow');
  return profile;
 }
-if(document.body.classList.contains('setup-page') && /snow-setup\\.html/i.test(location.pathname)){
+if(document.body.classList.contains('setup-page') && /snow-setup\.html/i.test(location.pathname)){
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
    event.preventDefault();
