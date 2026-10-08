@@ -1,0 +1,24 @@
+name: Validate AeriQuote application
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Check Python syntax before deployment
+        run: python -m py_compile app.py
+      - name: Check static website links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          assert Path("site/pricing.html").is_file()
+          assert Path("site/styles.css").is_file()
+          assert Path("site/assets/aeriquote-logo.png").is_file()
+          print("Static assets and pricing page present")
+          PY
