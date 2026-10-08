@@ -1,0 +1,42 @@
+name: Apply Pressure Washing application fixes
+on:
+  push:
+    paths:
+      - '.github/workflows/pressure-washing-fix.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Correct Pressure Washing defaults and report
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.py')
+          s=p.read_text()
+          original=s
+          # Correct industry-specific report label without affecting snow or roofing.
+          s=s.replace("Area Service — ${fmt(Number(snap.areaSqFt||calc.area))}", "${currentBusinessType()==='pressure'?'Pressure Washing':'Area Service'} — ${fmt(Number(snap.areaSqFt||calc.area))}")
+          # Avoid overwriting user-entered price; repair zero default only for pressure.
+          s=s.replace("if(d.price!==undefined&&el('jobPrice'))el('jobPrice').value=d.price;", "if(d.price!==undefined&&el('jobPrice'))el('jobPrice').value=(currentBusinessType()==='pressure'&&!(parseFloat(d.price)>0))?'0.70':d.price;")
+          # Replace stale snow marketing in pressure reports without overwriting other industries.
+          s=s.replace("const empty=!fields.trim();if(!(force||empty||roofWords.test(fields)))return;", "const empty=!fields.trim();const wrongIndustry=currentBusinessType()==='pressure'&&/snow removal|snow service|keep parking lots|walkways clear/i.test(fields);if(!(force||empty||roofWords.test(fields)||wrongIndustry))return;")
+          # Existing local title fix may or may not be in GitHub.
+          s=s.replace("(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate'))", "(currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate')))")
+          if s==original: raise SystemExit('No matching application locations: refusing empty commit')
+          p.write_text(s)
+          import py_compile
+          py_compile.compile('app.py',doraise=True)
+          print('Pressure washing patch applied and Python syntax verified')
+          PY
+      - name: Commit validated application
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.py
+          git diff --cached --quiet || (git commit -m "Fix pressure washing pricing defaults, report labels and stale snow marketing" && git push)
