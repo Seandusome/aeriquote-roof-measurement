@@ -11,3 +11,5 @@ services:
         value: 3.13.5
       - key: GOOGLE_API_KEY
         sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
