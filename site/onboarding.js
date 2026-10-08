@@ -78,7 +78,9 @@ if(document.body.classList.contains('setup-page') && /snow-setup\\.html/i.test(l
    const originalText=this.textContent;
    this.dataset.opening='true';this.disabled=true;this.textContent='OPENING MEASURING SYSTEM…';
    try{
-     await saveSnowSetupLocal();
+     const profile=await saveSnowSetupLocal();
+     const response=await fetch('/api/account/profile',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(profile)});
+     if(!response.ok)throw new Error('Your setup could not be saved to your account. Please sign in and try again.');
      // Carry the snow industry into the measuring URL as well as localStorage.
      window.location.assign('/?industry=snow');
    }catch(e){
