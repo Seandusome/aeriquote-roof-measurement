@@ -1,0 +1,18 @@
+from pathlib import Path
+import ast
+p=Path('app.py');s=p.read_text(encoding='utf-8')
+def change(a,b):
+ global s
+ if s.count(a)!=1: raise RuntimeError('Unexpected source match count: '+str(s.count(a))+' '+a[:60])
+ s=s.replace(a,b,1)
+change('<button id="areaStartBtn" type="button"','<button id="areaCorrectBtn" type="button" class="secondary" onclick="correctAreaOutline()" style="display:none">CORRECT MEASUREMENT OUTLINE</button><button id="areaCancelCorrectionBtn" type="button" class="ghost" onclick="cancelAreaCorrection()" style="display:none">CANCEL CORRECTION</button><button id="areaStartBtn" type="button"')
+change('function updateAreaUi(){const total=areaSqFtTotal();','function updateAreaUi(){const total=areaSqFtTotal();if(el("areaCorrectBtn"))el("areaCorrectBtn").style.display=areaMeasurementSaved&&!areaMode&&areaPoints.length>=3?"inline-block":"none";if(el("areaCancelCorrectionBtn"))el("areaCancelCorrectionBtn").style.display=areaCorrectionOriginal?"inline-block":"none";')
+change('function redrawAreaMeasure(){clearAreaLayers();','let areaCorrectionOriginal=null;\nfunction correctAreaOutline(){if(!sessionToken||!areaMeasurementSaved||areaPoints.length<3)return;areaCorrectionOriginal=areaPoints.map(p=>L.latLng(p.lat,p.lng));toggleAreaMeasure();status("Drag the purple corner handles to correct the outline, then select FINISH & SAVE AREA.","warn")}\nfunction cancelAreaCorrection(){if(!areaCorrectionOriginal)return;areaPoints=areaCorrectionOriginal.map(p=>L.latLng(p.lat,p.lng));areaCorrectionOriginal=null;areaMode=false;areaMeasurementSaved=true;measurementViewMode="area";if(el("areaStartBtn")){el("areaStartBtn").textContent="CONTINUE AREA MEASURE";el("areaStartBtn").className="secondary"}redrawAreaMeasure();renderSummary();status("Outline correction cancelled; previous measurement restored.","ok")}\nfunction redrawAreaMeasure(){clearAreaLayers();')
+change("const dot=L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class=\"area-point\"></div>',iconAnchor:[6,6]})}).addTo(map);areaLayers.push(dot)","const dot=L.marker(pt,{draggable:areaMode,interactive:areaMode,icon:L.divIcon({className:'',html:'<div class=\"area-point\"></div>',iconAnchor:[6,6]})}).addTo(map);if(areaMode){const index=areaPoints.indexOf(pt);dot.on('dragend',()=>{areaPoints[index]=dot.getLatLng();redrawAreaMeasure();renderSummary()})}areaLayers.push(dot)")
+change("areaMeasurementSaved=true;measurementViewMode='area';if(el('areaStartBtn'))","areaMeasurementSaved=true;areaCorrectionOriginal=null;measurementViewMode='area';if(el('areaStartBtn'))")
+change("function clearAreaMeasure(){areaPoints=[];","function clearAreaMeasure(){areaCorrectionOriginal=null;areaPoints=[];")
+change('Measure driveways, sidewalks, patios, parking lots or other service areas in square feet.','Measure the selected service area in square feet.')
+change("const extra=el('extraServiceDescription');","const areaDescription=document.querySelector('#areaTool .area-head .small');if(areaDescription)areaDescription.textContent=landscaping?'Measure lawns, sod, garden beds, patios or other landscaping areas in square feet.':paving?'Measure paved surfaces, driveways and parking areas in square feet.':pressure?'Measure driveways, sidewalks, patios and other cleaning areas in square feet.':snow?'Measure driveways, sidewalks and other snow clearing areas in square feet.':'Measure the selected service area in square feet.';\n const extra=el('extraServiceDescription');")
+ast.parse(s)
+p.write_text(s,encoding='utf-8')
+print('Outline correction controls and industry instructions patched; Python syntax valid')
