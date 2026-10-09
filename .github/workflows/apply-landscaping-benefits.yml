@@ -1,0 +1,29 @@
+name: Apply landscaping benefits correction
+on:
+  push:
+    paths:
+      - 'scripts/fix_landscaping_benefits.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Patch and validate
+        run: |
+          python scripts/fix_landscaping_benefits.py
+          python -m py_compile app.py
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.py
+          git commit -m "Fix six landscaping estimate benefits and wording"
+          git push
