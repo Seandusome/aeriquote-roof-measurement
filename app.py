@@ -927,7 +927,7 @@ function updateJobSummaryBar(calc,roofCount){
  const has=calc&&Number(calc.area)>0;
  const summaryLabel=r.previousElementSibling;if(summaryLabel&&['pressure','paving','landscaping'].includes(currentBusinessType()))summaryLabel.textContent=currentBusinessType()==='landscaping'?'SERVICE AREAS':'SURFACES';else if(summaryLabel)summaryLabel.textContent='ROOFS';
  r.textContent=['pressure','paving'].includes(currentBusinessType())?(has?'1':'—'):(has?String(roofCount||1):'—');
- a.textContent=has?fmt(calc.area)+' ft²':'—';
+ a.textContent=has?(measurementViewMode==='linear'?Number(calc.area).toFixed(1)+' linear ft':fmt(calc.area)+' ft²'):'—';
  t.textContent=has?money(calc.total):'—';
 }
 function updateProgressSteps(){
@@ -1125,6 +1125,7 @@ function reportTargetLabel(key){
  return'ROOF';
 }
 function returnToAreaCorrection(){document.body.classList.remove("report-open");if(el("reportOverlay"))el("reportOverlay").style.display="none";if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];if(typeof correctAreaOutline==="function")correctAreaOutline();if(el("areaTool"))el("areaTool").scrollIntoView({behavior:"smooth",block:"center"});}
+function returnToLinearCorrection(){document.body.classList.remove('report-open');if(el('reportOverlay'))el('reportOverlay').style.display='none';if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];if(el('linearTool'))el('linearTool').scrollIntoView({behavior:'smooth',block:'center'});if(el('linearStartBtn'))el('linearStartBtn').focus();}
 function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
  const snap=quoteSnapshot||captureQuoteSnapshot();let html='';
@@ -1137,6 +1138,7 @@ function renderReportOutlineTargetButtons(){
    const key=`manual-${i}`;
    html+=`<button class="orange" onclick="startReportOutlineEdit('${key}')">EDIT ${reportTargetLabel(key)} OUTLINE</button>`;
  });
+ if(snap.measurementMode==='linear'&&snap.linearPoints&&snap.linearPoints.length>=2){html='<button class="orange" onclick="returnToLinearCorrection()">CORRECT MEASUREMENT LINE</button>';if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Return to the property measurement to adjust the saved line and update the quote.';}
  if(snap.measurementMode==='area'&&snap.areaPoints&&snap.areaPoints.length>=3){html='<button class="orange" onclick="returnToAreaCorrection()">CORRECT MEASUREMENT OUTLINE</button>';if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Return to the measurement screen to adjust the saved area and update the price.';}
  box.innerHTML=html||'<span class="small">No roof outline available to edit.</span>';
 }
