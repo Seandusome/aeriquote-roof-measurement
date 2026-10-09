@@ -1684,16 +1684,40 @@ async function downloadEstimatePDF(){
   // The saved outline and the PDF therefore use the exact same Leaflet viewport + geometry.
   const useAerial=(el('streetViewChoice')?.value||'auto')!=='none';
   if(useAerial&&!customerMap){await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}
-  else if(customerMap){customerMap.invalidateSize(false);await new Promise(r=>setTimeout(r,160))}
+  else if(customerMap){await new Promise(r=>setTimeout(r,160))}
   const actions=report.querySelector('.reportActions'),outlineControls=el('reportOutlineControls');
   const oldActionsDisplay=actions?actions.style.display:'',oldOutlineDisplay=outlineControls?outlineControls.style.display:'';
   if(actions)actions.style.display='none';if(outlineControls)outlineControls.style.display='none';
-  // Preserve the exact approved estimate viewport. Do not restyle/reflow the report before vector capture.
-  // Keep Leaflet's SVG overlay pane visible: it contains the dealer's corrected
-  // area/linear tracing. Hiding it erased the trace from every downloaded PDF.
-  let canvas;
-  try{canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false})}
-  finally{
+  // Leaflet SVG paths can be offset by html2canvas when map panes have CSS
+  // transforms. Draw the approved geometry in the map's own pixel coordinate
+  // system onto a temporary canvas, then capture that canvas in the PDF.
+  let pdfTraceCanvas=null;
+  const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane'):null;
+  const oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
+  try{
+    const snap=quoteSnapshot||captureQuoteSnapshot();
+    const mode=snap.measurementMode;
+    const points=mode==='area'?(reportOutlines['area-visual']||snap.areaPoints):mode==='linear'?(reportOutlines['linear-visual']||snap.linearPoints):null;
+    if(customerMap&&Array.isArray(points)&&points.length>=(mode==='area'?3:2)){
+      const host=el('customerMap'),size=customerMap.getSize();
+      pdfTraceCanvas=document.createElement('canvas');
+      pdfTraceCanvas.width=Math.round(size.x*2);pdfTraceCanvas.height=Math.round(size.y*2);
+      Object.assign(pdfTraceCanvas.style,{position:'absolute',left:'0',top:'0',width:size.x+'px',height:size.y+'px',zIndex:'650',pointerEvents:'none'});
+      const ctx=pdfTraceCanvas.getContext('2d');ctx.scale(2,2);
+      ctx.beginPath();
+      points.forEach((p,i)=>{
+        const pt=customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));
+        if(i===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);
+      });
+      if(mode==='area'){ctx.closePath();ctx.fillStyle='rgba(115,87,184,0.14)';ctx.fill();}
+      ctx.strokeStyle=mode==='area'?'#7357b8':'#0f8f83';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+      host.appendChild(pdfTraceCanvas);
+      if(pdfOverlayPane)pdfOverlayPane.style.visibility='hidden';
+    }
+    var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+  }finally{
+    if(pdfTraceCanvas)pdfTraceCanvas.remove();
+    if(pdfOverlayPane)pdfOverlayPane.style.visibility=oldPdfOverlayVisibility;
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
 
