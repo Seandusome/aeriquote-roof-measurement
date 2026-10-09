@@ -1124,6 +1124,7 @@ function reportTargetLabel(key){
  if(key&&key.startsWith('manual-')){const i=Number(key.split('-')[1]);if((snap.measureSource||'')==='manual'&&!(snap.structures||[]).length&&i===0)return'MAIN HOUSE';return extraCount===1?'ADDED GARAGE / OTHER ROOF':`ADDED GARAGE / OTHER ROOF ${Math.max(0,(snap.structures||[]).length-1)+i+1}`;}
  return'ROOF';
 }
+function returnToAreaCorrection(){document.body.classList.remove("report-open");if(el("reportOverlay"))el("reportOverlay").style.display="none";if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];if(typeof correctAreaOutline==="function")correctAreaOutline();if(el("areaTool"))el("areaTool").scrollIntoView({behavior:"smooth",block:"center"});}
 function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
  const snap=quoteSnapshot||captureQuoteSnapshot();let html='';
@@ -1136,6 +1137,7 @@ function renderReportOutlineTargetButtons(){
    const key=`manual-${i}`;
    html+=`<button class="orange" onclick="startReportOutlineEdit('${key}')">EDIT ${reportTargetLabel(key)} OUTLINE</button>`;
  });
+ if(snap.measurementMode==='area'&&snap.areaPoints&&snap.areaPoints.length>=3){html='<button class="orange" onclick="returnToAreaCorrection()">CORRECT MEASUREMENT OUTLINE</button>';if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Return to the measurement screen to adjust the saved area and update the price.';}
  box.innerHTML=html||'<span class="small">No roof outline available to edit.</span>';
 }
 function setReportOutlineButtons(editing){if(el('reportOutlineTargetButtons'))el('reportOutlineTargetButtons').style.display=editing?'none':'flex';if(el('reportCancelOutlineBtnTop'))el('reportCancelOutlineBtnTop').style.display=editing?'inline-block':'none';if(el('reportUndoOutlineBtnTop'))el('reportUndoOutlineBtnTop').style.display=editing?'inline-block':'none';if(el('reportSaveOutlineBtnTop')){el('reportSaveOutlineBtnTop').style.display=editing?'inline-block':'none';el('reportSaveOutlineBtnTop').disabled=reportOutlinePoints.length<3}if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=!!editing;const msg=editing?`Editing ${reportTargetLabel(reportOutlineTarget)}. Click each corner on the final estimate image, then SAVE OUTLINE. The PDF button unlocks after the outline is saved.`:'Choose which roof outline to edit. Main house and added roofs can be edited separately. Picture only — measurements and price stay unchanged.';['reportOutlineHelp','reportOutlineHelpTop'].forEach(id=>{if(el(id))el(id).textContent=msg});const svg=el('reportDrawLayer');if(svg){svg.classList.toggle('active',!!editing);if(editing)syncReportDrawLayer()}}
@@ -1272,7 +1274,7 @@ async function buildInteractiveCustomerMap(){
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
  const snap=quoteSnapshot||captureQuoteSnapshot();
- if(snap.measurementMode==='area'&&Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3){if(el('reportOutlineControls'))el('reportOutlineControls').style.display='none';const pts=snap.areaPoints.map(p=>L.latLng(p[0],p[1]));const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);customerOverlays.push(poly);const c=poly.getBounds().getCenter(),lab=L.marker(c,{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);customerOverlays.push(lab);try{customerMap.fitBounds(poly.getBounds().pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}return}
+ if(snap.measurementMode==='area'&&Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3){if(el('reportOutlineControls'))el('reportOutlineControls').style.display='flex';renderReportOutlineTargetButtons();const pts=snap.areaPoints.map(p=>L.latLng(p[0],p[1]));const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);customerOverlays.push(poly);const c=poly.getBounds().getCenter(),lab=L.marker(c,{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);customerOverlays.push(lab);try{customerMap.fitBounds(poly.getBounds().pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}return}
  if(snap.measurementMode==='linear'&&Array.isArray(snap.linearPoints)&&snap.linearPoints.length>1){if(el('reportOutlineControls'))el('reportOutlineControls').style.display='none';const pts=snap.linearPoints.map(p=>L.latLng(p[0],p[1]));for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],feet=customerMap.distance(a,b)*3.28084;const line=L.polyline([a,b],{color:'#0f8f83',weight:5,opacity:.95,lineCap:'round'}).addTo(customerMap);customerOverlays.push(line);const mid=L.latLng((a.lat+b.lat)/2,(a.lng+b.lng)/2);const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="linear-seg-label">${feet.toFixed(1)} ft</div>`,iconAnchor:[24,9]})}).addTo(customerMap);customerOverlays.push(lab)}pts.forEach(pt=>{const dot=L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class="linear-point"></div>',iconAnchor:[6,6]})}).addTo(customerMap);customerOverlays.push(dot)});try{customerMap.fitBounds(L.latLngBounds(pts).pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}return}
  const reportStructures=snap.structures||[], reportManual=snap.manualPlanes||[];
  reportStructures.forEach((st,i)=>{
@@ -2414,7 +2416,7 @@ def consume_property_lookup(dealer_id):
         limit=int(d["lookup_limit"] or 0)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
-        if limit>0 and used>=limit:return False,used,limit
+        if limit>0 and used>=limit and not is_head_office():return False,used,limit
         if u:con.execute("UPDATE dealer_usage SET property_lookups=property_lookups+1 WHERE dealer_id=?",(dealer_id,))
         else:con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1)",(dealer_id,))
         con.commit();return True,used+1,limit
