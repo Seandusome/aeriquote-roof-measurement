@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'scripts/fix_landscaping_benefits.py'
+      - '.github/workflows/apply-landscaping-benefits.yml'
   workflow_dispatch:
 permissions:
   contents: write
