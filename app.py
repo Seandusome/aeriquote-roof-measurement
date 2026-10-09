@@ -2175,7 +2175,14 @@ HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><t
 US_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC']
 
 def is_head_office():
-    return "head office" in str(session.get("dealer_name") or "").lower()
+    if session.get("account_type") != "owner" or not session.get("dealer_id"):
+        return False
+    con=estimate_db()
+    try:
+        row=con.execute("SELECT email,status FROM dealers WHERE id=?",(session["dealer_id"],)).fetchone()
+        return bool(row and str(row["status"]).lower()=="active" and str(row["email"]).strip().lower()=="sdusome@diitalk.com")
+    finally:
+        con.close()
 
 @app.route("/head-office/dealers",methods=["GET","POST"])
 def head_office_dealers():
@@ -2922,7 +2929,7 @@ def estimate_history_api():
                 dealer_row=con.execute("SELECT estimate_limit FROM dealers WHERE id=?",(dealer_id,)).fetchone()
                 estimate_limit=int(dealer_row["estimate_limit"] or 0) if dealer_row else 0
                 estimate_used=int(con.execute("SELECT COUNT(*) AS estimate_count FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["estimate_count"])
-                if estimate_limit>0 and estimate_used>=estimate_limit:
+                if estimate_limit>0 and estimate_used>=estimate_limit and not is_head_office():
                     return jsonify(error="Estimate allowance reached.",user_error=f"Your dealership has used all {estimate_limit} estimates. Contact AeriQuote support to increase the allowance."),403
             created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
             payload_json=json.dumps(d,separators=(",",":"))
