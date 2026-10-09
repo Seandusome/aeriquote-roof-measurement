@@ -54,7 +54,7 @@ async function saveIndustrySetupLocal(industry){
   pricingMode:document.querySelector('input[name="taxmode"]:checked')?.value||'regular',
   warrantyStatement:document.getElementById('warrantyStatement')?.value||'',
   estimateMessage:document.getElementById('estimateMessage')?.value||'',
-  ctaHeading:document.getElementById('ctaHeading')?.value||(industry==='snow'?'Schedule Your Snow Removal Service':industry==='paving'?'Schedule Your Paving & Sealcoating Service':'Schedule Your Pressure Washing Service'),
+  ctaHeading:document.getElementById('ctaHeading')?.value||(industry==='snow'?'Schedule Your Snow Removal Service':industry==='paving'?'Schedule Your Paving & Sealcoating Service':industry==='landscaping'?'Schedule Your Landscaping Service':'Schedule Your Pressure Washing Service'),
   marketingEnabled:true,marketingHeading:'WHY CHOOSE US',
   benefits:industry==='paving'?[
    {icon:'✓',title:'Surface Preparation',text:'Paving and sealcoating tailored to the surface.'},
@@ -82,7 +82,7 @@ async function saveIndustrySetupLocal(industry){
  localStorage.setItem('aeriQuoteIndustry',industry);
  return profile;
 }
-const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':null));
+const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':null)));
 if(document.body.classList.contains('setup-page') && setupIndustry){
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
