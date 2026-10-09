@@ -51,7 +51,7 @@ footer{background:#071a3d;color:#dce6f3;margin-top:0}footer a{color:#dce6f3;text
    localStorage.setItem('aeriQuoteTrial',JSON.stringify(data));
    localStorage.setItem('aeriQuoteIndustry',industry);
    const routes={snow:'snow-setup.html',roofing:'roofer-setup.html',pressure:'pressure-setup.html',paving:'paving-setup.html',landscaping:'landscaping-setup.html',commercial:'commercial-setup.html'};
-   location.href=result.redirect||routes[industry]||'roofer-setup.html';
+   location.href=routes[industry]||result.redirect||'roofer-setup.html';
  });
 })();
 </script>
