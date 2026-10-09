@@ -33,6 +33,29 @@ jobs:
           s=s.replace("['price','coverage','province','pricingMode','discountPct','gst','pst'].forEach(id=>{if(d[id]!==undefined&&el(id))el(id).value=d[id]});", "['price','coverage','province','pricingMode','discountPct','gst','pst'].forEach(id=>{if(d[id]!==undefined&&el(id))el(id).value=(id==='price'&&currentBusinessType()==='pressure'&&!(parseFloat(d[id])>0))?'0.70':d[id]});")
           # Preserve explicit customer-entered rates while ensuring two-decimal pricing.
           s=s.replace("const savedPrice=parseFloat(d.price);", "const savedPrice=parseFloat(d.price);")
+          # Industry-specific marketing defaults: never load Snow Removal copy into Pressure Washing.
+          pressure_default = """function pressureMarketingDefaults(){return {heading:'WHY CHOOSE US',warranty:'',cta:'Schedule Your Pressure Washing Service',message:'Contact us to schedule professional pressure washing for your property.',benefits:[{icon:'✓',title:'Professional Exterior Cleaning',text:'Pressure washing for driveways, patios, sidewalks and other exterior surfaces.'},{icon:'✓',title:'Improve Curb Appeal',text:'Help remove built-up dirt and grime from your outdoor surfaces.'},{icon:'
+          s=s.replace("(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate'))", "(currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate')))")
+          if s==original: raise SystemExit('No matching application locations: refusing empty commit')
+          p.write_text(s)
+          import py_compile
+          py_compile.compile('app.py',doraise=True)
+          print('Pressure washing patch applied and Python syntax verified')
+          PY
+      - name: Commit validated application
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.py
+          git diff --cached --quiet || (git commit -m "Fix pressure washing pricing defaults, report labels and stale snow marketing" && git push)
+,title:'Clear Upfront Pricing',text:'Your estimate shows the measured cleaning area and pricing before work begins.'},{icon:'◆',title:'Property-Specific Service',text:'Cleaning areas and pricing are prepared for your individual property.'},{icon:'✓',title:'Reliable Service',text:'Professional pressure washing tailored to your property.'}]}}\\n"""
+          if 'function pressureMarketingDefaults()' not in s:
+              s=s.replace('function snowMarketingDefaults()',pressure_default.replace('\\n','\\n')+'function snowMarketingDefaults()',1)
+          s=s.replace("const d=snowMarketingDefaults(),roofWords=", "const d=currentBusinessType()==='pressure'?pressureMarketingDefaults():snowMarketingDefaults(),roofWords=")
+          s=s.replace("el('marketingWarranty').placeholder='Example: We stand behind our snow removal service. Add your company service guarantee or satisfaction policy here.';", "el('marketingWarranty').placeholder=currentBusinessType()==='pressure'?'Example: Add your pressure washing service guarantee or satisfaction policy here.':'Example: We stand behind our snow removal service. Add your company service guarantee or satisfaction policy here.';")
+          s=s.replace("if(el('rEstimateTitle'))el('rEstimateTitle').textContent=linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate');", "if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));")
+          # Refresh stale marketing in both saved profile and report generation.
+          s=s.replace("function applyDealerMarketing(){const enabled=", "function applyDealerMarketing(){applySnowMarketingDefaultsIfNeeded(false);const enabled=")
           # Existing local title fix may or may not be in GitHub.
           s=s.replace("(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate'))", "(currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Roof Measurement & Estimate')))")
           if s==original: raise SystemExit('No matching application locations: refusing empty commit')
