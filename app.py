@@ -434,7 +434,8 @@ const AERI_TERMS={
  roofing:{label:'Roofing'},
  snow:{label:'Snow Removal'},
  pressure:{label:'Pressure Washing'},
- paving:{label:'Paving & Sealcoating'}
+ paving:{label:'Paving & Sealcoating'},
+ landscaping:{label:'Landscaping'}
 };
 const _aeriOriginalText=new WeakMap();
 function currentBusinessType(){return (el('businessType')&&el('businessType').value)||'roofing'}
@@ -525,6 +526,7 @@ function translatePressureText(t){
  ];let v=t;for(const [re,to] of rules)v=v.replace(re,to);return v;
 }
 function translatePavingText(t){return translatePressureText(t).replace(/Gutters • fencing • curbing/g,'Curbing • edging • crack sealing').replace(/Additional Cleaning Services/g,'Additional Paving & Sealcoating Services').replace(/cleaning surface/gi,'paved surface').replace(/cleaning surfaces/gi,'paved surfaces').replace(/cleaning/gi,'paving & sealcoating');}
+function translateLandscapingText(t){return translatePressureText(t).replace(/Driveways • patios • sidewalks • parking/g,'Lawns • sod • garden beds • patios').replace(/Gutters • fencing • curbing/g,'Edging • borders • retaining walls').replace(/Additional Cleaning Services/g,'Additional Landscaping Services').replace(/cleaning surface/gi,'landscaping area').replace(/cleaning surfaces/gi,'landscaping areas').replace(/cleaning/gi,'landscaping');}
 function applyBusinessTerminology(root=document.body){
  const mode=currentBusinessType();
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
@@ -533,14 +535,14 @@ function applyBusinessTerminology(root=document.body){
    const p=n.parentElement;if(!p||['SCRIPT','STYLE','OPTION'].includes(p.tagName))return;
    if(!_aeriOriginalText.has(n))_aeriOriginalText.set(n,n.nodeValue);
    const base=_aeriOriginalText.get(n);
-   n.nodeValue=mode==='snow'?translateSnowText(base):mode==='paving'?translatePavingText(base):mode==='pressure'?translatePressureText(base):base;
+   n.nodeValue=mode==='snow'?translateSnowText(base):mode==='paving'?translatePavingText(base):mode==='landscaping'?translateLandscapingText(base):mode==='pressure'?translatePressureText(base):base;
  });
  const snow=mode==='snow';
- const pressure=mode==='pressure',paving=mode==='paving';
- const extra=el('extraServiceDescription');if(extra)extra.placeholder=paving?'Example: Crack filling, asphalt patching or additional sealcoating':pressure?'Example: Additional patio, sidewalk or driveway cleaning':'Example: Replace damaged shingles, seal vent, minor roof repair';
- document.body.classList.toggle('pressure-industry',pressure||paving);
- const coverageWrap=el('coverageWrap');if(coverageWrap)coverageWrap.style.display=(snow||pressure||paving)?'none':'';
- const industryTag=el('industryBrandTag');if(industryTag)industryTag.textContent=snow?'SNOW REMOVAL MEASUREMENT & ESTIMATE SOFTWARE':pressure?'PRESSURE WASHING MEASUREMENT & ESTIMATE SOFTWARE':paving?'PAVING & SEALCOATING MEASUREMENT & ESTIMATE SOFTWARE':'ROOF MEASUREMENT & ESTIMATE SOFTWARE';
+ const pressure=mode==='pressure',paving=mode==='paving',landscaping=mode==='landscaping';
+ const extra=el('extraServiceDescription');if(extra)extra.placeholder=landscaping?'Example: Sod installation, mulch, planting, edging or additional garden work':paving?'Example: Crack filling, asphalt patching or additional sealcoating':pressure?'Example: Additional patio, sidewalk or driveway cleaning':'Example: Replace damaged shingles, seal vent, minor roof repair';
+ document.body.classList.toggle('pressure-industry',pressure||paving||landscaping);
+ const coverageWrap=el('coverageWrap');if(coverageWrap)coverageWrap.style.display=(snow||pressure||paving||landscaping)?'none':'';
+ const industryTag=el('industryBrandTag');if(industryTag)industryTag.textContent=snow?'SNOW REMOVAL MEASUREMENT & ESTIMATE SOFTWARE':pressure?'PRESSURE WASHING MEASUREMENT & ESTIMATE SOFTWARE':paving?'PAVING & SEALCOATING MEASUREMENT & ESTIMATE SOFTWARE':landscaping?'LANDSCAPING MEASUREMENT & ESTIMATE SOFTWARE':'ROOF MEASUREMENT & ESTIMATE SOFTWARE';
  if(el('marketingWarranty')){if(paving)el('marketingWarranty').placeholder='Example: Add your workmanship guarantee or service terms.';else if(snow){el('marketingWarranty').placeholder='Example: We stand behind our snow removal service. Add your company service guarantee or satisfaction policy here.';if(/^Example: We stand behind our snow removal service/i.test((el('marketingWarranty').value||'').trim()))el('marketingWarranty').value='';}else el('marketingWarranty').placeholder='Example: Backed by our 5-year workmanship warranty.';}
  document.querySelectorAll('body *').forEach(x=>{
    if(x.children.length||['SCRIPT','STYLE'].includes(x.tagName))return;
@@ -552,7 +554,7 @@ function applyBusinessTerminology(root=document.body){
    Array.from(businessSelect.options||[]).forEach(o=>{
      if(o.value==='roofing')o.textContent='Roofing';
      if(o.value==='snow')o.textContent='Snow Removal';
-     if(o.value==='pressure')o.textContent='Pressure Washing';if(o.value==='paving')o.textContent='Paving & Sealcoating';
+     if(o.value==='pressure')o.textContent='Pressure Washing';if(o.value==='paving')o.textContent='Paving & Sealcoating';if(o.value==='landscaping')o.textContent='Landscaping';
    });
  }
  // Central Snow Removal display cleanup for dynamically rendered screens/previews.
@@ -1492,7 +1494,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  const dealerEmail=(el('dealerEmail')?el('dealerEmail').value.trim():'')||'';
  const dealerWebsite=(el('dealerWebsite')?el('dealerWebsite').value.trim():'')||'';
  const dealerAddress=(el('dealerAddress')?el('dealerAddress').value.trim():'')||'';
- el('rPhone').textContent=el('dealerPhone').value;if(el('rDealerCompany'))el('rDealerCompany').textContent=dealerCompany;if(el('rDealerName'))el('rDealerName').textContent=(dealerName&&dealerName!==dealerCompany)?dealerName:'';if(el('rDealerEmail'))el('rDealerEmail').textContent=dealerEmail;if(el('rDealerEmailWrap'))el('rDealerEmailWrap').style.display=dealerEmail?'inline':'none';if(el('rDealerWebsite'))el('rDealerWebsite').textContent=dealerWebsite;if(el('rDealerAddress'))el('rDealerAddress').textContent=dealerAddress;if(el('rDealerAddressWrap'))el('rDealerAddressWrap').style.display=dealerAddress?'inline':'none';if(el('rDealerLogo')){const rdl=el('rDealerLogo'),dls=dealerLogoSrc();if(dls){rdl.src=dls;rdl.classList.remove('noDealerLogo')}else{rdl.removeAttribute('src');rdl.classList.add('noDealerLogo')}}if(el('rEstimateSubtitle'))el('rEstimateSubtitle').textContent=dealerCompany;if(el('rEstimateDealerSub'))el('rEstimateDealerSub').textContent='Prepared by '+dealerCompany;if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='paving'?'Paving & Sealcoating Measurement & Estimate':currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));applyDealerMarketing()
+ el('rPhone').textContent=el('dealerPhone').value;if(el('rDealerCompany'))el('rDealerCompany').textContent=dealerCompany;if(el('rDealerName'))el('rDealerName').textContent=(dealerName&&dealerName!==dealerCompany)?dealerName:'';if(el('rDealerEmail'))el('rDealerEmail').textContent=dealerEmail;if(el('rDealerEmailWrap'))el('rDealerEmailWrap').style.display=dealerEmail?'inline':'none';if(el('rDealerWebsite'))el('rDealerWebsite').textContent=dealerWebsite;if(el('rDealerAddress'))el('rDealerAddress').textContent=dealerAddress;if(el('rDealerAddressWrap'))el('rDealerAddressWrap').style.display=dealerAddress?'inline':'none';if(el('rDealerLogo')){const rdl=el('rDealerLogo'),dls=dealerLogoSrc();if(dls){rdl.src=dls;rdl.classList.remove('noDealerLogo')}else{rdl.removeAttribute('src');rdl.classList.add('noDealerLogo')}}if(el('rEstimateSubtitle'))el('rEstimateSubtitle').textContent=dealerCompany;if(el('rEstimateDealerSub'))el('rEstimateDealerSub').textContent='Prepared by '+dealerCompany;if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='paving'?'Paving & Sealcoating Measurement & Estimate':currentBusinessType()==='landscaping'?'Landscaping Measurement & Estimate':currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));applyDealerMarketing()
 
  let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=historicalMode&&imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&imageChoice==='auto')||useSavedStreet,useAerial=imageChoice!=='none';
  if(el('streetPlaceholder'))el('streetPlaceholder').style.display=useStreet?'none':'flex';
@@ -1515,7 +1517,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(el('reportPropertyImageNote'))el('reportPropertyImageNote').textContent=linearReport?'Linear service length measured using available aerial imagery.':(areaReport?'Service area measured using available aerial imagery.':(snowReport?'Service area measured using available aerial imagery.':'Roof measured using available aerial imagery.'));
 
  let price='';
- if(areaReport){price+=`<div class="line"><span>${currentBusinessType()==='paving'?'Paving & Sealcoating':(currentBusinessType()==='pressure'?'Pressure Washing':'Area Service')} — ${fmt(Number(snap.areaSqFt||calc.area))} ft² × ${money(calc.price)}</span><b>${money(calc.subtotal)}</b></div>`}
+ if(areaReport){price+=`<div class="line"><span>${currentBusinessType()==='paving'?'Paving & Sealcoating':(currentBusinessType()==='pressure'?'Pressure Washing':currentBusinessType()==='landscaping'?'Landscaping Service':'Area Service')} — ${fmt(Number(snap.areaSqFt||calc.area))} ft² × ${money(calc.price)}</span><b>${money(calc.subtotal)}</b></div>`}
  else if(linearReport){price+=`<div class="line"><span>Linear Service — ${Number(snap.linearFeet||calc.area).toFixed(1)} ft × ${money(calc.price)}</span><b>${money(calc.subtotal)}</b></div>`}
  else if(manualUsed){
    price+=`<div class="line"><span>${snowReport?'Snow Removal Service — Manual Area Measurement':'Roofing Service — Manual Measurement'}</span><b>${money(calc.subtotal)}</b></div>`;
