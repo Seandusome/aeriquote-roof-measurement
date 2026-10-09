@@ -2184,7 +2184,32 @@ def is_head_office():
     finally:
         con.close()
 
-@app.route("/head-office/dealers",methods=["GET","POST"])
+
+AERIQUOTE_ADMIN_HTML=r"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AeriQuote | Admin Dashboard</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#172b45;font:15px system-ui,-apple-system,Segoe UI,Arial,sans-serif}header{background:#102b4a;color:white;padding:24px max(22px,calc((100vw - 1140px)/2));display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}header h1{margin:0;font-size:25px}header p{margin:4px 0 0;color:#bcd2e8}a{color:#1469b0}header a{color:white;text-decoration:none;border:1px solid #607d9d;border-radius:9px;padding:9px 13px}main{max-width:1140px;margin:30px auto;padding:0 18px}.intro{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.intro h2{margin:0}.muted{color:#64748b}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:23px 0}.metric,.panel{background:white;border:1px solid #e1e8f1;border-radius:14px;box-shadow:0 4px 14px #12243b08}.metric{padding:20px}.metric span{color:#607086;font-size:13px;display:block}.metric strong{display:block;font-size:27px;margin-top:9px}.panel{padding:23px;margin:18px 0}.panel h3{margin:0 0 8px;font-size:19px}.pill{display:inline-block;border-radius:50px;padding:5px 11px;background:#edf2f8;color:#42566d;font-size:12px;font-weight:700}.note{padding:14px 16px;background:#f4f7fb;border-radius:10px;border:1px solid #dce5f0;margin-top:15px}table{width:100%;border-collapse:collapse;min-width:680px}th,td{text-align:left;border-bottom:1px solid #e7edf4;padding:13px 10px;font-size:14px}th{color:#607086;font-size:12px;text-transform:uppercase;letter-spacing:.04em}td strong{display:block}td small{color:#64748b}.scroll{overflow:auto}input{padding:11px 12px;border:1px solid #cdd9e6;border-radius:9px;font:inherit;width:100%;max-width:350px}.tag{background:#eaf5ef;color:#18643a;border-radius:6px;padding:4px 8px;font-size:12px}.tag.off{background:#f3f4f6;color:#64748b}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.disabled{opacity:.55;cursor:not-allowed;border:0;background:#cbd5e1;color:#334155;padding:10px 15px;border-radius:8px;font-weight:700}button:not(.disabled){cursor:pointer}@media(max-width:720px){.metrics,.grid{grid-template-columns:1fr}.panel{padding:16px}header{padding:20px}}
+</style></head><body>
+<header><div><h1>AeriQuote <span style="font-weight:400">/ Admin</span></h1><p>Subscriptions, purchases & customer support</p></div><div><a href="/site/index.html">AeriQuote Website</a> <a href="/logout">Log Out</a></div></header>
+<main><div class="intro"><div><h2>Overview</h2><p class="muted">Manage AeriQuote software accounts. Business estimates remain private to each business.</p></div><span class="pill">Head Office</span></div>
+<div class="metrics"><div class="metric"><span>Registered Accounts</span><strong>{{total_accounts}}</strong></div><div class="metric"><span>Active Accounts</span><strong>{{active_accounts}}</strong></div><div class="metric"><span>Subscription Revenue</span><strong>—</strong><small class="muted">Awaiting Stripe connection</small></div></div>
+<section class="panel"><h3>Purchases & Subscriptions</h3><p class="muted">Subscription payments, renewal dates, invoices and refunds will appear here after Stripe is connected.</p><div class="note"><b>Stripe connection pending.</b> No payment amounts or subscription statuses are being guessed from estimate totals. <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener">Open Stripe Dashboard ↗</a></div></section>
+<section class="panel"><div class="intro"><div><h3>Customer Accounts</h3><p class="muted">Find an account by business name or email. Usage and estimates are available to business owners in their own workspace.</p></div><input id="search" type="search" placeholder="Search business or email..." aria-label="Search customer accounts" oninput="filterAccounts()"></div><div class="scroll"><table id="accounts"><thead><tr><th>Business / Owner</th><th>Login Email</th><th>Plan</th><th>Account</th></tr></thead><tbody>{% for a in accounts %}<tr><td><strong>{{a.dealer_name}}</strong></td><td>{{a.email}}</td><td>{{(a.plan_code or 'Legacy')|title}}</td><td>{% if a.status|lower == 'active' %}<span class="tag">Active</span>{% else %}<span class="tag off">{{a.status|title}}</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div></section>
+<div class="grid"><section class="panel"><h3>Issue Account Credit</h3><p class="muted">For customer complaints or service adjustments.</p><p><button class="disabled" disabled title="Available after Stripe integration">Issue Credit — Coming Later</button></p><small class="muted">No credits are recorded or applied until Stripe integration is complete.</small></section><section class="panel"><h3>Refund a Purchase</h3><p class="muted">Review an original payment and issue a full or partial refund.</p><p><button class="disabled" disabled title="Available after Stripe integration">Issue Refund — Coming Later</button></p><small class="muted">No money can move from this dashboard yet.</small></section></div>
+<p class="muted" style="margin:24px 0 38px">Development dashboard · Billing integration deferred until AeriQuote industry workflows are complete.</p></main>
+<script>function filterAccounts(){const q=document.getElementById('search').value.toLowerCase().trim();document.querySelectorAll('#accounts tbody tr').forEach(r=>{r.hidden=!r.textContent.toLowerCase().includes(q)})}</script></body></html>"""
+
+@app.get("/head-office/dealers")
+def aeriquote_admin_dashboard():
+    if not is_head_office():return Response("Head Office permission required.",status=403)
+    con=estimate_db()
+    try:
+        rows=con.execute("SELECT dealer_name,email,status,plan_code FROM dealers ORDER BY created_at DESC").fetchall()
+        accounts=[dict(row) for row in rows]
+    finally:
+        con.close()
+    return render_template_string(AERIQUOTE_ADMIN_HTML,accounts=accounts,total_accounts=len(accounts),active_accounts=sum(str(a["status"]).lower()=="active" for a in accounts))
+
+@app.route("/head-office/legacy-dealers",methods=["GET","POST"])
 def head_office_dealers():
     if not is_head_office(): return Response("Head Office permission required.",status=403)
     message=None; error=None
