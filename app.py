@@ -1127,21 +1127,36 @@ function reportTargetLabel(key){
 function returnToAreaCorrection(){document.body.classList.remove("report-open");if(el("reportOverlay"))el("reportOverlay").style.display="none";if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];if(typeof correctAreaOutline==="function")correctAreaOutline();if(el("areaTool"))el("areaTool").scrollIntoView({behavior:"smooth",block:"center"});}
 function returnToLinearCorrection(){document.body.classList.remove('report-open');if(el('reportOverlay'))el('reportOverlay').style.display='none';if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];if(el('linearTool'))el('linearTool').scrollIntoView({behavior:'smooth',block:'center'});if(el('linearStartBtn'))el('linearStartBtn').focus();}
 let visualCorrectionMarkers=[],visualCorrectionLayer=null,visualCorrectionMode=null;
-function clearVisualCorrection(){visualCorrectionMarkers.forEach(m=>{try{customerMap&&customerMap.removeLayer(m)}catch(e){}});visualCorrectionMarkers=[];if(visualCorrectionLayer){try{customerMap&&customerMap.removeLayer(visualCorrectionLayer)}catch(e){}}visualCorrectionLayer=null;visualCorrectionMode=null;}
+function clearVisualCorrection(){if(visualCorrectionClickHandler&&customerMap){customerMap.off('click',visualCorrectionClickHandler);visualCorrectionClickHandler=null;}if(el('reportUndoOutlineBtnTop'))el('reportUndoOutlineBtnTop').style.display='none';visualCorrectionMarkers.forEach(m=>{try{customerMap&&customerMap.removeLayer(m)}catch(e){}});visualCorrectionMarkers=[];if(visualCorrectionLayer){try{customerMap&&customerMap.removeLayer(visualCorrectionLayer)}catch(e){}}visualCorrectionLayer=null;visualCorrectionMode=null;}
+let visualCorrectionClickHandler=null;
+function refreshVisualCorrectionLine(){
+ if(!visualCorrectionLayer)return;
+ const pts=visualCorrectionMarkers.map(m=>m.getLatLng());
+ visualCorrectionLayer.setLatLngs(pts);
+ if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').disabled=pts.length<(visualCorrectionMode==='area'?3:2);
+ if(el('reportUndoOutlineBtnTop'))el('reportUndoOutlineBtnTop').style.display=pts.length?'inline-block':'none';
+}
+function addVisualCorrectionPoint(latlng){
+ if(!visualCorrectionMode)return;
+ const m=L.marker(latlng,{draggable:true,autoPan:true,title:'Drag this point to correct the estimate image'}).addTo(customerMap);
+ m.on('drag',refreshVisualCorrectionLine);
+ visualCorrectionMarkers.push(m);
+ refreshVisualCorrectionLine();
+}
 function startVisualMeasurementCorrection(mode){
  if(!customerMap){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='The aerial image is not ready. Please reopen the estimate.';return;}
- clearVisualCorrection();const snap=quoteSnapshot||captureQuoteSnapshot(),key=mode+'-visual',source=reportOutlines[key]||(mode==='area'?snap.areaPoints:snap.linearPoints);
- if(!Array.isArray(source)||source.length<(mode==='area'?3:2))return;
+ clearVisualCorrection();
  visualCorrectionMode=mode;
  customerOverlays.forEach(layer=>{try{customerMap.removeLayer(layer)}catch(e){}});customerOverlays=[];
- const pts=source.map(p=>L.latLng(p[0],p[1]));
- visualCorrectionLayer=(mode==='area'?L.polygon(pts,{color:'#f97316',weight:4,fillOpacity:.10}):L.polyline(pts,{color:'#f97316',weight:5})).addTo(customerMap);
- const refresh=()=>visualCorrectionLayer.setLatLngs(visualCorrectionMarkers.map(m=>m.getLatLng()));
- pts.forEach((p,i)=>{const m=L.marker(p,{draggable:true,autoPan:true,title:'Drag point '+(i+1)}).addTo(customerMap);m.on('drag',refresh);visualCorrectionMarkers.push(m)});
+ // Start EMPTY: the dealer traces the estimate image, not an automatic four-corner shape.
+ visualCorrectionLayer=(mode==='area'?L.polygon([],{color:'#f97316',weight:4,fillOpacity:.10}):L.polyline([],{color:'#f97316',weight:5})).addTo(customerMap);
+ visualCorrectionClickHandler=e=>addVisualCorrectionPoint(e.latlng);
+ customerMap.on('click',visualCorrectionClickHandler);
  if(el('reportOutlineTargetButtons'))el('reportOutlineTargetButtons').style.display='none';
- if(el('reportSaveOutlineBtnTop')){el('reportSaveOutlineBtnTop').style.display='inline-block';el('reportSaveOutlineBtnTop').disabled=false;el('reportSaveOutlineBtnTop').textContent='SAVE IMAGE OUTLINE'}
+ if(el('reportSaveOutlineBtnTop')){el('reportSaveOutlineBtnTop').style.display='inline-block';el('reportSaveOutlineBtnTop').disabled=true;el('reportSaveOutlineBtnTop').textContent='SAVE TRACED IMAGE';}
  if(el('reportCancelOutlineBtnTop'))el('reportCancelOutlineBtnTop').style.display='inline-block';
- if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Drag the orange corner points into position on this estimate image. Save changes to the picture only; measurements and price remain unchanged.';
+ if(el('reportUndoOutlineBtnTop'))el('reportUndoOutlineBtnTop').style.display='none';
+ if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Click each point along the actual service line on the aerial. Drag points to adjust, Undo Point to remove the last point, then Save Traced Image. Measurement and price will not change.';
  if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=true;
 }
 async function saveVisualCorrection(){
@@ -1198,7 +1213,7 @@ async function startReportOutlineEdit(target){
  const svg=el('reportDrawLayer');if(svg&&!svg.dataset.bound){svg.addEventListener('pointerdown',reportOutlinePointer);svg.dataset.bound='1'}
 }
 function cancelReportOutlineEdit(){if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error(e));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error(e))}
-function undoReportOutlinePoint(){if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
+function undoReportOutlinePoint(){if(visualCorrectionMode){const m=visualCorrectionMarkers.pop();if(m)customerMap.removeLayer(m);refreshVisualCorrectionLine();return;}if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
 async function saveReportOutline(){if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error(e));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
 
 async function buildExactPinCustomerSnapshot(){
