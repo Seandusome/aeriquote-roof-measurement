@@ -56,60 +56,7 @@ async function saveIndustrySetupLocal(industry){
   estimateMessage:document.getElementById('estimateMessage')?.value||'',
   ctaHeading:document.getElementById('ctaHeading')?.value||(industry==='snow'?'Schedule Your Snow Removal Service':industry==='paving'?'Schedule Your Paving & Sealcoating Service':industry==='landscaping'?'Schedule Your Landscaping Service':'Schedule Your Pressure Washing Service'),
   marketingEnabled:true,marketingHeading:'WHY CHOOSE US',
-  benefits:industry==='landscaping'?[
-   {icon:'✓',title:'Landscape Care',text:'Landscaping services tailored to your outdoor spaces.'},
-   {icon:'✓',title:'Improve Curb Appeal',text:'Refresh lawns, garden beds and outdoor living areas.'},
-   {icon:'
-   {icon:'✓',title:'Surface Preparation',text:'Paving and sealcoating tailored to the surface.'},
-   {icon:'✓',title:'Protect Asphalt Surfaces',text:'Sealcoating can help protect suitable asphalt surfaces.'},
-   {icon:'$',title:'Clear Upfront Pricing',text:'Measured paved areas and pricing shown before work begins.'},
-   {icon:'◆',title:'Property-Specific Service',text:'Driveways and parking areas measured for your property.'},
-   {icon:'✓',title:'Professional Service',text:'Paving and sealcoating tailored to your property.'}
-  ]:industry==='pressure'?[
-   {icon:'✓',title:'Professional Cleaning',text:'Pressure washing tailored to exterior surfaces.'},
-   {icon:'✓',title:'Improve Curb Appeal',text:'Help remove dirt and grime.'},
-   {icon:'$',title:'Clear Upfront Pricing',text:'Measured cleaning areas and pricing shown.'},
-   {icon:'◆',title:'Property-Specific Service',text:'Cleaning areas tailored to your property.'},
-   {icon:'✓',title:'Reliable Service',text:'Professional pressure washing.'}
-  ]:[
-   {icon:'✓',title:'Reliable Service',text:'Dependable snow removal tailored to your property.'},
-   {icon:'✓',title:'Help Keep Properties Safe',text:'Keep lots, driveways and walkways clear.'},
-   {icon:'$',title:'Clear Upfront Pricing',text:'Service areas and pricing shown upfront.'},
-   {icon:'◆',title:'Property-Specific Service',text:'Service areas prepared for your property.'}
-  ]
- };
- const file=document.getElementById('logoUpload')?.files?.[0];
- if(file){profile.logoData=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
- if(profile.logoData)localStorage.setItem('sxDealerLogo',profile.logoData);
- localStorage.setItem('sxDealerDefaults',JSON.stringify(profile));
- localStorage.setItem('aeriQuoteIndustry',industry);
- return profile;
-}
-const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':null)));
-if(document.body.classList.contains('setup-page') && setupIndustry){
- const finish=document.getElementById('finishSetup');
- finish?.addEventListener('click',async function(event){
-   event.preventDefault();
-   if(this.dataset.opening==='true')return;
-   const originalText=this.textContent;
-   this.dataset.opening='true';this.disabled=true;this.textContent='OPENING MEASURING SYSTEM…';
-   try{
-     const profile=await saveIndustrySetupLocal(setupIndustry);
-     const response=await fetch('/api/account/profile',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(profile)});
-     if(!response.ok)throw new Error('Your setup could not be saved to your account. Please sign in and try again.');
-     // Carry the snow industry into the measuring URL as well as localStorage.
-     window.location.assign('/?industry='+encodeURIComponent(setupIndustry));
-   }catch(e){
-     alert('Could not save setup in this browser. '+(e?.message||''));
-     this.dataset.opening='false';this.disabled=false;this.textContent=originalText;
-   }
- });
-}
-showStep(1);
-,title:'Clear Upfront Pricing',text:'Measured landscape areas and pricing shown before work begins.'},
-   {icon:'◆',title:'Property-Specific Service',text:'Lawn and landscaping areas measured for your property.'},
-   {icon:'✓',title:'Professional Service',text:'Professional landscaping for your property.'}
-  ]:industry==='paving'?[
+  benefits:industry==='landscaping'?[{icon:'✓',title:'Landscape Care',text:'Landscaping tailored to your property.'}]:industry==='paving'?[
    {icon:'✓',title:'Surface Preparation',text:'Paving and sealcoating tailored to the surface.'},
    {icon:'✓',title:'Protect Asphalt Surfaces',text:'Sealcoating can help protect suitable asphalt surfaces.'},
    {icon:'$',title:'Clear Upfront Pricing',text:'Measured paved areas and pricing shown before work begins.'},
