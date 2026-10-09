@@ -70,7 +70,7 @@ async function saveIndustrySetupLocal(industry){
  localStorage.setItem('aeriQuoteIndustry',industry);
  return profile;
 }
-const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':null);
+const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':null));
 if(document.body.classList.contains('setup-page') && setupIndustry){
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
