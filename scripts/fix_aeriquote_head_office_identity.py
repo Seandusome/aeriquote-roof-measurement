@@ -14,3 +14,8 @@ new='''def is_head_office():
 assert s.count(old)==1, "Head Office definition changed"
 s=s.replace(old,new)
 p.write_text(s)
+
+old_limit='if estimate_limit>0 and estimate_used>=estimate_limit:'
+assert s.count(old_limit)==1, "Estimate limit guard changed"
+s=s.replace(old_limit,'if estimate_limit>0 and estimate_used>=estimate_limit and not is_head_office():')
+p.write_text(s)
