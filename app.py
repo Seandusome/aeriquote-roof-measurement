@@ -2074,7 +2074,7 @@ def public_signup():
     email=str(d.get("email") or "").strip().lower(); password=str(d.get("password") or "")
     country=str(d.get("country") or "Canada").strip()
     industry=str(d.get("industry") or "roofing").strip().lower()
-    if industry not in {"roofing","snow","pressure"}: industry="roofing"
+    if industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}: industry="roofing"
     if not name or not company or not email or len(password)<8:
         return jsonify(error="Name, business name, email and a password of at least 8 characters are required."),400
     did=str(uuid.uuid4()); created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()); limit=PLAN_LIMITS["trial"]
@@ -2087,7 +2087,7 @@ def public_signup():
         con.execute("INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)",(did,json.dumps(profile),created));con.commit()
     finally: con.close()
     session.clear();session["dealer_id"]=did;session["dealer_name"]=name;session["account_type"]="owner"
-    return jsonify(ok=True,redirect=("/site/snow-setup.html" if industry=="snow" else "/site/pressure-setup.html" if industry=="pressure" else "/site/roofer-setup.html"),plan="trial",industry=industry,measurement_limit=limit)
+    return jsonify(ok=True,redirect=("/site/snow-setup.html" if industry=="snow" else "/site/pressure-setup.html" if industry=="pressure" else "/site/paving-setup.html" if industry=="paving" else "/site/landscaping-setup.html" if industry=="landscaping" else "/site/commercial-setup.html" if industry=="commercial" else "/site/roofer-setup.html"),plan="trial",industry=industry,measurement_limit=limit)
 
 
 HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Dealer Management</title>
