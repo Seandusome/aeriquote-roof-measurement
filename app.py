@@ -2471,12 +2471,13 @@ def dealer_employee_status(employee_id):
 def consume_property_lookup(dealer_id):
     con=estimate_db()
     try:
-        d=con.execute("SELECT lookup_limit FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+        d=con.execute("SELECT lookup_limit,email,status FROM dealers WHERE id=?",(dealer_id,)).fetchone()
         if not d:return False,0,0
         limit=int(d["lookup_limit"] or 0)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
-        if limit>0 and used>=limit and not is_head_office():return False,used,limit
+        is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and str(d["email"]).strip().lower()=="sdusome@diitalk.com")
+        if limit>0 and used>=limit and not is_office:return False,used,limit
         if u:con.execute("UPDATE dealer_usage SET property_lookups=property_lookups+1 WHERE dealer_id=?",(dealer_id,))
         else:con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1)",(dealer_id,))
         con.commit();return True,used+1,limit
