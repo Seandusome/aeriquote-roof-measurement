@@ -1689,12 +1689,11 @@ async function downloadEstimatePDF(){
   const oldActionsDisplay=actions?actions.style.display:'',oldOutlineDisplay=outlineControls?outlineControls.style.display:'';
   if(actions)actions.style.display='none';if(outlineControls)outlineControls.style.display='none';
   // Preserve the exact approved estimate viewport. Do not restyle/reflow the report before vector capture.
-  const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane'):null,oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
-  if(pdfOverlayPane)pdfOverlayPane.style.visibility='hidden';
+  // Keep Leaflet's SVG overlay pane visible: it contains the dealer's corrected
+  // area/linear tracing. Hiding it erased the trace from every downloaded PDF.
   let canvas;
   try{canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false})}
   finally{
-    if(pdfOverlayPane)pdfOverlayPane.style.visibility=oldPdfOverlayVisibility;
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
 
