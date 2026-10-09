@@ -2477,7 +2477,9 @@ def consume_property_lookup(dealer_id):
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
         is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and str(d["email"]).strip().lower()=="sdusome@diitalk.com")
-        if limit>0 and used>=limit and not is_office:return False,used,limit
+        # Head Office testing is unrestricted and must not consume trial or paid lookup credits.
+        if is_office:return True,used,limit
+        if limit>0 and used>=limit:return False,used,limit
         if u:con.execute("UPDATE dealer_usage SET property_lookups=property_lookups+1 WHERE dealer_id=?",(dealer_id,))
         else:con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1)",(dealer_id,))
         con.commit();return True,used+1,limit
