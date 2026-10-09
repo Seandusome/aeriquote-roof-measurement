@@ -1,0 +1,29 @@
+name: Apply admin and estimate area correction
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-admin-area-fix.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Patch and validate
+        run: |
+          python scripts/fix_admin_and_estimate_area.py
+          python -m py_compile app.py
+      - name: Commit update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.py
+          git commit -m "Allow head office tests and correct area from estimate"
+          git push
