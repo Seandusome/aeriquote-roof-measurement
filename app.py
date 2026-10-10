@@ -1004,7 +1004,7 @@ function updateJobSummaryBar(calc,roofCount){
  const has=calc&&Number(calc.area)>0;
  const summaryLabel=r.previousElementSibling;if(summaryLabel&&['pressure','paving','landscaping','commercial'].includes(currentBusinessType()))summaryLabel.textContent=currentBusinessType()==='landscaping'?'SERVICE AREAS':'SURFACES';else if(summaryLabel)summaryLabel.textContent='ROOFS';
  r.textContent=['pressure','paving'].includes(currentBusinessType())?(has?'1':'—'):(has?String(roofCount||1):'—');
- a.textContent=has?(measurementViewMode==='linear'?Number(calc.area).toFixed(1)+' linear ft':fmt(calc.area)+' ft²'):'—';
+ a.textContent=has?(commercialHasAreas()?fmt(calc.area)+' ft²':(measurementViewMode==='linear'?Number(calc.area).toFixed(1)+' linear ft':fmt(calc.area)+' ft²')):'—';
  t.textContent=has?money(calc.total):'—';
 }
 function updateProgressSteps(){
@@ -1813,21 +1813,34 @@ async function downloadEstimatePDF(){
   const oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
   try{
     const snap=quoteSnapshot||captureQuoteSnapshot();
-    const mode=snap.measurementMode;
-    const points=mode==='area'?(reportOutlines['area-visual']||snap.areaPoints):mode==='linear'?(reportOutlines['linear-visual']||snap.linearPoints):null;
-    if(customerMap&&Array.isArray(points)&&points.length>=(mode==='area'?3:2)){
+    // Capture all commercial area polygons and the linear trace together.
+    // The old PDF path chose just one outline based on the selected tool.
+    const traces=[];
+    const commercialPolys=Array.isArray(snap.commercialAreas)?snap.commercialAreas.filter(a=>Array.isArray(a.points)&&a.points.length>=3):[];
+    if(commercialPolys.length){
+      commercialPolys.forEach(a=>traces.push({points:a.points,area:true}));
+    }else if(Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3){
+      traces.push({points:reportOutlines['area-visual']||snap.areaPoints,area:true});
+    }
+    if(Array.isArray(snap.linearPoints)&&snap.linearPoints.length>=2){
+      traces.push({points:reportOutlines['linear-visual']||snap.linearPoints,area:false});
+    }
+    if(customerMap&&traces.length){
       const host=el('customerMap'),size=customerMap.getSize();
       pdfTraceCanvas=document.createElement('canvas');
       pdfTraceCanvas.width=Math.round(size.x*2);pdfTraceCanvas.height=Math.round(size.y*2);
       Object.assign(pdfTraceCanvas.style,{position:'absolute',left:'0',top:'0',width:size.x+'px',height:size.y+'px',zIndex:'650',pointerEvents:'none'});
       const ctx=pdfTraceCanvas.getContext('2d');ctx.scale(2,2);
-      ctx.beginPath();
-      points.forEach((p,i)=>{
-        const pt=customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));
-        if(i===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);
+      traces.forEach(trace=>{
+        ctx.beginPath();
+        trace.points.forEach((p,i)=>{
+          const pt=customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));
+          if(i===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);
+        });
+        if(trace.area){ctx.closePath();ctx.fillStyle='rgba(115,87,184,0.14)';ctx.fill();}
+        ctx.strokeStyle=trace.area?'#7357b8':'#0f8f83';
+        ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
       });
-      if(mode==='area'){ctx.closePath();ctx.fillStyle='rgba(115,87,184,0.14)';ctx.fill();}
-      ctx.strokeStyle=mode==='area'?'#7357b8':'#0f8f83';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
       host.appendChild(pdfTraceCanvas);
       if(pdfOverlayPane)pdfOverlayPane.style.visibility='hidden';
     }
