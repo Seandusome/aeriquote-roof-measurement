@@ -991,7 +991,7 @@ function estimateArea(){
  return googleTotal();
 }
 function currentJobPrice(){const jp=el('jobPrice');const raw=jp?jp.value:'';const v=parseFloat(raw);if(Number.isFinite(v)&&v>=0)return v;const fallback=parseFloat((el('price')&&el('price').value)||0);return Number.isFinite(fallback)&&fallback>=0?fallback:0}
-function priceCalc(){if(commercialActive()&&areaMeasurementSaved)commercialSyncCurrent();let linearActive=measurementViewMode==='linear',areaActive=measurementViewMode==='area',area=linearActive?linearFeetTotal():(areaActive?Math.round(areaSqFtTotal()):estimateArea()),price=currentJobPrice(),mode=el('pricingMode').value,disc=Number(el('discountPct').value||0),gst=Number(el('gst').value||0),pst=Number(el('pst').value||0),subtotal=(currentBusinessType()==='commercial'&&(commercialHasAreas()||commercialHasLinear())?commercialAreas.reduce((sum,a)=>sum+(a.sqft||0)*(a.rate||0),0)+(commercialHasLinear()?linearFeetTotal()*(measurementViewMode==='linear'?price:commercialLinearRate()):0):area*price),extraDescription=(el('extraServiceDescription')?.value||'').trim(),extraAmount=Math.max(0,Number(el('extraServiceAmount')?.value||0)),discount=0,taxBase=subtotal+extraAmount,gstAmt=0,pstAmt=0,total=0;if(mode==='discount'){discount=subtotal*(disc/100);taxBase=subtotal-discount+extraAmount;gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100;total=taxBase+gstAmt+pstAmt}else if(mode==='included'){total=subtotal+extraAmount;taxBase=total/(1+(gst+pst)/100);gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100}else{taxBase=subtotal+extraAmount;gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100;total=taxBase+gstAmt+pstAmt}if(commercialHasAreas())area=commercialAreas.reduce((sum,a)=>sum+(a.sqft||0),0);return{area,price,mode,disc,subtotal,extraDescription,extraAmount,discount,taxBase,gst,pst,gstAmt,pstAmt,total,measurementMode:linearActive?'linear':(areaActive?'area':'auto'),unit:linearActive?'linear ft':'ft²'}}
+function priceCalc(){if(commercialActive()&&areaMeasurementSaved)commercialSyncCurrent();let linearActive=measurementViewMode==='linear',areaActive=measurementViewMode==='area',area=linearActive?linearFeetTotal():(areaActive?Math.round(areaSqFtTotal()):estimateArea()),price=currentJobPrice(),mode=el('pricingMode').value,disc=Number(el('discountPct').value||0),gst=Number(el('gst').value||0),pst=Number(el('pst').value||0),subtotal=(currentBusinessType()==='commercial'&&(commercialHasAreas()||commercialHasLinear())?commercialAreas.reduce((sum,a)=>sum+(a.sqft||0)*(a.rate||0),0)+(commercialHasLinear()?linearFeetTotal()*commercialLinearRate():0):area*price),extraDescription=(el('extraServiceDescription')?.value||'').trim(),extraAmount=Math.max(0,Number(el('extraServiceAmount')?.value||0)),discount=0,taxBase=subtotal+extraAmount,gstAmt=0,pstAmt=0,total=0;if(mode==='discount'){discount=subtotal*(disc/100);taxBase=subtotal-discount+extraAmount;gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100;total=taxBase+gstAmt+pstAmt}else if(mode==='included'){total=subtotal+extraAmount;taxBase=total/(1+(gst+pst)/100);gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100}else{taxBase=subtotal+extraAmount;gstAmt=taxBase*gst/100;pstAmt=taxBase*pst/100;total=taxBase+gstAmt+pstAmt}if(commercialHasAreas())area=commercialAreas.reduce((sum,a)=>sum+(a.sqft||0),0);return{area,price,mode,disc,subtotal,extraDescription,extraAmount,discount,taxBase,gst,pst,gstAmt,pstAmt,total,measurementMode:linearActive?'linear':(areaActive?'area':'auto'),unit:commercialHasAreas()?'ft²':(linearActive?'linear ft':'ft²')}}
 function confidence(){return []}
 function pitchLabel(deg){const d=Number(deg||0);if(!d)return '—';const rise=12*Math.tan(d*Math.PI/180);const rounded=Math.round(rise*2)/2;return `${d.toFixed(1)}° (approx. ${Number.isInteger(rounded)?rounded.toFixed(0):rounded.toFixed(1)}/12)`}
 function pitchRiseLabel(deg){const d=Number(deg||0);if(!d)return '—';const rise=12*Math.tan(d*Math.PI/180);const rounded=Math.round(rise*2)/2;return `${Number.isInteger(rounded)?rounded.toFixed(0):rounded.toFixed(1)}/12`}
@@ -1187,7 +1187,7 @@ function removeLastExtra(){
 
 function captureQuoteSnapshot(){
  const clone=x=>JSON.parse(JSON.stringify(x||[]));
- quoteSnapshot={structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:commercialHasAreas()?commercialAreas.reduce((n,a)=>n+(a.sqft||0),0):areaSqFtTotal(),commercialAreas:clone(commercialAreas),commercialLinearRate:commercialHasLinear()?(measurementViewMode==='linear'?currentJobPrice():commercialLinearRate()):0,commercialLinearSaved:commercialHasLinear()};
+ quoteSnapshot={structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:commercialHasAreas()?commercialAreas.reduce((n,a)=>n+(a.sqft||0),0):areaSqFtTotal(),commercialAreas:clone(commercialAreas),commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear()};
  return quoteSnapshot;
 }
 function clearReportOutlineTemp(){reportOutlineTemp.forEach(x=>{try{customerMap&&customerMap.removeLayer(x)}catch(e){}});reportOutlineTemp=[];const svg=el('reportDrawLayer');if(svg)svg.innerHTML=''}
@@ -1402,11 +1402,23 @@ async function buildInteractiveCustomerMap(){
   renderReportOutlineTargetButtons();
   const allBounds=[];
   if(hasArea){
+   // Commercial estimates can contain multiple independent saved service polygons.
+   const areas=(Array.isArray(snap.commercialAreas)&&snap.commercialAreas.some(a=>Array.isArray(a.points)&&a.points.length>=3))
+    ?snap.commercialAreas.filter(a=>Array.isArray(a.points)&&a.points.length>=3):[];
+   if(areas.length){
+    areas.forEach((area,i)=>{
+     const pts=area.points.map(p=>L.latLng(p[0],p[1]));
+     const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
+     customerOverlays.push(poly);allBounds.push(...pts);
+     customerOverlays.push(L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(area.sqft||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap));
+    });
+   }else{
    const pts=(reportOutlines['area-visual']||snap.areaPoints).map(p=>L.latLng(p[0],p[1]));
    const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
    customerOverlays.push(poly);allBounds.push(...pts);
    const lab=L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);
    customerOverlays.push(lab);
+   }
   }
   if(hasLinear){
    const pts=(reportOutlines['linear-visual']||snap.linearPoints).map(p=>L.latLng(p[0],p[1]));
