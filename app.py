@@ -927,6 +927,9 @@ function updatePropertyActionButton(){
  b.textContent=mode==='area'?'LOAD PROPERTY & START AREA MEASURE':mode==='linear'?'LOAD PROPERTY & START LINEAR MEASURE':'LOAD & MEASURE ROOF';
 }
 function selectMeasurementTool(mode){
+ // Preserve the area price entered in the main job-rate field before switching to linear.
+ // Combined Pressure Washing estimates use a separate area-rate field.
+ if(currentBusinessType()==='pressure'&&measurementViewMode==='area'&&mode==='linear'&&areaMeasurementSaved&&el('pressureAreaRate')&&Number(el('pressureAreaRate').value||0)===0){el('pressureAreaRate').value=String(currentJobPrice());}
  pendingMeasurementMode=mode;measurementViewMode=mode;updatePropertyActionButton();updateMeasurementInterface();
  // Before a property is loaded, choosing a tool only sets the intended workflow.
  if(!sessionToken){status(mode==='area'?'Area Measure selected. Enter the property and load it to start measuring.':mode==='linear'?'Linear Measure selected. Enter the property and load it to start measuring.':'AutoMeasure selected. Enter the property and load it to measure the roof.','ok');return}
