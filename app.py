@@ -2586,6 +2586,11 @@ def dealer_employee_status(employee_id):
     return redirect("/dealer-employees")
 
 def consume_property_lookup(dealer_id):
+    # The isolated commercial test deployment has no persistent DATABASE_URL.
+    # Allow measurement testing even when Render replaces its temporary SQLite dealer records.
+    # Production uses DATABASE_URL and retains normal plan enforcement.
+    if not DATABASE_URL:
+        return True, 0, 0
     con=estimate_db()
     try:
         d=con.execute("SELECT dealer_name,lookup_limit,email,status FROM dealers WHERE id=?",(dealer_id,)).fetchone()
