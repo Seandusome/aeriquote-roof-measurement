@@ -1382,8 +1382,34 @@ async function buildInteractiveCustomerMap(){
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
  const snap=quoteSnapshot||captureQuoteSnapshot();
- if(snap.measurementMode==='area'&&Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3){if(el('reportOutlineControls'))el('reportOutlineControls').style.display='flex';renderReportOutlineTargetButtons();const pts=(reportOutlines['area-visual']||snap.areaPoints).map(p=>L.latLng(p[0],p[1]));const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);customerOverlays.push(poly);const c=poly.getBounds().getCenter(),lab=L.marker(c,{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);customerOverlays.push(lab);try{customerMap.fitBounds(poly.getBounds().pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}return}
- if(snap.measurementMode==='linear'&&Array.isArray(snap.linearPoints)&&snap.linearPoints.length>1){if(el('reportOutlineControls')){el('reportOutlineControls').style.display='flex';renderReportOutlineTargetButtons();}const pts=(reportOutlines['linear-visual']||snap.linearPoints).map(p=>L.latLng(p[0],p[1]));for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],feet=customerMap.distance(a,b)*3.28084;const line=L.polyline([a,b],{color:'#0f8f83',weight:5,opacity:.95,lineCap:'round'}).addTo(customerMap);customerOverlays.push(line);const mid=L.latLng((a.lat+b.lat)/2,(a.lng+b.lng)/2);const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="linear-seg-label">${feet.toFixed(1)} ft</div>`,iconAnchor:[24,9]})}).addTo(customerMap);customerOverlays.push(lab)}pts.forEach(pt=>{const dot=L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class="linear-point"></div>',iconAnchor:[6,6]})}).addTo(customerMap);customerOverlays.push(dot)});try{customerMap.fitBounds(L.latLngBounds(pts).pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}return}
+ // Draw saved area and linear outlines together on the customer estimate and PDF.
+ const hasArea=Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3;
+ const hasLinear=Array.isArray(snap.linearPoints)&&snap.linearPoints.length>=2;
+ if(hasArea||hasLinear){
+  if(el('reportOutlineControls'))el('reportOutlineControls').style.display='flex';
+  renderReportOutlineTargetButtons();
+  const allBounds=[];
+  if(hasArea){
+   const pts=(reportOutlines['area-visual']||snap.areaPoints).map(p=>L.latLng(p[0],p[1]));
+   const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
+   customerOverlays.push(poly);allBounds.push(...pts);
+   const lab=L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);
+   customerOverlays.push(lab);
+  }
+  if(hasLinear){
+   const pts=(reportOutlines['linear-visual']||snap.linearPoints).map(p=>L.latLng(p[0],p[1]));
+   allBounds.push(...pts);
+   for(let i=1;i<pts.length;i++){
+    const a=pts[i-1],b=pts[i],feet=customerMap.distance(a,b)*3.28084;
+    customerOverlays.push(L.polyline([a,b],{color:'#0f8f83',weight:5,opacity:.95,lineCap:'round'}).addTo(customerMap));
+    const mid=L.latLng((a.lat+b.lat)/2,(a.lng+b.lng)/2);
+    customerOverlays.push(L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="linear-seg-label">${feet.toFixed(1)} ft</div>`,iconAnchor:[24,9]})}).addTo(customerMap));
+   }
+   pts.forEach(pt=>customerOverlays.push(L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class="linear-point"></div>',iconAnchor:[6,6]})}).addTo(customerMap)));
+  }
+  try{customerMap.fitBounds(L.latLngBounds(allBounds).pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}
+  return;
+ }
  const reportStructures=snap.structures||[], reportManual=snap.manualPlanes||[];
  reportStructures.forEach((st,i)=>{
    const key=`structure-${i}`,custom=Array.isArray(reportOutlines[key])&&reportOutlines[key].length>=3;
