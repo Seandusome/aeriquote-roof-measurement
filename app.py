@@ -1157,6 +1157,23 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   skipAddressConflictOnce=false;
   let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))el('propertyProvince').value=prov;syncPropertyProvince()}
   el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
+  // Commercial surface measurements must never run the roof AutoMeasure path.
+  // Use the property satellite image, then activate the selected surface tool.
+  if(['paving','pressure','landscaping','commercial'].includes(currentBusinessType())){
+    structures=[];manualPlanes=[];roofMask=null;
+    setManualCorrectionLayout(false);setManualUi(false);
+    if(el('measureSource'))el('measureSource').value='manual';
+    const aerial=exactPinDisplay?await loadExactPinAerial(sessionToken):await loadFallbackAerial(sessionToken);
+    fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;
+    removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0);
+    pendingMeasurementMode=(requestedMeasurementMode==='linear'?'linear':'area');
+    measurementViewMode=pendingMeasurementMode;
+    selectMeasurementTool(pendingMeasurementMode);
+    renderSummary();
+    if(el('garageGuide'))el('garageGuide').textContent='Satellite imagery loaded. Measure the paved or service area using Area or Linear tools.';
+    status('Property aerial loaded — ready for '+(pendingMeasurementMode==='linear'?'Linear':'Area')+' measurement.','ok');
+    return;
+  }
   if(d.fallback){
     structures=[];setManualCorrectionLayout(true);setManualUi(true);if(el('measureSource'))el('measureSource').value='manual';
     let aerialLoaded=false;
