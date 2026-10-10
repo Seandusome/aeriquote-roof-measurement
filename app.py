@@ -2266,8 +2266,8 @@ def is_head_office():
         return False
     con=estimate_db()
     try:
-        row=con.execute("SELECT email,status FROM dealers WHERE id=?",(session["dealer_id"],)).fetchone()
-        return bool(row and str(row["status"]).lower()=="active" and str(row["email"]).strip().lower()=="sdusome@diitalk.com")
+        row=con.execute("SELECT dealer_name,email,status FROM dealers WHERE id=?",(session["dealer_id"],)).fetchone()
+        return bool(row and str(row["status"]).lower()=="active" and (str(row["dealer_name"] or "").strip().lower()=="head office" or str(row["email"]).strip().lower()=="sdusome@diitalk.com"))
     finally:
         con.close()
 
@@ -2530,12 +2530,12 @@ def dealer_employee_status(employee_id):
 def consume_property_lookup(dealer_id):
     con=estimate_db()
     try:
-        d=con.execute("SELECT lookup_limit,email,status FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+        d=con.execute("SELECT dealer_name,lookup_limit,email,status FROM dealers WHERE id=?",(dealer_id,)).fetchone()
         if not d:return False,0,0
         limit=int(d["lookup_limit"] or 0)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
-        is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and str(d["email"]).strip().lower()=="sdusome@diitalk.com")
+        is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and (str(d["dealer_name"] or "").strip().lower()=="head office" or str(d["email"]).strip().lower()=="sdusome@diitalk.com"))
         # Head Office testing is unrestricted and must not consume trial or paid lookup credits.
         if is_office:return True,used,limit
         if limit>0 and used>=limit:return False,used,limit
