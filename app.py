@@ -2594,6 +2594,8 @@ def consume_property_lookup(dealer_id):
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
         is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and (str(d["dealer_name"] or "").strip().lower()=="head office" or str(d["email"]).strip().lower()=="sdusome@diitalk.com"))
+        # Isolated commercial development service uses SQLite (no DATABASE_URL). Do not block test measurements on plan limits.
+        if not DATABASE_URL:return True,used,limit
         # Head Office testing is unrestricted and must not consume trial or paid lookup credits.
         if is_office:return True,used,limit
         if limit>0 and used>=limit:return False,used,limit
