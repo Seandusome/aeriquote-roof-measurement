@@ -1424,6 +1424,22 @@ async function buildManualCustomerSnapshot(){
    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);host.appendChild(canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
+async function loadCustomerWideAerial(token,targetMap){
+ // Use one continuous satellite image for estimates instead of a raster tile mosaic.
+ const snap=quoteSnapshot||captureQuoteSnapshot(),pts=[];
+ (snap.commercialAreas||[]).forEach(a=>(a.points||[]).forEach(p=>pts.push(L.latLng(p[0],p[1]))));
+ (snap.areaPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
+ (snap.linearPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
+ const center=pts.length?L.latLngBounds(pts).getCenter():(propertyMarker?.getLatLng?.()||map.getCenter());
+ const zoom=17,qs=new URLSearchParams({lat:String(center.lat),lng:String(center.lng),zoom:String(zoom)});
+ const response=await fetch('/wide-aerial/'+token+'?'+qs.toString());
+ if(!response.ok)throw new Error('Wide estimate aerial unavailable');
+ const blob=await response.blob(),url=URL.createObjectURL(blob),bounds=staticMapBounds(center.lat,center.lng,zoom,640,640);
+ const layer=L.imageOverlay(url,bounds,{opacity:1,interactive:false});
+ layer.once('remove',()=>URL.revokeObjectURL(url));
+ await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',()=>reject(new Error('Wide estimate image failed to load')));layer.addTo(targetMap)});
+ return{layer,bounds};
+}
 async function buildInteractiveCustomerMap(){
  if(!sessionToken)return;
  const imageChoice=el('streetViewChoice')?.value||'auto';
@@ -1437,7 +1453,7 @@ async function buildInteractiveCustomerMap(){
  customerMap.on('click',reportOutlineClick);
  await new Promise(r=>setTimeout(r,180));
  customerMap.invalidateSize(true);
- let rgb=exactPinDisplay?await loadExactPinAerial(sessionToken,customerMap):(fallbackMode?await loadFallbackAerial(sessionToken,customerMap):await loadRaster('/rgb/'+sessionToken,customerMap));
+ let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadFallbackAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('Wide estimate image unavailable; using raster fallback',e);rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
  customerRgbLayer=rgb.layer;
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
