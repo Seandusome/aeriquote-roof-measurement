@@ -729,7 +729,7 @@ async function loadStandardWideAerial(){
  const z=18,scale=256*Math.pow(2,z),tileSize=640;
  const latToY=lat=>{const sin=Math.sin(lat*Math.PI/180);return (.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*scale};
  const x=(c.lng+180)/360*scale,y=latToY(c.lat);
- const toLatLng=(px,py)=>L.latLng(mercatorLat(2*Math.PI*(.5-py/scale)),px/scale*360-180);
+ const toLatLng=(px,py)=>L.latLng(mercatorLat(py/scale),px/scale*360-180);
  const group=L.layerGroup().addTo(map),bounds=L.latLngBounds([]);
  const jobs=[];
  for(let row=-1;row<=1;row++)for(let col=-1;col<=1;col++){
