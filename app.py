@@ -1893,10 +1893,23 @@ async function downloadEstimatePDF(){
   // Leaflet SVG paths can be offset by html2canvas when map panes have CSS
   // transforms. Draw the approved geometry in the map's own pixel coordinate
   // system onto a temporary canvas, then capture that canvas in the PDF.
-  let pdfTraceCanvas=null;
+  let pdfTraceCanvas=null,pdfAerialCanvas=null;
+  const pdfAerialImage=customerRgbLayer&&typeof customerRgbLayer.getElement==='function'?customerRgbLayer.getElement():null;
+  const pdfAerialOldVisibility=pdfAerialImage?pdfAerialImage.style.visibility:'';
   const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane'):null;
   const oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
   try{
+    // html2canvas cannot reliably capture transformed Leaflet image overlays.
+    // Paint the exact approved aerial into a map-sized canvas before capturing.
+    if(customerMap&&pdfAerialImage&&pdfAerialImage.complete&&pdfAerialImage.naturalWidth){
+      const host=el('customerMap'),size=customerMap.getSize(),bounds=customerRgbLayer.getBounds();
+      const nw=customerMap.latLngToContainerPoint(bounds.getNorthWest()),se=customerMap.latLngToContainerPoint(bounds.getSouthEast());
+      pdfAerialCanvas=document.createElement('canvas');pdfAerialCanvas.width=Math.round(size.x*2);pdfAerialCanvas.height=Math.round(size.y*2);
+      Object.assign(pdfAerialCanvas.style,{position:'absolute',left:'0',top:'0',width:size.x+'px',height:size.y+'px',zIndex:'350',pointerEvents:'none'});
+      const ctx=pdfAerialCanvas.getContext('2d');ctx.scale(2,2);
+      ctx.drawImage(pdfAerialImage,nw.x,nw.y,se.x-nw.x,se.y-nw.y);
+      host.appendChild(pdfAerialCanvas);pdfAerialImage.style.visibility='hidden';
+    }
     const snap=quoteSnapshot||captureQuoteSnapshot();
     // Capture all commercial area polygons and the linear trace together.
     // The old PDF path chose just one outline based on the selected tool.
@@ -1932,6 +1945,8 @@ async function downloadEstimatePDF(){
     var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
+    if(pdfAerialCanvas)pdfAerialCanvas.remove();
+    if(pdfAerialImage)pdfAerialImage.style.visibility=pdfAerialOldVisibility;
     if(pdfOverlayPane)pdfOverlayPane.style.visibility=oldPdfOverlayVisibility;
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
