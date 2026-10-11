@@ -20,9 +20,11 @@ jobs:
           s=p.read_text()
           old='const toLatLng=(px,py)=>L.latLng(mercatorLat(2*Math.PI*(.5-py/scale)),px/scale*360-180);'
           new='const toLatLng=(px,py)=>L.latLng(mercatorLat(py/scale),px/scale*360-180);'
-          assert s.count(old)==1, 'Expected one original mosaic coordinate conversion; stopping'
-          p.write_text(s.replace(old,new,1))
-          assert s.count(new)==1
+          assert s.count(old)==1, f'Expected exactly one original mosaic coordinate conversion, found {s.count(old)}'
+          s=s.replace(old,new,1)
+          assert s.count(old)==0, 'Original coordinate conversion still present after replacement'
+          assert s.count(new)>=1, 'Corrected coordinate conversion missing after replacement'
+          p.write_text(s)
           PY
           python -m py_compile app.py
       - name: Commit correction to commercial test branch
