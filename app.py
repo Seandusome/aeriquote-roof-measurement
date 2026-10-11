@@ -1804,7 +1804,17 @@ async function downloadEstimatePDF(){
       host.appendChild(pdfTraceCanvas);
       if(pdfOverlayPane)pdfOverlayPane.style.visibility='hidden';
     }
-    var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+    // Wait for visible aerial images before taking the report snapshot.
+     // A Leaflet image can be in the DOM but not yet decoded when PDF is clicked.
+     if(customerMap){
+       customerMap.invalidateSize(false);
+       const visibleImages=Array.from(el('customerMap').querySelectorAll('img')).filter(im=>im.getClientRects().length);
+       await Promise.all(visibleImages.map(async im=>{
+         if(im.complete&&im.naturalWidth>0)return;
+         await Promise.race([new Promise(resolve=>{im.addEventListener('load',resolve,{once:true});im.addEventListener('error',resolve,{once:true})}),new Promise(resolve=>setTimeout(resolve,4000))]);
+       }));
+     }
+     var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,imageTimeout:15000});
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
     if(pdfOverlayPane)pdfOverlayPane.style.visibility=oldPdfOverlayVisibility;
