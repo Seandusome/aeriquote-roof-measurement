@@ -2605,12 +2605,14 @@ def consume_property_lookup(dealer_id):
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
         is_office=bool(session.get("account_type")=="owner" and str(d["status"]).lower()=="active" and (str(d["dealer_name"] or "").strip().lower()=="head office" or str(d["email"]).strip().lower()=="sdusome@diitalk.com"))
-        # Keep the isolated commercial test service usable even when a test account
-        # has a zero allowance. Production quotas remain enforced.
-        test_host=(request.host or '').split(':',1)[0].lower()
-        is_commercial_test=(test_host == 'aeriquote-commercial-test.onrender.com')
+        # DEVELOPMENT BRANCH ONLY: bypass measurement quotas for active test
+        # accounts. Never rely on Host/forwarded-host headers to detect Render.
+        # Do not merge this branch into production without restoring plan checks.
         if str(d["status"]).lower() != "active":return False,used,limit
-        if is_office or is_commercial_test:return True,used,limit
+        return True,used,limit
+        # Production allowance logic is intentionally unreachable on this
+        # isolated development branch; restore before promoting to main.
+        if is_office:return True,used,limit
         if limit <= 0 or used >= limit:return False,used,limit
         if u:con.execute("UPDATE dealer_usage SET property_lookups=property_lookups+1 WHERE dealer_id=?",(dealer_id,))
         else:con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1)",(dealer_id,))
