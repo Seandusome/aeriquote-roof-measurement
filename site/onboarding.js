@@ -77,9 +77,35 @@ async function saveIndustrySetupLocal(industry){
  };
  const file=document.getElementById('logoUpload')?.files?.[0];
  if(file){profile.logoData=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
- if(profile.logoData)localStorage.setItem('sxDealerLogo',profile.logoData);
- localStorage.setItem('sxDealerDefaults',JSON.stringify(profile));
- localStorage.setItem('aeriQuoteIndustry',industry);
+ // Resize uploaded logos before storing them: raw phone images can exceed
+ // the browser's small localStorage quota and block the entire setup.
+ if(profile.logoData){
+   try{
+     const resized=await new Promise((resolve,reject)=>{
+       const img=new Image();img.onload=()=>{
+         const scale=Math.min(1,600/img.width,240/img.height);
+         const canvas=document.createElement('canvas');
+         canvas.width=Math.max(1,Math.round(img.width*scale));
+         canvas.height=Math.max(1,Math.round(img.height*scale));
+         const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
+         ctx.drawImage(img,0,0,canvas.width,canvas.height);
+         resolve(canvas.toDataURL('image/png'));
+       };img.onerror=reject;img.src=profile.logoData;
+     });
+     profile.logoData=resized;
+   }catch(err){profile.logoData='';}
+ }
+ // Store company details even when logo storage is full. The account API
+ // receives the compact logo independently of the browser's cache.
+ const cachedProfile={...profile};delete cachedProfile.logoData;
+ try{localStorage.setItem('sxDealerDefaults',JSON.stringify(cachedProfile))}catch(err){
+   try{localStorage.removeItem('sxDealerDefaults');localStorage.setItem('sxDealerDefaults',JSON.stringify(cachedProfile))}catch(ignore){}
+ }
+ if(profile.logoData){
+   try{localStorage.setItem('sxDealerLogo',profile.logoData)}
+   catch(err){try{localStorage.removeItem('sxDealerLogo')}catch(ignore){}}
+ }
+ try{localStorage.setItem('aeriQuoteIndustry',industry)}catch(ignore){}
  return profile;
 }
 const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':(/commercial-setup\.html/i.test(location.pathname)?'commercial':null))));
