@@ -917,7 +917,8 @@ function clearAreaMeasure(){areaCorrectionOriginal=null;areaPoints=[];areaMeasur
 function toggleAreaMeasure(){if(!sessionToken){status('Load the property first.','error');return}if(areaMode){if(areaPoints.length<3){status('Add at least three points before saving the area measurement.','error');return}areaMode=false;if(!areaMeasurementSaved)usage.area++;areaMeasurementSaved=true;areaCorrectionOriginal=null;measurementViewMode='area';if(commercialActive()){commercialSyncCurrent();commercialAreaDrawSaved();}if(el('areaStartBtn')){el('areaStartBtn').textContent='CONTINUE AREA MEASURE';el('areaStartBtn').className='secondary'}updateAreaUi();renderSummary();status(`✓ AREA MEASUREMENT SAVED — ${fmt(areaSqFtTotal())} ft².`,'ok');return}if(linearMode)stopLinearMode(false);linearMode=false;clearLinearLayers();areaMode=true;areaMeasurementSaved=false;measurementViewMode='area';hideRoofDisplayForLinear();if(el('areaStartBtn')){el('areaStartBtn').textContent='FINISH & SAVE AREA';el('areaStartBtn').className='primary'}redrawAreaMeasure();updateAreaUi();renderSummary();status('AREA MEASURE ON — click around the outside edge of the service area.','warn')}
 function returnAreaToAutoMeasure(){areaMode=false;measurementViewMode='auto';areaMeasurementSaved=areaPoints.length>=3;if(el('areaStartBtn')){el('areaStartBtn').textContent='START AREA MEASURE';el('areaStartBtn').className='secondary'}clearAreaLayers();restoreAutoMeasureDisplay();updateAreaUi();renderSummary();status('AutoMeasure restored. Your saved area measurement is still available.','ok')}
 function updateMeasurementInterface(){
- const industry=currentBusinessType(),surfaceOnly=['commercial','paving','pressure','landscaping'].includes(industry);
+ const industry=currentBusinessType(),surfaceOnly=['commercial','paving','pressure','landscaping','snow'].includes(industry);
+ const roofLegend=document.querySelector('.roof-legend');if(roofLegend)roofLegend.style.display=surfaceOnly?'none':'';
  const autoButton=el('toolAutoBtn');if(autoButton)autoButton.style.display=surfaceOnly?'none':'';
  const areaAuto=el('areaAutoBtn');if(areaAuto)areaAuto.style.display=surfaceOnly?'none':areaAuto.style.display;
  const linearAuto=el('linearAutoBtn');if(linearAuto)linearAuto.style.display=surfaceOnly?'none':linearAuto.style.display;
@@ -1434,11 +1435,22 @@ async function loadCustomerWideAerial(token,targetMap){
  const zoom=17,qs=new URLSearchParams({lat:String(center.lat),lng:String(center.lng),zoom:String(zoom)});
  const response=await fetch('/wide-aerial/'+token+'?'+qs.toString());
  if(!response.ok)throw new Error('Wide estimate aerial unavailable');
- const blob=await response.blob(),url=URL.createObjectURL(blob),bounds=staticMapBounds(center.lat,center.lng,zoom,640,640);
- const layer=L.imageOverlay(url,bounds,{opacity:1,interactive:false});
- layer.once('remove',()=>URL.revokeObjectURL(url));
+ const blob=await response.blob();
+ const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Could not decode estimate aerial'));reader.readAsDataURL(blob)});
+ const bounds=staticMapBounds(center.lat,center.lng,zoom,640,640);
+ const layer=L.imageOverlay(dataUrl,bounds,{opacity:1,interactive:false});
  await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',()=>reject(new Error('Wide estimate image failed to load')));layer.addTo(targetMap)});
  return{layer,bounds};
+}
+function drawCustomerAreaEdgeLabels(points){
+ if(!customerMap||!Array.isArray(points)||points.length<3)return;
+ const pts=points.map(p=>L.latLng(p[0]!==undefined?p[0]:p.lat,p[1]!==undefined?p[1]:p.lng));
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],feet=customerMap.distance(a,b)*3.28084;
+  const mid=L.latLng((a.lat+b.lat)/2,(a.lng+b.lng)/2);
+  const label=feet<100?feet.toFixed(1):Math.round(feet).toLocaleString();
+  customerOverlays.push(L.marker(mid,{interactive:false,keyboard:false,icon:L.divIcon({className:'aeri-edge-label-icon',html:'<span class="aeri-edge-label">'+label+' ft</span>',iconSize:[90,24],iconAnchor:[45,12]})}).addTo(customerMap));
+ }
 }
 async function buildInteractiveCustomerMap(){
  if(!sessionToken)return;
@@ -1476,13 +1488,13 @@ async function buildInteractiveCustomerMap(){
     areas.forEach((area,i)=>{
      const pts=area.points.map(p=>L.latLng(p[0],p[1]));
      const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
-     customerOverlays.push(poly);allBounds.push(...pts);
+     customerOverlays.push(poly);allBounds.push(...pts);drawCustomerAreaEdgeLabels(area.points);
      customerOverlays.push(L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(area.sqft||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap));
     });
    }else{
    const pts=(reportOutlines['area-visual']||snap.areaPoints).map(p=>L.latLng(p[0],p[1]));
    const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
-   customerOverlays.push(poly);allBounds.push(...pts);
+   customerOverlays.push(poly);allBounds.push(...pts);drawCustomerAreaEdgeLabels(reportOutlines['area-visual']||snap.areaPoints);
    const lab=L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);
    customerOverlays.push(lab);
    }
