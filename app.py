@@ -2596,11 +2596,24 @@ def dealer_employee_status(employee_id):
     finally:con.close()
     return redirect("/dealer-employees")
 
+@app.get("/api/development-build")
+def development_build_info():
+    # Public, non-sensitive build identifier for checking Render deployment.
+    import os
+    return jsonify(branch="aeriquote-commercial-multi-area-development",
+                   revision=os.environ.get("RENDER_GIT_COMMIT","unknown"),
+                   quota_policy="active_test_accounts_unlimited",
+                   diagnostic_version="2026-10-11-session-fix")
+
+
 def consume_property_lookup(dealer_id):
     con=estimate_db()
     try:
         d=con.execute("SELECT dealer_name,lookup_limit,email,status FROM dealers WHERE id=?",(dealer_id,)).fetchone()
-        if not d:return False,0,0
+        if not d:
+            # A missing dealer session is an authentication failure, not a plan limit.
+            session.clear()
+            return False,0,-1
         limit=int(d["lookup_limit"] or 0)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0)
@@ -2861,13 +2874,16 @@ def property_data():
     if not key or not address:return jsonify(error="API key and address are required."),400
     allowed,used,limit=consume_property_lookup(str(session.get("dealer_id") or ""))
     if not allowed:
+        if limit == -1:
+            return jsonify(error="Session account not found.",user_error="Your account session is no longer valid. Please log out and log in again.",code="account_session_invalid"),401
         con=estimate_db()
         try:
             row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(str(session.get("dealer_id") or ""),)).fetchone()
             is_trial=bool(row and str(row["plan_code"] or "").lower()=="trial")
         finally:con.close()
-        if is_trial:return jsonify(error="Free trial complete.",code="trial_limit_reached",user_error="You’ve used all 3 free property measurements included with your AeriQuote trial."),403
-        return jsonify(error="Property lookup allowance reached.",user_error=f"Your account has used all {limit} property measurements included with the current plan."),403
+        # Development build does not reject active accounts for allowance limits.
+        # Any denial at this point is an inactive account, not exhausted credits.
+        return jsonify(error="Account inactive.",code="account_inactive",user_error="This test account is inactive. Please reactivate it in Dealer Management."),403
     try:
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
