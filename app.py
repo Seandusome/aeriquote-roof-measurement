@@ -1026,7 +1026,9 @@ function updateJobSummaryBar(calc,roofCount){
  const has=calc&&Number(calc.area)>0;
  const summaryLabel=r.previousElementSibling;if(summaryLabel&&['pressure','paving','landscaping','commercial'].includes(currentBusinessType()))summaryLabel.textContent=currentBusinessType()==='landscaping'?'SERVICE AREAS':'SURFACES';else if(summaryLabel)summaryLabel.textContent='ROOFS';
  r.textContent=['pressure','paving'].includes(currentBusinessType())?(has?'1':'—'):(has?String(roofCount||1):'—');
- a.textContent=has?(commercialHasAreas()?fmt(calc.area)+' ft²':(measurementViewMode==='linear'?Number(calc.area).toFixed(1)+' linear ft':fmt(calc.area)+' ft²')):'—';
+ const savedSurfaceArea=multiAreaSaved()?multiAreaTotal():(areaMeasurementSaved&&areaPoints.length>=3?Math.round(areaSqFtTotal()):0);
+ const savedLinearLength=linearMeasurementSaved&&linearPoints.length>=2?linearFeetTotal():0;
+ a.textContent=savedSurfaceArea>0?fmt(savedSurfaceArea)+' ft²'+(savedLinearLength>0?' • '+savedLinearLength.toFixed(1)+' linear ft':''):(measurementViewMode==='linear'&&savedLinearLength>0?savedLinearLength.toFixed(1)+' linear ft':has?fmt(calc.area)+' ft²':'—');
  t.textContent=has?money(calc.total):'—';
 }
 function updateProgressSteps(){
