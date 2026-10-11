@@ -1163,9 +1163,17 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
     structures=[];manualPlanes=[];roofMask=null;
     setManualCorrectionLayout(false);setManualUi(false);
     if(el('measureSource'))el('measureSource').value='manual';
-    const aerial=exactPinDisplay?await loadExactPinAerial(sessionToken):await loadFallbackAerial(sessionToken);
-    fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;
-    removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0);
+    // Prefer the existing wider commercial satellite framing used before the
+    // roof-routing correction. Fall back to the previous image only if needed.
+    let aerial;
+    if(!exactPinDisplay){
+      try{aerial=await loadStandardWideAerial()}
+      catch(wideError){aerial=await loadFallbackAerial(sessionToken);fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0)}
+    }else{
+      aerial=await loadExactPinAerial(sessionToken);
+      fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;
+      removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0);
+    }
     pendingMeasurementMode=(requestedMeasurementMode==='linear'?'linear':'area');
     measurementViewMode=pendingMeasurementMode;
     selectMeasurementTool(pendingMeasurementMode);
