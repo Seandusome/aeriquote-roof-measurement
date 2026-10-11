@@ -1,0 +1,44 @@
+name: Apply isolated commercial PDF image readiness fix
+on:
+  push:
+    branches: [aeriquote-commercial-multi-area-development]
+    paths: ['.github/workflows/commercial-pdf-image-readiness.yml']
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: aeriquote-commercial-multi-area-development
+          persist-credentials: true
+      - name: Patch only PDF image capture
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("app.py")
+          s=p.read_text()
+          old="var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});"
+          new="""// Wait for visible aerial images before taking the report snapshot.
+               // A Leaflet image can be in the DOM but not yet decoded when PDF is clicked.
+               if(customerMap){
+                 customerMap.invalidateSize(false);
+                 const visibleImages=Array.from(el('customerMap').querySelectorAll('img')).filter(im=>im.getClientRects().length);
+                 await Promise.all(visibleImages.map(async im=>{
+                   if(im.complete&&im.naturalWidth>0)return;
+                   await Promise.race([new Promise(resolve=>{im.addEventListener('load',resolve,{once:true});im.addEventListener('error',resolve,{once:true})}),new Promise(resolve=>setTimeout(resolve,4000))]);
+                 }));
+               }
+               var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,imageTimeout:15000});"""
+          assert s.count(old)==1, "Expected exactly one PDF capture location; refusing unsafe patch"
+          p.write_text(s.replace(old,new,1))
+          PY
+          python -m py_compile app.py
+      - name: Commit isolated patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.py
+          git commit -m "Wait for aerial imagery before commercial PDF capture"
+          git push origin HEAD:aeriquote-commercial-multi-area-development
