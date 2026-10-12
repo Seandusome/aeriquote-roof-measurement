@@ -4,8 +4,12 @@ import json
 import math
 import os
 import urllib.request
+import urllib.error
 
 SURFACES = {'lawn', 'paved'}
+
+class ProviderError(RuntimeError):
+    pass
 
 def configured():
     return bool(os.environ.get('OPENAI_API_KEY', '').strip())
@@ -86,8 +90,28 @@ def suggest(image, lat, lng, zoom, surface):
             'text':{'format':{'type':'json_schema','name':'surface_outlines','strict':True,'schema':schema}}}
     req = urllib.request.Request('https://api.openai.com/v1/responses', data=json.dumps(body).encode(),
                                  headers={'Content-Type':'application/json','Authorization':'Bearer '+key})
-    with urllib.request.urlopen(req, timeout=45) as response:
-        data = json.loads(response.read())
+    try:
+        with urllib.request.urlopen(req, timeout=45) as response:
+            data = json.loads(response.read())
+    except urllib.error.HTTPError as error:
+        code = ''
+        try:
+            code = json.loads(error.read(65536)).get('error', {}).get('code', '')
+        except Exception:
+            pass
+        if code == 'insufficient_quota':
+            message = 'OpenAI API credits are unavailable. Check API billing and available credits for the project that owns this key.'
+        elif error.code == 401:
+            message = 'OpenAI rejected the API key. Check OPENAI_API_KEY in the test service environment.'
+        elif error.code == 429:
+            message = 'OpenAI rate limit reached. Wait a moment before trying again.'
+        elif error.code == 403:
+            message = 'This OpenAI project does not have access to the tracing model. Check project permissions.'
+        else:
+            message = 'OpenAI could not process the tracing request (HTTP '+str(error.code)+').'
+        raise ProviderError(message) from None
+    except (TimeoutError, urllib.error.URLError):
+        raise ProviderError('The OpenAI tracing request timed out or could not connect. Try again shortly.') from None
     if data.get('status') != 'completed':
         raise ValueError('AI tracing did not complete')
     text = ''.join(part.get('text','') for output in data.get('output',[]) if output.get('type')=='message'

@@ -1,5 +1,6 @@
 """Provider and route tests use mock responses; no paid AI or map requests."""
 import ast
+import io
 import json
 import math
 import os
@@ -43,6 +44,17 @@ class TraceTests(unittest.TestCase):
             payload=json.loads(call.call_args.args[0].data)
             self.assertFalse(payload['store']);self.assertTrue(payload['text']['format']['strict'])
             self.assertTrue(payload['input'][0]['content'][1]['image_url'].startswith('data:image/png;base64,'))
+    def test_provider_errors_are_safe_and_specific(self):
+        for status, code, phrase in [(429,'insufficient_quota','credits'),(401,'invalid_api_key','API key'),(429,'rate_limit_exceeded','rate limit'),(403,'','permissions')]:
+            error=urllib.error.HTTPError('https://api.openai.com/v1/responses',status,'private provider detail',{},io.BytesIO(json.dumps({'error':{'code':code,'message':'SECRET'}}).encode()))
+            with patch.dict(os.environ,{'OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
+                with self.assertRaises(ai_trace.ProviderError) as raised: ai_trace.suggest(b'png',52,-106,18,'paved')
+                self.assertIn(phrase,str(raised.exception));self.assertNotIn('SECRET',str(raised.exception))
+    def test_provider_error_reaches_user_and_unlocks(self):
+        scope,sess=self.route()
+        with patch('ai_trace.configured',return_value=True),patch('urllib.request.urlopen',return_value=Response(b'png')),patch('ai_trace.suggest',side_effect=ai_trace.ProviderError('Check API credits.')):
+            result,status=scope['ai_trace_suggestions']()
+            self.assertEqual(status,502);self.assertEqual(result['user_error'],'Check API credits.');self.assertFalse(sess['ai_trace_busy'])
     def test_missing_key_no_network(self):
         with patch.dict(os.environ,{},clear=True),patch('urllib.request.urlopen') as call:
             with self.assertRaises(RuntimeError): ai_trace.suggest(b'png',52,-106,18,'lawn')

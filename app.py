@@ -991,14 +991,14 @@ function updatePropertyActionButton(){
  const mode=pendingMeasurementMode||measurementViewMode||'auto';
  b.textContent=mode==='area'?'LOAD PROPERTY & START AREA MEASURE':mode==='linear'?'LOAD PROPERTY & START LINEAR MEASURE':'LOAD & MEASURE ROOF';
 }
-function openAiTraceTools(){if(el('aiTraceTools'))el('aiTraceTools').style.display='block';if(el('aiTraceSurface'))el('aiTraceSurface').value=currentBusinessType()==='landscaping'?'lawn':'paved';if(!sessionToken)status('Load a property before using AI tracing.','warn')}
+function openAiTraceTools(){if(el('aiTraceTools'))el('aiTraceTools').style.display='block';if(el('aiTraceSurface')&&!el('aiTraceSurface').dataset.initialized){el('aiTraceSurface').value=currentBusinessType()==='landscaping'?'lawn':'paved';el('aiTraceSurface').dataset.initialized='true';}if(!sessionToken)status('Load a property before using AI tracing.','warn')}
 function clearAiTraceLayers(){aiTraceLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});aiTraceLayers=[]}
 function clearAiTraceDrafts(){aiTraceGeneration++;aiTraceDrafts=[];clearAiTraceLayers();if(el('aiTraceResults'))el('aiTraceResults').innerHTML='';if(el('aiTraceMessage'))el('aiTraceMessage').textContent=''}
 function renderAiTraceDrafts(){clearAiTraceLayers();aiTraceDrafts.forEach((a,i)=>{const poly=L.polygon(a.points,{color:'#e35b21',weight:3,dashArray:'7,5',fillOpacity:.08,interactive:false}).addTo(map);aiTraceLayers.push(poly)});if(el('aiTraceResults'))el('aiTraceResults').innerHTML=aiTraceDrafts.map((a,i)=>`<div style="margin-top:8px"><b>${escapeHistory(a.name||'Suggested area '+(i+1))}</b> <button type="button" class="secondary" onclick="reviewAiTrace(${i})">REVIEW & EDIT OUTLINE</button></div>`).join('')}
 async function runAiTrace(){
- if(!sessionToken){status('Load the property first.','warn');return}
+ if(!sessionToken){if(el('aiTraceMessage'))el('aiTraceMessage').textContent='Load the property first.';status('Load the property first.','warn');return}
  if(aiTraceBusy)return;
- if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){status('Finish and save your current measurement before requesting AI suggestions.','warn');return}
+ if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){if(el('aiTraceMessage'))el('aiTraceMessage').textContent='Finish and save your current measurement before requesting AI suggestions.';status('Finish and save your current measurement before requesting AI suggestions.','warn');return}
  aiTraceBusy=true;const token=sessionToken,generation=++aiTraceGeneration,button=el('aiTraceRunBtn');if(button)button.disabled=true;
  if(el('aiTraceMessage'))el('aiTraceMessage').textContent='Finding visible surface boundaries…';
  try{const centre=map.getCenter(),r=await fetch('/api/ai-trace',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface:el('aiTraceSurface').value,latitude:centre.lat,longitude:centre.lng,zoom:Math.max(16,Math.min(20,Math.floor(map.getZoom())-1))})}),d=await r.json();if(token!==sessionToken||generation!==aiTraceGeneration)return;if(!r.ok)throw new Error(d.user_error||d.error||'AI tracing is unavailable.');aiTraceDrafts=(d.suggestions||[]).filter(a=>Array.isArray(a.points)&&a.points.length>=3);renderAiTraceDrafts();if(el('aiTraceMessage'))el('aiTraceMessage').textContent=aiTraceDrafts.length?'Draft outlines only. Select Review & Edit, adjust the corners, then FINISH & SAVE AREA.':'No clear surface boundary was found. Use manual Area Measure.'}
@@ -3118,6 +3118,8 @@ def ai_trace_suggestions():
             return jsonify(suggestions=suggestions,review_required=True)
         finally:
             with AI_TRACE_LOCK:sess["ai_trace_busy"]=False
+    except ai_trace.ProviderError as e:
+        return jsonify(error="AI provider request failed.",user_error=str(e)),502
     except ValueError as e:
         return jsonify(error="AI tracing could not produce a valid outline.",user_error=str(e) if str(e) in ("Choose Lawn or Paved Surface.","Invalid aerial view.","Center the aerial closer to the loaded property.") else "No reliable outline was returned. Try manual Area Measure."),422
     except Exception:
