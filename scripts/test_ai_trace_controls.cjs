@@ -7,7 +7,7 @@ async function test(response,expected){
  let timer,cleared=false,request;
  const saved=[{name:'Existing lawn',sqft:1200}];
  const scope={sessionToken:'property',aiTraceBusy:false,aiTraceGeneration:0,areaMode:false,areaPoints:[],linearMode:false,linearPoints:[],aiTraceDrafts:[],commercialAreas:saved,
-  map:{getCenter:()=>({lat:52,lng:-106}),getZoom:()=>19},el:id=>elements[id],status:(message)=>scope.message=message,renderAiTraceDrafts:()=>{},AbortController,
+  map:{getCenter:()=>({lat:52,lng:-106}),getZoom:()=>19},el:id=>elements[id],status:(message)=>scope.message=message,renderAiTraceDrafts:()=>{},renderAiTracePreview:()=>{},AbortController,
   setTimeout:fn=>{timer=fn;return 1},clearTimeout:()=>cleared=true,
   fetch:async(url,options)=>{request=options;if(response==='timeout'){return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>{const e=new Error();e.name='AbortError';reject(e)}))}return response;}};
  vm.createContext(scope);vm.runInContext(code,scope);
@@ -20,7 +20,19 @@ async function test(response,expected){
  assert.equal(JSON.parse(request.body).surface,'paved');assert.deepEqual(saved,[{name:'Existing lawn',sqft:1200}]);
  return scope;
 }
+function testExactImagePreview(){
+ const make=()=>({style:{},attrs:{},children:[],setAttribute(k,v){this.attrs[k]=v},appendChild(n){this.children.push(n)}});
+ const elements={aiTracePreview:make(),aiTraceComparison:make()};
+ const scope={el:id=>elements[id],document:{createElementNS:()=>make()}};vm.createContext(scope);
+ vm.runInContext(source.slice(source.indexOf('function renderAiTracePreview('),source.indexOf('function setAiTraceMessage(')),scope);
+ const drafts=[{name:'Grass',image_points:[[160,160],[480,160],[480,480],[160,480]],points:[[52,-106],[52,-105],[53,-106]]}];
+ const before=JSON.stringify(drafts);scope.renderAiTracePreview('data:image/png;base64,cG5n',drafts);
+ const svg=elements.aiTracePreview.children[0];assert.equal(svg.attrs.viewBox,'0 0 640 640');assert.equal(svg.children[0].attrs.href,'data:image/png;base64,cG5n');assert.equal(svg.children[1].attrs.points,'160,160 480,160 480,480 160,480');assert.equal(JSON.stringify(drafts),before);assert.equal(elements.aiTraceComparison.style.display,'block');
+ scope.renderAiTracePreview('https://external.invalid/image',drafts);assert.equal(elements.aiTraceComparison.style.display,'none');
+ console.log('PASS: exact cached image and original AI pixel corners are displayed without map reprojection, new requests or draft changes');
+}
 (async()=>{
+ testExactImagePreview();
  await test('timeout','timed out');
  await test({status:401},'login has expired');
  await test({status:404},'property session has expired');

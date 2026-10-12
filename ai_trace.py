@@ -63,6 +63,7 @@ def validate_polygons(payload, lat, lng, zoom):
         if area < .00001:
             raise ValueError('AI outline is too small')
         result.append({'name': str(polygon.get('name') or 'AI suggested area')[:80],
+                       'image_points': [[x*640,y*640] for x,y in xy],
                        'points': [pixel_to_latlng(x,y,lat,lng,zoom) for x,y in xy]})
     return result
 
@@ -126,3 +127,6 @@ def suggest(image, lat, lng, zoom, surface):
     text = ''.join(part.get('text','') for output in data.get('output',[]) if output.get('type')=='message'
                    for part in output.get('content',[]) if part.get('type')=='output_text')
     return validate_polygons(json.loads(text),lat,lng,zoom), data.get('usage',{})
+
+def image_preview(image):
+    return 'data:image/png;base64,' + base64.b64encode(image).decode()

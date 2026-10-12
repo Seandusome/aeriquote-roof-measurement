@@ -31,7 +31,9 @@ class TraceTests(unittest.TestCase):
         se=ai_trace.pixel_to_latlng(1,1,52,-106,18)
         self.assertGreater(nw[0],se[0]);self.assertLess(nw[1],se[1])
     def test_validation(self):
-        self.assertEqual(len(ai_trace.validate_polygons({'polygons':[SQUARE]},52,-106,18)[0]['points']),4)
+        outline=ai_trace.validate_polygons({'polygons':[SQUARE]},52,-106,18)[0]
+        self.assertEqual(len(outline['points']),4)
+        self.assertEqual(outline['image_points'],[[160,160],[480,160],[480,480],[160,480]])
         for points in [[dict(x=2,y=0),dict(x=0,y=1),dict(x=1,y=1)],
                        [dict(x=0,y=0),dict(x=1,y=1),dict(x=0,y=1),dict(x=1,y=0)],
                        [dict(x=0,y=0)]*4, [dict(x=False,y=0),dict(x=1,y=0),dict(x=0,y=1)]]:
@@ -86,7 +88,7 @@ class TraceTests(unittest.TestCase):
         scope,sess=self.route()
         with patch('ai_trace.configured',return_value=True),patch('ai_trace.suggest',return_value=([{'name':'Paved','points':[[52,-106],[52,-105.99],[52.01,-106]]}],{})),patch('urllib.request.urlopen',return_value=Response(b'png')) as call:
             result=scope['ai_trace_suggestions']();self.assertTrue(result['review_required']);self.assertEqual(len(result['suggestions']),1)
-            self.assertFalse(sess['ai_trace_busy']);self.assertEqual(scope['ai_trace_suggestions'](),result);self.assertEqual(call.call_count,1)
+            self.assertFalse(sess['ai_trace_busy']);self.assertEqual(result['image_preview'],ai_trace.image_preview(b'png'));self.assertEqual(scope['ai_trace_suggestions'](),result);self.assertEqual(call.call_count,1)
         scope,sess=self.route()
         with patch('ai_trace.configured',return_value=True),patch('urllib.request.urlopen',side_effect=TimeoutError()):
             self.assertEqual(scope['ai_trace_suggestions']()[1],502);self.assertFalse(sess['ai_trace_busy'])
