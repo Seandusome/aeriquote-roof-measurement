@@ -40,7 +40,7 @@ class TraceTests(unittest.TestCase):
             with self.assertRaises(ValueError): ai_trace.validate_polygons({'polygons':[dict(name='Bad',points=points)]},52,-106,18)
     def test_provider_payload_and_response(self):
         data={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps({'polygons':[SQUARE]})}]}],'usage':{'input_tokens':1000,'output_tokens':200}}
-        with patch.dict(os.environ,{'OPENAI_API_KEY':'test-key'},clear=True),patch('urllib.request.urlopen',return_value=Response(json.dumps(data).encode())) as call:
+        with patch.dict(os.environ,{'AERIQUOTE_AI_TRACE_PROVIDER':'openai','OPENAI_API_KEY':'test-key'},clear=True),patch('urllib.request.urlopen',return_value=Response(json.dumps(data).encode())) as call:
             result,usage=ai_trace.suggest(b'png',52,-106,18,'lawn')
             self.assertEqual(len(result),1);self.assertEqual(usage['input_tokens'],1000)
             payload=json.loads(call.call_args.args[0].data)
@@ -49,13 +49,13 @@ class TraceTests(unittest.TestCase):
     def test_provider_errors_are_safe_and_specific(self):
         for status, code, phrase in [(429,'insufficient_quota','credits'),(401,'invalid_api_key','API key'),(429,'rate_limit_exceeded','rate limit'),(403,'','permissions')]:
             error=urllib.error.HTTPError('https://api.openai.com/v1/responses',status,'private provider detail',{},io.BytesIO(json.dumps({'error':{'code':code,'message':'SECRET'}}).encode()))
-            with patch.dict(os.environ,{'OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
+            with patch.dict(os.environ,{'AERIQUOTE_AI_TRACE_PROVIDER':'openai','OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
                 with self.assertRaises(ai_trace.ProviderError) as raised: ai_trace.suggest(b'png',52,-106,18,'paved')
                 self.assertIn(phrase,str(raised.exception));self.assertNotIn('SECRET',str(raised.exception))
     def test_billing_errors_are_not_reported_as_retryable_rate_limits(self):
         for code, kind, phrase in [('credit_balance_exhausted','','credit balance'),('project_spend_limit_exceeded','','project spending'),('organization_spend_limit_exceeded','','organization spending'),('organization_usage_limit_exceeded','','usage limit'),(None,'insufficient_quota','credits')]:
             error=urllib.error.HTTPError('https://api.openai.com/v1/responses',429,'private',{},io.BytesIO(json.dumps({'error':{'code':code,'type':kind,'message':'SECRET'}}).encode()))
-            with patch.dict(os.environ,{'OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
+            with patch.dict(os.environ,{'AERIQUOTE_AI_TRACE_PROVIDER':'openai','OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
                 with self.assertRaises(ai_trace.ProviderError) as raised: ai_trace.suggest(b'png',52,-106,18,'paved')
                 self.assertIn(phrase,str(raised.exception));self.assertNotIn('rate limit',str(raised.exception));self.assertNotIn('SECRET',str(raised.exception))
     def test_provider_error_reaches_user_and_unlocks(self):
@@ -64,7 +64,7 @@ class TraceTests(unittest.TestCase):
             result,status=scope['ai_trace_suggestions']()
             self.assertEqual(status,502);self.assertEqual(result['user_error'],'Check API credits.');self.assertFalse(sess['ai_trace_busy'])
     def test_missing_key_no_network(self):
-        with patch.dict(os.environ,{},clear=True),patch('urllib.request.urlopen') as call:
+        with patch.dict(os.environ,{'AERIQUOTE_AI_TRACE_PROVIDER':'openai'},clear=True),patch('urllib.request.urlopen') as call:
             with self.assertRaises(RuntimeError): ai_trace.suggest(b'png',52,-106,18,'lawn')
             call.assert_not_called()
     def route(self,owner='dealer',enabled=True):

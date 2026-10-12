@@ -17,7 +17,7 @@ async function test(response,expected){
  await pending;
  assert.equal(scope.aiTraceBusy,false);assert.equal(elements.aiTraceRunBtn.disabled,false);assert(cleared);
  assert(scope.message.includes(expected));assert.equal(elements.aiTraceMessage.textContent,scope.message);
- assert.equal(JSON.parse(request.body).surface,'paved');assert.deepEqual(saved,[{name:'Existing lawn',sqft:1200}]);
+ assert.equal(JSON.parse(request.body).surface,'paved');assert.equal(JSON.parse(request.body).zoom,18);assert.deepEqual(saved,[{name:'Existing lawn',sqft:1200}]);
  return scope;
 }
 function testExactImagePreview(){

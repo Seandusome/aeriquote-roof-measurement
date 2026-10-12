@@ -11,8 +11,12 @@ SURFACES = {'lawn', 'paved'}
 class ProviderError(RuntimeError):
     pass
 
+def provider():
+    return os.environ.get('AERIQUOTE_AI_TRACE_PROVIDER', 'fal').strip().lower()
+
 def configured():
-    return bool(os.environ.get('OPENAI_API_KEY', '').strip())
+    name = provider()
+    return name in {'fal', 'openai'} and bool(os.environ.get('FAL_KEY' if name == 'fal' else 'OPENAI_API_KEY', '').strip())
 
 def pixel_to_latlng(x, y, lat, lng, zoom):
     scale = 256 * 2 ** zoom
@@ -68,6 +72,14 @@ def validate_polygons(payload, lat, lng, zoom):
     return result
 
 def suggest(image, lat, lng, zoom, surface):
+    if provider() == 'fal':
+        import sam_trace
+        return sam_trace.suggest(image, lat, lng, zoom, surface)
+    if provider() == 'openai':
+        return suggest_openai(image, lat, lng, zoom, surface)
+    raise ProviderError('Unknown AI tracing provider. Check AERIQUOTE_AI_TRACE_PROVIDER.')
+
+def suggest_openai(image, lat, lng, zoom, surface):
     key = os.environ.get('OPENAI_API_KEY', '').strip()
     if not key:
         raise RuntimeError('AI tracing is not configured')

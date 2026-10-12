@@ -1019,7 +1019,7 @@ async function runAiTrace(){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
  setAiTraceMessage('Finding visible surface boundaries…');
  try{
-  const centre=map.getCenter(),r=await fetch('/api/ai-trace',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface:el('aiTraceSurface').value,latitude:centre.lat,longitude:centre.lng,zoom:Math.max(16,Math.min(20,Math.floor(map.getZoom())-1))})});
+  const centre=map.getCenter(),r=await fetch('/api/ai-trace',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface:el('aiTraceSurface').value,latitude:centre.lat,longitude:centre.lng,zoom:18})});
   if(token!==sessionToken||generation!==aiTraceGeneration)return;
   if(r.status===401)throw new Error('Your login has expired. Log in again, then reload the property.');
   if(r.status===404)throw new Error('The property session has expired or the service restarted. Reload the property before tracing.');
@@ -1027,7 +1027,7 @@ async function runAiTrace(){
   if(token!==sessionToken||generation!==aiTraceGeneration)return;
   if(!r.ok)throw new Error(d.user_error||d.error||'AI tracing is unavailable.');
   aiTraceDrafts=(d.suggestions||[]).filter(a=>Array.isArray(a.points)&&a.points.length>=3);renderAiTraceDrafts();renderAiTracePreview(d.image_preview,aiTraceDrafts);
-  setAiTraceMessage(aiTraceDrafts.length?'Draft outlines only. Select Review & Edit, adjust the corners, then FINISH & SAVE AREA.':'No clear surface boundary was found. Use manual Area Measure.',aiTraceDrafts.length?'ok':'warn');
+  setAiTraceMessage((aiTraceDrafts.length?'Draft outlines only. Select Review & Edit, adjust the corners, then FINISH & SAVE AREA.':'No clear surface boundary was found. Use manual Area Measure.')+(d.user_warning?' '+d.user_warning:''),d.user_warning?'warn':aiTraceDrafts.length?'ok':'warn');
  }catch(e){if(token===sessionToken&&generation===aiTraceGeneration)setAiTraceMessage(e.name==='AbortError'?'AI tracing timed out. Your saved measurements are unchanged. You can try again.':e.message,'error')}
  finally{clearTimeout(timer);aiTraceBusy=false;if(button)button.disabled=false}
 }
@@ -3110,7 +3110,7 @@ def create_session(key,lat,lng,street_url=None,mode="solar",layers=None,anchor_l
 
 @app.get("/api/ai-trace/config")
 def ai_trace_config():
-    return jsonify(enabled=ai_trace.configured())
+    return jsonify(enabled=ai_trace.configured(),provider=ai_trace.provider())
 
 @app.post("/api/ai-trace")
 def ai_trace_suggestions():
@@ -3118,7 +3118,7 @@ def ai_trace_suggestions():
     sess=SESSIONS.get(str(data.get("token") or ""))
     if not sess or time.time()-sess.get("created",0)>3600:return jsonify(error="Reload the property before AI tracing."),404
     if str(sess.get("dealer_id") or "")!=str(session.get("dealer_id") or ""):return jsonify(error="This property belongs to another account."),403
-    if not ai_trace.configured():return jsonify(error="AI tracing is not configured.",user_error="AI tracing needs to be enabled by AeriQuote. Manual Area and Linear tools are still available."),503
+    if not ai_trace.configured():return jsonify(error="AI tracing is not configured.",user_error="SAM 3 tracing needs FAL_KEY in the test service environment. Manual Area and Linear tools are still available."),503
     try:
         surface=str(data.get("surface") or "")
         if surface not in ai_trace.SURFACES:raise ValueError("Choose Lawn or Paved Surface.")
@@ -3126,10 +3126,10 @@ def ai_trace_suggestions():
         if not math.isfinite(lat) or not math.isfinite(lng) or not (-85<=lat<=85 and -180<=lng<=180 and 16<=zoom<=20):raise ValueError("Invalid aerial view.")
         distance=math.hypot((lat-sess["lat"])*111320,(lng-sess["lng"])*111320*math.cos(math.radians(lat)))
         if distance>1500:raise ValueError("Center the aerial closer to the loaded property.")
-        cache_key=(surface,round(lat,7),round(lng,7),zoom)
+        cache_key=(ai_trace.provider(),surface,round(lat,7),round(lng,7),zoom)
         with AI_TRACE_LOCK:
             if sess.get("ai_trace_busy"):return jsonify(error="AI tracing is already running."),409
-            if sess.get("ai_trace_cache_key")==cache_key:return jsonify(suggestions=sess["ai_trace_cache"],image_preview=sess.get("ai_trace_image_preview"),review_required=True)
+            if sess.get("ai_trace_cache_key")==cache_key:return jsonify(suggestions=sess["ai_trace_cache"],image_preview=sess.get("ai_trace_image_preview"),user_warning=sess.get("ai_trace_warning", ""),review_required=True)
             if time.time()-sess.get("ai_trace_last_started",0)<15:return jsonify(error="Wait a few seconds before requesting another trace."),429
             sess["ai_trace_busy"]=True;sess["ai_trace_last_started"]=time.time()
         try:
@@ -3140,8 +3140,9 @@ def ai_trace_suggestions():
                 image=image_response.read(8*1024*1024)
             suggestions,usage=ai_trace.suggest(image,lat,lng,zoom,surface)
             sess["ai_trace_cache_key"]=cache_key;sess["ai_trace_cache"]=suggestions;sess["ai_trace_image_preview"]=ai_trace.image_preview(image)
-            app.logger.info("AI trace token usage: %s",json.dumps(usage))
-            return jsonify(suggestions=suggestions,image_preview=sess["ai_trace_image_preview"],review_required=True)
+            sess["ai_trace_warning"]="Some detected regions were omitted because they were incomplete, had exclusions, or could not be outlined safely. Check that all required service areas are included." if usage.get("rejected_regions") else ""
+            app.logger.info("AI trace usage: %s",json.dumps(usage))
+            return jsonify(suggestions=suggestions,image_preview=sess["ai_trace_image_preview"],user_warning=sess["ai_trace_warning"],review_required=True)
         finally:
             with AI_TRACE_LOCK:sess["ai_trace_busy"]=False
     except ai_trace.ProviderError as e:
