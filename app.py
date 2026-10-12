@@ -724,7 +724,7 @@ function removeStaleAerialLayers(keep=null){
  if(fallbackLayer&&fallbackLayer!==keep){try{map.removeLayer(fallbackLayer)}catch(e){}fallbackLayer=null}
 }
 async function loadStandardWideAerial(){
- if(!['landscaping','commercial'].includes(currentBusinessType()))return loadSingleWideAerial();
+ if(!['landscaping','commercial','paving','snow','pressure'].includes(currentBusinessType()))return loadSingleWideAerial();
  if(!sessionToken)throw new Error('Load the property first.');
  // A 3x3 continuous satellite mosaic restores panning beyond the old 640px square.
  // The measurement geometry and pricing code are untouched.
@@ -1232,18 +1232,16 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
   // Commercial surface measurements must never run the roof AutoMeasure path.
   // Use the property satellite image, then activate the selected surface tool.
-  if(['paving','pressure','landscaping','commercial'].includes(currentBusinessType())){
+  if(['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType())){
     structures=[];manualPlanes=[];roofMask=null;
     setManualCorrectionLayout(false);setManualUi(false);
     if(el('measureSource'))el('measureSource').value='manual';
     // Prefer the existing wider commercial satellite framing used before the
     // roof-routing correction. Fall back to the previous image only if needed.
     let aerial;
-    if(!exactPinDisplay){
-      try{aerial=await loadStandardWideAerial()}
-      catch(wideError){aerial=await loadFallbackAerial(sessionToken);fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0)}
-    }else{
-      aerial=await loadExactPinAerial(sessionToken);
+    try{aerial=await loadStandardWideAerial()}
+    catch(wideError){
+      aerial=exactPinDisplay?await loadExactPinAerial(sessionToken):await loadFallbackAerial(sessionToken);
       fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;
       removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0);
     }
