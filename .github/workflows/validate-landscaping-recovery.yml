@@ -1,0 +1,19 @@
+name: Validate landscaping recovery
+on:
+  push:
+    branches: [landscaping-multi-area-recovery-oct11]
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python -m py_compile app.py
+      - run: python scripts/check_landscaping_multi_area.py
+      - run: node scripts/test_landscaping_engine.cjs
+      - run: python scripts/test_landscaping_rendering.py
