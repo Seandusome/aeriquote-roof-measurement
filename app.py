@@ -723,6 +723,46 @@ function removeStaleAerialLayers(keep=null){
  if(fallbackLayer&&fallbackLayer!==keep){try{map.removeLayer(fallbackLayer)}catch(e){}fallbackLayer=null}
 }
 async function loadStandardWideAerial(){
+ if(!['landscaping','commercial'].includes(currentBusinessType()))return loadSingleWideAerial();
+ if(!sessionToken)throw new Error('Load the property first.');
+ // A 3x3 continuous satellite mosaic restores panning beyond the old 640px square.
+ // The measurement geometry and pricing code are untouched.
+ const c=(propertyMarker&&propertyMarker.getLatLng)?propertyMarker.getLatLng():map.getCenter();
+ const z=18,scale=256*Math.pow(2,z),tileSize=640;
+ const latToY=lat=>{const sin=Math.sin(lat*Math.PI/180);return (.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*scale};
+ const x=(c.lng+180)/360*scale,y=latToY(c.lat);
+ const toLatLng=(px,py)=>L.latLng(mercatorLat(py/scale),px/scale*360-180);
+ const group=L.layerGroup().addTo(map),bounds=L.latLngBounds([]);
+ const jobs=[];
+ for(let row=-1;row<=1;row++)for(let col=-1;col<=1;col++){
+   const cx=x+col*tileSize,cy=y+row*tileSize;
+   const centre=toLatLng(cx,cy);
+   const b=L.latLngBounds(toLatLng(cx-tileSize/2,cy+tileSize/2),toLatLng(cx+tileSize/2,cy-tileSize/2));
+   bounds.extend(b);
+   const q=new URLSearchParams({lat:String(centre.lat),lng:String(centre.lng),zoom:String(z)});
+   jobs.push((async()=>{
+     const r=await fetch('/wide-aerial/'+sessionToken+'?'+q.toString());
+     if(!r.ok)throw new Error('Wide satellite image request failed: '+r.status);
+     const blob=await r.blob(),url=URL.createObjectURL(blob);
+     const layer=L.imageOverlay(url,b,{opacity:1,interactive:false});
+     layer.once('remove',()=>URL.revokeObjectURL(url));
+     await new Promise((resolve,reject)=>{
+       layer.once('load',resolve);
+       layer.once('error',()=>reject(new Error('Satellite tile failed to decode')));
+       layer.addTo(group);
+     });
+   })());
+ }
+ try{await Promise.all(jobs)}catch(e){await Promise.allSettled(jobs);group.eachLayer(l=>{if(l._url&&l._url.startsWith('blob:'))URL.revokeObjectURL(l._url)});map.removeLayer(group);throw e}
+ group._sgAerial=true;group._sgAerialType='wide-3x3-mosaic';
+ removeStaleAerialLayers(group);
+ fallbackLayer=group;fallbackBounds=bounds;rgbLayer=null;mainBounds=bounds;
+ map.setMinZoom(14);map.setMaxBounds(null);map.options.maxBoundsViscosity=0;
+ // Start at the same useful property scale, but retain imagery in all directions.
+ map.setView(c,z,{animate:false});
+ return{layer:group,bounds};
+}
+async function loadSingleWideAerial(){
  if(!sessionToken)throw new Error('Load the property first.');
  const c=(propertyMarker&&propertyMarker.getLatLng)?propertyMarker.getLatLng():map.getCenter();
  const z=18,q=new URLSearchParams({lat:String(c.lat),lng:String(c.lng),zoom:String(z)});
