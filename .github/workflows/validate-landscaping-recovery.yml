@@ -17,3 +17,5 @@ jobs:
       - run: python scripts/check_landscaping_multi_area.py
       - run: node scripts/test_landscaping_engine.cjs
       - run: python scripts/test_landscaping_rendering.py
+      - run: npm install --no-save --package-lock=false jsdom@30.1.2 leaflet@1.9.4
+      - run: node scripts/test_landscaping_controls.cjs
