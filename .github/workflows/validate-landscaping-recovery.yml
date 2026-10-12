@@ -23,3 +23,4 @@ jobs:
       - run: node scripts/test_landscaping_engine.cjs paving
       - run: node scripts/test_landscaping_engine.cjs pressure
       - run: node scripts/test_landscaping_engine.cjs snow
+      - run: python scripts/test_ai_trace.py

@@ -1,0 +1,95 @@
+"""Optional shared AI boundary suggestions. Geometry and final pricing stay in AeriQuote."""
+import base64
+import json
+import math
+import os
+import urllib.request
+
+SURFACES = {'lawn', 'paved'}
+
+def configured():
+    return bool(os.environ.get('OPENAI_API_KEY', '').strip())
+
+def pixel_to_latlng(x, y, lat, lng, zoom):
+    scale = 256 * 2 ** zoom
+    sin = math.sin(math.radians(lat))
+    cx = (lng + 180) / 360 * scale
+    cy = (.5 - math.log((1 + sin) / (1 - sin)) / (4 * math.pi)) * scale
+    px, py = cx + (x - .5) * 640, cy + (y - .5) * 640
+    return [math.degrees(math.atan(math.sinh(math.pi - 2 * math.pi * py / scale))), px / scale * 360 - 180]
+
+def validate_polygons(payload, lat, lng, zoom):
+    if not isinstance(payload, dict):
+        raise ValueError('Invalid AI suggestions')
+    polygons = payload.get('polygons')
+    if not isinstance(polygons, list) or len(polygons) > 6:
+        raise ValueError('Invalid AI suggestions')
+    result = []
+    for polygon in polygons:
+        if not isinstance(polygon, dict):
+            raise ValueError('Invalid AI outline')
+        points = polygon.get('points')
+        if not isinstance(points, list) or not 3 <= len(points) <= 40:
+            raise ValueError('Invalid AI outline')
+        xy = []
+        for point in points:
+            if not isinstance(point, dict):
+                raise ValueError('Invalid AI corner')
+            x, y = point.get('x'), point.get('y')
+            if isinstance(x, bool) or isinstance(y, bool) or not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+                raise ValueError('Invalid AI corner')
+            if not math.isfinite(x) or not math.isfinite(y) or not 0 <= x <= 1 or not 0 <= y <= 1:
+                raise ValueError('AI outline is outside the image')
+            xy.append((x, y))
+        if xy[0] == xy[-1]:
+            xy.pop()
+        if len(set(xy)) != len(xy) or len(xy) < 3:
+            raise ValueError('Duplicate AI corners')
+        def orient(a, b, c):
+            return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+        for i in range(len(xy)):
+            for j in range(i+1, len(xy)):
+                if j == i+1 or (i == 0 and j == len(xy)-1):
+                    continue
+                a,b,c,d = xy[i],xy[(i+1)%len(xy)],xy[j],xy[(j+1)%len(xy)]
+                if orient(a,b,c)*orient(a,b,d) <= 0 and orient(c,d,a)*orient(c,d,b) <= 0:
+                    if max(min(a[0],b[0]),min(c[0],d[0])) <= min(max(a[0],b[0]),max(c[0],d[0])) and max(min(a[1],b[1]),min(c[1],d[1])) <= min(max(a[1],b[1]),max(c[1],d[1])):
+                        raise ValueError('AI outline crosses itself')
+        area = abs(sum(xy[i][0]*xy[(i+1)%len(xy)][1]-xy[(i+1)%len(xy)][0]*xy[i][1] for i in range(len(xy)))) / 2
+        if area < .00001:
+            raise ValueError('AI outline is too small')
+        result.append({'name': str(polygon.get('name') or 'AI suggested area')[:80],
+                       'points': [pixel_to_latlng(x,y,lat,lng,zoom) for x,y in xy]})
+    return result
+
+def suggest(image, lat, lng, zoom, surface):
+    key = os.environ.get('OPENAI_API_KEY', '').strip()
+    if not key:
+        raise RuntimeError('AI tracing is not configured')
+    if surface not in SURFACES:
+        raise ValueError('Choose Lawn or Paved Surface')
+    schema = {'type':'object','additionalProperties':False,'required':['polygons'],
+              'properties':{'polygons':{'type':'array','items':{'type':'object','additionalProperties':False,
+              'required':['name','points'],'properties':{'name':{'type':'string'},'points':{'type':'array',
+              'items':{'type':'object','additionalProperties':False,'required':['x','y'],
+              'properties':{'x':{'type':'number'},'y':{'type':'number'}}}}}}}}}
+    prompt = ('Suggest visible '+('grass/turf' if surface=='lawn' else 'asphalt or concrete')+
+              ' boundaries for the surface centered in this 640x640 satellite image. Return up to 6 simple polygons, '
+              '3 to 40 corners each, excluding buildings, trees, roads, cars and unrelated neighboring properties. '
+              'Do not infer legal property lines or hidden boundaries. If unsure, return an empty polygons list. '
+              'For surfaces with holes, use separate simple sections; never include the hole in measured area. '
+              'Coordinates must be normalized image positions: x=0 left, x=1 right, y=0 top, y=1 bottom. '
+              'Do not repeat the first point. These are draft suggestions for human review, not certified measurements.')
+    body = {'model':os.environ.get('AERIQUOTE_AI_TRACE_MODEL','gpt-4.1-2025-04-14'), 'store':False,
+            'max_output_tokens':3000,'input':[{'role':'user','content':[{'type':'input_text','text':prompt},
+            {'type':'input_image','detail':'high','image_url':'data:image/png;base64,'+base64.b64encode(image).decode()}]}],
+            'text':{'format':{'type':'json_schema','name':'surface_outlines','strict':True,'schema':schema}}}
+    req = urllib.request.Request('https://api.openai.com/v1/responses', data=json.dumps(body).encode(),
+                                 headers={'Content-Type':'application/json','Authorization':'Bearer '+key})
+    with urllib.request.urlopen(req, timeout=45) as response:
+        data = json.loads(response.read())
+    if data.get('status') != 'completed':
+        raise ValueError('AI tracing did not complete')
+    text = ''.join(part.get('text','') for output in data.get('output',[]) if output.get('type')=='message'
+                   for part in output.get('content',[]) if part.get('type')=='output_text')
+    return validate_polygons(json.loads(text),lat,lng,zoom), data.get('usage',{})
