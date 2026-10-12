@@ -20,3 +20,6 @@ jobs:
       - run: npm install --no-save --package-lock=false jsdom@30.1.2 leaflet@1.9.4
       - run: node scripts/test_landscaping_controls.cjs
       - run: python scripts/test_recovery_allowance.py
+      - run: node scripts/test_landscaping_engine.cjs paving
+      - run: node scripts/test_landscaping_engine.cjs pressure
+      - run: node scripts/test_landscaping_engine.cjs snow
