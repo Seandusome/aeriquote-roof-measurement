@@ -1954,7 +1954,8 @@ async function downloadEstimatePDF(){
   // transforms. Draw the approved geometry in the map's own pixel coordinate
   // system onto a temporary canvas, then capture that canvas in the PDF.
   let pdfTraceCanvas=null;
-  const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane'):null;
+  // Hide only Leaflet's vector SVG. Image overlays share this pane and must stay visible.
+  const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane')?.querySelector('svg'):null;
   const oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
   try{
     const snap=quoteSnapshot||captureQuoteSnapshot();
