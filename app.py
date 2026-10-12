@@ -2783,11 +2783,16 @@ def dealer_employee_status(employee_id):
     finally:con.close()
     return redirect("/dealer-employees")
 
+def is_recovery_test_service():
+    """Unrestricted recovery testing only on the explicitly identified Render test service."""
+    return (os.environ.get("RENDER_SERVICE_ID", "") == "srv-db5a2g5ckfvc739fui70"
+            or os.environ.get("RENDER_EXTERNAL_HOSTNAME", "") == "aeriquote-commercial-test.onrender.com")
+
 def consume_property_lookup(dealer_id):
     # The isolated commercial test deployment has no persistent DATABASE_URL.
     # Allow measurement testing even when Render replaces its temporary SQLite dealer records.
     # Production uses DATABASE_URL and retains normal plan enforcement.
-    if not DATABASE_URL:
+    if is_recovery_test_service() or not DATABASE_URL:
         return True, 0, 0
     con=estimate_db()
     try:
@@ -3309,7 +3314,7 @@ def estimate_history_api():
                 dealer_row=con.execute("SELECT estimate_limit FROM dealers WHERE id=?",(dealer_id,)).fetchone()
                 estimate_limit=int(dealer_row["estimate_limit"] or 0) if dealer_row else 0
                 estimate_used=int(con.execute("SELECT COUNT(*) AS estimate_count FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["estimate_count"])
-                if estimate_limit>0 and estimate_used>=estimate_limit and not is_head_office():
+                if estimate_limit>0 and estimate_used>=estimate_limit and not is_head_office() and not is_recovery_test_service():
                     return jsonify(error="Estimate allowance reached.",user_error=f"Your dealership has used all {estimate_limit} estimates. Contact AeriQuote support to increase the allowance."),403
             created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
             payload_json=json.dumps(d,separators=(",",":"))
