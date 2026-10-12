@@ -50,6 +50,12 @@ class TraceTests(unittest.TestCase):
             with patch.dict(os.environ,{'OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
                 with self.assertRaises(ai_trace.ProviderError) as raised: ai_trace.suggest(b'png',52,-106,18,'paved')
                 self.assertIn(phrase,str(raised.exception));self.assertNotIn('SECRET',str(raised.exception))
+    def test_billing_errors_are_not_reported_as_retryable_rate_limits(self):
+        for code, kind, phrase in [('credit_balance_exhausted','','credit balance'),('project_spend_limit_exceeded','','project spending'),('organization_spend_limit_exceeded','','organization spending'),('organization_usage_limit_exceeded','','usage limit'),(None,'insufficient_quota','credits')]:
+            error=urllib.error.HTTPError('https://api.openai.com/v1/responses',429,'private',{},io.BytesIO(json.dumps({'error':{'code':code,'type':kind,'message':'SECRET'}}).encode()))
+            with patch.dict(os.environ,{'OPENAI_API_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=error):
+                with self.assertRaises(ai_trace.ProviderError) as raised: ai_trace.suggest(b'png',52,-106,18,'paved')
+                self.assertIn(phrase,str(raised.exception));self.assertNotIn('rate limit',str(raised.exception));self.assertNotIn('SECRET',str(raised.exception))
     def test_provider_error_reaches_user_and_unlocks(self):
         scope,sess=self.route()
         with patch('ai_trace.configured',return_value=True),patch('urllib.request.urlopen',return_value=Response(b'png')),patch('ai_trace.suggest',side_effect=ai_trace.ProviderError('Check API credits.')):

@@ -94,17 +94,26 @@ def suggest(image, lat, lng, zoom, surface):
         with urllib.request.urlopen(req, timeout=45) as response:
             data = json.loads(response.read())
     except urllib.error.HTTPError as error:
-        code = ''
+        code = ''; error_type = ''
         try:
-            code = json.loads(error.read(65536)).get('error', {}).get('code', '')
+            detail = json.loads(error.read(65536)).get('error', {})
+            code = detail.get('code', ''); error_type = detail.get('type', '')
         except Exception:
             pass
-        if code == 'insufficient_quota':
+        if code == 'credit_balance_exhausted':
+            message = 'OpenAI API credit balance is exhausted. Check API billing and available credits before tracing again.'
+        elif code == 'project_spend_limit_exceeded':
+            message = 'The OpenAI API project spending limit has been reached. Check the limits for the project that owns this key.'
+        elif code == 'organization_spend_limit_exceeded':
+            message = 'The OpenAI API organization spending limit has been reached. Check organization billing limits.'
+        elif code == 'organization_usage_limit_exceeded':
+            message = 'The OpenAI API organization usage limit has been reached. Check the approved usage limit in OpenAI settings.'
+        elif code == 'insufficient_quota' or error_type == 'insufficient_quota':
             message = 'OpenAI API credits are unavailable. Check API billing and available credits for the project that owns this key.'
         elif error.code == 401:
             message = 'OpenAI rejected the API key. Check OPENAI_API_KEY in the test service environment.'
         elif error.code == 429:
-            message = 'OpenAI rate limit reached. Wait a moment before trying again.'
+            message = 'OpenAI rate limit reached. Check the tracing model request and token limits in the API project. Waiting will not help if one trace exceeds those limits.'
         elif error.code == 403:
             message = 'This OpenAI project does not have access to the tracing model. Check project permissions.'
         else:
