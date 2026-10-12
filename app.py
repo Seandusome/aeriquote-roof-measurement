@@ -1954,9 +1954,10 @@ async function downloadEstimatePDF(){
   // transforms. Draw the approved geometry in the map's own pixel coordinate
   // system onto a temporary canvas, then capture that canvas in the PDF.
   let pdfTraceCanvas=null;
-  // Hide only Leaflet's vector SVG. Image overlays share this pane and must stay visible.
-  const pdfOverlayPane=customerMap?customerMap.getPane('overlayPane')?.querySelector('svg'):null;
-  const oldPdfOverlayVisibility=pdfOverlayPane?pdfOverlayPane.style.visibility:'';
+  // Detach every vector SVG during capture. Keeping the original transformed SVG
+  // alongside the pixel canvas can produce a second, displaced outline in html2canvas.
+  // Satellite images and labels remain in the map; restore SVGs even if capture fails.
+  const pdfVectors=[];
   try{
     const snap=quoteSnapshot||captureQuoteSnapshot();
     // Capture all commercial area polygons and the linear trace together.
@@ -1988,12 +1989,12 @@ async function downloadEstimatePDF(){
         ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
       });
       host.appendChild(pdfTraceCanvas);
-      if(pdfOverlayPane)pdfOverlayPane.style.visibility='hidden';
+      customerMap.getPane('overlayPane')?.querySelectorAll('svg').forEach(svg=>{const anchor=document.createComment('PDF vector replacement');svg.replaceWith(anchor);pdfVectors.push({svg,anchor})});
     }
     var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
-    if(pdfOverlayPane)pdfOverlayPane.style.visibility=oldPdfOverlayVisibility;
+    pdfVectors.forEach(({svg,anchor})=>anchor.replaceWith(svg));
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
 
