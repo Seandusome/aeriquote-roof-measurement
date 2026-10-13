@@ -9,8 +9,6 @@ from flask import Flask, request, jsonify, Response, render_template_string, ses
 import urllib.request, urllib.parse, urllib.error
 import json, webbrowser, threading, uuid, math, time, os, sqlite3, hmac, hashlib, secrets
 from datetime import datetime
-import ai_trace
-AI_TRACE_LOCK = threading.Lock()
 try:
     import psycopg
     from psycopg.rows import dict_row
@@ -127,7 +125,6 @@ HTML = r"""<!doctype html>
 .workflow{padding:9px 20px;border-bottom:1px solid var(--line);background:#edf7f0;font-size:13px}.workflow b{color:var(--green2)}
 .job-summary-bar{display:grid;grid-template-columns:2fr .55fr .8fr .8fr;gap:0;margin:0 20px 12px;border:1px solid #cfe0d3;border-radius:11px;background:#f7fbf8;overflow:hidden}.job-summary-bar>div{padding:9px 12px;border-right:1px solid #dbe7de;min-width:0}.job-summary-bar>div:last-child{border-right:0}.job-summary-bar b{display:block;margin-top:2px;color:var(--green2);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.js-label{font-size:10px;font-weight:900;letter-spacing:.55px;color:var(--muted)}
 .main{display:grid;grid-template-columns:2.55fr .68fr;gap:13px;padding:0 20px 20px}.panel{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}.ptitle{padding:11px 13px;background:#f8faf9;border-bottom:1px solid var(--line);font-weight:800}
-.aerial-actionbar{position:sticky;top:8px;z-index:1300;background:#fff;padding:10px;border:1px solid #d8e0eb;border-radius:9px;margin:10px 0;box-shadow:0 2px 8px #0002}.panel:has(.aerial-actionbar){overflow:visible}.aerial-actionbar #aiTraceTools{padding:8px 0 0!important;border:0!important;margin-bottom:0!important}.aerial-actionbar #aiTraceResults{max-height:164px;overflow:auto}.aerial-actionbar #aiTraceComparison[open]{max-height:65vh;overflow:auto}
 #map{height:840px;background:#e9efeb}.mapwrap{position:relative;overflow:hidden}.loading{position:absolute;z-index:1200;left:14px;top:14px;background:rgba(255,255,255,.95);border:1px solid var(--line);padding:9px 12px;border-radius:8px;font-weight:800;box-shadow:0 2px 8px #0002}.tracebanner{display:none;position:absolute;z-index:1200;left:50%;top:14px;transform:translateX(-50%);background:#fff7ed;border:2px solid var(--manual);color:#8a5208;padding:8px 13px;border-radius:8px;font-weight:800}.leaflet-zoom-animated{transition-duration:.22s!important}.leaflet-fade-anim .leaflet-tile{transition:opacity .12s linear!important}
 .manualbox{background:#fff7ed;border-bottom:1px solid #efd4aa}.manualbox summary{cursor:pointer;padding:10px 12px;font-weight:800;color:#8a5208}.manualrow{padding:0 12px 10px;display:flex;gap:8px;align-items:end;flex-wrap:wrap}.pitch{width:120px}.point-label{background:#fff;border:2px solid var(--manual);border-radius:50%;width:25px;height:25px;text-align:center;padding-top:3px;color:#8a5208;font-size:12px;font-weight:800}.manual-label{background:#fff;border:2px solid var(--manual);border-radius:6px;padding:3px 6px;color:#8a5208;font-size:12px;font-weight:800;white-space:nowrap}.seg-label{background:rgba(255,255,255,.92);border:1px solid #e27b2d;border-radius:6px;padding:2px 5px;font-weight:800;color:#7a3f08;box-shadow:0 1px 3px #0002;white-space:nowrap;font-size:11px}.edge-label{background:rgba(255,255,255,.98);border:1px solid #8fa9ca;border-radius:5px;padding:2px 5px;color:#0b1739;font-size:11px;font-weight:900;white-space:nowrap;box-shadow:0 1px 4px #0002}.roof-corner{width:10px;height:10px;border-radius:50%;background:#fff;border:3px solid currentColor;box-shadow:0 1px 4px #0004}
 .side{padding:12px}.street{width:100%;height:190px;object-fit:cover;background:#e8ece9;border-radius:9px;border:1px solid var(--line)}.section{margin-top:12px}.section h3{margin:0 0 7px;font-size:15px}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.metric{padding:9px;border:1px solid var(--line);border-radius:9px;background:#f8faf9}.metric b{display:block;font-size:18px;color:var(--green2);margin-top:2px}.structure{border:1px solid var(--line);border-radius:9px;padding:9px;margin:7px 0}.structure-head{display:flex;justify-content:space-between;gap:8px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px}.house-dot{background:var(--house)}.garage-dot{background:var(--garage)}.manual-dot{background:var(--manual)}.calc{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:13px}.calc div:nth-child(even){font-weight:800}.estimate{background:#f7faf8;border:1px solid var(--line);border-radius:9px;padding:10px;margin-top:9px}.line{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #e5ece7}.line:last-child{border-bottom:0}.grand{font-size:17px;color:var(--green2);font-weight:900}.total{padding:11px;background:#edf7f0;border:1px solid #cde5d4;border-radius:9px;font-weight:800;margin-top:9px}.warning{padding:9px;background:var(--warn);border:1px solid #e5ca7e;border-radius:8px;color:#79520c;margin-top:8px;font-size:12px}.good{padding:9px;background:#edf7f0;border:1px solid #cde5d4;border-radius:8px;color:var(--green2);margin-top:8px;font-size:12px}.fallbackbox{display:none;background:#fff8e8;border:1px solid #e7c56f;border-radius:10px;padding:11px 12px;margin:10px 0;color:#6f4b08}.fallbackbox b{color:#5e3e05}
@@ -364,11 +361,11 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
  <div id="jobSummaryBar" class="job-summary-bar"><div><span class="js-label">PROPERTY</span><b id="jsProperty">No property loaded</b></div><div><span class="js-label">ROOFS</span><b id="jsRoofs">—</b></div><div><span class="js-label">TOTAL AREA</span><b id="jsArea">—</b></div><div><span class="js-label">ESTIMATE</span><b id="jsTotal">—</b></div></div>
  <div id="solarFallback" class="fallbackbox"><b>Manual Measurement Required</b><div id="solarFallbackText" class="small" style="margin-top:4px">Google does not have an automatic roof measurement for this property. Trace the shingled roof area below and confirm the roof pitch.</div><div class="small" style="margin-top:6px"><b>Important:</b> If the aerial appears older, verify the current roof layout with the homeowner or on site before sending the estimate.</div></div>
  <div class="main">
-  <div class="panel"><div class="ptitle">STEP 2 — Measure the property</div><div class="measure-intro"><b>What do you need to measure?</b><span>Use one tool or combine multiple measurements on the same property.</span></div><div class="measure-toolbar"><button id="toolAutoBtn" type="button" class="measure-mode active" onclick="selectMeasurementTool('auto')"><b>AUTOMEASURE</b><small>Roof • automatic</small></button><button id="toolAreaBtn" type="button" class="measure-mode" onclick="startServiceAreaTool()"><b>+ ADD AREA</b><small>Lawns • driveways • parking</small></button><button id="toolLinearBtn" type="button" class="measure-mode" onclick="selectMeasurementTool('linear')"><b>+ LINEAR</b><small>Gutters • fencing • curbing</small></button><button id="toolAiBtn" type="button" class="measure-mode" style="display:none" onclick="openAiTraceTools()"><b>AI TRACE · PILOT</b><small>Suggest editable surface outlines</small></button></div><div id="jobMeasurements" class="job-measurements"><div class="jm-head"><b>Measurements for This Job</b><span class="small">Saved measurements stay with the property.</span></div><div id="jobMeasurementsList" class="jm-list"></div></div>
+  <div class="panel"><div class="ptitle">STEP 2 — Measure the property</div><div class="measure-intro"><b>What do you need to measure?</b><span>Use one tool or combine multiple measurements on the same property.</span></div><div class="measure-toolbar"><button id="toolAutoBtn" type="button" class="measure-mode active" onclick="selectMeasurementTool('auto')"><b>AUTOMEASURE</b><small>Roof • automatic</small></button><button id="toolAreaBtn" type="button" class="measure-mode" onclick="startServiceAreaTool()"><b>+ ADD AREA</b><small>Lawns • driveways • parking</small></button><button id="toolLinearBtn" type="button" class="measure-mode" onclick="selectMeasurementTool('linear')"><b>+ LINEAR</b><small>Gutters • fencing • curbing</small></button></div><div id="jobMeasurements" class="job-measurements"><div class="jm-head"><b>Measurements for This Job</b><span class="small">Saved measurements stay with the property.</span></div><div id="jobMeasurementsList" class="jm-list"></div></div>
    <div id="garageControls" class="good auto-only" style="margin:8px"><div id="garageSavedConfirm" class="good" style="display:none;margin-bottom:8px;padding:10px;border:2px solid #2f7d44;font-size:15px"></div><div class="nexthelp"><b id="garageGuide">Load the property first. The main house will measure automatically.</b></div><div class="simple-actions" style="margin-top:10px"><button id="measureClickedTop" class="secondary primarybig" onclick="startGarageMode()" disabled>+ ADD GARAGE / OTHER ROOF</button><button class="ghost" onclick="removeLastExtra()">UNDO LAST ADDED ROOF</button></div><div class="small" style="margin-top:7px">Only use Add Garage / Other Roof when another shingled structure should be included.</div></div>
    <div id="roofCheckCard" class="stepcard auto-only" style="margin:10px 0"><h2 style="margin-bottom:5px">Is AutoMeasure showing the correct MAIN HOUSE?</h2><div class="small">If the blue outline is on the correct main house, continue. Garage and other-roof corrections are handled separately below.</div><div class="simple-actions" style="margin-top:9px"><button class="primary" onclick="roofCheckGood()">YES — MAIN HOUSE IS CORRECT</button></div><div id="roofFixHelp" class="small" style="margin-top:7px"></div><details class="roof-advanced"><summary>ROOF CORRECTIONS / ADVANCED OPTIONS</summary><div class="roof-advanced-body"><details style="margin-top:8px"><summary>Wrong garage / extra roof included? <span class="info-tip" tabindex="0" data-tip="Use this when Google correctly measured the main house but included a garage or other roof you do not want in the quote.">ⓘ</span></summary><div class="small" style="padding:8px 0"><b>Remove only the wrong extra roof.</b> The main house stays in the quote. If you need the correct garage afterward, use <b>ADD / REMEASURE GARAGE OR OTHER ROOF</b> directly below.</div><div class="simple-actions" style="margin-top:8px"><button id="fixRoofBtn" class="ghost" onclick="toggleRoofFix()">REMOVE WRONG GARAGE / EXTRA ROOF</button></div></details><details style="margin-top:8px"><summary>Customer picture outline needs cleanup? <span class="info-tip" tabindex="0" data-tip="Picture only. Adjusting this outline does NOT change Google's square footage, pitch, or estimate price.">ⓘ</span></summary><div class="small" style="padding:8px 0">This changes the customer picture only — not square footage, pitch or price.</div><div class="simple-actions"><button id="adjustOutlineBtn" class="secondary" onclick="toggleOutlineAdjust()">ADJUST CUSTOMER OUTLINE</button><button id="finishOutlineBtn" class="primary" onclick="finishOutlineAdjust()" disabled style="display:none">FINISH OUTLINE</button><button id="undoOutlineBtn" class="ghost" onclick="undoOutlinePoint()" style="display:none">UNDO POINT</button><button id="clearOutlineBtn" class="ghost" onclick="clearAdjustedOutline()" style="display:none">USE GOOGLE OUTLINE</button></div><div id="outlineHelp" class="small" style="margin-top:7px"></div></details><details style="margin-top:12px;border-top:1px solid #d9e3dc;padding-top:9px"><summary><b>Main house measurement is wrong?</b></summary><div class="warning" style="margin-top:8px"><b>Only use this to replace the MAIN HOUSE measurement.</b> Do not use this button for a garage or other added roof.</div><div class="simple-actions" style="margin-top:8px"><button id="manualOverrideBtn" class="danger" onclick="startManualOverride()">REPLACE MAIN HOUSE MEASUREMENT</button></div></details></div></details></div><div id="areaTool" class="area-tool"><div class="area-head"><div><div class="area-title">AREA MEASURE</div><div class="small">Measure the selected service area in square feet.</div></div><div id="areaTotal" class="area-total">Area: 0 ft²</div></div><div class="area-body"><div id="commercialAreaPanel" style="display:none;padding:10px;border:1px solid #ccd7e4;border-radius:8px;margin-bottom:8px"><b>Commercial service areas</b><div id="commercialAreaList"></div><button type="button" class="secondary" id="commercialAddAreaBtn" onclick="commercialAddArea()">+ ADD ANOTHER SERVICE AREA</button></div><div class="simple-actions"><button id="areaCorrectBtn" type="button" class="secondary" onclick="correctAreaOutline()" style="display:none">CORRECT MEASUREMENT OUTLINE</button><button id="areaCancelCorrectionBtn" type="button" class="ghost" onclick="cancelAreaCorrection()" style="display:none">CANCEL CORRECTION</button><button id="areaStartBtn" type="button" class="secondary" onclick="toggleAreaMeasure()">START AREA MEASURE</button><button id="areaUndoBtn" type="button" class="ghost" onclick="undoAreaPoint()" style="display:none">UNDO LAST POINT</button><button id="areaClearBtn" type="button" class="ghost" onclick="clearAreaMeasure()" style="display:none">CLEAR AREA MEASUREMENT</button><button id="areaAutoBtn" type="button" class="ghost" onclick="returnAreaToAutoMeasure()" style="display:none">RETURN TO AUTOMEASURE</button></div><div id="areaHelp" class="small" style="margin-top:7px">Click Start Area Measure for a clean aerial workspace. Click around the outside edge of the service area, then save it.</div></div></div><div id="linearTool" class="linear-tool"><div class="linear-head"><div><div class="linear-title">LINEAR MEASURE</div><div class="small">Measure gutters, fencing, curbing, edging, crack sealing or any point-to-point distance.</div></div><div id="linearTotal" class="linear-total">Total: 0.0 ft</div></div><div class="linear-body"><div class="simple-actions"><button id="linearStartBtn" type="button" class="secondary" onclick="toggleLinearMeasure()">START LINEAR MEASURE</button><button id="linearUndoBtn" type="button" class="ghost" onclick="undoLinearPoint()" style="display:none">UNDO LAST POINT</button><button id="linearClearBtn" type="button" class="ghost" onclick="clearLinearMeasure()" style="display:none">CLEAR LINEAR MEASUREMENT</button><button id="linearAutoBtn" type="button" class="ghost" onclick="returnToAutoMeasure()" style="display:none">RETURN TO AUTOMEASURE</button></div><div id="linearHelp" class="small" style="margin-top:7px">Click Start Linear Measure for a clean aerial workspace. Roof overlays hide while you draw. AeriQuote shows every segment and the running total. Use the measurement tools above to switch modes.</div></div></div><details id="manualRoofDetails" class="manualbox auto-only" open><summary id="manualRoofSummary">Add / Remeasure Garage or Other Roof</summary><div id="manualRoofWarning" class="warning" style="margin:8px 12px"><b>Google's confirmed MAIN HOUSE stays in the quote.</b> Use this to add or remeasure a garage, shed, addition, or other shingled roof.</div><div class="manualrow"><button id="traceBtn" class="orange" onclick="toggleTrace()">ADD / REMEASURE GARAGE OR OTHER ROOF</button><div id="tracePitchControl" class="pitch" style="display:none"><label id="manualPitchLabel" style="margin:0 0 3px" class="aeri-added-pitch-label">Pitch of Added Roof <span class="info-tip" tabindex="0" data-tip="Google supplies pitch for automatically measured roofs. For a manually traced roof, the dealer must confirm the pitch. 5/12 is only the starting default.">ⓘ</span></label><select id="pitchSel" onchange="pitchChanged()" class="pitch-select"><option value="18.43">4/12</option><option value="22.62" selected>5/12</option><option value="26.57">6/12</option><option value="30.26">7/12</option><option value="33.69">8/12</option><option value="36.87">9/12</option><option value="39.81">10/12</option><option value="42.51">11/12</option><option value="45">12/12</option><option value="custom">Custom°</option></select></div><input id="pitchDeg" type="hidden" value="22.62"><button id="finishTrace" class="secondary" onclick="finishTrace()" disabled style="display:none">SAVE & ADD ROOF</button><button id="undoTraceBtn" class="ghost" onclick="undoPoint()" style="display:none">UNDO LAST POINT</button><button id="clearManualBtn" class="danger" onclick="clearManual()" style="display:none">CLEAR CURRENT DRAWING</button></div><div id="pitchReminder" class="pitch-reminder"><b>Confirm the roof pitch.</b> Manual roofs start at 5/12. Change it if needed before saving.</div><div id="manualRoofHelp" class="small" style="padding:0 12px 10px">Click around only the garage or other roof you want to add, confirm its pitch, then press SAVE & ADD ROOF. The Google main house stays unchanged.</div></details>
    <details id="advancedOptions" class="advanced"><summary>Show advanced roof display options</summary><div style="padding:8px 10px"><b>Roof Outlines:</b> <select id="outlineMode" onchange="redrawRoofData()" style="width:auto"><option value="smart">Actual Roof Outline (Recommended)</option><option value="all">Show Google segment boxes</option><option value="clean">Pitch labels only</option></select></div></details>
-   <div id="aerialActionbar" class="aerial-actionbar" style="display:none"><div class="simple-actions"><button id="aerialAiBtn" type="button" onclick="openAiTraceTools()">AI TRACE — CLICK A SECTION</button><button id="aerialSaveBtn" type="button" class="primary" onclick="saveAerialArea()" disabled>SAVE REVIEWED AREA</button><button type="button" class="secondary" onclick="startServiceAreaTool()">MANUAL AREA</button><button id="resumeManualBtn" type="button" class="secondary" onclick="resumeAiPausedManual()" style="display:none">RESUME MANUAL DRAWING</button></div><div id="aiTraceTools" style="display:none;padding:12px;border:1px solid #d8e0eb;border-radius:10px;margin-bottom:12px"><b>AI-assisted surface tracing</b><div class="small">Choose Lawn or Paved Surface, then click inside one section on the aerial. AI will suggest its outline for review.</div><label for="aiTraceSurface">Surface to trace</label><select id="aiTraceSurface"><option value="lawn">Lawn / turf</option><option value="paved">Paved surface — asphalt / concrete</option></select><div class="simple-actions" style="margin-top:8px"><button id="aiTraceRunBtn" type="button" onclick="startAiTracePick()">CLICK A SURFACE TO TRACE</button><button type="button" class="ghost" onclick="clearAiTraceDrafts()">CLEAR SUGGESTIONS</button></div><div id="aiTraceMessage" class="small" style="margin-top:8px"></div><div id="aiTraceResults"></div><details id="aiTraceComparison" style="display:none;margin-top:12px"><summary>COMPARE OUTLINES WITH THE IMAGE AI USED</summary><div class="small">Orange outlines are AI drafts. Check whether each follows the actual surface below.</div><div id="aiTracePreview"></div></details></div></div><div class="mapwrap"><div id="loading" class="loading" style="display:none">Loading aerial imagery…</div><div id="traceBanner" class="tracebanner">MANUAL MEASURE ON — click roof corners, then SAVE & ADD ROOF</div><div id="map"></div></div>
+   <div class="mapwrap"><div id="loading" class="loading" style="display:none">Loading aerial imagery…</div><div id="traceBanner" class="tracebanner">MANUAL MEASURE ON — click roof corners, then SAVE & ADD ROOF</div><div id="map"></div></div>
   </div>
   <div class="panel"><div class="ptitle">STEP 3 — Review & price</div><div class="side"><img id="street" class="street" alt="Actual Street View"><div id="streetMeta" class="small" style="margin-top:4px"></div><div id="jobPriceCard" class="stepcard measurement-price-card" style="margin-top:10px"><h2 id="jobPriceTitle">Price for this job</h2><label id="jobPriceLabel">Price for This Job / sq. ft. <span class="info-tip" tabindex="0" data-tip="Your dealer default loads here automatically. Change this number for any individual job and the quote recalculates immediately.">ⓘ</span></label><input id="jobPrice" type="number" step=".01" value=".95" oninput="jobPriceChanged()" onchange="jobPriceChanged()"><div id="jobPriceHelp" class="small">This is the price used for the quote. Change it anytime before creating the estimate.</div><div id="appliedJobPrice" class="good" style="margin-top:7px;padding:7px">Quote is using <b>$0.95 / sq. ft.</b></div></div><div id="summary"></div><div class="stepcard workflow-next"><h2>STEP 4 — Customer</h2><div class="customer-grid"><div class="full"><label>Customer Name</label><input id="customerName" name="aq_job_customer_name" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Customer name" oninput="updateProgressSteps()"></div><div><label>Customer Phone</label><input id="customerPhone" name="aq_job_customer_phone" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Phone" oninput="updateProgressSteps()"></div><div><label>Customer Email</label><input id="customerEmail" name="aq_job_customer_email" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" type="email" placeholder="Email" oninput="updateProgressSteps()"></div><div class="full"><label>Customer / Job Notes <span class="small">(optional)</span></label><textarea id="customerNotes" name="aq_job_customer_notes" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Optional notes for this customer or job"></textarea></div></div></div><div class="stepcard workflow-next"><h2>STEP 5 — Create estimate</h2><label>Additional Services / Repairs <span class="small">(optional)</span></label><input id="extraServiceDescription" placeholder="Example: Replace damaged shingles, seal vent, minor roof repair" oninput="renderSummary()"><label style="margin-top:8px">Additional Services / Repairs Amount</label><input id="extraServiceAmount" type="number" min="0" step="0.01" value="0" oninput="renderSummary()"><div class="small" style="margin-top:5px">Added to the estimate and uses the same sales-tax setting as this job.</div><label style="margin-top:10px">Estimate images</label><select id="streetViewChoice"><option value="auto" selected>Use Aerial + Google Street View</option><option value="hide">Use Aerial + Property Assessment Placeholder</option><option value="none">Create Estimate Without Images</option></select><div class="simple-actions" style="margin-top:10px"><button id="createEstimateBtn" class="primarybig" onclick="showCustomerEstimate()" disabled>CREATE CUSTOMER ESTIMATE</button></div></div></div></div>
  </div>
@@ -412,9 +409,6 @@ let customerMap=null,customerRgbLayer=null,customerOverlays=[],reportOutlines={}
 let quoteSnapshot=null;
 let commercialAreas=[],commercialAreaLayers=[],commercialEditingIndex=-1;
 let savedLinearJobRate=null;
-let aiTraceDrafts=[],aiTraceLayers=[],aiTraceBusy=false,aiTraceGeneration=0;
-let aiTracePickMode=false,aiTraceSeed=null,aiTraceSeedMarker=null,aiTraceDraftSequence=0;
-let aiTracePausedManual=null;
 let savedStreetImageData='';
 let exactPinDisplay=false;
 let estimateOpenInProgress=false,customerMapBuildTimer=null,pdfInProgress=false;
@@ -422,7 +416,7 @@ let usage={property:0,structures:0,reports:0,saved:0,area:0,linear:0};
 let lastHistorySaveKey='';
 
 const legend=L.control({position:'bottomright'});legend.onAdd=()=>{const d=L.DomUtil.create('div');d.style.cssText='background:white;padding:7px 9px;border-radius:7px;box-shadow:0 1px 5px #0003;font-size:11px;line-height:1.5';d.innerHTML='<b>Roof Segments</b><br>Blue = Main House<br>Teal = Extra Structure<br>Gold = Pitch';return d};legend.addTo(map);if(legend.getContainer())legend.getContainer().classList.add('roof-legend');
-map.on('click',e=>{if(aiTracePickMode){if(!aiTraceBusy)pickAiTraceSurface(e.latlng);return}if(areaMode){addAreaPoint(e.latlng);return}if(linearMode){addLinearPoint(e.latlng);return}if(outlineEditMode){addOutlinePoint(e.latlng);return}if(traceMode){addTracePoint(e.latlng);return}if(roofFixMode){removeClickedExtraRoof(e.latlng);return}if(locateRoofMode){retryRoofAt(e.latlng);return}if(!garageMode)return;clicked=e.latlng;if(clickMarker)clickMarker.remove();clickMarker=L.marker(e.latlng).addTo(map).bindPopup('Measuring selected roof…').openPopup();garageMode=false;measureClicked();});
+map.on('click',e=>{if(areaMode){addAreaPoint(e.latlng);return}if(linearMode){addLinearPoint(e.latlng);return}if(outlineEditMode){addOutlinePoint(e.latlng);return}if(traceMode){addTracePoint(e.latlng);return}if(roofFixMode){removeClickedExtraRoof(e.latlng);return}if(locateRoofMode){retryRoofAt(e.latlng);return}if(!garageMode)return;clicked=e.latlng;if(clickMarker)clickMarker.remove();clickMarker=L.marker(e.latlng).addTo(map).bindPopup('Measuring selected roof…').openPopup();garageMode=false;measureClicked();});
 
 function el(id){return document.getElementById(id)}function fmt(n){return Math.round(Number(n||0)).toLocaleString()}function currencyCode(){return (el('dealerCountry')?.value||'US')==='CA'?'CAD':'USD'}function money(n){const c=currencyCode();return new Intl.NumberFormat(c==='CAD'?'en-CA':'en-US',{style:'currency',currency:c}).format(Number(n||0))}function status(t,k=''){const surface=['commercial','paving','pressure','landscaping','snow'].includes(currentBusinessType());if(surface)t=String(t).replace(/AutoMeasure remains hidden until you return to it\.?/gi,'Your service measurement has been saved.').replace(/Roof AutoMeasure is not included in this service-area quote\.?/gi,'Only the selected service measurements are included in this quote.');el('status').textContent=t;el('status').className='status '+k}function showLoad(v){el('loading').style.display=v?'block':'none'}
 const AERIQUOTE_US_STATES=`<option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option><option value="AR">AR</option><option value="CA">CA</option><option value="CO">CO</option><option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option><option value="GA">GA</option><option value="HI">HI</option><option value="ID">ID</option><option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option><option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option><option value="ME">ME</option><option value="MD">MD</option><option value="MA">MA</option><option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option><option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option><option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option><option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option><option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option><option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option><option value="SC">SC</option><option value="SD">SD</option><option value="TN">TN</option><option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option><option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option><option value="WI">WI</option><option value="WY">WY</option><option value="DC">DC</option>`;
@@ -952,7 +946,7 @@ function commercialSelectArea(i){if(areaMode){status('Save the current outline f
 function commercialAddArea(){if(!commercialActive()||areaMode||(!multiAreaSaved()&&(!areaMeasurementSaved||areaPoints.length<3))){status('Save the current service area first.','warn');return}commercialSyncCurrent();commercialEditingIndex=commercialAreas.length;commercialAreas.push({name:'Service Area '+(commercialEditingIndex+1),rate:currentJobPrice(),points:[],sqft:0});areaPoints=[];areaMeasurementSaved=false;clearAreaLayers();commercialAreaDrawSaved();updateAreaUi();renderSummary();toggleAreaMeasure()}
 function areaSqFtTotal(){if(areaPoints.length<3)return 0;return localPolygonAreaM2(areaPoints)*10.76391041671}
 function clearAreaLayers(){areaLayers.forEach(x=>{try{map.removeLayer(x)}catch(e){}});areaLayers=[]}
-function updateAreaUi(){const total=areaSqFtTotal(),surfaceOnly=['commercial','paving','pressure','landscaping'].includes(currentBusinessType());commercialAreaUi();if(el("areaCorrectBtn"))el("areaCorrectBtn").style.display=areaMeasurementSaved&&!areaMode&&areaPoints.length>=3?"inline-block":"none";if(el("areaCancelCorrectionBtn"))el("areaCancelCorrectionBtn").style.display=areaCorrectionOriginal?"inline-block":"none";if(el('areaTotal'))el('areaTotal').textContent=`Area: ${fmt(multiAreaSaved()?multiAreaTotal():total)} ft²`;if(el('areaUndoBtn'))el('areaUndoBtn').style.display=areaMode&&areaPoints.length?'inline-block':'none';if(el('areaClearBtn'))el('areaClearBtn').style.display=(areaMode||measurementViewMode==='area')&&areaPoints.length?'inline-block':'none';if(el('areaAutoBtn'))el('areaAutoBtn').style.display=!surfaceOnly&&measurementViewMode==='area'?'inline-block':'none';if(el('areaHelp'))el('areaHelp').innerHTML=areaMode?(areaPoints.length>=3?`<b>Area Measure ON.</b> ${areaPoints.length} points placed • <b>${fmt(total)} ft²</b>. Keep clicking to adjust the outline, then Save Area Measurement.`:`<b>Area Measure ON.</b> Click at least three corners around the service area.`):(measurementViewMode==='area'&&areaMeasurementSaved?`<b>✓ Area measurement saved: ${fmt(total)} ft².</b> ${currentBusinessType()==='paving'?'Only the saved paved surface is included in this quote.':currentBusinessType()==='pressure'?'Only the saved cleaning surface is included in this quote.':currentBusinessType()==='landscaping'?'Only the measured landscaping area is included in this quote.':'Only the selected service area is included in this quote.'}`:'Click Start Area Measure for a clean aerial workspace.');document.body.classList.toggle('area-active',areaMode);updateAerialActionbar()}
+function updateAreaUi(){const total=areaSqFtTotal(),surfaceOnly=['commercial','paving','pressure','landscaping'].includes(currentBusinessType());commercialAreaUi();if(el("areaCorrectBtn"))el("areaCorrectBtn").style.display=areaMeasurementSaved&&!areaMode&&areaPoints.length>=3?"inline-block":"none";if(el("areaCancelCorrectionBtn"))el("areaCancelCorrectionBtn").style.display=areaCorrectionOriginal?"inline-block":"none";if(el('areaTotal'))el('areaTotal').textContent=`Area: ${fmt(multiAreaSaved()?multiAreaTotal():total)} ft²`;if(el('areaUndoBtn'))el('areaUndoBtn').style.display=areaMode&&areaPoints.length?'inline-block':'none';if(el('areaClearBtn'))el('areaClearBtn').style.display=(areaMode||measurementViewMode==='area')&&areaPoints.length?'inline-block':'none';if(el('areaAutoBtn'))el('areaAutoBtn').style.display=!surfaceOnly&&measurementViewMode==='area'?'inline-block':'none';if(el('areaHelp'))el('areaHelp').innerHTML=areaMode?(areaPoints.length>=3?`<b>Area Measure ON.</b> ${areaPoints.length} points placed • <b>${fmt(total)} ft²</b>. Keep clicking to adjust the outline, then Save Area Measurement.`:`<b>Area Measure ON.</b> Click at least three corners around the service area.`):(measurementViewMode==='area'&&areaMeasurementSaved?`<b>✓ Area measurement saved: ${fmt(total)} ft².</b> ${currentBusinessType()==='paving'?'Only the saved paved surface is included in this quote.':currentBusinessType()==='pressure'?'Only the saved cleaning surface is included in this quote.':currentBusinessType()==='landscaping'?'Only the measured landscaping area is included in this quote.':'Only the selected service area is included in this quote.'}`:'Click Start Area Measure for a clean aerial workspace.');document.body.classList.toggle('area-active',areaMode);}
 let areaCorrectionOriginal=null;
 function correctAreaOutline(){if(!sessionToken||!areaMeasurementSaved||areaPoints.length<3)return;areaCorrectionOriginal=areaPoints.map(p=>L.latLng(p.lat,p.lng));toggleAreaMeasure();status("Drag the purple corner handles to correct the outline, then select FINISH & SAVE AREA.","warn")}
 function cancelAreaCorrection(){if(!areaCorrectionOriginal)return;areaPoints=areaCorrectionOriginal.map(p=>L.latLng(p.lat,p.lng));areaCorrectionOriginal=null;areaMode=false;areaMeasurementSaved=true;measurementViewMode="area";if(el("areaStartBtn")){el("areaStartBtn").textContent=commercialActive()?"START ANOTHER SERVICE AREA":"CONTINUE AREA MEASURE";el("areaStartBtn").className="secondary"}redrawAreaMeasure();renderSummary();status("Outline correction cancelled; previous measurement restored.","ok")}
@@ -972,22 +966,8 @@ function undoAreaPoint(){if(!areaMode||!areaPoints.length)return;areaPoints.pop(
 function clearAreaMeasure(){areaCorrectionOriginal=null;areaPoints=[];areaMeasurementSaved=false;if(commercialActive()&&commercialEditingIndex>=0){commercialAreas.splice(commercialEditingIndex,1);commercialEditingIndex=-1;commercialAreaDrawSaved()}clearAreaLayers();updateAreaUi();renderSummary();status('Area measurement cleared.','ok')}
 function toggleAreaMeasure(){if(!sessionToken){status('Load the property first.','error');return}if(commercialActive()&&!areaMode&&areaMeasurementSaved&&areaPoints.length>=3&&!areaCorrectionOriginal){commercialAddArea();return}if(areaMode){if(areaPoints.length<3){status('Add at least three points before saving the area measurement.','error');return}areaMode=false;if(!areaMeasurementSaved)usage.area++;areaMeasurementSaved=true;areaCorrectionOriginal=null;measurementViewMode='area';if(commercialActive()){commercialSyncCurrent();commercialAreaDrawSaved();}if(el('areaStartBtn')){el('areaStartBtn').textContent=commercialActive()?'START ANOTHER SERVICE AREA':'CONTINUE AREA MEASURE';el('areaStartBtn').className='secondary'}updateAreaUi();renderSummary();status(`✓ AREA MEASUREMENT SAVED — ${fmt(areaSqFtTotal())} ft².`,'ok');return}if(linearMode)stopLinearMode(false);linearMode=false;clearLinearLayers();areaMode=true;areaMeasurementSaved=false;measurementViewMode='area';hideRoofDisplayForLinear();if(el('areaStartBtn')){el('areaStartBtn').textContent='FINISH & SAVE AREA';el('areaStartBtn').className='primary'}redrawAreaMeasure();updateAreaUi();renderSummary();status('AREA MEASURE ON — click around the outside edge of the service area.','warn')}
 function returnAreaToAutoMeasure(){areaMode=false;measurementViewMode='auto';areaMeasurementSaved=areaPoints.length>=3;if(el('areaStartBtn')){el('areaStartBtn').textContent='START AREA MEASURE';el('areaStartBtn').className='secondary'}clearAreaLayers();restoreAutoMeasureDisplay();updateAreaUi();renderSummary();status('AutoMeasure restored. Your saved area measurement is still available.','ok')}
-function updateAerialActionbar(){
- const surface=['commercial','paving','pressure','landscaping','snow'].includes(currentBusinessType());
- if(el('aerialActionbar'))el('aerialActionbar').style.display=surface&&sessionToken?'block':'none';
- if(el('aerialSaveBtn'))el('aerialSaveBtn').disabled=aiTraceBusy||!areaMode||areaPoints.length<3||!(areaSqFtTotal()>0);
- if(el('aerialAiBtn'))el('aerialAiBtn').disabled=aiTraceBusy;
- if(el('resumeManualBtn'))el('resumeManualBtn').style.display=aiTracePausedManual?'inline-block':'none';
-}
-function saveAerialArea(){
- if(!areaMode||areaPoints.length<3||!(areaSqFtTotal()>0))return;
- toggleAreaMeasure();updateAerialActionbar();
- if(areaMeasurementSaved)setAiTraceMessage('Area saved. Click AI TRACE, then another section to add more. Your other drafts are kept.','ok');
-}
 function updateMeasurementInterface(){
- updateAerialActionbar();
  const industry=currentBusinessType(),surfaceOnly=['commercial','paving','pressure','landscaping','snow'].includes(industry);
- if(el('toolAiBtn'))el('toolAiBtn').style.display=surfaceOnly?'block':'none';if(!surfaceOnly&&el('aiTraceTools'))el('aiTraceTools').style.display='none';
  const roofLegend=document.querySelector('.roof-legend');if(roofLegend)roofLegend.style.display=surfaceOnly?'none':'';
  const autoButton=el('toolAutoBtn');if(autoButton)autoButton.style.display=surfaceOnly?'none':'';
  const areaAuto=el('areaAutoBtn');if(areaAuto)areaAuto.style.display=surfaceOnly?'none':areaAuto.style.display;
@@ -1007,126 +987,7 @@ function updatePropertyActionButton(){
  const mode=pendingMeasurementMode||measurementViewMode||'auto';
  b.textContent=mode==='area'?'LOAD PROPERTY & START AREA MEASURE':mode==='linear'?'LOAD PROPERTY & START LINEAR MEASURE':'LOAD & MEASURE ROOF';
 }
-function pauseManualForAi(){
- if(!((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)))return true;
- if(aiTracePausedManual){setAiTraceMessage('Save the outline currently being reviewed before starting another trace. Your earlier manual drawing is still available.');return false}
- aiTracePausedManual={areaMode,linearMode,areaPoints:areaPoints.map(p=>L.latLng(p.lat,p.lng)),linearPoints:linearPoints.map(p=>L.latLng(p.lat,p.lng)),areaMeasurementSaved,linearMeasurementSaved,measurementViewMode,commercialEditingIndex,commercialItem:commercialAreas[commercialEditingIndex]||null,areaCorrectionOriginal,jobPrice:el('jobPrice')?.value};
- if(areaMode&&areaPoints.length){areaMode=false;areaPoints=[];areaMeasurementSaved=false;areaCorrectionOriginal=null;clearAreaLayers()}
- if(linearMode&&linearPoints.length){linearMode=false;linearPoints=[];linearMeasurementSaved=false;clearLinearLayers()}
- updateAreaUi();updateLinearUi();renderSummary();return true;
-}
-function resumeAiPausedManual(){
- if(!aiTracePausedManual||aiTraceBusy)return;
- if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){setAiTraceMessage('Save the current outline before resuming the paused manual drawing.');return}
- const saved=aiTracePausedManual;
- if(saved.linearMode&&linearMeasurementSaved){setAiTraceMessage('The current linear measurement is saved. Your earlier unfinished linear drawing remains paused so neither is overwritten.');return}
- if(measurementViewMode==='linear'&&linearMeasurementSaved)savedLinearJobRate=currentJobPrice();
- aiTracePausedManual=null;aiTracePickMode=false;
- if(saved.areaMode){
-  let index=saved.commercialItem?commercialAreas.indexOf(saved.commercialItem):saved.commercialEditingIndex;
-  if(saved.commercialItem&&index<0){index=commercialAreas.length;commercialAreas.push(saved.commercialItem)}
-  commercialEditingIndex=index;areaPoints=saved.areaPoints;areaMode=true;areaMeasurementSaved=saved.areaMeasurementSaved;areaCorrectionOriginal=saved.areaCorrectionOriginal;linearMode=false;
- }else if(saved.linearMode){linearPoints=saved.linearPoints;linearMode=true;linearMeasurementSaved=saved.linearMeasurementSaved;areaMode=false}
- measurementViewMode=saved.measurementViewMode;pendingMeasurementMode=saved.measurementViewMode;
- if(el('jobPrice')&&saved.jobPrice!==undefined)el('jobPrice').value=saved.jobPrice;
- if(areaMode&&el('areaStartBtn'))el('areaStartBtn').textContent='FINISH & SAVE AREA';
- redrawAreaMeasure();redrawLinearMeasure();commercialAreaDrawSaved();updateMeasurementInterface();renderSummary();setAiTraceMessage('Your manual drawing is restored. Continue its corners or save it when ready.','ok');
-}
-function clearAiTracePick(){
- aiTracePickMode=false;aiTraceSeed=null;aiTraceDraftSequence=0;aiTracePausedManual=null;
- if(aiTraceSeedMarker){try{map.removeLayer(aiTraceSeedMarker)}catch(e){}aiTraceSeedMarker=null}
-}
-function startAiTracePick(){
- if(!sessionToken){setAiTraceMessage('Load the property first.');return}
- if(aiTraceBusy){setAiTraceMessage('AI tracing is already running. Please wait.');return}
- if(!pauseManualForAi())return;
- aiTracePickMode=true;aiTraceSeed=null;
- ['toolAutoBtn','toolAreaBtn','toolLinearBtn','toolAiBtn'].forEach(id=>{if(el(id))el(id).classList.toggle('active',id==='toolAiBtn')});
- setAiTraceMessage('AI TRACE ON — click inside the grass or paved section you want. One click starts tracing automatically.');
- const aerial=el('map'),position=aerial?.getBoundingClientRect();if(position&&(position.top>window.innerHeight||position.bottom<0))aerial.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function aiTraceContainsPoint(points,point){
- let inside=false;
- for(let i=0,j=points.length-1;i<points.length;j=i++){
-  const a=points[i],b=points[j],ax=Array.isArray(a)?a[1]:a.lng,ay=Array.isArray(a)?a[0]:a.lat,bx=Array.isArray(b)?b[1]:b.lng,by=Array.isArray(b)?b[0]:b.lat;
-  if((ay>point.lat)!==(by>point.lat)&&point.lng<(bx-ax)*(point.lat-ay)/(by-ay)+ax)inside=!inside;
- }return inside;
-}
-function pickAiTraceSurface(point){
- const saved=commercialAreas.find(a=>a.source==='ai-assisted'&&a.sqft>0&&aiTraceContainsPoint(a.points,point));
- if(saved){setAiTraceMessage((saved.name||'This section')+' is already saved. Use its EDIT OUTLINE control if it needs correction.','ok');return}
- const existing=aiTraceDrafts.find(a=>aiTraceContainsPoint(a.points,point));
- if(existing){setAiTraceMessage((existing.name||'This section')+' already has a draft outline. Click another section, or REVIEW & EDIT OUTLINE to save this one.','ok');return}
- aiTraceSeed=point;
- if(aiTraceSeedMarker)map.removeLayer(aiTraceSeedMarker);
- aiTraceSeedMarker=L.circleMarker(point,{radius:5,color:'#00a6c8',fillColor:'#00a6c8',fillOpacity:1,interactive:false}).addTo(map);
- runAiTrace();
-}
-function aiTraceRequestView(){return{centre:aiTraceSeed,zoom:18,scope:[0,0,1,1],seed:[.5,.5]}}
-function openAiTraceTools(){if(el('aiTraceTools'))el('aiTraceTools').style.display='block';if(el('aiTraceSurface')&&!el('aiTraceSurface').dataset.initialized){el('aiTraceSurface').value=currentBusinessType()==='landscaping'?'lawn':'paved';el('aiTraceSurface').dataset.initialized='true';}startAiTracePick()}
-function clearAiTraceLayers(){aiTraceLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});aiTraceLayers=[]}
-function clearAiTraceDrafts(){if(el('aiTraceComparison'))el('aiTraceComparison').style.display='none';if(el('aiTracePreview'))el('aiTracePreview').innerHTML='';aiTraceGeneration++;aiTraceDrafts=[];clearAiTraceLayers();if(el('aiTraceResults'))el('aiTraceResults').innerHTML='';if(el('aiTraceMessage'))el('aiTraceMessage').textContent=''}
-function renderAiTraceDrafts(){clearAiTraceLayers();aiTraceDrafts.forEach((a,i)=>{const poly=L.polygon(a.points,{color:'#e35b21',weight:3,dashArray:'7,5',fillOpacity:.08,interactive:false}).addTo(map);aiTraceLayers.push(poly)});if(el('aiTraceResults'))el('aiTraceResults').innerHTML=aiTraceDrafts.map((a,i)=>`<div style="margin-top:8px"><b>${escapeHistory(a.name||'Suggested area '+(i+1))}</b> <button type="button" class="secondary" onclick="reviewAiTrace(${i})">REVIEW & EDIT OUTLINE</button></div>`).join('')}
-function renderAiTracePreview(image,suggestions){
- const box=el('aiTracePreview'),details=el('aiTraceComparison');if(!box||!details)return;
- box.innerHTML='';details.style.display='none';
- if(typeof image!=='string'||!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(image))return;
- const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 640 640');svg.style.width='100%';svg.style.maxWidth='640px';
- const background=document.createElementNS(ns,'image');background.setAttribute('href',image);background.setAttribute('width','640');background.setAttribute('height','640');svg.appendChild(background);
- suggestions.forEach((area,index)=>{
-  const points=area.image_points;if(!Array.isArray(points)||points.length<3||!points.every(p=>Array.isArray(p)&&p.length===2&&p.every(v=>Number.isFinite(v)&&v>=0&&v<=640)))return;
-  const polygon=document.createElementNS(ns,'polygon');polygon.setAttribute('points',points.map(p=>p.join(',')).join(' '));polygon.setAttribute('fill','none');polygon.setAttribute('stroke','#ff6a00');polygon.setAttribute('stroke-width','2');svg.appendChild(polygon);
-  const title=document.createElementNS(ns,'title');title.textContent=area.name||'Suggested area '+(index+1);polygon.appendChild(title);
- });box.appendChild(svg);details.style.display='block';
-}
-function setAiTraceMessage(message,kind='warn'){
- if(el('aiTraceMessage'))el('aiTraceMessage').textContent=message;
- status(message,kind);
-}
-function appendAiTraceDrafts(incoming,surface){
- const key=a=>JSON.stringify(a.points.map(p=>p.map(v=>Number(v).toFixed(7))).sort());
- const known=new Set(aiTraceDrafts.map(key)),added=[];
- for(const draft of incoming){const identity=key(draft);if(known.has(identity))continue;known.add(identity);
-  const item={...draft,name:(surface==='lawn'?'Lawn':'Paved surface')+' section '+(++aiTraceDraftSequence)};
-  aiTraceDrafts.push(item);added.push(item);
- }return added;
-}
-async function runAiTrace(){
- if(!sessionToken){setAiTraceMessage('Load the property first.');return}
- if(aiTraceBusy){setAiTraceMessage('AI tracing is already running. Please wait.');return}
- if(!pauseManualForAi())return;
- if(!aiTraceSeed){startAiTracePick();return}
- aiTraceBusy=true;const token=sessionToken,generation=++aiTraceGeneration,surface=el('aiTraceSurface').value,button=el('aiTraceRunBtn');if(button)button.disabled=true;updateAerialActionbar();
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
- setAiTraceMessage('Finding visible surface boundaries…');
- try{
-  const view=aiTraceRequestView(),centre=view.centre,r=await fetch('/api/ai-trace',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface,latitude:centre.lat,longitude:centre.lng,zoom:view.zoom,scope:view.scope,seed:view.seed})});
-  if(token!==sessionToken||generation!==aiTraceGeneration)return;
-  if(r.status===401)throw new Error('Your login has expired. Log in again, then reload the property.');
-  if(r.status===404)throw new Error('The property session has expired or the service restarted. Reload the property before tracing.');
-  let d;try{d=await r.json()}catch(e){if(e.name==='AbortError')throw e;throw new Error('The tracing service returned an unreadable response. Please try again.');}
-  if(token!==sessionToken||generation!==aiTraceGeneration)return;
-  if(!r.ok)throw new Error((d.user_error||d.error||'AI tracing is unavailable.')+(d.retry_after_seconds?' Wait '+d.retry_after_seconds+' seconds before clicking the next section.':'')+' Your existing draft outlines are kept.');
-  const incoming=(d.suggestions||[]).filter(a=>Array.isArray(a.points)&&a.points.length>=3&&a.points.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))),added=appendAiTraceDrafts(incoming,surface);
-  renderAiTraceDrafts();renderAiTracePreview(d.image_preview,incoming);
-  const message=added.length?aiTraceDrafts.length+' draft outline'+(aiTraceDrafts.length===1?'':'s')+' ready. Click another section to add its outline, or REVIEW & EDIT each draft, then FINISH & SAVE AREA.':incoming.length?'This section already has a draft outline. Your existing drafts are kept.':'No clear surface boundary was found for this click. '+(aiTraceDrafts.length?'Your '+aiTraceDrafts.length+' earlier draft outline'+(aiTraceDrafts.length===1?' is':'s are')+' kept.':'Use manual Area Measure.');
-  setAiTraceMessage(message+(d.user_warning?' '+d.user_warning:''),d.user_warning?'warn':added.length?'ok':'warn');
- }catch(e){if(token===sessionToken&&generation===aiTraceGeneration)setAiTraceMessage(e.name==='AbortError'?'AI tracing timed out. Your saved measurements are unchanged. You can try again.':e.message,'error')}
- finally{clearTimeout(timer);aiTraceBusy=false;if(button)button.disabled=false;updateAerialActionbar()}
-}
-function reviewAiTrace(i){
- aiTracePickMode=false;
- if(!sessionToken||!aiTraceDrafts[i])return;
- if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){status('Save or clear your current measurement before reviewing a suggestion.','warn');return}
- const draft=aiTraceDrafts.splice(i,1)[0];if(commercialEditingIndex>=0&&commercialAreas[commercialEditingIndex]?.sqft===0){commercialAreas.splice(commercialEditingIndex,1);commercialEditingIndex=-1}if(measurementViewMode==='linear')savedLinearJobRate=currentJobPrice();commercialSyncCurrent();
- linearMode=false;clearLinearLayers();measurementViewMode='area';pendingMeasurementMode='area';areaCorrectionOriginal=null;
- const rate=Number(commercialAreas.filter(a=>a.sqft>0).at(-1)?.rate??el('price')?.value??0);if(el('jobPrice'))el('jobPrice').value=String(rate);
- commercialEditingIndex=commercialAreas.length;commercialAreas.push({name:draft.name||'AI suggested area',rate,points:[],sqft:0,source:'ai-assisted'});
- areaPoints=draft.points.map(p=>L.latLng(p[0],p[1]));areaMeasurementSaved=false;areaMode=true;hideRoofDisplayForLinear();commercialAreaDrawSaved();renderAiTraceDrafts();
- if(el('areaStartBtn')){el('areaStartBtn').textContent='FINISH & SAVE AREA';el('areaStartBtn').className='primary'}redrawAreaMeasure();updateMeasurementInterface();renderSummary();setAiTraceMessage('Review the purple outline on the aerial. Adjust its corners if needed, then SAVE REVIEWED AREA above the map.','warn');
-}
 function startServiceAreaTool(){
- aiTracePickMode=false;
  if(sessionToken&&!areaMode&&multiAreaSaved()){
   if(measurementViewMode==='linear')savedLinearJobRate=currentJobPrice();
   measurementViewMode='area';pendingMeasurementMode='area';updateMeasurementInterface();commercialAddArea();return;
@@ -1134,7 +995,6 @@ function startServiceAreaTool(){
  selectMeasurementTool('area');
 }
 function selectMeasurementTool(mode){
- aiTracePickMode=false;
  if(measurementViewMode==='linear'&&mode!=='linear')savedLinearJobRate=currentJobPrice();
  // Preserve the area price entered in the main job-rate field before switching to linear.
  // Combined Pressure Washing estimates use a separate area-rate field.
@@ -1254,8 +1114,6 @@ function resetReportForNewProperty(){
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
 function resetMeasurementForNewProperty(){
- clearAiTracePick();
- clearAiTraceDrafts();
  linearMode=false;linearPoints=[];linearMeasurementSaved=false;areaMode=false;commercialAreas=[];commercialEditingIndex=-1;savedLinearJobRate=null;commercialAreaLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});commercialAreaLayers=[];areaPoints=[];areaMeasurementSaved=false;measurementViewMode=pendingMeasurementMode||'auto';clearLinearLayers();clearAreaLayers();updateLinearUi();updateAreaUi();updatePropertyActionButton();updateMeasurementInterface();
  cancelCurrentTrace();
  structures=[];
@@ -3194,52 +3052,6 @@ def create_session(key,lat,lng,street_url=None,mode="solar",layers=None,anchor_l
     for t in list(SESSIONS):
         if time.time()-SESSIONS[t]["created"]>3600:SESSIONS.pop(t,None)
     return token
-
-@app.get("/api/ai-trace/config")
-def ai_trace_config():
-    return jsonify(enabled=ai_trace.configured(),provider=ai_trace.provider())
-
-@app.post("/api/ai-trace")
-def ai_trace_suggestions():
-    data=request.get_json(silent=True) or {}
-    sess=SESSIONS.get(str(data.get("token") or ""))
-    if not sess or time.time()-sess.get("created",0)>3600:return jsonify(error="Reload the property before AI tracing."),404
-    if str(sess.get("dealer_id") or "")!=str(session.get("dealer_id") or ""):return jsonify(error="This property belongs to another account."),403
-    if not ai_trace.configured():return jsonify(error="AI tracing is not configured.",user_error="SAM 3 tracing needs FAL_KEY in the test service environment. Manual Area and Linear tools are still available."),503
-    try:
-        surface=str(data.get("surface") or "")
-        if surface not in ai_trace.SURFACES:raise ValueError("Choose Lawn or Paved Surface.")
-        lat=float(data.get("latitude"));lng=float(data.get("longitude"));zoom=int(data.get("zoom"))
-        if not math.isfinite(lat) or not math.isfinite(lng) or not (-85<=lat<=85 and -180<=lng<=180 and 16<=zoom<=20):raise ValueError("Invalid aerial view.")
-        distance=math.hypot((lat-sess["lat"])*111320,(lng-sess["lng"])*111320*math.cos(math.radians(lat)))
-        if distance>1500:raise ValueError("Center the aerial closer to the loaded property.")
-        scope=ai_trace.validate_scope(data.get("scope"));seed=ai_trace.validate_seed(data.get("seed"))
-        cache_key=(ai_trace.provider(),surface,round(lat,7),round(lng,7),zoom,tuple(scope),tuple(seed))
-        with AI_TRACE_LOCK:
-            if sess.get("ai_trace_busy"):return jsonify(error="AI tracing is already running."),409
-            if sess.get("ai_trace_cache_key")==cache_key:return jsonify(suggestions=sess["ai_trace_cache"],image_preview=sess.get("ai_trace_image_preview"),user_warning=sess.get("ai_trace_warning", ""),review_required=True)
-            now=time.time();recent=[started for started in sess.get("ai_trace_recent_starts",[]) if now-started<60]
-            if len(recent)>=20:return jsonify(error="Tracing request limit reached.",retry_after_seconds=max(1,math.ceil(60-(now-recent[0])))),429
-            sess["ai_trace_recent_starts"]=recent+[now];sess["ai_trace_busy"]=True;sess["ai_trace_last_started"]=now
-        try:
-            q=urllib.parse.urlencode({"center":f"{lat},{lng}","zoom":zoom,"size":"640x640","maptype":"satellite","format":"png","key":sess["key"]})
-            req=urllib.request.Request("https://maps.googleapis.com/maps/api/staticmap?"+q,headers={"Referer":request.host_url,"User-Agent":"AeriQuote/AI-Trace"})
-            with urllib.request.urlopen(req,timeout=12) as image_response:
-                if not image_response.headers.get("Content-Type","").startswith("image/png"):raise ValueError("Satellite image unavailable.")
-                image=image_response.read(8*1024*1024)
-            suggestions,usage=ai_trace.suggest(image,lat,lng,zoom,surface,scope=scope,seed=seed)
-            sess["ai_trace_cache_key"]=cache_key;sess["ai_trace_cache"]=suggestions;sess["ai_trace_image_preview"]=ai_trace.image_preview(image)
-            sess["ai_trace_warning"]=usage.get("user_warning", "") or ("Some detected regions could not be outlined safely." if usage.get("rejected_regions") else "")
-            app.logger.info("AI trace usage: %s",json.dumps(usage))
-            return jsonify(suggestions=suggestions,image_preview=sess["ai_trace_image_preview"],user_warning=sess["ai_trace_warning"],review_required=True)
-        finally:
-            with AI_TRACE_LOCK:sess["ai_trace_busy"]=False
-    except ai_trace.ProviderError as e:
-        return jsonify(error="AI provider request failed.",user_error=str(e)),502
-    except ValueError as e:
-        return jsonify(error="AI tracing could not produce a valid outline.",user_error=str(e) if str(e) in ("Choose Lawn or Paved Surface.","Invalid aerial view.","Center the aerial closer to the loaded property.","Set a valid job boundary before AI tracing.","Click inside the surface you want to trace.") else "No reliable outline was returned. Try manual Area Measure."),422
-    except Exception:
-        return jsonify(error="AI tracing service is unavailable.",user_error="AI tracing could not finish. Your saved measurements are unchanged. Try manual Area Measure."),502
 
 @app.post("/property")
 def property_data():
