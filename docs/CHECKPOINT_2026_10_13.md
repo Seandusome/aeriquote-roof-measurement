@@ -1,3 +1,59 @@
+# AeriQuote handoff — October 13, 2026, 4:38 PM MDT
+
+Current application baseline: `64d28a2d7065a6af9f93b3d71a4bba41499aaebf`.
+Repository: `Seandusome/aeriquote-roof-measurement`.
+Authorized branch ONLY: `landscaping-multi-area-recovery-oct11`. Never modify main or roll the entire app back.
+Test service: https://aeriquote-commercial-test.onrender.com/
+
+## Latest live result: PASSED
+User reopened the prior two-roof Roofing estimate and downloaded PDF (19).
+Property: 1715 2nd Ave North, Saskatoon, SK.
+Main house 1,097 ft², garage 453 ft², combined 1,550 ft², two roofs.
+Main house $822.50, garage $340.09, subtotal $1,162.59, taxes $58.13 + $69.76, total CAD $1,290.48.
+Both roof outlines align; all eight feet labels and all four pitch labels appear in the reopened PDF.
+Main house edge labels 45.0, 48.3, 19.7, 22.2 ft; pitch labels 29.6°,31.7°.
+Garage labels 24.5,25.4,15.6,15.6 ft; pitches 24.0°,22.9°.
+Do not repeat these tests unless new code or evidence warrants it.
+
+## Afternoon progress after the earlier checkpoint
+- Snow Removal combined workflow passed: 17,729 + 11,432 ft², 667.4 ft, $150 salt, 5% + 6% taxes, CAD $13,188.07. Saved reopen preserves Nancy contact details and internal note de-ice. PDF guarantee prompt removed.
+- Saved-area count and message corrected for all five surface industries (23de83a).
+- Empty new draft blocked removing a saved area. Fixed f510923; tests cover all five surface industries, retaining remaining geometry/rate and linear.
+- User removed Snow Area 2, then edited Area 1: 17,808→17,409 ft² at .25, 669.4 ft at .40, final CAD $5,128.20; PDF aligned.
+- User confirmed improved imagery at 1715 2nd Ave North. Wide imagery now scale=2; zoom/pan detail up to zoom20, with retained 3x3 coverage. Surface industries and normal address-based Roofing share loader. Exact-pin special route remains separate.
+- Estimate source resolution now selected from saved areas, lines, roofs and manual outlines; fallback estimate uses improved loader. User confirmed clearer PDF.
+- Roofing setup finish button was disconnected. Fixed missing finishSetup ID, setupIndustry roofing mapping, profile field IDs, price/taxes and Roofing benefits in be963b3. All six setup-button flows tested with mocked profile save/navigation.
+- Roofing label backgrounds were clipped. Fixed full text width and included Roofing labels in shared canvas export (da5c9e0).
+- Roofing PDF SVG shifted outline. Fixed e2bae01: use approved live polygon LatLngs/style on pixel canvas, detach transformed SVG during capture and restore afterward. Edge labels anchor to true midpoints rather than geographically offset locations.
+- Label suppression dropped 3 of 4 roof edges. Fixed a3ce1e8. Live PDF13 passed four edge labels, pitch and outline at 1,097 ft², CAD $912.97.
+- Added detached garage: live PDF14 passed both polygons, feet/pitch, area1,550 and CAD $1,290.48.
+- Removed garage: PDFs15/16 one roof1,097 and CAD $912.97. PDF16 initially appeared blank in Poppler but embedded JPEG and PyMuPDF confirmed valid report; this was a renderer issue, NOT an app blank-PDF regression.
+- Previous version PDF18 retained two-roof price/geometry but missed labels. Fixed64d28a2: draw saved roof edges and segment pitch labels into historical canvas. Latest PDF19 confirms fix live.
+
+## Preserve / avoid confusion
+AI Trace is permanently retired. Keep Google AutoMeasure Roofing, manual tools, wide panning, saved versions, internal notes and pricing.
+Opening a saved estimate shows a frozen report, not editable workspace recovery. Copied page text may include hidden background workspace; it already has a fixed report overlay. No UI hiding change was needed.
+Refresh/deployment clears active unfinished job; reopening saved report does not restore active measurement state.
+Use approved logos only; no redesign. Roof test profile was intentionally sparse (Your Company/Homeowner, empty contact); no evidence of a profile-persistence regression from those placeholders alone.
+Street View wall at2301AveC is property-specific, not a bug.
+
+## Next work
+No live failure remains from the latest two-roof saved-PDF test. Choose next cleanup/feature with Sean; do NOT repeat passed industry creation tests unnecessarily.
+Known usability gap: saved area edit/remove buttons hidden in Linear mode; user switches AREA to remove. Not fixed yet.
+Further testing pending: differing per-area rates live; broader commercial workflow; manual Roofing/pitch/correction and dropped-pin paths after shared export changes; complete account/permissions/quotas and launch regression pass.
+Website AI wording audit and payments remain pending. Do not claim production ready.
+Stripe/bank work deferred until software cleanup/features/heavy testing complete. Sean plans actual Alberta operations, may use Shingle Guard Inc. legal entity and dedicated USD business account, public AeriQuote branding, subscriptionsUSD; tax registration specifics require accountant confirmation. Do not resume payments unsolicited.
+
+## Verification and workspace notes
+Latest local DOM+Leaflet suite and rendering/inline-JS syntax checks passed. New checks cover Roofing imagery requestzoom20, saved labels, polygon pixel export, midpoint anchors, all rectangularroofedge labels, and all five surface-industry removal cases. These are mocked-source/export checks; live PDF results above provide visual evidence.
+GitHub CI green was verified earlier at e4e64ec; later commits were not individually checked for workflow conclusions. Check actual REST actions/runs?head_sha=... if needed (wrapper fetch_commit_workflow_runs incorrectly filters and returns[]).
+Local repo /workspace/scratch/423ffc3aefb0/aeriquote-roof-measurement; local Git index remains oldc52de63 with many remote-published changes showingmodified/untracked. Compare against remote branch, not index. Leave pre-existing site/assets/commercial-approved.png modification untouched.
+Node dependency path: /workspace/scratch/423ffc3aefb0/test-deps/node_modules. Run NODE_PATH=... node scripts/test_landscaping_controls.cjs. python scripts/test_landscaping_rendering.py checks syntax and saved aerial framing. Flask not installed globally; scripts ASTextract routes. Browserbinaryinstall failed; do not claim full browser automation.
+Publish via GitHub connector create_blob/create_tree(base current remote tree)/create_commit/update_ref expected_sha. Only authorized branch. app.py huge1.35MB embedded assets, avoid truncating; small docs use structured blob.
+
+---
+Earlier checkpoint retained below for history. Its next-step list is superseded by this handoff.
+
 # AeriQuote verified checkpoint — October 13, 2026
 
 Application baseline: e4e64ec05a6b866e1fbfff7b07751cf7b5e333a0.
@@ -36,3 +92,4 @@ Engine checks for landscaping, paving, pressure and snow; DOM + Leaflet area/lin
 5. Stripe subscription/payment integration and launch readiness are not established by measurement tests.
 
 User is opening an AeriQuote bank account and asking about Stripe Canada onboarding. Resume software work from this verified baseline when they return; avoid repeating passed tests without a new reason.
+
