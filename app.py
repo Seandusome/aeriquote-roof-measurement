@@ -1499,6 +1499,26 @@ async function loadCustomerWideAerial(token,targetMap){
  await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',()=>reject(new Error('Wide estimate image failed to load')));layer.addTo(targetMap)});
  return{layer,bounds};
 }
+function measurementLabelPosition(x,y,w,h,occupied,width,height,gap=4){
+ const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));let best=null;
+ for(let radius=0;radius<=260;radius+=26){
+  const offsets=radius?[[0,-radius],[0,radius],[-radius,0],[radius,0],[-radius,-radius],[radius,-radius],[-radius,radius],[radius,radius]]:[[0,0]];
+  for(const [dx,dy] of offsets){const cx=clamp(x+dx,w/2+gap,width-w/2-gap),cy=clamp(y+dy,h/2+gap,height-h/2-gap),box={x:cx-w/2,y:cy-h/2,w,h};
+   const overlap=occupied.reduce((n,b)=>n+Math.max(0,Math.min(box.x+w+gap,b.x+b.w)-Math.max(box.x-gap,b.x))*Math.max(0,Math.min(box.y+h+gap,b.y+b.h)-Math.max(box.y-gap,b.y)),0);
+   if(!best||overlap<best.overlap)best={...box,overlap};if(!overlap){occupied.push(box);return box}
+  }
+ }occupied.push(best);return best;
+}
+function layoutCustomerMeasurementLabels(){
+ if(!customerMap)return;const occupied=[],size=customerMap.getSize();
+ const labels=customerOverlays.map(layer=>({layer,node:layer.getElement?.()?.querySelector('.aeri-edge-label,.linear-seg-label,.area-label')})).filter(a=>a.node);
+ labels.sort((a,b)=>Number(b.node.classList.contains('area-label'))-Number(a.node.classList.contains('area-label')));
+ labels.forEach(({layer,node})=>{const marker=layer.getElement(),pt=customerMap.latLngToContainerPoint(layer.getLatLng()),w=node.offsetWidth||node.textContent.length*7+14,h=node.offsetHeight||26,box=measurementLabelPosition(pt.x,pt.y,w,h,occupied,size.x,size.y);
+  marker.style.marginLeft='0';marker.style.marginTop='0';Object.assign(node.style,{position:'absolute',left:(box.x-pt.x)+'px',top:(box.y-pt.y)+'px',transform:'none',width:'max-content'});
+  marker.querySelector('.measurement-label-leader')?.remove();const dx=box.x+w/2-pt.x,dy=box.y+h/2-pt.y;
+  if(Math.hypot(dx,dy)>4){const leader=document.createElement('div');leader.className='measurement-label-leader';Object.assign(leader.style,{position:'absolute',left:'0',top:'0',width:Math.hypot(dx,dy)+'px',height:'1px',background:'#46576b',transformOrigin:'0 0',transform:'rotate('+Math.atan2(dy,dx)+'rad)',pointerEvents:'none',zIndex:'-1'});marker.prepend(leader)}
+ });
+}
 function drawCustomerAreaEdgeLabels(points,targetMap=customerMap,targetList=customerOverlays){
  if(!targetMap||!Array.isArray(points)||points.length<3)return;
  const pts=points.map(p=>L.latLng(p[0]!==undefined?p[0]:p.lat,p[1]!==undefined?p[1]:p.lng));
@@ -1519,7 +1539,7 @@ async function buildInteractiveCustomerMap(){
  if(!useAerial){if(customerMap){customerMap.remove();customerMap=null;customerRgbLayer=null;customerOverlays=[]}return}
  if(customerMap){customerMap.remove();customerMap=null;customerRgbLayer=null;customerOverlays=[]}
  customerMap=L.map('customerMap',{zoomControl:false,attributionControl:false,zoomSnap:.25}).setView([52.1522,-106.6595],19);
- customerMap.on('click',reportOutlineClick);
+ customerMap.on('click',reportOutlineClick);customerMap.on('moveend zoomend',layoutCustomerMeasurementLabels);
  await new Promise(r=>setTimeout(r,180));
  customerMap.invalidateSize(true);
  let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadFallbackAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('Wide estimate image unavailable; using raster fallback',e);rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
@@ -1568,7 +1588,7 @@ async function buildInteractiveCustomerMap(){
    pts.forEach(pt=>customerOverlays.push(L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class="linear-point"></div>',iconAnchor:[6,6]})}).addTo(customerMap)));
   }
   try{customerMap.fitBounds(L.latLngBounds(allBounds).pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}
-  return;
+  layoutCustomerMeasurementLabels();return;
  }
  const reportStructures=snap.structures||[], reportManual=snap.manualPlanes||[];
  reportStructures.forEach((st,i)=>{
@@ -1609,9 +1629,9 @@ async function buildInteractiveCustomerMap(){
  setReportOutlineButtons(false);
 }
 function drawSavedMeasurementLabels(ctx,snap,view,width,height){
- const world=256*Math.pow(2,view.zoom),xy=p=>{const lat=Number(p[0]??p.lat),lng=Number(p[1]??p.lng),v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},center=xy([view.latitude,view.longitude]);
+ const occupied=[];const world=256*Math.pow(2,view.zoom),xy=p=>{const lat=Number(p[0]??p.lat),lng=Number(p[1]??p.lng),v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},center=xy([view.latitude,view.longitude]);
  const pixel=p=>{const q=xy(p);return[width/2+(q[0]-center[0])*width/view.width,height/2+(q[1]-center[1])*height/view.height]};
- const label=(point,text,color)=>{const [x,y]=pixel(point);ctx.save();ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.measureText(text).width+14;ctx.fillStyle='#fff';ctx.fillRect(x-w/2,y-14,w,28);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-14,w,28);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore()};
+ const label=(point,text,color)=>{const [px,py]=pixel(point);ctx.save();ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.measureText(text).width+14,box=measurementLabelPosition(px,py,w,28,occupied,width,height,8),x=box.x+w/2,y=box.y+14;ctx.strokeStyle=color;ctx.lineWidth=1;if(Math.hypot(x-px,y-py)>4){ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke()}ctx.fillStyle='#fff';ctx.fillRect(box.x,box.y,w,28);ctx.strokeRect(box.x,box.y,w,28);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore()};
  const edges=(points,closed,color)=>{for(let i=1;i<points.length+(closed?1:0);i++){const a=points[i-1],b=points[i%points.length],feet=L.latLng(a).distanceTo(L.latLng(b))*3.28084;label([(a[0]+b[0])/2,(a[1]+b[1])/2],(feet<100?feet.toFixed(1):Math.round(feet).toLocaleString())+' ft',color)}};
  const areas=(snap.commercialAreas||[]).filter(a=>a.points?.length>=3);
  (areas.length?areas:[{points:snap.areaPoints||[],sqft:snap.areaSqFt}]).forEach(a=>{if(a.points.length<3)return;edges(a.points,true,'#7357b8');const lats=a.points.map(p=>p[0]),lngs=a.points.map(p=>p[1]);if(Number(a.sqft)>0)label([(Math.min(...lats)+Math.max(...lats))/2,(Math.min(...lngs)+Math.max(...lngs))/2],fmt(a.sqft)+' ft²','#7357b8')});
