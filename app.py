@@ -1501,6 +1501,8 @@ async function loadCustomerWideAerial(token,targetMap){
  (snap.commercialAreas||[]).forEach(a=>(a.points||[]).forEach(p=>pts.push(L.latLng(p[0],p[1]))));
  (snap.areaPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
  (snap.linearPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
+ (snap.structures||[]).forEach(st=>(st.outline||[]).forEach(p=>pts.push(L.latLng(p.lat!==undefined?p.lat:p[0],p.lng!==undefined?p.lng:p[1]))));
+ (snap.manualPlanes||[]).forEach(st=>(st.points||[]).forEach(p=>pts.push(L.latLng(p.lat!==undefined?p.lat:p[0],p.lng!==undefined?p.lng:p[1]))));
  const center=pts.length?L.latLngBounds(pts).getCenter():(propertyMarker?.getLatLng?.()||map.getCenter());
  const extent=pts.length?L.latLngBounds(pts):null;
  let zoom=18;if(extent)for(zoom=20;zoom>15;zoom--){const nw=map.project(extent.getNorthWest(),zoom),se=map.project(extent.getSouthEast(),zoom);if(Math.abs(se.x-nw.x)<=500&&Math.abs(se.y-nw.y)<=340)break}
@@ -1557,7 +1559,7 @@ async function buildInteractiveCustomerMap(){
  customerMap.on('click',reportOutlineClick);customerMap.on('moveend zoomend',layoutCustomerMeasurementLabels);
  await new Promise(r=>setTimeout(r,180));
  customerMap.invalidateSize(true);
- let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadFallbackAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('Wide estimate image unavailable; using raster fallback',e);rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
+ let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadCustomerWideAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('Wide estimate image unavailable; using raster fallback',e);rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
  customerRgbLayer=rgb.layer;
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
@@ -3580,7 +3582,7 @@ def fallback_map(token):
     if not sess:return Response("Session expired",status=404)
     try:
         if sess.get("fallback_cache") is None:
-            q=urllib.parse.urlencode({"center":f'{sess["lat"]},{sess["lng"]}',"zoom":sess.get("fallback_zoom",20),"size":"640x640","maptype":"satellite","format":"png","key":sess["key"]})
+            q=urllib.parse.urlencode({"center":f'{sess["lat"]},{sess["lng"]}',"zoom":sess.get("fallback_zoom",20),"size":"640x640","scale":"2","maptype":"satellite","format":"png","key":sess["key"]})
             url="https://maps.googleapis.com/maps/api/staticmap?"+q
             # Static Maps keys may be restricted by HTTP referrer. Because this app is
             # local, send the same localhost referrer the browser uses instead of a

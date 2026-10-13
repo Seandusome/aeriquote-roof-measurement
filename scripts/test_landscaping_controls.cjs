@@ -15,6 +15,9 @@ assert.equal(requests.length,detailRequests+1);assert.equal(requests.at(-1).sear
 await w.eval('refreshAerialDetail()');assert.equal(requests.length,detailRequests+1,'Same detailed view must reuse its image');
 w.eval('map.panTo([52.0002,-106],{animate:false});clearTimeout(aerialDetailTimer)');await w.eval('refreshAerialDetail()');assert.equal(requests.length,detailRequests+2);assert.equal(w.eval('fallbackLayer.getLayers().length'),10,'Old detail image must be replaced, keeping nine wide tiles');
 w.eval('map.setView([52,-106],18);clearTimeout(aerialDetailTimer)');console.log('PASS: zoom/pan fetches zoom-20 aerial detail, reuses unchanged views, and retains wide coverage and geometry');
+// A small roof report must request zoom-20 detail using its frozen outline, not the zoom-18 default.
+w.eval("quoteSnapshot={structures:[{outline:[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]}],manualPlanes:[],commercialAreas:[],areaPoints:[],linearPoints:[]}");
+const roofImage=await w.eval("loadCustomerWideAerial('roof-detail',map)");assert.equal(requests.at(-1).searchParams.get('zoom'),'20');w.eval('quoteSnapshot=null');w.eval('map').removeLayer(roofImage.layer);console.log('PASS: small Roofing estimate requests detailed source imagery from frozen roof outline');
 // Saved commercial polygons must keep every edge label when the user switches to Linear.
 dom.reconfigure({url:'https://test.invalid/?industry=commercial'});w.eval("el('businessType').value='commercial';measurementViewMode='linear';clearAreaLayers();commercialAreaDrawSaved()");const edgeCount=w.eval('commercialAreas.reduce((n,a)=>n+a.points.length,0)');assert.equal(btn('map').querySelectorAll('.aeri-edge-label').length,edgeCount);assert.equal(btn('map').querySelectorAll('.area-label').length,3);console.log('PASS: every saved commercial area retains feet on every edge in linear view');
 // The actual PDF exporter must preserve satellite image overlays while replacing vector paths.
