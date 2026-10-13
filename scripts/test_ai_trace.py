@@ -84,11 +84,17 @@ class TraceTests(unittest.TestCase):
         scope,_=self.route()
         with patch('ai_trace.configured',return_value=False),patch('urllib.request.urlopen') as call:
             self.assertEqual(scope['ai_trace_suggestions']()[1],503);call.assert_not_called()
-    def test_route_cooldown_reports_seconds_without_network(self):
-        scope,sess=self.route();sess['ai_trace_last_started']=time.time()
+    def test_route_burst_limit_reports_seconds_without_network(self):
+        scope,sess=self.route();sess['ai_trace_recent_starts']=[time.time()]*20
         with patch('ai_trace.configured',return_value=True),patch('urllib.request.urlopen') as call:
             data,status=scope['ai_trace_suggestions']()
-            self.assertEqual(status,429);self.assertTrue(1<=data['retry_after_seconds']<=15);call.assert_not_called()
+            self.assertEqual(status,429);self.assertTrue(1<=data['retry_after_seconds']<=60);call.assert_not_called()
+    def test_next_section_does_not_require_a_15_second_wait(self):
+        scope,sess=self.route()
+        with patch('ai_trace.configured',return_value=True),patch('ai_trace.suggest',return_value=([],{})),patch('urllib.request.urlopen',return_value=Response(b'png')) as call:
+            scope['ai_trace_suggestions']()
+            scope['request'].get_json=lambda **kw:dict(token='token',surface='paved',latitude=52.0001,longitude=-106,zoom=18,scope=[0,0,1,1],seed=[.5,.5])
+            self.assertTrue(scope['ai_trace_suggestions']()['review_required']);self.assertEqual(call.call_count,2)
     def test_route_cache_and_busy_cleanup(self):
         scope,sess=self.route()
         with patch('ai_trace.configured',return_value=True),patch('ai_trace.suggest',return_value=([{'name':'Paved','points':[[52,-106],[52,-105.99],[52.01,-106]]}],{})),patch('urllib.request.urlopen',return_value=Response(b'png')) as call:

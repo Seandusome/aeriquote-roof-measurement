@@ -1018,11 +1018,16 @@ function pauseManualForAi(){
 function resumeAiPausedManual(){
  if(!aiTracePausedManual||aiTraceBusy)return;
  if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){setAiTraceMessage('Save the current outline before resuming the paused manual drawing.');return}
- const saved=aiTracePausedManual;aiTracePausedManual=null;aiTracePickMode=false;
- // Keep any saved AI areas; a removed empty placeholder is recreated at the end.
- let index=saved.commercialItem?commercialAreas.indexOf(saved.commercialItem):saved.commercialEditingIndex;
- if(saved.commercialItem&&index<0){index=commercialAreas.length;commercialAreas.push(saved.commercialItem)}
- commercialEditingIndex=index;areaPoints=saved.areaPoints;linearPoints=saved.linearPoints;areaMode=saved.areaMode;linearMode=saved.linearMode;areaMeasurementSaved=saved.areaMeasurementSaved;linearMeasurementSaved=saved.linearMeasurementSaved;measurementViewMode=saved.measurementViewMode;pendingMeasurementMode=saved.measurementViewMode;areaCorrectionOriginal=saved.areaCorrectionOriginal;
+ const saved=aiTracePausedManual;
+ if(saved.linearMode&&linearMeasurementSaved){setAiTraceMessage('The current linear measurement is saved. Your earlier unfinished linear drawing remains paused so neither is overwritten.');return}
+ if(measurementViewMode==='linear'&&linearMeasurementSaved)savedLinearJobRate=currentJobPrice();
+ aiTracePausedManual=null;aiTracePickMode=false;
+ if(saved.areaMode){
+  let index=saved.commercialItem?commercialAreas.indexOf(saved.commercialItem):saved.commercialEditingIndex;
+  if(saved.commercialItem&&index<0){index=commercialAreas.length;commercialAreas.push(saved.commercialItem)}
+  commercialEditingIndex=index;areaPoints=saved.areaPoints;areaMode=true;areaMeasurementSaved=saved.areaMeasurementSaved;areaCorrectionOriginal=saved.areaCorrectionOriginal;linearMode=false;
+ }else if(saved.linearMode){linearPoints=saved.linearPoints;linearMode=true;linearMeasurementSaved=saved.linearMeasurementSaved;areaMode=false}
+ measurementViewMode=saved.measurementViewMode;pendingMeasurementMode=saved.measurementViewMode;
  if(el('jobPrice')&&saved.jobPrice!==undefined)el('jobPrice').value=saved.jobPrice;
  if(areaMode&&el('areaStartBtn'))el('areaStartBtn').textContent='FINISH & SAVE AREA';
  redrawAreaMeasure();redrawLinearMeasure();commercialAreaDrawSaved();updateMeasurementInterface();renderSummary();setAiTraceMessage('Your manual drawing is restored. Continue its corners or save it when ready.','ok');
@@ -1038,7 +1043,7 @@ function startAiTracePick(){
  aiTracePickMode=true;aiTraceSeed=null;
  ['toolAutoBtn','toolAreaBtn','toolLinearBtn','toolAiBtn'].forEach(id=>{if(el(id))el(id).classList.toggle('active',id==='toolAiBtn')});
  setAiTraceMessage('AI TRACE ON — click inside the grass or paved section you want. One click starts tracing automatically.');
- el('map')?.scrollIntoView({behavior:'smooth',block:'center'});
+ const aerial=el('map'),position=aerial?.getBoundingClientRect();if(position&&(position.top>window.innerHeight||position.bottom<0))aerial.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function aiTraceContainsPoint(points,point){
  let inside=false;
@@ -1048,6 +1053,8 @@ function aiTraceContainsPoint(points,point){
  }return inside;
 }
 function pickAiTraceSurface(point){
+ const saved=commercialAreas.find(a=>a.source==='ai-assisted'&&a.sqft>0&&aiTraceContainsPoint(a.points,point));
+ if(saved){setAiTraceMessage((saved.name||'This section')+' is already saved. Use its EDIT OUTLINE control if it needs correction.','ok');return}
  const existing=aiTraceDrafts.find(a=>aiTraceContainsPoint(a.points,point));
  if(existing){setAiTraceMessage((existing.name||'This section')+' already has a draft outline. Click another section, or REVIEW & EDIT OUTLINE to save this one.','ok');return}
  aiTraceSeed=point;
@@ -1055,7 +1062,7 @@ function pickAiTraceSurface(point){
  aiTraceSeedMarker=L.circleMarker(point,{radius:5,color:'#00a6c8',fillColor:'#00a6c8',fillOpacity:1,interactive:false}).addTo(map);
  runAiTrace();
 }
-function aiTraceRequestView(){return{centre:aiTraceSeed,zoom:18,scope:[.02,.02,.98,.98],seed:[.5,.5]}}
+function aiTraceRequestView(){return{centre:aiTraceSeed,zoom:18,scope:[0,0,1,1],seed:[.5,.5]}}
 function openAiTraceTools(){if(el('aiTraceTools'))el('aiTraceTools').style.display='block';if(el('aiTraceSurface')&&!el('aiTraceSurface').dataset.initialized){el('aiTraceSurface').value=currentBusinessType()==='landscaping'?'lawn':'paved';el('aiTraceSurface').dataset.initialized='true';}startAiTracePick()}
 function clearAiTraceLayers(){aiTraceLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});aiTraceLayers=[]}
 function clearAiTraceDrafts(){if(el('aiTraceComparison'))el('aiTraceComparison').style.display='none';if(el('aiTracePreview'))el('aiTracePreview').innerHTML='';aiTraceGeneration++;aiTraceDrafts=[];clearAiTraceLayers();if(el('aiTraceResults'))el('aiTraceResults').innerHTML='';if(el('aiTraceMessage'))el('aiTraceMessage').textContent=''}
@@ -3211,8 +3218,9 @@ def ai_trace_suggestions():
         with AI_TRACE_LOCK:
             if sess.get("ai_trace_busy"):return jsonify(error="AI tracing is already running."),409
             if sess.get("ai_trace_cache_key")==cache_key:return jsonify(suggestions=sess["ai_trace_cache"],image_preview=sess.get("ai_trace_image_preview"),user_warning=sess.get("ai_trace_warning", ""),review_required=True)
-            if time.time()-sess.get("ai_trace_last_started",0)<15:return jsonify(error="Tracing is cooling down.",retry_after_seconds=max(1,math.ceil(15-(time.time()-sess["ai_trace_last_started"])))),429
-            sess["ai_trace_busy"]=True;sess["ai_trace_last_started"]=time.time()
+            now=time.time();recent=[started for started in sess.get("ai_trace_recent_starts",[]) if now-started<60]
+            if len(recent)>=20:return jsonify(error="Tracing request limit reached.",retry_after_seconds=max(1,math.ceil(60-(now-recent[0])))),429
+            sess["ai_trace_recent_starts"]=recent+[now];sess["ai_trace_busy"]=True;sess["ai_trace_last_started"]=now
         try:
             q=urllib.parse.urlencode({"center":f"{lat},{lng}","zoom":zoom,"size":"640x640","maptype":"satellite","format":"png","key":sess["key"]})
             req=urllib.request.Request("https://maps.googleapis.com/maps/api/staticmap?"+q,headers={"Referer":request.host_url,"User-Agent":"AeriQuote/AI-Trace"})

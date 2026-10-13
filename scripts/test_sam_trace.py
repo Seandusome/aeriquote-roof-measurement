@@ -144,6 +144,18 @@ class SamTests(unittest.TestCase):
             drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.02,.02,.98,.98],seed=[.5,.5])
             self.assertEqual(drafts,[]);self.assertEqual(usage['diagnostics'],{'click_not_matched':1});self.assertIn('contains your click',usage['user_warning'])
 
+    def test_grayscale_with_transparent_padding_is_not_a_full_image_mask(self):
+        rgba=np.zeros((640,640,4),dtype='uint8');rgba[:,:,3]=255
+        rgba[100:120,100:300,:3]=255;rgba[0,0,3]=0
+        out=io.BytesIO();Image.fromarray(rgba).save(out,format='PNG');decoded=sam_trace.decode_mask(out.getvalue())
+        self.assertEqual(int(decoded.sum()),4000)
+        self.assertEqual(len(sam_trace.masks_to_suggestions([decoded],52,-106,18,'lawn',seed=[200/640,110/640])[0]),1)
+
+    def test_complete_region_near_image_edge_is_not_artificially_cropped(self):
+        mask=np.zeros((640,640),dtype='uint8');mask[310:330,5:600]=1
+        drafts,rejected=sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',scope=[0,0,1,1],seed=[.5,.5])
+        self.assertEqual(len(drafts),1);self.assertEqual(rejected,0)
+
     def test_external_mask_urls_and_coloured_images_rejected(self):
         with patch('urllib.request.build_opener') as call:
             with self.assertRaises(ValueError):sam_trace.read_mask('https://internal.invalid/private')

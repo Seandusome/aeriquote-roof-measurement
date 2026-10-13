@@ -22,13 +22,14 @@ def decode_mask(raw):
         if image.format != 'PNG' or max(image.size) > 2048 or min(image.size) < 2:
             raise ValueError('Invalid mask image')
         rgba = np.asarray(image.convert('RGBA'))
-    if np.any(rgba[:, :, 3] < 255):
-        return (rgba[:, :, 3] > 127).astype('uint8')
     rgb = rgba[:, :, :3]
-    # apply_mask=False must return a binary mask, never the coloured aerial.
-    if not np.all(rgb.max(axis=2) - rgb.min(axis=2) <= 2):
-        raise ValueError('Expected a binary segmentation mask')
-    return (rgb[:, :, 0] > 127).astype('uint8')
+    achromatic = np.all(rgb.max(axis=2)-rgb.min(axis=2)<=2)
+    if achromatic:
+        # Binary grayscale remains authoritative even if padding is transparent.
+        return ((rgb[:, :, 0]>127)&(rgba[:, :, 3]>127)).astype('uint8')
+    if rgba[:, :, 3].min()==0 and rgba[:, :, 3].max()==255:
+        return (rgba[:, :, 3]>127).astype('uint8')
+    raise ValueError('Expected a binary segmentation mask')
 
 
 def read_mask(url, timeout=5):
