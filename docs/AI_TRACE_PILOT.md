@@ -7,7 +7,7 @@ Work stays on `landscaping-multi-area-recovery-oct11`. Do not deploy to main.
 1. Create a fal API key and put it in Render as the secret environment variable `FAL_KEY`.
 2. The default tracing provider is now `fal`, using `fal-ai/sam-3/image`. Optional explicit setting: `AERIQUOTE_AI_TRACE_PROVIDER=fal`.
 3. Deploy the recovery branch with `gunicorn app:app --workers 1 --threads 4 --timeout 90`.
-4. Load the property, choose AI TRACE, select Lawn or Paved Surface if needed, and click once inside the section on the aerial. The click starts the request automatically. No job box or manual diagonal is needed.
+4. Load the property, choose AI TRACE, select Lawn or Paved Surface if needed, and click once inside the section on the aerial. The click starts the request automatically. No job box or manual diagonal is needed. If an unfinished manual drawing is active, AI TRACE pauses it without deleting its points. RESUME MANUAL DRAWING restores it; existing saved areas and linear work stay in the quote. Save any currently reviewed AI outline before resuming the older manual drawing.
 5. Compare the draft against the exact source image; Review & Edit each section before Finish & Save Area.
 
 The same integration serves Landscaping, Commercial, Paving & Sealcoating, Pressure Washing and Snow Removal. Existing roof auto-measurement remains separate.
@@ -32,7 +32,7 @@ Published fal SAM 3 image price checked October 12, 2026: US$0.005/request. Goog
 
 - `python scripts/test_sam_trace.py`: actual PNG mask decoding and vectorization, three separated grass sections, thin strips, exclusions, cropping, duplicates, resolution conversion, provider payload/errors, missing credentials, no OpenAI fallback, point-only selection, resolution-aware point matching, and rejection of missing or invalid selected points before a paid request.
 - `python scripts/test_ai_trace.py`: existing provider/route isolation, cache and cleanup checks.
-- `node scripts/test_ai_trace_controls.cjs`: button timeouts, visible errors, expired sessions, source comparison and unchanged saved areas. DOM controls test AI activation and automatic request from a single map click without adding manual area points, accumulation of three unsaved drafts, retained drafts across AI reopening/cooldown/empty responses, duplicate-click reuse, and saving one without removing the others.
+- `node scripts/test_ai_trace_controls.cjs`: button timeouts, visible errors, expired sessions, source comparison and unchanged saved areas. DOM controls test AI activation and automatic request from a single map click without adding manual area points, accumulation of three unsaved drafts, retained drafts across AI reopening/cooldown/empty responses, duplicate-click reuse, and saving one without removing the others, and pausing/resuming an unfinished two-point manual drawing while retaining saved AI and linear work.
 - Existing landscaping rendering and DOM tests cover areas, linear measurement, aerial imagery, customer estimates and PDF capture.
 
 These checks validate integration and conversion. Real SAM 3 grass/pavement accuracy still requires a live test with `FAL_KEY` on the user's property. Do not describe live accuracy as proven until that test passes. Failed selections now distinguish masks missing the click, cropped surfaces, internal exclusions, insufficient confidence, ambiguous overlapping masks, and conversion failures. Detailed mask boundaries may retain up to 120 corners while preserving the same overlap and area thresholds.

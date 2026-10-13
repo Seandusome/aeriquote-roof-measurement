@@ -7,7 +7,7 @@ async function test(response,expected){
  let timer,cleared=false,request;
  const saved=[{name:'Existing lawn',sqft:1200}];
  const scope={sessionToken:'property',aiTraceSeed:{lat:52,lng:-106},aiTracePickMode:false,aiTraceRequestView:()=>({centre:{lat:52,lng:-106},zoom:18,scope:[.1,.1,.9,.9],seed:[.5,.5]}),aiTraceBusy:false,aiTraceGeneration:0,aiTraceDraftSequence:0,areaMode:false,areaPoints:[],linearMode:false,linearPoints:[],aiTraceDrafts:[],commercialAreas:saved,
-  map:{getCenter:()=>({lat:52,lng:-106}),getZoom:()=>19},el:id=>elements[id],status:(message)=>scope.message=message,startAiTracePick:()=>scope.message="Click inside the surface",renderAiTraceDrafts:()=>{},renderAiTracePreview:()=>{},updateAerialActionbar:()=>{},AbortController,
+  map:{getCenter:()=>({lat:52,lng:-106}),getZoom:()=>19},el:id=>elements[id],status:(message)=>scope.message=message,pauseManualForAi:()=>true,startAiTracePick:()=>scope.message="Click inside the surface",renderAiTraceDrafts:()=>{},renderAiTracePreview:()=>{},updateAerialActionbar:()=>{},AbortController,
   setTimeout:fn=>{timer=fn;return 1},clearTimeout:()=>cleared=true,
   fetch:async(url,options)=>{request=options;if(response==='timeout'){return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>{const e=new Error();e.name='AbortError';reject(e)}))}return response;}};
  vm.createContext(scope);vm.runInContext(code,scope);
@@ -42,7 +42,7 @@ function testExactImagePreview(){
  const s=await test({status:200,ok:true,json:async()=>({suggestions:[{points:[[52,-106],[52,-105],[53,-106]]}]})},'draft outline');
  s.sessionToken=null;await s.runAiTrace();assert(s.message.includes('Load the property'));
  s.sessionToken='property';s.aiTraceBusy=true;await s.runAiTrace();assert(s.message.includes('already running'));
- s.aiTraceBusy=false;s.aiTraceSeed=null;await s.runAiTrace();assert(s.message.includes('Click inside'));s.aiTraceSeed={};s.areaMode=true;s.areaPoints=[{}];await s.runAiTrace();assert(s.message.includes('Finish and save'));
+ s.aiTraceBusy=false;s.aiTraceSeed=null;await s.runAiTrace();assert(s.message.includes('Click inside'));s.aiTraceSeed={};s.areaMode=true;s.areaPoints=[{}];s.pauseManualForAi=()=>{s.message='Save the outline currently being reviewed';return false};await s.runAiTrace();assert(s.message.includes('Save the outline'));
  for(const file of ['Procfile','render.yaml'])assert(fs.readFileSync(file,'utf8').includes('--workers 1 --threads 4'));
  console.log('PASS: timeout recovery, expired sessions, invalid responses, provider errors, Paving request, draft-only results, visible blockers, single-worker deployment');
 })().catch(e=>{console.error(e);process.exitCode=1});
