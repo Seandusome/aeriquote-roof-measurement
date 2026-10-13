@@ -723,6 +723,19 @@ function removeStaleAerialLayers(keep=null){
  if(rgbLayer&&rgbLayer!==keep){try{map.removeLayer(rgbLayer)}catch(e){}rgbLayer=null}
  if(fallbackLayer&&fallbackLayer!==keep){try{map.removeLayer(fallbackLayer)}catch(e){}fallbackLayer=null}
 }
+let aerialDetailSequence=0,aerialDetailTimer=null,aerialDetailLayer=null,aerialDetailKey='';
+async function refreshAerialDetail(){
+ const token=sessionToken,base=fallbackLayer,z=Math.min(20,Math.floor(map.getZoom()));
+ if(!token||base?._sgAerialType!=='wide-3x3-mosaic'||z<=18)return;
+ const c=map.getCenter(),key=token+':'+z+':'+c.lat.toFixed(6)+':'+c.lng.toFixed(6);if(key===aerialDetailKey)return;
+ const seq=++aerialDetailSequence,q=new URLSearchParams({lat:String(c.lat),lng:String(c.lng),zoom:String(z)});
+ try{const r=await fetch('/wide-aerial/'+token+'?'+q);if(!r.ok)return;const blob=await r.blob();if(seq!==aerialDetailSequence||token!==sessionToken||base!==fallbackLayer)return;
+ const url=URL.createObjectURL(blob),layer=L.imageOverlay(url,staticMapBounds(c.lat,c.lng,z,640,640),{opacity:1,interactive:false});layer.once('remove',()=>URL.revokeObjectURL(url));
+ await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',reject);layer.addTo(base)});
+ if(seq!==aerialDetailSequence||token!==sessionToken||base!==fallbackLayer){base.removeLayer(layer);return}if(aerialDetailLayer&&base.hasLayer(aerialDetailLayer))base.removeLayer(aerialDetailLayer);aerialDetailLayer=layer;aerialDetailKey=key;
+ }catch(e){console.warn('Detailed aerial unavailable',e)}
+}
+function scheduleAerialDetail(){clearTimeout(aerialDetailTimer);aerialDetailTimer=setTimeout(refreshAerialDetail,300)}
 async function loadStandardWideAerial(){
  if(!['landscaping','commercial','paving','snow','pressure'].includes(currentBusinessType()))return loadSingleWideAerial();
  if(!sessionToken)throw new Error('Load the property first.');
@@ -760,6 +773,7 @@ async function loadStandardWideAerial(){
  fallbackLayer=group;fallbackBounds=bounds;rgbLayer=null;mainBounds=bounds;
  map.setMinZoom(14);map.setMaxBounds(null);map.options.maxBoundsViscosity=0;
  // Start at the same useful property scale, but retain imagery in all directions.
+ map.off('moveend',scheduleAerialDetail);map.on('moveend',scheduleAerialDetail);aerialDetailSequence++;aerialDetailKey='';aerialDetailLayer=null;
  map.setView(c,z,{animate:false});
  return{layer:group,bounds};
 }
@@ -1489,7 +1503,9 @@ async function loadCustomerWideAerial(token,targetMap){
  (snap.areaPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
  (snap.linearPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
  const center=pts.length?L.latLngBounds(pts).getCenter():(propertyMarker?.getLatLng?.()||map.getCenter());
- const zoom=17,qs=new URLSearchParams({lat:String(center.lat),lng:String(center.lng),zoom:String(zoom)});
+ const extent=pts.length?L.latLngBounds(pts):null;
+ let zoom=18;if(extent)for(zoom=20;zoom>15;zoom--){const nw=map.project(extent.getNorthWest(),zoom),se=map.project(extent.getSouthEast(),zoom);if(Math.abs(se.x-nw.x)<=500&&Math.abs(se.y-nw.y)<=340)break}
+ const qs=new URLSearchParams({lat:String(center.lat),lng:String(center.lng),zoom:String(zoom)});
  const response=await fetch('/wide-aerial/'+token+'?'+qs.toString());
  if(!response.ok)throw new Error('Wide estimate aerial unavailable');
  const blob=await response.blob();
@@ -3542,8 +3558,8 @@ def wide_aerial(token):
         lat=float(request.args.get("lat",sess.get("lat")));lng=float(request.args.get("lng",sess.get("lng")))
         zoom=int(float(request.args.get("zoom",17)))
         if not (-90<=lat<=90 and -180<=lng<=180):raise ValueError("Invalid map centre")
-        zoom=max(15,min(18,zoom))
-        q=urllib.parse.urlencode({"center":f"{lat},{lng}","zoom":zoom,"size":"640x640","maptype":"satellite","format":"png","key":sess["key"]})
+        zoom=max(15,min(20,zoom))
+        q=urllib.parse.urlencode({"center":f"{lat},{lng}","zoom":zoom,"size":"640x640","scale":"2","maptype":"satellite","format":"png","key":sess["key"]})
         url="https://maps.googleapis.com/maps/api/staticmap?"+q
         headers={"User-Agent":"ShingleGuardRoofAssessment/2.0","Referer":request.host_url,"Origin":request.host_url.rstrip("/")}
         req=urllib.request.Request(url,headers=headers)
