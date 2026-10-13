@@ -124,6 +124,26 @@ class SamTests(unittest.TestCase):
                 with self.assertRaises(ValueError):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.02,.02,.98,.98],seed=seed)
                 call.assert_not_called()
 
+    def test_detailed_boundary_preserves_shape_with_more_than_40_corners(self):
+        mask=np.zeros((640,640),dtype='uint8');mask[250:280,100:400]=1
+        for x in range(100,400,12):mask[235:250,x:x+5]=1
+        drafts,rejected=sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',seed=[200/640,260/640])
+        self.assertEqual(len(drafts),1);self.assertEqual(rejected,0)
+        self.assertTrue(40<len(drafts[0]['points'])<=120)
+        self.assertAlmostEqual(pixel_area(drafts[0]['image_points']),int(mask.sum()),delta=mask.sum()*.02)
+
+    def test_specific_failure_reasons(self):
+        mask=np.zeros((640,640),dtype='uint8');mask[100:200,100:200]=1;mask[120:140,120:140]=0
+        reasons={};sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',seed=[110/640,110/640],diagnostics=reasons)
+        self.assertEqual(reasons,{'holes':1})
+        mask[:]=0;mask[0:400,100:200]=1;reasons={}
+        sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',seed=[150/640,150/640],diagnostics=reasons)
+        self.assertEqual(reasons,{'cropped':1})
+        mask[:]=0;mask[100:120,100:300]=1
+        with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen',return_value=Response({'masks':[{'url':encoded(mask)}]})):
+            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.02,.02,.98,.98],seed=[.5,.5])
+            self.assertEqual(drafts,[]);self.assertEqual(usage['diagnostics'],{'click_not_matched':1});self.assertIn('contains your click',usage['user_warning'])
+
     def test_external_mask_urls_and_coloured_images_rejected(self):
         with patch('urllib.request.build_opener') as call:
             with self.assertRaises(ValueError):sam_trace.read_mask('https://internal.invalid/private')

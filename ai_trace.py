@@ -26,7 +26,7 @@ def pixel_to_latlng(x, y, lat, lng, zoom):
     px, py = cx + (x - .5) * 640, cy + (y - .5) * 640
     return [math.degrees(math.atan(math.sinh(math.pi - 2 * math.pi * py / scale))), px / scale * 360 - 180]
 
-def validate_polygons(payload, lat, lng, zoom):
+def validate_polygons(payload, lat, lng, zoom, max_corners=40):
     if not isinstance(payload, dict):
         raise ValueError('Invalid AI suggestions')
     polygons = payload.get('polygons')
@@ -37,7 +37,7 @@ def validate_polygons(payload, lat, lng, zoom):
         if not isinstance(polygon, dict):
             raise ValueError('Invalid AI outline')
         points = polygon.get('points')
-        if not isinstance(points, list) or not 3 <= len(points) <= 40:
+        if not isinstance(points, list) or not 3 <= len(points) <= max_corners:
             raise ValueError('Invalid AI outline')
         xy = []
         for point in points:

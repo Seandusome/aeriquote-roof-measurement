@@ -76,17 +76,19 @@ def cell_outline(component):
     return points
 
 
-def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None):
+def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None, diagnostics=None):
     import cv2
     import numpy as np
     import ai_trace
     cv2.setNumThreads(1)
     polygons = []; rejected = 0; accepted = []
+    reasons=diagnostics if diagnostics is not None else {}
+    def note(code):reasons[code]=reasons.get(code,0)+1
     for mask in masks:
         if mask.shape[0] != mask.shape[1]:
             raise ValueError('Mask aspect ratio differs from aerial')
         if mask.mean() > .9:
-            rejected += 1; continue
+            rejected += 1; note('whole_image'); continue
         n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=4)
         for label in range(1, n):
             x, y, w, h, count = stats[label]
@@ -97,13 +99,13 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None):
             if count < 20:
                 continue
             if x == 0 or y == 0 or x+w == mask.shape[1] or y+h == mask.shape[0]:
-                rejected += 1; continue  # cropped surfaces are incomplete
+                rejected += 1; note('cropped'); continue  # cropped surfaces are incomplete
             component = labels == label
             if scope is not None:
                 x0,y0,x1,y1=scope
                 # Reject crossing regions instead of inventing a boundary by clipping.
                 if x/mask.shape[1]<x0 or y/mask.shape[0]<y0 or (x+w)/mask.shape[1]>x1 or (y+h)/mask.shape[0]>y1:
-                    rejected += 1; continue
+                    rejected += 1; note('cropped'); continue
             if any(a.shape == component.shape and np.count_nonzero(a & component) / max(1, np.count_nonzero(a | component)) > .85 for a in accepted):
                 continue
             try:
@@ -111,7 +113,7 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None):
                 poly = None
                 for tolerance in (.25, .5, .75, 1, 1.5, 2):
                     candidate = cv2.approxPolyDP(boundary, tolerance, True)
-                    if 3 <= len(candidate) <= 40 and abs(cv2.contourArea(candidate)-count)/count <= .02:
+                    if 3 <= len(candidate) <= 120 and abs(cv2.contourArea(candidate)-count)/count <= .02:
                         # Check shape overlap as well as total area.
                         reconstructed = np.zeros((mask.shape[0]*2, mask.shape[1]*2), dtype='uint8')
                         cv2.fillPoly(reconstructed, [np.rint(candidate*2).astype('int32')], 1)
@@ -124,16 +126,17 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None):
                 height, width = mask.shape
                 item = {'name': ('Lawn' if surface == 'lawn' else 'Paved surface')+' section '+str(len(polygons)+1),
                         'points': [{'x': float(px)/width, 'y': float(py)/height} for px, py in poly]}
-                ai_trace.validate_polygons({'polygons': [item]}, lat, lng, zoom)
+                ai_trace.validate_polygons({'polygons': [item]}, lat, lng, zoom, max_corners=120)
                 if len(polygons) == 6:
                     rejected += 1; continue
                 polygons.append(item); accepted.append(component)
-            except ValueError:
+            except ValueError as error:
                 rejected += 1
+                note('holes' if 'holes' in str(error) else 'complex')
     if seed is not None and len(polygons)>1:
         # Multiple materially different masks covering the click are ambiguous.
-        rejected += len(polygons); polygons=[]
-    suggestions = ai_trace.validate_polygons({'polygons': polygons}, lat, lng, zoom)
+        rejected += len(polygons); note('ambiguous'); polygons=[]
+    suggestions = ai_trace.validate_polygons({'polygons': polygons}, lat, lng, zoom, max_corners=120)
     return suggestions, rejected
 
 
@@ -175,8 +178,18 @@ def suggest(image, lat, lng, zoom, surface, scope=None, seed=None):
             if remaining <= 0:
                 raise TimeoutError()
             masks.append(read_mask(entry.get('url'), timeout=min(5,remaining)))
-        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface, scope=scope, seed=seed)
-        return suggestions, {'provider': 'fal-sam3', 'masks': len(entries), 'rejected_regions': rejected+low_confidence}
+        reasons={}
+        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface, scope=scope, seed=seed, diagnostics=reasons)
+        if not suggestions and not reasons:reasons['low_confidence' if low_confidence else 'click_not_matched']=1
+        messages={'cropped':'The selected surface extends beyond the image, so a complete outline was not returned.',
+                  'holes':'The selected mask contains internal gaps or exclusions. This pilot cannot save those as one solid area.',
+                  'complex':'The selected boundary could not be converted accurately into an editable outline.',
+                  'ambiguous':'SAM returned different overlapping outlines for the selected section, so none was chosen.',
+                  'whole_image':'SAM marked almost the whole image instead of a distinct surface section.',
+                  'low_confidence':'SAM returned only low-confidence masks for this click.',
+                  'click_not_matched':'None of the returned surface masks contains your click.'}
+        warning=' '.join(messages[code] for code in messages if code in reasons)
+        return suggestions, {'provider': 'fal-sam3', 'masks': len(entries), 'rejected_regions': rejected+low_confidence, 'diagnostics':reasons, 'user_warning':warning}
     except urllib.error.HTTPError as error:
         messages = {401: 'fal rejected FAL_KEY. Check the key in Render.',
                     402: 'fal credits are unavailable. Check fal billing.',
