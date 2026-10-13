@@ -1827,8 +1827,12 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(estimateOpenInProgress||document.body.classList.contains('report-open'))return;
  estimateOpenInProgress=true;
  const createBtn=el('createEstimateBtn');if(createBtn)createBtn.disabled=true;
- if(!historicalMode)quoteSnapshot=captureQuoteSnapshot(); reportOutlines={}; reportOutlineTarget=null; reportOutlineEditMode=false; reportOutlinePoints=[]; clearReportOutlineTemp();
- let calc=historicalMode&&quoteSnapshot.savedPricing?quoteSnapshot.savedPricing:priceCalc(),snap=quoteSnapshot||captureQuoteSnapshot(),linearReport=snap.measurementMode==='linear',areaReport=snap.measurementMode==='area',reportStructures=snap.structures||[],reportManual=snap.manualPlanes||[],src=snap.measureSource||'google',reportManualTotal=reportManual.reduce((a,p)=>a+Number(p.surface_sqft||0),0),manualUsed=!linearReport&&!areaReport&&(src==='manual'&&reportManualTotal>0),hybridUsed=!linearReport&&!areaReport&&(src==='hybrid'&&reportManualTotal>0);
+ const estimatePricing=historicalMode&&quoteSnapshot.savedPricing?quoteSnapshot.savedPricing:priceCalc();
+ if(!historicalMode)quoteSnapshot=captureQuoteSnapshot();
+ if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];el('customerMap')?.replaceChildren();
+ if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=true;
+ reportOutlines={}; reportOutlineTarget=null; reportOutlineEditMode=false; reportOutlinePoints=[]; clearReportOutlineTemp();
+ let calc=estimatePricing,snap=quoteSnapshot||captureQuoteSnapshot(),linearReport=snap.measurementMode==='linear',areaReport=snap.measurementMode==='area',reportStructures=snap.structures||[],reportManual=snap.manualPlanes||[],src=snap.measureSource||'google',reportManualTotal=reportManual.reduce((a,p)=>a+Number(p.surface_sqft||0),0),manualUsed=!linearReport&&!areaReport&&(src==='manual'&&reportManualTotal>0),hybridUsed=!linearReport&&!areaReport&&(src==='hybrid'&&reportManualTotal>0);
  el('rAddress').textContent=el('address').value;
  el('rDate').textContent=historicalDate?new Date(historicalDate+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});if(el('rCustomerName'))el('rCustomerName').textContent=(el('customerName')?.value||'').trim()||(currentBusinessType()==='commercial'?'Property Manager / Client':'Homeowner');if(el('rCustomerPhone'))el('rCustomerPhone').textContent=(el('customerPhone')?.value||'').trim();if(el('rCustomerEmail'))el('rCustomerEmail').textContent=(el('customerEmail')?.value||'').trim();
  const dealerName=(el('dealerName')?el('dealerName').value.trim():'')||'';
@@ -1896,7 +1900,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  el('reportOverlay').style.display='block';
  if(!historicalMode){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
- customerMapBuildTimer=setTimeout(async()=>{try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(historicalMode&&el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Saved property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false}},350);
+ try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
 
  // Final business-specific estimate-summary label.
  if(currentBusinessType()==='roofing'){
@@ -1971,6 +1975,7 @@ async function downloadEstimatePDF(){
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
  if(!report){status('Create the customer estimate first.','error');return}
  if(reportOutlineEditMode){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Save the outline before downloading the PDF.';return}
+ if(estimateOpenInProgress){status('Wait for the current estimate aerial to finish loading before downloading.','warn');return}
  if(pdfInProgress)return;
  if(typeof html2canvas==='undefined'||!window.jspdf){status('PDF tools did not load. Check the internet connection, then reopen the estimate.','error');return}
  pdfInProgress=true;
