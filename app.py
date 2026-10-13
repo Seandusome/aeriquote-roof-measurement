@@ -737,7 +737,6 @@ async function refreshAerialDetail(){
 }
 function scheduleAerialDetail(){clearTimeout(aerialDetailTimer);aerialDetailTimer=setTimeout(refreshAerialDetail,300)}
 async function loadStandardWideAerial(){
- if(!['landscaping','commercial','paving','snow','pressure'].includes(currentBusinessType()))return loadSingleWideAerial();
  if(!sessionToken)throw new Error('Load the property first.');
  // A 3x3 continuous satellite mosaic restores panning beyond the old 640px square.
  // The measurement geometry and pricing code are untouched.
