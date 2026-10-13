@@ -1,3 +1,16 @@
+# October 13 evening continuation
+
+Baseline parent: cec07fc3b587461f905f3abd0ebcb4b846466677. Authorized branch unchanged.
+- Saved area controls now appear in Linear mode. Remove keeps the line and rate. Edit switches to Area with draggable corners; Sean clarified that Area dragging works, and he had attempted to drag the linear line.
+- Website index/features now distinguish Google Roofing AutoMeasure from manual surface area/linear tools. AI Trace remains retired.
+- Added Edit Line / Save Line Changes / Cancel Line Edit for all six industries. Dragged line points update length. Cancel restores geometry; switching tools cancels an unfinished edit. Creating an estimate requires Save/Cancel first. Rate and saved areas remain unchanged.
+- DOM+Leaflet checks pass all six industries for draggable line correction, exact cancellation, saved changed length, unchanged areas/rate/usage and tool switching. Existing imagery/PDF and inline syntax/rendering checks pass. These are local checks; live Edit Line validation is pending.
+- Sean's initial Pressure Washing test: Area1 18,995 ft² @ .20 = $3,799; Area2 11,401 ft² @ .70 = $7,980.70; Linear679.6 ft @ .70 = $475.72; total $12,255.42, no tax. User proceeded through area removal and confirmed finding Clear Linear; exact post-removal pricing/PDF still needs evidence.
+- Next live test: saved Linear -> Edit Line -> drag point -> Cancel restores original; Edit again -> drag -> Save updates length/charge while keeping .70 rate and saved areas. Then export/reopen the changed report.
+- Remaining broader commercial, manual Roofing/pitch/correction, dropped-pin, account permissions/quotas testing remains pending. Payments deferred.
+
+---
+
 # AeriQuote handoff — October 13, 2026, 4:38 PM MDT
 
 Current application baseline: `64d28a2d7065a6af9f93b3d71a4bba41499aaebf`.
