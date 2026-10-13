@@ -76,7 +76,7 @@ def cell_outline(component):
     return points
 
 
-def masks_to_suggestions(masks, lat, lng, zoom, surface):
+def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None):
     import cv2
     import numpy as np
     import ai_trace
@@ -95,6 +95,11 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface):
             if x == 0 or y == 0 or x+w == mask.shape[1] or y+h == mask.shape[0]:
                 rejected += 1; continue  # cropped surfaces are incomplete
             component = labels == label
+            if scope is not None:
+                x0,y0,x1,y1=scope
+                # Reject crossing regions instead of inventing a boundary by clipping.
+                if x/mask.shape[1]<x0 or y/mask.shape[0]<y0 or (x+w)/mask.shape[1]>x1 or (y+h)/mask.shape[0]>y1:
+                    rejected += 1; continue
             if any(a.shape == component.shape and np.count_nonzero(a & component) / max(1, np.count_nonzero(a | component)) > .85 for a in accepted):
                 continue
             try:
@@ -125,16 +130,19 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface):
     return suggestions, rejected
 
 
-def suggest(image, lat, lng, zoom, surface):
+def suggest(image, lat, lng, zoom, surface, scope=None):
     import ai_trace
     key = os.environ.get('FAL_KEY', '').strip()
     if not key:
         raise ai_trace.ProviderError('SAM 3 tracing needs FAL_KEY in the test service environment. It does not use OpenAI credits.')
     if surface not in ai_trace.SURFACES:
         raise ValueError('Choose Lawn or Paved Surface')
+    scope = ai_trace.validate_scope(scope)
     body = {'image_url': ai_trace.image_preview(image), 'prompt': 'grass lawn' if surface == 'lawn' else 'paved asphalt or concrete surface',
             'apply_mask': False, 'sync_mode': True, 'output_format': 'png',
             'return_multiple_masks': True, 'max_masks': 12, 'include_scores': True}
+    x0,y0,x1,y1=scope
+    body['box_prompts']=[{'x_min':round(x0*640),'y_min':round(y0*640),'x_max':round(x1*640),'y_max':round(y1*640)}]
     request = urllib.request.Request(ENDPOINT, data=json.dumps(body).encode(),
         headers={'Authorization': 'Key '+key, 'Content-Type': 'application/json', 'X-Fal-No-Retry': '1'})
     deadline = time.monotonic()+45
@@ -160,7 +168,7 @@ def suggest(image, lat, lng, zoom, surface):
             if remaining <= 0:
                 raise TimeoutError()
             masks.append(read_mask(entry.get('url'), timeout=min(5,remaining)))
-        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface)
+        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface, scope=scope)
         return suggestions, {'provider': 'fal-sam3', 'masks': len(entries), 'rejected_regions': rejected+low_confidence}
     except urllib.error.HTTPError as error:
         messages = {401: 'fal rejected FAL_KEY. Check the key in Render.',

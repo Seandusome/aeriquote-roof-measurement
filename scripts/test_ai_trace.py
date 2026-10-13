@@ -71,7 +71,7 @@ class TraceTests(unittest.TestCase):
         tree=ast.parse(Path('app.py').read_text())
         fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='ai_trace_suggestions');fn.decorator_list=[]
         sess=dict(created=time.time(),dealer_id=owner,lat=52,lng=-106,key='test-map-key')
-        scope=dict(request=SimpleNamespace(get_json=lambda **kw:dict(token='token',surface='paved',latitude=52,longitude=-106,zoom=18),host_url='https://test.invalid/'),
+        scope=dict(request=SimpleNamespace(get_json=lambda **kw:dict(token='token',surface='paved',latitude=52,longitude=-106,zoom=18,scope=[.05,.05,.95,.95]),host_url='https://test.invalid/'),
                    SESSIONS={'token':sess},session={'dealer_id':'dealer'},time=time,math=math,urllib=urllib,AI_TRACE_LOCK=threading.Lock(),ai_trace=ai_trace,
                    app=SimpleNamespace(logger=SimpleNamespace(info=lambda *a:None)),json=json,jsonify=lambda **kw:kw)
         exec(compile(ast.Module(body=[fn],type_ignores=[]),'app.py','exec'),scope)

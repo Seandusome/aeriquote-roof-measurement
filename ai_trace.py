@@ -71,12 +71,27 @@ def validate_polygons(payload, lat, lng, zoom):
                        'points': [pixel_to_latlng(x,y,lat,lng,zoom) for x,y in xy]})
     return result
 
-def suggest(image, lat, lng, zoom, surface):
+def validate_scope(scope):
+    if not isinstance(scope,list) or len(scope)!=4 or any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in scope):
+        raise ValueError('Set a valid job boundary before AI tracing.')
+    x0,y0,x1,y1=scope
+    if not (0<=x0<x1<=1 and 0<=y0<y1<=1 and x1-x0>=.005 and y1-y0>=.005):
+        raise ValueError('Set a valid job boundary before AI tracing.')
+    return scope
+
+def suggest(image, lat, lng, zoom, surface, scope=None):
     if provider() == 'fal':
         import sam_trace
-        return sam_trace.suggest(image, lat, lng, zoom, surface)
+        return sam_trace.suggest(image, lat, lng, zoom, surface, scope=scope)
     if provider() == 'openai':
-        return suggest_openai(image, lat, lng, zoom, surface)
+        drafts, usage = suggest_openai(image, lat, lng, zoom, surface)
+        if scope is not None:
+            validate_scope(scope)
+            x0,y0,x1,y1=scope
+            kept=[a for a in drafts if all(x0*640<=p[0]<=x1*640 and y0*640<=p[1]<=y1*640 for p in a['image_points'])]
+            usage={**usage,'rejected_regions':len(drafts)-len(kept)}
+            drafts=kept
+        return drafts, usage
     raise ProviderError('Unknown AI tracing provider. Check AERIQUOTE_AI_TRACE_PROVIDER.')
 
 def suggest_openai(image, lat, lng, zoom, surface):

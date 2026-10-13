@@ -27,6 +27,8 @@ for(const industry of ['paving','snow','pressure']){
  w.fetch=async url=>{calls.push(String(url));if(String(url)==='/property')return {ok:true,json:async()=>({token:'test-'+industry,exact_pin_display:true,fallback:true,center:{latitude:52,longitude:-106},parts:{},formatted_address:'Test Property'})};return {ok:true,json:async()=>({}),blob:async()=>new w.Blob(['mock-image'])}};
  await w.eval('loadProperty()');assert.equal(calls.filter(u=>u.startsWith('/wide-aerial/')).length,9,'Property load must use wide aerial even on exact-pin/manual fallback');assert.equal(w.eval('fallbackLayer.getLayers().length'),9);assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('traceMode'),false);assert.equal(w.eval('structures.length'),0);console.log('PASS '+industry+': actual property loader uses wide area workspace for dropped pins and roof-data fallback');
 }
+// Job boundary clicks must not add measurement points or alter saved areas.
+w.eval('areaMode=false;linearMode=false');const scopeAreas=w.eval('commercialAreas.length');btn('aiTraceScopeBtn').click();w.eval("map.fire('click',{latlng:L.latLng(51.9995,-106.001)});map.fire('click',{latlng:L.latLng(52.0005,-105.999)})");assert.equal(w.eval('aiTraceScopeMode'),false);assert(w.eval('!!aiTraceScopeBounds'));assert.equal(w.eval('commercialAreas.length'),scopeAreas);assert(btn('aiTraceScopeBtn').textContent.includes('CHANGE'));assert.equal(w.eval('aiTraceRequestView().zoom'),18);console.log('PASS: two-click job boundary sets a tracing scope without modifying saved measurements');
 // AI suggestions use the same review/save path in all five surface industries.
 w.eval('areaMode=true');draw(0);
 for(const [index,industry] of ['landscaping','commercial','paving','pressure','snow'].entries()){

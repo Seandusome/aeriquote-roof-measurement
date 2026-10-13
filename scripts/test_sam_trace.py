@@ -66,7 +66,7 @@ class SamTests(unittest.TestCase):
         mask=np.zeros((640,640), dtype='uint8');mask[100:120,100:300]=1
         data={'masks':[{'url':encoded(mask)}],'scores':[.9]}
         with patch.dict(os.environ,{'FAL_KEY':'PRIVATE','OPENAI_API_KEY':'OTHER'},clear=True),patch('urllib.request.urlopen',return_value=Response(data)) as call:
-            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn')
+            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99])
             self.assertEqual(len(drafts),1);self.assertEqual(usage['provider'],'fal-sam3')
             req=call.call_args.args[0];body=json.loads(req.data)
             self.assertEqual(req.full_url,sam_trace.ENDPOINT);self.assertEqual(call.call_count,1)
@@ -74,17 +74,36 @@ class SamTests(unittest.TestCase):
             self.assertNotIn('PRIVATE',json.dumps(body));self.assertNotIn('OTHER',json.dumps(body))
         with patch.dict(os.environ,{'OPENAI_API_KEY':'OTHER'},clear=True),patch('urllib.request.urlopen') as call:
             self.assertFalse(ai_trace.configured())
-            with self.assertRaisesRegex(ai_trace.ProviderError,'FAL_KEY'):ai_trace.suggest(b'png',52,-106,18,'lawn')
+            with self.assertRaisesRegex(ai_trace.ProviderError,'FAL_KEY'):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99])
             call.assert_not_called()
 
     def test_safe_errors_and_low_confidence(self):
         for code in [401,402,403,422,429,500]:
             err=urllib.error.HTTPError(sam_trace.ENDPOINT,code,'SECRET',{},io.BytesIO(b'SECRET'))
             with patch.dict(os.environ,{'FAL_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=err):
-                with self.assertRaises(ai_trace.ProviderError) as raised:ai_trace.suggest(b'png',52,-106,18,'paved')
+                with self.assertRaises(ai_trace.ProviderError) as raised:ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99])
                 self.assertNotIn('SECRET',str(raised.exception))
         with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen',return_value=Response({'masks':[{'url':'bad'}],'scores':[.1]})):
-            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'paved');self.assertEqual(drafts,[]);self.assertEqual(usage['rejected_regions'],1)
+            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99]);self.assertEqual(drafts,[]);self.assertEqual(usage['rejected_regions'],1)
+
+    def test_neighbouring_and_crossing_regions_are_not_offered(self):
+        mask=np.zeros((640,640),dtype='uint8')
+        mask[100:120,100:300]=1  # own south grass strip
+        mask[200:320,400:420]=1  # own east grass strip
+        mask[80:120,500:560]=1   # neighbouring property
+        mask[500:530,100:300]=1  # property across the street
+        mask[300:320,40:90]=1   # crosses selected job boundary
+        drafts,rejected=sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',scope=[80/640,60/640,450/640,450/640])
+        self.assertEqual(len(drafts),2);self.assertEqual(rejected,3)
+        self.assertEqual(sum(pixel_area(a['image_points']) for a in drafts),6400)
+        for a in drafts:
+            self.assertTrue(all(80<=x<=450 and 60<=y<=450 for x,y in a['image_points']))
+
+    def test_invalid_or_missing_scope_never_calls_provider(self):
+        for scope in [None,[],[0,0,1],[0,0,2,1],[.5,0,.1,1],[False,0,1,1],[0,0,float('nan'),1]]:
+            with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen') as call:
+                with self.assertRaises(ValueError):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=scope)
+                call.assert_not_called()
 
     def test_external_mask_urls_and_coloured_images_rejected(self):
         with patch('urllib.request.build_opener') as call:
