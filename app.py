@@ -1608,6 +1608,15 @@ async function buildInteractiveCustomerMap(){
  }else{fitEntireQuote(customerMap)};
  setReportOutlineButtons(false);
 }
+function drawSavedMeasurementLabels(ctx,snap,view,width,height){
+ const world=256*Math.pow(2,view.zoom),xy=p=>{const lat=Number(p[0]??p.lat),lng=Number(p[1]??p.lng),v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},center=xy([view.latitude,view.longitude]);
+ const pixel=p=>{const q=xy(p);return[width/2+(q[0]-center[0])*width/view.width,height/2+(q[1]-center[1])*height/view.height]};
+ const label=(point,text,color)=>{const [x,y]=pixel(point);ctx.save();ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.measureText(text).width+14;ctx.fillStyle='#fff';ctx.fillRect(x-w/2,y-14,w,28);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-14,w,28);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore()};
+ const edges=(points,closed,color)=>{for(let i=1;i<points.length+(closed?1:0);i++){const a=points[i-1],b=points[i%points.length],feet=L.latLng(a).distanceTo(L.latLng(b))*3.28084;label([(a[0]+b[0])/2,(a[1]+b[1])/2],(feet<100?feet.toFixed(1):Math.round(feet).toLocaleString())+' ft',color)}};
+ const areas=(snap.commercialAreas||[]).filter(a=>a.points?.length>=3);
+ (areas.length?areas:[{points:snap.areaPoints||[],sqft:snap.areaSqFt}]).forEach(a=>{if(a.points.length<3)return;edges(a.points,true,'#7357b8');const lats=a.points.map(p=>p[0]),lngs=a.points.map(p=>p[1]);if(Number(a.sqft)>0)label([(Math.min(...lats)+Math.max(...lats))/2,(Math.min(...lngs)+Math.max(...lngs))/2],fmt(a.sqft)+' ft²','#7357b8')});
+ if(snap.linearPoints?.length>=2)edges(snap.linearPoints,false,'#0f8f83');
+}
 async function buildSavedHistoricalSnapshot(){
  const host=el('customerMap');if(!host)return;
  if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
@@ -1627,11 +1636,13 @@ async function buildSavedHistoricalSnapshot(){
  if(!roofs.length)throw new Error('Saved estimate has no measurement outline for the aerial image.');
  const r=await fetch('/saved-estimate-report-map',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roofs})});
  if(!r.ok)throw new Error((await r.text())||'Could not rebuild saved estimate aerial.');
+ const view=JSON.parse(r.headers.get('X-AeriQuote-Map-View')||'null');
+ if(!view||![view.latitude,view.longitude,view.zoom,view.width,view.height].every(Number.isFinite))throw new Error('Saved aerial measurement coordinates are unavailable.');
  const blob=await r.blob(),obj=URL.createObjectURL(blob);
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
-   canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);host.appendChild(canvas);
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height);host.appendChild(canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
@@ -1950,7 +1961,7 @@ async function downloadEstimatePDF(){
   // Do not rebuild the manual aerial and do not refit/recenter the map before capture.
   // The saved outline and the PDF therefore use the exact same Leaflet viewport + geometry.
   const useAerial=(el('streetViewChoice')?.value||'auto')!=='none';
-  if(useAerial&&!customerMap){await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}
+  if(useAerial&&!customerMap){if(quoteSnapshot?.savedPricing){if(!el('customerMap')?.querySelector('canvas'))await buildSavedHistoricalSnapshot()}else{await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}}
   else if(customerMap){await new Promise(r=>setTimeout(r,160))}
   const actions=report.querySelector('.reportActions'),outlineControls=el('reportOutlineControls');
   const oldActionsDisplay=actions?actions.style.display:'',oldOutlineDisplay=outlineControls?outlineControls.style.display:'';
@@ -3217,7 +3228,7 @@ def saved_estimate_report_map():
             with urllib.request.urlopen(req,timeout=15) as rr:ct=rr.headers.get("Content-Type","image/png");body=rr.read()
         except urllib.error.HTTPError as he:
             raw=he.read().decode("utf-8","replace")[:1200].replace(key,"[API KEY REDACTED]");raise ValueError(f"Google Maps Static HTTP {he.code}: {raw}")
-        return Response(body,content_type=ct)
+        return Response(body,content_type=ct,headers={"X-AeriQuote-Map-View":json.dumps({"latitude":round(center_lat,7),"longitude":round(center_lng,7),"zoom":zoom,"width":640,"height":420})})
     except Exception as e:return Response(str(e).replace(key,"[API KEY REDACTED]"),status=400,content_type="text/plain; charset=utf-8")
 
 

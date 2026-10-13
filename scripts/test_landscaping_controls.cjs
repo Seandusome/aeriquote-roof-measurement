@@ -29,4 +29,17 @@ for(const industry of ['paving','snow','pressure']){
 }
 assert.equal(btn('toolAiBtn'),null);assert.equal(btn('aiTraceTools'),null);assert.equal(btn('aerialActionbar'),null);
 console.log('PASS: AI tracing controls removed; manual measurements remain available');
+// Saved estimates use a static aerial; labels must be painted into the same PDF canvas.
+await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');
+const painted=[];let imagesPainted=0;
+w.HTMLCanvasElement.prototype.getContext=()=>({drawImage(){imagesPainted++},save(){},restore(){},measureText(t){return{width:t.length*10}},fillRect(){},strokeRect(){},fillText(t,x,y){painted.push({t,x,y})}});
+w.Image=class{naturalWidth=1280;naturalHeight=840;set src(v){queueMicrotask(()=>this.onload())}};
+w.eval(`quoteSnapshot={commercialAreas:[{name:'Area 1',sqft:1000,rate:.25,points:[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]},{name:'Area 2',sqft:2000,rate:.25,points:[[52.001,-106],[52.001,-105.9999],[52.0011,-105.9999],[52.0011,-106]]}],linearPoints:[[52,-106],[52.001,-106],[52.001,-105.9999]],savedPricing:{total:800}}`);
+const snapshot=w.eval('JSON.stringify(quoteSnapshot)'),areas=w.eval('quoteSnapshot.commercialAreas'),line=w.eval('quoteSnapshot.linearPoints');
+w.fetch=async(url,options)=>{assert.equal(url,'/saved-estimate-report-map');const sent=JSON.parse(options.body);assert.equal(sent.roofs.filter(a=>a.kind==='area').length,areas.length);assert.equal(sent.roofs.filter(a=>a.kind==='linear').length,1);return{ok:true,headers:{get:()=>JSON.stringify({latitude:52,longitude:-105.99995,zoom:18,width:640,height:420})},blob:async()=>new w.Blob(['image'])}};
+await w.eval('buildSavedHistoricalSnapshot()');
+assert.equal(imagesPainted,1);assert(Math.abs(painted[0].x-640)<1e-5);assert(Math.abs(painted[0].y-420)<1e-5);assert.equal(painted.filter(p=>p.t.endsWith(' ft')).length,areas.reduce((n,a)=>n+a.points.length,0)+line.length-1);assert.equal(painted.filter(p=>p.t.endsWith(' ft²')).length,areas.length);assert(painted.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)));assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),snapshot);
+assert.equal(btn('customerMap').querySelectorAll('canvas').length,1);
+console.log('PASS: reopened aerial paints every area edge, area total and linear segment into PDF canvas without changing saved geometry or pricing');
+w.eval("el('streetViewChoice').value='auto';buildCustomerMap=async()=>{throw new Error('Historical PDF must not rebuild a live property map')}");let historicalCaptured=false;w.html2canvas=async()=>{assert.equal(btn('customerMap').querySelectorAll('canvas').length,1);historicalCaptured=true;return{width:1280,height:840,toDataURL:()=> 'data:image/jpeg;base64,test'}};await w.eval('downloadEstimatePDF()');assert(historicalCaptured);assert.equal(imagesPainted,1);assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),snapshot);console.log('PASS: historical PDF captures the labeled saved canvas without a live property session');
 await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');console.log('Script errors:',errors);dom.window.close();if(errors.length)process.exitCode=1;})().catch(e=>{console.error(e);process.exit(1)});

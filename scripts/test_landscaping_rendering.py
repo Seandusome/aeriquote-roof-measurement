@@ -1,6 +1,7 @@
 """Check shipped JavaScript syntax and saved-aerial request geometry without API charges."""
 import ast
 import math
+import json
 from pathlib import Path
 import re
 import subprocess
@@ -27,7 +28,7 @@ areas = [{'kind': 'area', 'points': [{'lat': 52, 'lng': -106}, {'lat': 52, 'lng'
          {'kind': 'area', 'points': [{'lat': 52.02, 'lng': -106}, {'lat': 52.02, 'lng': -105.99}, {'lat': 52.03, 'lng': -105.99}]},
          {'kind': 'linear', 'points': [{'lat': 52, 'lng': -106}, {'lat': 52.03, 'lng': -106}]}]
 request = SimpleNamespace(get_json=lambda **kw: {'roofs': areas}, host_url='https://test.invalid/')
-scope = dict(GOOGLE_MAPS_API_KEY='test-key', request=request, math=math, urllib=urllib,
+scope = dict(GOOGLE_MAPS_API_KEY='test-key', request=request, math=math, urllib=urllib, json=json,
              Response=lambda body, **kw: (body, kw))
 exec(compile(ast.Module(body=[fn], type_ignores=[]), 'app.py', 'exec'), scope)
 class ImageResponse:
@@ -39,6 +40,10 @@ with patch('urllib.request.urlopen', return_value=ImageResponse()) as get:
     body, meta = scope['saved_estimate_report_map']()
     assert body == b'test-image', (body, meta)
     params = urllib.parse.parse_qs(urllib.parse.urlparse(get.call_args.args[0].full_url).query)
+    view=json.loads(meta['headers']['X-AeriQuote-Map-View'])
+    assert str(view['zoom'])==params['zoom'][0]
+    assert params['center'][0]==f"{view['latitude']:.7f},{view['longitude']:.7f}"
+    assert (view['width'],view['height'])==(640,420)
     assert len(params['path']) == 3
     assert int(params['zoom'][0]) < 18, 'Large landscaping properties must fit the image'
     assert params['path'][2].endswith('52.0300000,-106.0000000'), 'Linear trace must stay open'
