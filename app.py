@@ -1506,11 +1506,14 @@ async function buildManualCustomerSnapshot(){
  if(!planes.length)throw new Error('No saved manual roof outline is available for the report.');
  const r=await fetch('/manual-report-map/'+sessionToken,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({planes})});
  if(!r.ok)throw new Error((await r.text())||'Could not create manual report aerial.');
+ const view=JSON.parse(r.headers.get('X-AeriQuote-Map-View')||'null');if(!view)throw new Error('Manual report aerial is missing its map view.');
  const blob=await r.blob(),obj=URL.createObjectURL(blob);
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Manual report aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
-   canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);host.appendChild(canvas);
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   const labeledSnap={...snap,manualPlanes:(snap.manualPlanes||[]).map((p,i)=>({...p,points:reportOutlines['manual-'+i]||p.points}))};
+   drawSavedMeasurementLabels(ctx,labeledSnap,view,canvas.width,canvas.height);host.appendChild(canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 async function loadCustomerWideAerial(token,targetMap){
@@ -3277,7 +3280,7 @@ def manual_report_map(token):
         except urllib.error.HTTPError as he:
             raw=he.read().decode("utf-8","replace")[:1200].replace(sess.get("key") or "","[API KEY REDACTED]")
             raise ValueError(f"Google Maps Static HTTP {he.code}: {raw}")
-        return Response(body,content_type=ct)
+        return Response(body,content_type=ct,headers={"X-AeriQuote-Map-View":json.dumps({"latitude":round(center_lat,7),"longitude":round(center_lng,7),"zoom":zoom,"width":640,"height":420})})
     except Exception as e:
         return Response(str(e).replace(sess.get("key") or "","[API KEY REDACTED]"),status=400,content_type="text/plain; charset=utf-8")
 

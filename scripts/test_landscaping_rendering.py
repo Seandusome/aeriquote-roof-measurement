@@ -49,3 +49,19 @@ with patch('urllib.request.urlopen', return_value=ImageResponse()) as get:
     assert params['path'][2].endswith('52.0300000,-106.0000000'), 'Linear trace must stay open'
     assert '52.0000000,-106.0000000' in params['path'][0]
 print('PASS: saved aerial includes both areas and open linear trace; large-property framing')
+
+# The manual-map response must expose exactly the view used to bake its outline.
+manual_fn=next(n for n in module.body if isinstance(n,ast.FunctionDef) and n.name=='manual_report_map')
+manual_fn.decorator_list=[]
+manual_points=[{'lat':52,'lng':-106},{'lat':52,'lng':-105.9999},{'lat':52.0001,'lng':-105.9999},{'lat':52.0001,'lng':-106}]
+manual_scope=dict(scope,SESSIONS={'manual':{'key':'test-key'}},request=SimpleNamespace(get_json=lambda **kw:{'planes':[manual_points]},host_url='https://test.invalid/'))
+exec(compile(ast.Module(body=[manual_fn],type_ignores=[]),'app.py','exec'),manual_scope)
+with patch('urllib.request.urlopen',return_value=ImageResponse()) as get:
+    body,meta=manual_scope['manual_report_map']('manual')
+    view=json.loads(meta['headers']['X-AeriQuote-Map-View'])
+    params=urllib.parse.parse_qs(urllib.parse.urlparse(get.call_args.args[0].full_url).query)
+    assert params['center'][0]==f"{view['latitude']:.7f},{view['longitude']:.7f}"
+    assert params['zoom'][0]==str(view['zoom'])
+    assert params['size']==['640x420'] and params['scale']==['2']
+    assert len(params['path'])==1 and 'color:0xd97706ff' in params['path'][0]
+print('PASS: manual Roofing labels use exact static-image map view and retain baked outline')

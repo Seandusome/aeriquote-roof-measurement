@@ -130,6 +130,12 @@ for(const industry of ['roofing','pressure','paving','snow','landscaping','comme
  btn('linearEditBtn').click();corner=w.eval('linearLayers.find(l=>l.dragging&&l.dragging.enabled())');corner.setLatLng(w.L.latLng(52.0003,-106));corner.fire('dragend');btn('toolAreaBtn').click();assert.equal(w.eval('JSON.stringify(linearPoints)'),changed,'Switching tools cancels an unfinished line edit');assert.equal(w.eval('savedLinearJobRate'),.70);w.eval('areaMode=false');
  console.log('PASS '+industry+': draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels');
 }
+// Live manual Roofing must paint all edge dimensions and pitch over its baked static outline.
+w.eval("el('businessType').value='roofing';sessionToken='manual-labels';reportOutlines={};quoteSnapshot={businessType:'roofing',measureSource:'manual',measurementMode:'auto',structures:[],manualPlanes:[{points:[{lat:52,lng:-106},{lat:52,lng:-105.9999},{lat:52.0001,lng:-105.9999},{lat:52.0001,lng:-106}],pitch_degrees:26.6,surface_sqft:1111}]} ");
+const manualOriginal=w.eval('JSON.stringify(quoteSnapshot)');let manualRequest;
+w.fetch=async(url,options)=>{assert.equal(url,'/manual-report-map/manual-labels');manualRequest=JSON.parse(options.body);return{ok:true,headers:{get:()=>JSON.stringify({latitude:52.00005,longitude:-105.99995,zoom:20,width:640,height:420})},blob:async()=>new w.Blob(['image'])}};
+painted.length=0;await w.eval('buildManualCustomerSnapshot()');assert.equal(manualRequest.planes.length,1);assert.equal(painted.filter(x=>x.t.endsWith(' ft')).length,4);assert(painted.some(x=>x.t==='26.6°'));assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),manualOriginal);assert.equal(btn('customerMap').querySelectorAll('canvas').length,1);
+console.log('PASS: live manual Roofing canvas includes all four edges and pitch with unchanged snapshot');
 // A late aerial completion must honor Linear selected after loading started.
 dom.reconfigure({url:'https://test.invalid/?industry=pressure'});w.eval("el('businessType').value='pressure';el('streetAddress').value='52,-106';pendingMeasurementMode='area';measurementViewMode='area';areaMode=false;linearMode=false");let finishAerial;
 w.loadStandardWideAerial=()=>new Promise(resolve=>finishAerial=()=>resolve({}));w.fetch=async()=>({ok:true,json:async()=>({token:'delayed-aerial',exact_pin_display:true,fallback:true,center:{latitude:52,longitude:-106},parts:{},formatted_address:'Test Property'})});

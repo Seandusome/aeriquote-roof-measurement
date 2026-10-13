@@ -1,3 +1,15 @@
+# October 13 manual-Roofing PDF follow-up
+
+- Edit Line live confirmed by Sean. Pressure Washing one-line PDFs46/47 (fresh/reopened): 551.6 ft @ .70, total CAD386.10, both segment labels retained. User explicitly drew only one line; no area-loss bug. Reopened labels round individual segments differently, but saved length/rate/total unchanged.
+- Isolated engine CI failed after Edit Line because fixture omitted linearCorrectionOriginal. Fixed fixture in3c89963; GitHub recovery workflow passed. Application code unchanged by that fix.
+- Commercial combined/customer tests already performed per Sean; do not request repeating them without reason.
+- Roofing/Pressure Washing confusion: user thought Roofing selected, copied UI showed Pressure Washing, new-property line0.0ft so old geometry did not carry. No proven industry reset; no change made. Choose Roofing and confirm heading before loading.
+- Manual Roofing PDF20:1,111ft², base5,278.00, GST263.90, PST316.68, CAD5,858.58. Orange outline present, feet/pitch labels absent. Root cause: manual-report static image path baked outline but did not draw labels.
+- Fix: manual-map response exposes exact center/zoom/size; manual snapshot draws saved edge/pitch labels on its static canvas using that view and approved report outlines. Geometry/pricing unchanged. DOM+Leaflet manual canvas and server view tests pass, alongside existing PDF/imagery/linear tests. Live manual-PDF retest pending.
+- Next: after deployment, regenerate manual Roofing estimate and verify all feet labels + selected pitch, then reopen saved version. Do not repeat passed automatic two-roof PDFs.
+
+---
+
 # October 13 evening continuation
 
 Baseline parent: cec07fc3b587461f905f3abd0ebcb4b846466677. Authorized branch unchanged.
