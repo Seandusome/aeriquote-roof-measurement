@@ -33,6 +33,9 @@ w.html2canvas=async()=>{assert(btn('customerMap').querySelector('canvas'),'Roofi
 await w.eval('downloadEstimatePDF()');assert(roofCaptured);assert.equal(w.eval('JSON.stringify(customerOverlays[customerOverlays.length-1].getLatLngs())'),approvedRoof);w.eval('customerMap.removeLayer(customerOverlays.pop())');w.quoteSnapshot=priorRoofSnapshot;
 w.eval("const anchoredEdges=[];drawEdgeMeasurements([[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]],'#2d6cdf',map,anchoredEdges,false);window.testRoofEdges=anchoredEdges");
 assert.equal(w.testRoofEdges.length,4,'Every rectangular roof edge must retain a feet label');const midpoints=[[52,-105.99995],[52.00005,-105.9999],[52.0001,-105.99995],[52.00005,-106]];for(const marker of w.testRoofEdges){const ll=marker.getLatLng();assert(midpoints.some(p=>Math.abs(ll.lat-p[0])<1e-8&&Math.abs(ll.lng-p[1])<1e-8),'Edge label must anchor to true midpoint');w.eval('map').removeLayer(marker)}console.log('PASS: roof PDF replaces transformed SVG without changing approved polygon; edge labels retain true midpoint anchors');
+const savedRoofTexts=[];w.testSavedRoofCtx={save(){},restore(){},measureText(t){return{width:t.length*10}},beginPath(){},moveTo(){},lineTo(){},stroke(){},fillRect(){},strokeRect(){},fillText(t){savedRoofTexts.push(t)}};
+w.eval("drawSavedMeasurementLabels(testSavedRoofCtx,{structures:[{outline:[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]],segments:[{center:{latitude:52.00005,longitude:-105.99995},pitch_degrees:30.7}]}]},{latitude:52,longitude:-106,zoom:20,width:640,height:420},1280,840)");assert.equal(savedRoofTexts.filter(t=>t.endsWith(' ft')).length,4);assert(savedRoofTexts.includes('30.7°'));console.log('PASS: saved Roofing report retains every edge and pitch label');
+
 
 
 for(const industry of ['paving','pressure','snow']){

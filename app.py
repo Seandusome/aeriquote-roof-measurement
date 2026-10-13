@@ -1654,6 +1654,11 @@ function drawSavedMeasurementLabels(ctx,snap,view,width,height){
  const areas=(snap.commercialAreas||[]).filter(a=>a.points?.length>=3);
  (areas.length?areas:[{points:snap.areaPoints||[],sqft:snap.areaSqFt}]).forEach(a=>{if(a.points.length<3)return;edges(a.points,true,'#7357b8');const lats=a.points.map(p=>p[0]),lngs=a.points.map(p=>p[1]);if(Number(a.sqft)>0)label([(Math.min(...lats)+Math.max(...lats))/2,(Math.min(...lngs)+Math.max(...lngs))/2],fmt(a.sqft)+' ft²','#7357b8')});
  if(snap.linearPoints?.length>=2)edges(snap.linearPoints,false,'#0f8f83');
+ (snap.structures||[]).forEach((st,i)=>{
+  const color=i===0?'#2d6cdf':'#18a7a0',points=(st.outline||[]).map(p=>[Number(p.lat??p[0]),Number(p.lng??p[1])]);if(points.length>=3)edges(points,true,color);
+  (st.segments||[]).forEach(seg=>{const c=seg.center,b=seg.bounding_box;const point=c?[c.latitude,c.longitude]:b?.sw&&b?.ne?[(b.sw.latitude+b.ne.latitude)/2,(b.sw.longitude+b.ne.longitude)/2]:null;if(point&&Number.isFinite(Number(seg.pitch_degrees)))label(point,Number(seg.pitch_degrees).toFixed(1)+'°','#7a3f08')});
+ });
+ (snap.manualPlanes||[]).forEach(st=>{const points=(st.points||[]).map(p=>[Number(p.lat??p[0]),Number(p.lng??p[1])]);if(points.length<3)return;edges(points,true,'#d97706');const bounds=L.latLngBounds(points).getCenter();label([bounds.lat,bounds.lng],Number(st.pitch_degrees||0).toFixed(1)+'°','#7a3f08')});
 }
 async function buildSavedHistoricalSnapshot(){
  const host=el('customerMap');if(!host)return;
