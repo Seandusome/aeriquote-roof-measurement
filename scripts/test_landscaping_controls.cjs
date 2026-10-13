@@ -20,7 +20,7 @@ for(const industry of ['paving','pressure','snow']){
  assert(btn('summary').textContent.includes('Service Area 1')&&btn('summary').textContent.includes('Service Area 3'));
  const expected=w.eval('commercialAreas.reduce((n,a)=>n+a.sqft*a.rate,0)+linearFeetTotal()*.75');assert(Math.abs(w.eval('priceCalc().subtotal')-expected)<1e-8);
  await w.eval('showCustomerEstimate()');for(const area of ['Service Area 1','Service Area 2','Service Area 3']){assert(btn('rProperty').textContent.includes(area));assert(btn('rPricing').textContent.includes(area));}
- assert(btn('rPricing').textContent.includes(w.eval('surfaceServiceLabel()')+' Linear'));w.eval('clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false');console.log('PASS '+industry+': rendered summary and customer estimate list every area with its own rate plus linear service');
+ assert(btn('rProperty').textContent.includes(w.eval('surfaceServiceLabel()')+' Linear'));assert(!btn('rProperty').textContent.includes('Landscaping Linear'));assert.equal(btn('rEstimateTitle').textContent,w.eval('surfaceServiceLabel()')+' Measurement & Estimate');assert(btn('rPricing').textContent.includes(w.eval('surfaceServiceLabel()')+' Linear'));w.eval('clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false');console.log('PASS '+industry+': rendered summary and customer estimate list every area with its own rate plus linear service');
 }
 for(const industry of ['paving','snow','pressure']){
  dom.reconfigure({url:'https://test.invalid/?industry='+industry});w.eval(`el('businessType').value='${industry}';el('streetAddress').value='52,-106';pendingMeasurementMode='area';traceMode=false`);const calls=[];
