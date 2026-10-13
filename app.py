@@ -907,7 +907,7 @@ function drawEdgeMeasurements(points,color,targetMap=map,targetList=overlays,sho
  // and suppress labels that would land on top of another edge label on complex roofs.
  let center=null;try{const cps=pts.map(p=>targetMap.latLngToContainerPoint(p));center=cps.reduce((a,p)=>L.point(a.x+p.x,a.y+p.y),L.point(0,0));center=L.point(center.x/cps.length,center.y/cps.length)}catch(e){}
  const placed=[];
- chosen.forEach(e=>{let mid=L.latLng((e.a.lat+e.b.lat)/2,(e.a.lng+e.b.lng)/2),labelPoint=null;try{const mp=targetMap.latLngToContainerPoint(mid);labelPoint=mp;if(center){const dx=mp.x-center.x,dy=mp.y-center.y,len=Math.hypot(dx,dy)||1;labelPoint=L.point(mp.x+(dx/len)*22,mp.y+(dy/len)*22);mid=targetMap.containerPointToLatLng(labelPoint)}}catch(err){}if(labelPoint&&placed.some(p=>Math.hypot(labelPoint.x-p.x,labelPoint.y-p.y)<58))return;if(labelPoint)placed.push(labelPoint);const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="edge-label">${e.feet.toFixed(1)} ft</div>`,iconAnchor:[22,8]})}).addTo(targetMap);targetList.push(lab)});
+ chosen.forEach(e=>{let mid=L.latLng((e.a.lat+e.b.lat)/2,(e.a.lng+e.b.lng)/2),labelPoint=null;try{const mp=targetMap.latLngToContainerPoint(mid);labelPoint=mp;}catch(err){}if(labelPoint&&placed.some(p=>Math.hypot(labelPoint.x-p.x,labelPoint.y-p.y)<58))return;if(labelPoint)placed.push(labelPoint);const lab=L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="edge-label">${e.feet.toFixed(1)} ft</div>`,iconAnchor:[22,8]})}).addTo(targetMap);targetList.push(lab)});
  if(showCorners&&pts.length<=24)pts.forEach(pt=>{const dot=L.circleMarker(pt,{radius:4,color,weight:2,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(targetMap);targetList.push(dot)});
 }
 function drawSegments(s,kind,targetMap=map,targetList=overlays,skipOutline=false){const color=kind==='house'?'#2d6cdf':'#18a7a0',segs=(s.segments||[]),mode=(el('outlineMode')?el('outlineMode').value:'smart'),showBoxes=(mode==='all');segs.forEach((seg)=>{const b=seg.bounding_box;if(!b||!b.sw||!b.ne)return;if(showBoxes){const rect=L.rectangle([[b.sw.latitude,b.sw.longitude],[b.ne.latitude,b.ne.longitude]],{color,weight:2,fillColor:color,fillOpacity:.08}).addTo(targetMap);targetList.push(rect)}const c=seg.center||{latitude:(b.sw.latitude+b.ne.latitude)/2,longitude:(b.sw.longitude+b.ne.longitude)/2};const lab=L.marker([c.latitude,c.longitude],{interactive:false,icon:L.divIcon({className:'',html:`<div class="seg-label">${seg.pitch_degrees.toFixed(1)}°</div>`,iconAnchor:[24,10]})}).addTo(targetMap);targetList.push(lab)});const visualOutline=(kind==='house'&&outlineEditMode)?null:((kind==='house'&&Array.isArray(adjustedOutline)&&adjustedOutline.length>=3)?adjustedOutline:s.outline);if(!skipOutline&&mode==='smart'&&Array.isArray(visualOutline)&&visualOutline.length>=3){const poly=L.polygon(visualOutline,{color,weight:5,fillColor:color,fillOpacity:.045,interactive:false,lineJoin:'round',smoothFactor:1.35}).addTo(targetMap);targetList.unshift(poly);if(targetMap===map)drawEdgeMeasurements(visualOutline,color,targetMap,targetList,true)}}
@@ -2047,6 +2047,13 @@ async function downloadEstimatePDF(){
     if(Array.isArray(snap.linearPoints)&&snap.linearPoints.length>=2){
       traces.push({points:reportOutlines['linear-visual']||snap.linearPoints,area:false});
     }
+    // Roofing: export the exact polygons already approved on the report map.
+    // Reuse their LatLngs and style, rather than capturing transformed Leaflet SVG.
+    if(customerMap&&!traces.length){customerOverlays.forEach(layer=>{
+      if(!(layer instanceof L.Polygon))return;
+      const rings=layer.getLatLngs(),ring=Array.isArray(rings[0])?rings[0]:rings;
+      if(ring.length>=3)traces.push({points:ring.map(p=>[p.lat,p.lng]),area:true,color:layer.options.color||'#2d6cdf',fillOpacity:layer.options.fillOpacity??.045});
+    })}
     if(customerMap&&traces.length){
       const host=el('customerMap'),size=customerMap.getSize();
       pdfTraceCanvas=document.createElement('canvas');
@@ -2059,8 +2066,8 @@ async function downloadEstimatePDF(){
           const pt=customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));
           if(i===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);
         });
-        if(trace.area){ctx.closePath();ctx.fillStyle='rgba(115,87,184,0.14)';ctx.fill();}
-        ctx.strokeStyle=trace.area?'#7357b8':'#0f8f83';
+        if(trace.area){ctx.closePath();ctx.fillStyle=trace.color||'rgba(115,87,184,0.14)';if(trace.color)ctx.globalAlpha=trace.fillOpacity;ctx.fill();ctx.globalAlpha=1;}
+        ctx.strokeStyle=trace.color||(trace.area?'#7357b8':'#0f8f83');
         ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
       });
       pdfLabels.push(...paintCustomerPdfLabels(ctx,host));
