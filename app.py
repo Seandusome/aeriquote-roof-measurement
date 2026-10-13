@@ -2012,7 +2012,7 @@ async function downloadEstimatePDF(){
       const host=el('customerMap'),size=customerMap.getSize();
       pdfTraceCanvas=document.createElement('canvas');
       pdfTraceCanvas.width=Math.round(size.x*2);pdfTraceCanvas.height=Math.round(size.y*2);
-      Object.assign(pdfTraceCanvas.style,{position:'absolute',left:'0',top:'0',width:size.x+'px',height:size.y+'px',zIndex:'650',pointerEvents:'none'});
+      Object.assign(pdfTraceCanvas.style,{position:'absolute',left:'0',top:'0',width:size.x+'px',height:size.y+'px',zIndex:'450',pointerEvents:'none'});
       const ctx=pdfTraceCanvas.getContext('2d');ctx.scale(2,2);
       traces.forEach(trace=>{
         ctx.beginPath();
