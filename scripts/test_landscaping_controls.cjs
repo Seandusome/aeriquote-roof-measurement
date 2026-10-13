@@ -67,6 +67,17 @@ for(const industry of ['pressure','paving','snow','landscaping','commercial']){
  btn('toolAreaBtn').click();assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('linearMeasurementSaved'),true);assert(w.eval('linearLayers.length>0&&linearLayers.every(l=>map.hasLayer(l))'),'Saved linear layers must stay visible in Area mode');assert.equal(w.eval('JSON.stringify(linearPoints)'),geometry);assert.equal(w.eval('savedLinearJobRate'),1.25);
  w.eval("el('jobPrice').value='.20'");draw(0);btn('toolAreaBtn').click();assert(w.eval('linearLayers.length>0&&linearLayers.every(l=>map.hasLayer(l))'));draw(.001);assert.equal(w.eval('commercialAreas.filter(a=>a.sqft>0).length'),2);assert.equal(w.eval('linearFeetTotal()'),feet);assert.equal(w.eval('savedLinearJobRate'),1.25);assert(w.eval('linearLayers.every(l=>map.hasLayer(l))'));console.log('PASS '+industry+': linear-first line stays visible through two saved areas; geometry and linear rate retained');
 }
+// Removing a saved area must cancel an empty new draft and preserve the saved line.
+for(const industry of ['pressure','paving','snow','landscaping','commercial']){
+ dom.reconfigure({url:'https://test.invalid/?industry='+industry});w.eval(`el('businessType').value='${industry}';measurementViewMode='area';areaMode=false;linearMode=false;commercialEditingIndex=-1;areaPoints=[];areaMeasurementSaved=false;commercialAreas=[]`);
+ btn('toolAreaBtn').click();draw(0);btn('commercialAddAreaBtn').click();draw(.001);
+ const first=w.eval('JSON.stringify(commercialAreas[0])'),line=w.eval('JSON.stringify(linearPoints)'),rate=w.eval('savedLinearJobRate');
+ btn('commercialAddAreaBtn').click();assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('commercialAreas.length'),3);
+ btn('commercialAreaList').querySelectorAll('button')[3].click();assert.equal(w.eval('commercialAreas.length'),1);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);assert.equal(w.eval('areaMode'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);assert.equal(w.eval('savedLinearJobRate'),rate);assert.equal(btn('jsRoofs').textContent,'1');
+ assert(btn('areaHelp').textContent.includes('All saved service areas'));assert.equal(btn('commercialAreaList').querySelectorAll('button').length,2);
+ btn('commercialAreaList').querySelectorAll('button')[1].click();assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('areaMeasurementSaved'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
+ console.log('PASS '+industry+': remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement');
+}
 // A late aerial completion must honor Linear selected after loading started.
 dom.reconfigure({url:'https://test.invalid/?industry=pressure'});w.eval("el('businessType').value='pressure';el('streetAddress').value='52,-106';pendingMeasurementMode='area';measurementViewMode='area';areaMode=false;linearMode=false");let finishAerial;
 w.loadStandardWideAerial=()=>new Promise(resolve=>finishAerial=()=>resolve({}));w.fetch=async()=>({ok:true,json:async()=>({token:'delayed-aerial',exact_pin_display:true,fallback:true,center:{latitude:52,longitude:-106},parts:{},formatted_address:'Test Property'})});
