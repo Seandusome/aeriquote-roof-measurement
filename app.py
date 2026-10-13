@@ -1711,7 +1711,7 @@ async function saveEstimateHistory(){
    }catch(e){console.warn('Street View could not be stored with estimate',e)}
   }
   const payload={customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:'Estimate',scheduled_date:'',completion_date:'',amount_paid:0,address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData};
-  const saveKey=[payload.address,payload.customer_name,payload.customer_phone,payload.customer_email,payload.total_area,payload.total_price].join('|');
+  const saveKey=[payload.address,payload.customer_name,payload.customer_phone,payload.customer_email,payload.total_area,payload.total_price,payload.customer_notes].join('|');
   if(saveKey===lastHistorySaveKey)return;
   const r=await fetch('/api/estimates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('save failed');
   lastHistorySaveKey=saveKey;
@@ -1971,6 +1971,16 @@ function customerPdfVectorSnapshot(){
  const pane=customerMap.getPane('overlayPane'),old=pane?pane.style.visibility:'';if(pane)pane.style.visibility='hidden';
  return()=>{if(pane)pane.style.visibility=old;try{svg.remove()}catch(e){}};
 }
+function paintCustomerPdfLabels(ctx,host){
+ const hidden=[],origin=host.getBoundingClientRect();
+ customerOverlays.forEach(layer=>{const marker=layer.getElement?.(),node=marker?.querySelector('.aeri-edge-label,.linear-seg-label,.area-label');if(!node)return;
+  const rect=node.getBoundingClientRect(),style=getComputedStyle(node),point=customerMap.latLngToContainerPoint(layer.getLatLng()),w=rect.width||node.textContent.length*7+14,h=rect.height||26,x=rect.width?rect.left-origin.left:point.x+(parseFloat(node.style.left)||-w/2),y=rect.height?rect.top-origin.top:point.y+(parseFloat(node.style.top)||-h/2);
+  ctx.save();ctx.strokeStyle=style.color||'#7357b8';ctx.lineWidth=1;
+  if(Math.hypot(x+w/2-point.x,y+h/2-point.y)>4){ctx.beginPath();ctx.moveTo(point.x,point.y);ctx.lineTo(x+w/2,y+h/2);ctx.stroke()}
+  ctx.fillStyle='#fff';ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);ctx.fillStyle=style.color||'#283653';ctx.font=(style.fontWeight||'800')+' '+(style.fontSize||'12px')+' '+(style.fontFamily||'Arial');ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(node.textContent,x+w/2,y+h/2);ctx.restore();
+  hidden.push({node:marker,visibility:marker.style.visibility});marker.style.visibility='hidden';
+ });return hidden;
+}
 async function downloadEstimatePDF(){
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
  if(!report){status('Create the customer estimate first.','error');return}
@@ -1998,7 +2008,7 @@ async function downloadEstimatePDF(){
   // Detach every vector SVG during capture. Keeping the original transformed SVG
   // alongside the pixel canvas can produce a second, displaced outline in html2canvas.
   // Satellite images and labels remain in the map; restore SVGs even if capture fails.
-  const pdfVectors=[];
+  const pdfVectors=[],pdfLabels=[];
   try{
     const snap=quoteSnapshot||captureQuoteSnapshot();
     // Capture all commercial area polygons and the linear trace together.
@@ -2029,12 +2039,14 @@ async function downloadEstimatePDF(){
         ctx.strokeStyle=trace.area?'#7357b8':'#0f8f83';
         ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
       });
+      pdfLabels.push(...paintCustomerPdfLabels(ctx,host));
       host.appendChild(pdfTraceCanvas);
       customerMap.getPane('overlayPane')?.querySelectorAll('svg').forEach(svg=>{const anchor=document.createComment('PDF vector replacement');svg.replaceWith(anchor);pdfVectors.push({svg,anchor})});
     }
     var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
+    pdfLabels.forEach(({node,visibility})=>node.style.visibility=visibility);
     pdfVectors.forEach(({svg,anchor})=>anchor.replaceWith(svg));
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
