@@ -76,7 +76,7 @@ def cell_outline(component):
     return points
 
 
-def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None):
+def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None, seed=None):
     import cv2
     import numpy as np
     import ai_trace
@@ -90,6 +90,10 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None):
         n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=4)
         for label in range(1, n):
             x, y, w, h, count = stats[label]
+            if seed is not None:
+                sx=min(mask.shape[1]-1,int(seed[0]*mask.shape[1]));sy=min(mask.shape[0]-1,int(seed[1]*mask.shape[0]))
+                if labels[sy,sx]!=label:
+                    continue  # regions not containing the user's click are not this request
             if count < 20:
                 continue
             if x == 0 or y == 0 or x+w == mask.shape[1] or y+h == mask.shape[0]:
@@ -126,11 +130,14 @@ def masks_to_suggestions(masks, lat, lng, zoom, surface, scope=None):
                 polygons.append(item); accepted.append(component)
             except ValueError:
                 rejected += 1
+    if seed is not None and len(polygons)>1:
+        # Multiple materially different masks covering the click are ambiguous.
+        rejected += len(polygons); polygons=[]
     suggestions = ai_trace.validate_polygons({'polygons': polygons}, lat, lng, zoom)
     return suggestions, rejected
 
 
-def suggest(image, lat, lng, zoom, surface, scope=None):
+def suggest(image, lat, lng, zoom, surface, scope=None, seed=None):
     import ai_trace
     key = os.environ.get('FAL_KEY', '').strip()
     if not key:
@@ -138,11 +145,11 @@ def suggest(image, lat, lng, zoom, surface, scope=None):
     if surface not in ai_trace.SURFACES:
         raise ValueError('Choose Lawn or Paved Surface')
     scope = ai_trace.validate_scope(scope)
+    seed = ai_trace.validate_seed(seed)
     body = {'image_url': ai_trace.image_preview(image), 'prompt': 'grass lawn' if surface == 'lawn' else 'paved asphalt or concrete surface',
             'apply_mask': False, 'sync_mode': True, 'output_format': 'png',
             'return_multiple_masks': True, 'max_masks': 12, 'include_scores': True}
-    x0,y0,x1,y1=scope
-    body['box_prompts']=[{'x_min':round(x0*640),'y_min':round(y0*640),'x_max':round(x1*640),'y_max':round(y1*640)}]
+    body['point_prompts']=[{'x':round(seed[0]*640),'y':round(seed[1]*640),'label':1}]
     request = urllib.request.Request(ENDPOINT, data=json.dumps(body).encode(),
         headers={'Authorization': 'Key '+key, 'Content-Type': 'application/json', 'X-Fal-No-Retry': '1'})
     deadline = time.monotonic()+45
@@ -168,7 +175,7 @@ def suggest(image, lat, lng, zoom, surface, scope=None):
             if remaining <= 0:
                 raise TimeoutError()
             masks.append(read_mask(entry.get('url'), timeout=min(5,remaining)))
-        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface, scope=scope)
+        suggestions, rejected = masks_to_suggestions(masks, lat, lng, zoom, surface, scope=scope, seed=seed)
         return suggestions, {'provider': 'fal-sam3', 'masks': len(entries), 'rejected_regions': rejected+low_confidence}
     except urllib.error.HTTPError as error:
         messages = {401: 'fal rejected FAL_KEY. Check the key in Render.',

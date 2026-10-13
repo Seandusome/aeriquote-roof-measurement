@@ -66,25 +66,25 @@ class SamTests(unittest.TestCase):
         mask=np.zeros((640,640), dtype='uint8');mask[100:120,100:300]=1
         data={'masks':[{'url':encoded(mask)}],'scores':[.9]}
         with patch.dict(os.environ,{'FAL_KEY':'PRIVATE','OPENAI_API_KEY':'OTHER'},clear=True),patch('urllib.request.urlopen',return_value=Response(data)) as call:
-            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99])
+            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99],seed=[200/640,110/640])
             self.assertEqual(len(drafts),1);self.assertEqual(usage['provider'],'fal-sam3')
             req=call.call_args.args[0];body=json.loads(req.data)
             self.assertEqual(req.full_url,sam_trace.ENDPOINT);self.assertEqual(call.call_count,1)
-            self.assertFalse(body['apply_mask']);self.assertTrue(body['sync_mode']);self.assertTrue(body['return_multiple_masks'])
+            self.assertEqual(body['point_prompts'],[{'x':200,'y':110,'label':1}]);self.assertNotIn('box_prompts',body);self.assertFalse(body['apply_mask']);self.assertTrue(body['sync_mode']);self.assertTrue(body['return_multiple_masks'])
             self.assertNotIn('PRIVATE',json.dumps(body));self.assertNotIn('OTHER',json.dumps(body))
         with patch.dict(os.environ,{'OPENAI_API_KEY':'OTHER'},clear=True),patch('urllib.request.urlopen') as call:
             self.assertFalse(ai_trace.configured())
-            with self.assertRaisesRegex(ai_trace.ProviderError,'FAL_KEY'):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99])
+            with self.assertRaisesRegex(ai_trace.ProviderError,'FAL_KEY'):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.01,.01,.99,.99],seed=[200/640,110/640])
             call.assert_not_called()
 
     def test_safe_errors_and_low_confidence(self):
         for code in [401,402,403,422,429,500]:
             err=urllib.error.HTTPError(sam_trace.ENDPOINT,code,'SECRET',{},io.BytesIO(b'SECRET'))
             with patch.dict(os.environ,{'FAL_KEY':'SECRET'},clear=True),patch('urllib.request.urlopen',side_effect=err):
-                with self.assertRaises(ai_trace.ProviderError) as raised:ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99])
+                with self.assertRaises(ai_trace.ProviderError) as raised:ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99],seed=[200/640,110/640])
                 self.assertNotIn('SECRET',str(raised.exception))
         with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen',return_value=Response({'masks':[{'url':'bad'}],'scores':[.1]})):
-            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99]);self.assertEqual(drafts,[]);self.assertEqual(usage['rejected_regions'],1)
+            drafts,usage=ai_trace.suggest(b'png',52,-106,18,'paved',scope=[.01,.01,.99,.99],seed=[200/640,110/640]);self.assertEqual(drafts,[]);self.assertEqual(usage['rejected_regions'],1)
 
     def test_neighbouring_and_crossing_regions_are_not_offered(self):
         mask=np.zeros((640,640),dtype='uint8')
@@ -102,7 +102,26 @@ class SamTests(unittest.TestCase):
     def test_invalid_or_missing_scope_never_calls_provider(self):
         for scope in [None,[],[0,0,1],[0,0,2,1],[.5,0,.1,1],[False,0,1,1],[0,0,float('nan'),1]]:
             with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen') as call:
-                with self.assertRaises(ValueError):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=scope)
+                with self.assertRaises(ValueError):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=scope,seed=[.5,.5])
+                call.assert_not_called()
+
+    def test_click_only_returns_that_section(self):
+        mask=np.zeros((640,640),dtype='uint8')
+        mask[100:120,100:300]=1
+        mask[200:320,400:420]=1
+        mask[80:120,500:560]=1
+        drafts,rejected=sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',scope=[.02,.02,.98,.98],seed=[200/640,110/640])
+        self.assertEqual(len(drafts),1);self.assertEqual(rejected,0)
+        self.assertEqual(pixel_area(drafts[0]['image_points']),4000)
+        self.assertEqual(sam_trace.masks_to_suggestions([mask],52,-106,18,'lawn',seed=[.5,.5])[0],[])
+        # Selection scales correctly when the model returns 1024px masks.
+        bigger=np.zeros((1024,1024),dtype='uint8');bigger[256:512,256:512]=1;bigger[600:700,600:700]=1
+        self.assertEqual(len(sam_trace.masks_to_suggestions([bigger],52,-106,18,'lawn',seed=[.3,.3])[0]),1)
+
+    def test_missing_click_never_calls_provider(self):
+        for seed in [None,[],[.5],[0,.5],[float('nan'),.5],[True,.5]]:
+            with patch.dict(os.environ,{'FAL_KEY':'test'},clear=True),patch('urllib.request.urlopen') as call:
+                with self.assertRaises(ValueError):ai_trace.suggest(b'png',52,-106,18,'lawn',scope=[.02,.02,.98,.98],seed=seed)
                 call.assert_not_called()
 
     def test_external_mask_urls_and_coloured_images_rejected(self):

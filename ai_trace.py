@@ -79,11 +79,18 @@ def validate_scope(scope):
         raise ValueError('Set a valid job boundary before AI tracing.')
     return scope
 
-def suggest(image, lat, lng, zoom, surface, scope=None):
+def validate_seed(seed):
+    if not isinstance(seed,list) or len(seed)!=2 or any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) or not 0<v<1 for v in seed):
+        raise ValueError('Click inside the surface you want to trace.')
+    return seed
+
+def suggest(image, lat, lng, zoom, surface, scope=None, seed=None):
     if provider() == 'fal':
         import sam_trace
-        return sam_trace.suggest(image, lat, lng, zoom, surface, scope=scope)
+        return sam_trace.suggest(image, lat, lng, zoom, surface, scope=scope, seed=seed)
     if provider() == 'openai':
+        if seed is not None:
+            raise ProviderError('Click-to-trace requires the fal SAM 3 provider.')
         drafts, usage = suggest_openai(image, lat, lng, zoom, surface)
         if scope is not None:
             validate_scope(scope)
