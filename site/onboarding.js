@@ -32,7 +32,7 @@ document.querySelectorAll('input[name="pricing"]').forEach(r=>r.addEventListener
  const f=document.getElementById('defaultPriceField');
  if(f)f.style.display=document.querySelector('input[name="pricing"]:checked')?.value==='manual'?'none':'block';
 }));
-document.getElementById('brandCompany')?.addEventListener('input',e=>document.getElementById('previewCompany').textContent=(e.target.value||(setupIndustry==='paving'?'ABC PAVING & SEALCOATING':setupIndustry==='pressure'?'ABC EXTERIOR CLEANING':setupIndustry==='landscaping'?'ABC LANDSCAPING':setupIndustry==='commercial'?'ABC PROPERTY SERVICES':'ABC SNOW SERVICES')).toUpperCase());
+document.getElementById('brandCompany')?.addEventListener('input',e=>document.getElementById('previewCompany').textContent=(e.target.value||(setupIndustry==='paving'?'ABC PAVING & SEALCOATING':setupIndustry==='pressure'?'ABC EXTERIOR CLEANING':setupIndustry==='landscaping'?'ABC LANDSCAPING':setupIndustry==='commercial'?'ABC PROPERTY SERVICES':setupIndustry==='roofing'?'ABC ROOFING':'ABC SNOW SERVICES')).toUpperCase());
 document.getElementById('logoUpload')?.addEventListener('change',e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
  const reader=new FileReader();reader.onload=()=>{document.getElementById('previewLogo').innerHTML='<img src="'+reader.result+'" alt="Company logo" style="max-width:150px;max-height:70px;object-fit:contain">';};reader.readAsDataURL(file);
@@ -54,9 +54,9 @@ async function saveIndustrySetupLocal(industry){
   pricingMode:document.querySelector('input[name="taxmode"]:checked')?.value||'regular',
   warrantyStatement:document.getElementById('warrantyStatement')?.value||'',
   estimateMessage:document.getElementById('estimateMessage')?.value||'',
-  ctaHeading:document.getElementById('ctaHeading')?.value||(industry==='snow'?'Schedule Your Snow Removal Service':industry==='paving'?'Schedule Your Paving & Sealcoating Service':industry==='landscaping'?'Schedule Your Landscaping Service':industry==='commercial'?'Request Your Commercial Property Service':'Schedule Your Pressure Washing Service'),
+  ctaHeading:document.getElementById('ctaHeading')?.value||(industry==='roofing'?'Schedule Your Roofing Service':industry==='snow'?'Schedule Your Snow Removal Service':industry==='paving'?'Schedule Your Paving & Sealcoating Service':industry==='landscaping'?'Schedule Your Landscaping Service':industry==='commercial'?'Request Your Commercial Property Service':'Schedule Your Pressure Washing Service'),
   marketingEnabled:true,marketingHeading:'WHY CHOOSE US',
-  benefits:industry==='commercial'?[{icon:'✓',title:'Commercial Property Services',text:'Commercial exterior and grounds services tailored to your property.'},{icon:'$',title:'Clear Upfront Pricing',text:'Clear estimates based on measured areas and your selected services.'},{icon:'◆',title:'Multiple Service Areas',text:'Parking lots, walkways, grounds and other service areas.'},{icon:'★',title:'Professional Service',text:'Professional estimates with a clearly defined scope of work.'},{icon:'●',title:'Property-Specific Planning',text:'Service recommendations tailored to the property layout.'},{icon:'✓',title:'Convenient Scheduling',text:'Scheduling options that consider property access and operations.'}]:industry==='landscaping'?[{icon:'✓',title:'Landscape Care',text:'Landscaping tailored to your property.'}]:industry==='paving'?[
+  benefits:industry==='roofing'?[{icon:'✓',title:'Professional Roofing',text:'Roofing services tailored to your property.'},{icon:'$',title:'Clear Upfront Pricing',text:'Measured roof areas and pricing shown before work begins.'},{icon:'◆',title:'Property-Specific Service',text:'Roofing work prepared for your property.'}]:industry==='commercial'?[{icon:'✓',title:'Commercial Property Services',text:'Commercial exterior and grounds services tailored to your property.'},{icon:'$',title:'Clear Upfront Pricing',text:'Clear estimates based on measured areas and your selected services.'},{icon:'◆',title:'Multiple Service Areas',text:'Parking lots, walkways, grounds and other service areas.'},{icon:'★',title:'Professional Service',text:'Professional estimates with a clearly defined scope of work.'},{icon:'●',title:'Property-Specific Planning',text:'Service recommendations tailored to the property layout.'},{icon:'✓',title:'Convenient Scheduling',text:'Scheduling options that consider property access and operations.'}]:industry==='landscaping'?[{icon:'✓',title:'Landscape Care',text:'Landscaping tailored to your property.'}]:industry==='paving'?[
    {icon:'✓',title:'Surface Preparation',text:'Paving and sealcoating tailored to the surface.'},
    {icon:'✓',title:'Protect Asphalt Surfaces',text:'Sealcoating can help protect suitable asphalt surfaces.'},
    {icon:'$',title:'Clear Upfront Pricing',text:'Measured paved areas and pricing shown before work begins.'},
@@ -108,7 +108,7 @@ async function saveIndustrySetupLocal(industry){
  try{localStorage.setItem('aeriQuoteIndustry',industry)}catch(ignore){}
  return profile;
 }
-const setupIndustry=/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':(/commercial-setup\.html/i.test(location.pathname)?'commercial':null))));
+const setupIndustry=/roofer-setup\.html/i.test(location.pathname)?'roofing':/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':(/commercial-setup\.html/i.test(location.pathname)?'commercial':null))));
 if(document.body.classList.contains('setup-page') && setupIndustry){
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
