@@ -1,3 +1,12 @@
+# October 13 5:29 PM verified manual Roofing checkpoint
+
+Application baseline: ad9a9e459d0c699ef2a253eb99a445ef75c11ed4. Both GitHub workflows passed.
+Manual Roofing fresh PDF21 and reopened PDF22 PASSED:1715 2nd Ave North,1,137ft²,1roof,pitch22.6°,edges46.3/21.3/23.0/48.3ft,subtotalCAD5,400.24,GST270.01,PST324.01,totalCAD5,994.27. Every edge/pitch label and outline align in both PDFs. Do not repeat this test without reason.
+Edit Line fresh/reopened PDFs46/47 also passed (one line only,551.6ft@.70,CAD386.10). Sean says prior Commercial combined/customer tests already completed; do not repeat them unnecessarily.
+Next pending coverage: exact dropped-pin roof report path; Roofing pitch changes/corrections as needed; account/employee permissions and quotas; final launch regression. Payments remain deferred. No new app failure from latest PDF22.
+
+---
+
 # October 13 manual-Roofing PDF follow-up
 
 - Edit Line live confirmed by Sean. Pressure Washing one-line PDFs46/47 (fresh/reopened): 551.6 ft @ .70, total CAD386.10, both segment labels retained. User explicitly drew only one line; no area-loss bug. Reopened labels round individual segments differently, but saved length/rate/total unchanged.
