@@ -412,7 +412,7 @@ let quoteSnapshot=null;
 let commercialAreas=[],commercialAreaLayers=[],commercialEditingIndex=-1;
 let savedLinearJobRate=null;
 let aiTraceDrafts=[],aiTraceLayers=[],aiTraceBusy=false,aiTraceGeneration=0;
-let aiTracePickMode=false,aiTraceSeed=null,aiTraceSeedMarker=null;
+let aiTracePickMode=false,aiTraceSeed=null,aiTraceSeedMarker=null,aiTraceDraftSequence=0;
 let savedStreetImageData='';
 let exactPinDisplay=false;
 let estimateOpenInProgress=false,customerMapBuildTimer=null,pdfInProgress=false;
@@ -993,7 +993,7 @@ function updatePropertyActionButton(){
  b.textContent=mode==='area'?'LOAD PROPERTY & START AREA MEASURE':mode==='linear'?'LOAD PROPERTY & START LINEAR MEASURE':'LOAD & MEASURE ROOF';
 }
 function clearAiTracePick(){
- aiTracePickMode=false;aiTraceSeed=null;
+ aiTracePickMode=false;aiTraceSeed=null;aiTraceDraftSequence=0;
  if(aiTraceSeedMarker){try{map.removeLayer(aiTraceSeedMarker)}catch(e){}aiTraceSeedMarker=null}
 }
 function startAiTracePick(){
@@ -1005,7 +1005,16 @@ function startAiTracePick(){
  setAiTraceMessage('AI TRACE ON — click inside the grass or paved section you want. One click starts tracing automatically.');
  el('map')?.scrollIntoView({behavior:'smooth',block:'center'});
 }
+function aiTraceContainsPoint(points,point){
+ let inside=false;
+ for(let i=0,j=points.length-1;i<points.length;j=i++){
+  const a=points[i],b=points[j],ax=Array.isArray(a)?a[1]:a.lng,ay=Array.isArray(a)?a[0]:a.lat,bx=Array.isArray(b)?b[1]:b.lng,by=Array.isArray(b)?b[0]:b.lat;
+  if((ay>point.lat)!==(by>point.lat)&&point.lng<(bx-ax)*(point.lat-ay)/(by-ay)+ax)inside=!inside;
+ }return inside;
+}
 function pickAiTraceSurface(point){
+ const existing=aiTraceDrafts.find(a=>aiTraceContainsPoint(a.points,point));
+ if(existing){setAiTraceMessage((existing.name||'This section')+' already has a draft outline. Click another section, or REVIEW & EDIT OUTLINE to save this one.','ok');return}
  aiTraceSeed=point;
  if(aiTraceSeedMarker)map.removeLayer(aiTraceSeedMarker);
  aiTraceSeedMarker=L.circleMarker(point,{radius:5,color:'#00a6c8',fillColor:'#00a6c8',fillOpacity:1,interactive:false}).addTo(map);
@@ -1032,24 +1041,34 @@ function setAiTraceMessage(message,kind='warn'){
  if(el('aiTraceMessage'))el('aiTraceMessage').textContent=message;
  status(message,kind);
 }
+function appendAiTraceDrafts(incoming,surface){
+ const key=a=>JSON.stringify(a.points.map(p=>p.map(v=>Number(v).toFixed(7))).sort());
+ const known=new Set(aiTraceDrafts.map(key)),added=[];
+ for(const draft of incoming){const identity=key(draft);if(known.has(identity))continue;known.add(identity);
+  const item={...draft,name:(surface==='lawn'?'Lawn':'Paved surface')+' section '+(++aiTraceDraftSequence)};
+  aiTraceDrafts.push(item);added.push(item);
+ }return added;
+}
 async function runAiTrace(){
  if(!sessionToken){setAiTraceMessage('Load the property first.');return}
  if(aiTraceBusy){setAiTraceMessage('AI tracing is already running. Please wait.');return}
  if((areaMode&&areaPoints.length)||(linearMode&&linearPoints.length)){setAiTraceMessage('Finish and save your current measurement before requesting AI suggestions.');return}
  if(!aiTraceSeed){startAiTracePick();return}
- aiTraceBusy=true;const token=sessionToken,generation=++aiTraceGeneration,button=el('aiTraceRunBtn');if(button)button.disabled=true;
+ aiTraceBusy=true;const token=sessionToken,generation=++aiTraceGeneration,surface=el('aiTraceSurface').value,button=el('aiTraceRunBtn');if(button)button.disabled=true;
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
  setAiTraceMessage('Finding visible surface boundaries…');
  try{
-  const view=aiTraceRequestView(),centre=view.centre,r=await fetch('/api/ai-trace',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface:el('aiTraceSurface').value,latitude:centre.lat,longitude:centre.lng,zoom:view.zoom,scope:view.scope,seed:view.seed})});
+  const view=aiTraceRequestView(),centre=view.centre,r=await fetch('/api/ai-trace',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({token,surface,latitude:centre.lat,longitude:centre.lng,zoom:view.zoom,scope:view.scope,seed:view.seed})});
   if(token!==sessionToken||generation!==aiTraceGeneration)return;
   if(r.status===401)throw new Error('Your login has expired. Log in again, then reload the property.');
   if(r.status===404)throw new Error('The property session has expired or the service restarted. Reload the property before tracing.');
   let d;try{d=await r.json()}catch(e){if(e.name==='AbortError')throw e;throw new Error('The tracing service returned an unreadable response. Please try again.');}
   if(token!==sessionToken||generation!==aiTraceGeneration)return;
-  if(!r.ok)throw new Error(d.user_error||d.error||'AI tracing is unavailable.');
-  aiTraceDrafts=(d.suggestions||[]).filter(a=>Array.isArray(a.points)&&a.points.length>=3);renderAiTraceDrafts();renderAiTracePreview(d.image_preview,aiTraceDrafts);
-  setAiTraceMessage((aiTraceDrafts.length?'Draft outlines only. Select Review & Edit, adjust the corners, then FINISH & SAVE AREA.':'No clear surface boundary was found. Use manual Area Measure.')+(d.user_warning?' '+d.user_warning:''),d.user_warning?'warn':aiTraceDrafts.length?'ok':'warn');
+  if(!r.ok)throw new Error((d.user_error||d.error||'AI tracing is unavailable.')+(d.retry_after_seconds?' Wait '+d.retry_after_seconds+' seconds before clicking the next section.':'')+' Your existing draft outlines are kept.');
+  const incoming=(d.suggestions||[]).filter(a=>Array.isArray(a.points)&&a.points.length>=3&&a.points.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))),added=appendAiTraceDrafts(incoming,surface);
+  renderAiTraceDrafts();renderAiTracePreview(d.image_preview,incoming);
+  const message=added.length?aiTraceDrafts.length+' draft outline'+(aiTraceDrafts.length===1?'':'s')+' ready. Click another section to add its outline, or REVIEW & EDIT each draft, then FINISH & SAVE AREA.':incoming.length?'This section already has a draft outline. Your existing drafts are kept.':'No clear surface boundary was found for this click. '+(aiTraceDrafts.length?'Your '+aiTraceDrafts.length+' earlier draft outline'+(aiTraceDrafts.length===1?' is':'s are')+' kept.':'Use manual Area Measure.');
+  setAiTraceMessage(message+(d.user_warning?' '+d.user_warning:''),d.user_warning?'warn':added.length?'ok':'warn');
  }catch(e){if(token===sessionToken&&generation===aiTraceGeneration)setAiTraceMessage(e.name==='AbortError'?'AI tracing timed out. Your saved measurements are unchanged. You can try again.':e.message,'error')}
  finally{clearTimeout(timer);aiTraceBusy=false;if(button)button.disabled=false}
 }
@@ -3157,7 +3176,7 @@ def ai_trace_suggestions():
         with AI_TRACE_LOCK:
             if sess.get("ai_trace_busy"):return jsonify(error="AI tracing is already running."),409
             if sess.get("ai_trace_cache_key")==cache_key:return jsonify(suggestions=sess["ai_trace_cache"],image_preview=sess.get("ai_trace_image_preview"),user_warning=sess.get("ai_trace_warning", ""),review_required=True)
-            if time.time()-sess.get("ai_trace_last_started",0)<15:return jsonify(error="Wait a few seconds before requesting another trace."),429
+            if time.time()-sess.get("ai_trace_last_started",0)<15:return jsonify(error="Tracing is cooling down.",retry_after_seconds=max(1,math.ceil(15-(time.time()-sess["ai_trace_last_started"])))),429
             sess["ai_trace_busy"]=True;sess["ai_trace_last_started"]=time.time()
         try:
             q=urllib.parse.urlencode({"center":f"{lat},{lng}","zoom":zoom,"size":"640x640","maptype":"satellite","format":"png","key":sess["key"]})

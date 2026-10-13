@@ -84,6 +84,11 @@ class TraceTests(unittest.TestCase):
         scope,_=self.route()
         with patch('ai_trace.configured',return_value=False),patch('urllib.request.urlopen') as call:
             self.assertEqual(scope['ai_trace_suggestions']()[1],503);call.assert_not_called()
+    def test_route_cooldown_reports_seconds_without_network(self):
+        scope,sess=self.route();sess['ai_trace_last_started']=time.time()
+        with patch('ai_trace.configured',return_value=True),patch('urllib.request.urlopen') as call:
+            data,status=scope['ai_trace_suggestions']()
+            self.assertEqual(status,429);self.assertTrue(1<=data['retry_after_seconds']<=15);call.assert_not_called()
     def test_route_cache_and_busy_cleanup(self):
         scope,sess=self.route()
         with patch('ai_trace.configured',return_value=True),patch('ai_trace.suggest',return_value=([{'name':'Paved','points':[[52,-106],[52,-105.99],[52.01,-106]]}],{})),patch('urllib.request.urlopen',return_value=Response(b'png')) as call:

@@ -6,7 +6,7 @@ async function test(response,expected){
  const elements={aiTraceMessage:{textContent:''},aiTraceRunBtn:{disabled:false},aiTraceSurface:{value:'paved'}};
  let timer,cleared=false,request;
  const saved=[{name:'Existing lawn',sqft:1200}];
- const scope={sessionToken:'property',aiTraceSeed:{lat:52,lng:-106},aiTracePickMode:false,aiTraceRequestView:()=>({centre:{lat:52,lng:-106},zoom:18,scope:[.1,.1,.9,.9],seed:[.5,.5]}),aiTraceBusy:false,aiTraceGeneration:0,areaMode:false,areaPoints:[],linearMode:false,linearPoints:[],aiTraceDrafts:[],commercialAreas:saved,
+ const scope={sessionToken:'property',aiTraceSeed:{lat:52,lng:-106},aiTracePickMode:false,aiTraceRequestView:()=>({centre:{lat:52,lng:-106},zoom:18,scope:[.1,.1,.9,.9],seed:[.5,.5]}),aiTraceBusy:false,aiTraceGeneration:0,aiTraceDraftSequence:0,areaMode:false,areaPoints:[],linearMode:false,linearPoints:[],aiTraceDrafts:[],commercialAreas:saved,
   map:{getCenter:()=>({lat:52,lng:-106}),getZoom:()=>19},el:id=>elements[id],status:(message)=>scope.message=message,startAiTracePick:()=>scope.message="Click inside the surface",renderAiTraceDrafts:()=>{},renderAiTracePreview:()=>{},AbortController,
   setTimeout:fn=>{timer=fn;return 1},clearTimeout:()=>cleared=true,
   fetch:async(url,options)=>{request=options;if(response==='timeout'){return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>{const e=new Error();e.name='AbortError';reject(e)}))}return response;}};
@@ -39,7 +39,7 @@ function testExactImagePreview(){
  await test({status:502,json:async()=>{throw new SyntaxError()}},'unreadable response');
  await test({status:502,ok:false,json:async()=>({user_error:'Check API credits.'})},'Check API credits.');
  await test({status:200,ok:true,json:async()=>({suggestions:[]})},'No clear surface');
- const s=await test({status:200,ok:true,json:async()=>({suggestions:[{points:[[52,-106],[52,-105],[53,-106]]}]})},'Draft outlines');
+ const s=await test({status:200,ok:true,json:async()=>({suggestions:[{points:[[52,-106],[52,-105],[53,-106]]}]})},'draft outline');
  s.sessionToken=null;await s.runAiTrace();assert(s.message.includes('Load the property'));
  s.sessionToken='property';s.aiTraceBusy=true;await s.runAiTrace();assert(s.message.includes('already running'));
  s.aiTraceBusy=false;s.aiTraceSeed=null;await s.runAiTrace();assert(s.message.includes('Click inside'));s.aiTraceSeed={};s.areaMode=true;s.areaPoints=[{}];await s.runAiTrace();assert(s.message.includes('Finish and save'));
