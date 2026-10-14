@@ -14,8 +14,11 @@ r=account_metrics(accounts,now)
 assert (r[0]['signups'],r[0]['activations'],r[0]['cohort_activated'],r[0]['conversion'])==(1,3,1,100.0)
 assert r[1]['signups']==3 and r[1]['cohort_activated']==2 and r[1]['conversion']==66.7
 assert account_metrics([],now)[0]['conversion'] is None
-# DST: midnight Edmonton after the November clock change is 07:00 UTC.
-r=account_metrics([{'created_at':'2026-11-02T06:59:59Z'}, {'created_at':'2026-11-02T07:00:00Z'}],datetime(2026,11,2,20,tzinfo=timezone.utc))
+# Test the actual Edmonton midnight boundary using the runner's timezone rules.
+from zoneinfo import ZoneInfo
+from datetime import timedelta
+boundary=datetime(2026,11,2,tzinfo=ZoneInfo('America/Edmonton')).astimezone(timezone.utc)
+r=account_metrics([{'created_at':(boundary-timedelta(seconds=1)).isoformat()}, {'created_at':boundary.isoformat()}],boundary+timedelta(hours=12))
 assert r[0]['signups']==1
 module=ast.parse(Path('app.py').read_text());fn=next(n for n in module.body if isinstance(n,ast.FunctionDef) and n.name=='record_account_activation');fn.decorator_list=[]
 con=sqlite3.connect(':memory:');con.row_factory=sqlite3.Row
