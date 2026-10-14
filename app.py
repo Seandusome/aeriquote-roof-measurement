@@ -2431,7 +2431,7 @@ def create_dealer():
     return jsonify(id=did,dealer_name=name,email=email,status="active",lookup_limit=250,estimate_limit=150)
 
 
-PLAN_LIMITS={"trial":3,"basic":50,"pro":150,"business":300,"legacy":250}
+PLAN_LIMITS={"trial":3,"basic":25,"pro":75,"business":200,"legacy":250}
 
 def _account_profile(dealer_id):
     con=estimate_db()
@@ -2454,6 +2454,7 @@ def account_profile_api():
     if request.method=="GET":
         data=_account_profile(dealer_id)
         return (jsonify(data) if data else (jsonify(error="Account not found"),404))
+    if is_employee():return jsonify(error="Business owner permission required to change settings."),403
     d=request.get_json(silent=True) or {}
     allowed={"name","company","phone","email","website","address","country","businessType","province","price","coverage","pricingMode","discountPct","gst","pst","marketingEnabled","marketingHeading","marketingWarranty","marketingCtaHeading","marketingCtaText","benefits","pricingMethod","includeRoofImage","includePitch","estimateTemplate","warrantyStatement","estimateMessage","ctaHeading","services","propertyTypes","logoData"}
     profile={k:d[k] for k in allowed if k in d}
@@ -2977,6 +2978,18 @@ def require_dealer_login():
     if path in {"/dealer-login","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
         if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
+        return redirect("/dealer-login")
+    con=estimate_db()
+    try:
+        account=con.execute("SELECT status FROM dealers WHERE id=?",(session["dealer_id"],)).fetchone()
+        active=bool(account and str(account["status"]).lower()=="active")
+        if active and is_employee():
+            employee=con.execute("SELECT status FROM dealer_employees WHERE id=? AND dealer_id=?",(str(session.get("employee_id") or ""),session["dealer_id"])).fetchone()
+            active=bool(employee and str(employee["status"]).lower()=="active")
+    finally:con.close()
+    if not active:
+        session.clear()
+        if request.path.startswith("/api/"):return jsonify(error="Account access disabled. Please log in again."),401
         return redirect("/dealer-login")
 
 

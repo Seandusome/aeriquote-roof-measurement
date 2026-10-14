@@ -1,3 +1,21 @@
+# October 14 website allowance cleanup — local preparation, not deployed
+
+Compared checkout, FAQ, homepage and upgrade sources with remote3367174 blob hashes; exact matches before this cleanup. Corrected remaining old allowances on homepage (50->25), FAQ (50/150/300->25/75/200), checkout fallback and plan map, upgrade Pro125->75, and choose-plan Pro125->75. Upgrade intro no longer assumes every visitor exhausted trial. Pricing FAQ corrected in preceding account audit. No styles, logos, feature differences, payment wiring or measurement code changed by this cleanup.
+Checked actual checkout scripts under jsdom for Basic/Pro/Business and invalid-plan fallback; allowance/price correct. Upgrade card selection and aria-pressed remain functional. Visible-text sweep found no remaining old plan allowances. Retired AI Trace terminology was not found in site HTML/JS. Payments and monthly quota implementation remain deferred; no live deployment claimed.
+
+---
+
+# October 14 account audit — local preparation, not deployed
+
+Remote baseline inspected: 3367174e42d5510d5a0add99b4a59212b52130c3.
+Render last user-confirmed live: 7e3bb0b. Render reports build/deploy incident across regions and free-service deployment pause. No rollback or measurement changes.
+Prepared locally only: PLAN_LIMITS Basic25/Pro75/Business200 (trial3/legacy unchanged); pricing FAQ matches cards; employee POST profile blocked; authenticated requests revalidate active business and employee membership/status so disabling revokes an existing session on next request. Reactivation requires login again. No existing account quotas migrated.
+New SQLite/actual-route AST tests pass business estimate isolation, employee profile-read/settings-write denial, disabled/reactivated sessions, cross-business employee rejection, owner suspension and public pages. Existing DOM+Leaflet measurement/PDF/imagery/price regression, rendering/inline syntax, activation client/server/template and recovery-allowance tests passed. Tests remain mocked/local; live verification pending after Render recovers.
+Outstanding: paid allowances currently use lifetime lookup and estimate counters, not monthly periods; paid feature entitlement gating not established. Payments/billing remain deferred. Named recovery service continues quota bypass; use isolated quota tests rather than blocking recovery measurements. Do not claim paid-plan launch readiness.
+Publish only the focused current changes to authorized recovery branch after deployment recovery. Local index predates remote baseline; do not commit all local changes or touch existing commercial-approved.png modification.
+
+---
+
 # October 14 account activation dashboard
 
 Only authorized recovery branch; main still untouched.
