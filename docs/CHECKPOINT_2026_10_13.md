@@ -1,3 +1,16 @@
+# October 14 account activation dashboard
+
+Only authorized recovery branch; main still untouched.
+- Sean confirmed dropped-pin Roofing on garage works (no PDF supplied today).
+- Render502 on home/health/Employees resolved after Gunicorn restart. No application defect established; no code change for incident.
+- Employee created employee-test@example.com, name sam smoith. Live login, hidden Employees/management, shared owner estimates and opening1,137ft²/CAD5,994.27 passed. Direct /dealer-employees returns Dealer Owner permission required. Disabling blocks next login. Reactivation retest unfinished during account switching.
+- Sean requests no dealer-management dashboard: show daily/weekly/monthly activations and revenue. Activation defined as first successful measurement per business. Added Today/This week/This month, signup counts, first-measurement counts and signup-cohort conversion, Edmonton timezone, Monday week start. Revenue says Not connected until confirmed payment records exist.
+- New account_activations table records one timestamp per account. Employees attribute to owner dealer_id, repeat measurements do not overwrite. Authenticated endpoint checks property-session ownership and positive valid measurement. Client records successful saved Area/Linear or measured Roofing, excludes old frozen reports and unloaded/unsaved drafts. Existing measurements are not backdated; UI states tracking begins with update. Head Office excluded from customer counts.
+- Local timezone/DST, cohort conversion, idempotency, employee attribution, cross-account rejection, actual template rendering and client event tests passed. Existing measurement/PDF/imagery/linear/engine/allowance tests passed. New tests added to CI. Live dashboard review pending.
+- Next: review dashboard on test service with first measurement/refresh; complete account separation/quotas and branch-vs-main review, then prepare merge for tester feedback. Payments remain deferred.
+
+---
+
 # October 13 5:29 PM verified manual Roofing checkpoint
 
 Application baseline: ad9a9e459d0c699ef2a253eb99a445ef75c11ed4. Both GitHub workflows passed.
