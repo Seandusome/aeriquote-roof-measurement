@@ -130,6 +130,14 @@ for(const industry of ['roofing','pressure','paving','snow','landscaping','comme
  btn('linearEditBtn').click();corner=w.eval('linearLayers.find(l=>l.dragging&&l.dragging.enabled())');corner.setLatLng(w.L.latLng(52.0003,-106));corner.fire('dragend');btn('toolAreaBtn').click();assert.equal(w.eval('JSON.stringify(linearPoints)'),changed,'Switching tools cancels an unfinished line edit');assert.equal(w.eval('savedLinearJobRate'),.70);w.eval('areaMode=false');
  console.log('PASS '+industry+': draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels');
 }
+// Area/Linear summary early returns must still record account activation after saving.
+for(const mode of ['area','linear']){
+ dom.reconfigure({url:'https://test.invalid/?industry=pressure'});
+ w.eval(`el('businessType').value='pressure';sessionToken='activation-summary';activationRecorded=false;activationRecording=false;quoteSnapshot=null;document.body.classList.remove('report-open');areaMode=false;linearMode=false;measurementViewMode='${mode}';commercialAreas=[];commercialEditingIndex=-1;structures=[];manualPlanes=[];areaPoints=[L.latLng(52,-106),L.latLng(52,-105.9999),L.latLng(52.0001,-105.9999)];areaMeasurementSaved=${mode==='area'};linearPoints=[L.latLng(52,-106),L.latLng(52,-105.999)];linearMeasurementSaved=${mode==='linear'}`);
+ const activationCalls=[];w.fetch=async(url,options)=>{if(url==='/api/account/activation')activationCalls.push(JSON.parse(options.body));return{ok:true,json:async()=>({})}};
+ w.eval('renderSummary()');await new Promise(r=>setImmediate(r));assert.equal(activationCalls.length,1);assert.equal(activationCalls[0].kind,mode);assert(activationCalls[0].amount>0);w.eval('renderSummary()');await new Promise(r=>setImmediate(r));assert.equal(activationCalls.length,1);
+ console.log('PASS '+mode+': real saved-measurement summary records one activation before returning');
+}
 // Live manual Roofing must paint all edge dimensions and pitch over its baked static outline.
 w.eval("el('businessType').value='roofing';sessionToken='manual-labels';reportOutlines={};quoteSnapshot={businessType:'roofing',measureSource:'manual',measurementMode:'auto',structures:[],manualPlanes:[{points:[{lat:52,lng:-106},{lat:52,lng:-105.9999},{lat:52.0001,lng:-105.9999},{lat:52.0001,lng:-106}],pitch_degrees:26.6,surface_sqft:1111}]} ");
 const manualOriginal=w.eval('JSON.stringify(quoteSnapshot)');let manualRequest;
