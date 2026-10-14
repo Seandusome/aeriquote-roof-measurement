@@ -19,7 +19,7 @@ class DB:
  def commit(self):con.commit()
 session={'dealer_id':'a','account_type':'employee','employee_id':'ea'}
 req=SimpleNamespace(path='/api/estimates',method='GET',get_json=lambda **kw:{},args={})
-scope=dict(session=session,request=req,estimate_db=DB,jsonify=lambda *a,**kw:a[0] if a else kw,redirect=lambda url:('redirect',url),is_head_office=lambda:False,json=json,Response=lambda body,**kw:(body,kw))
+scope=dict(session=session,request=req,estimate_db=DB,jsonify=lambda *a,**kw:a[0] if a else kw,redirect=lambda url:('redirect',url),is_head_office=lambda:False,auth_version=lambda *args:0,json=json,Response=lambda body,**kw:(body,kw))
 for name in ['is_employee','is_dealer_owner','require_dealer_login','account_profile_api','estimate_history_one','estimate_history_versions','dealer_employee_status']:
  n=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==name);n.decorator_list=[]
  exec(compile(ast.Module(body=[n],type_ignores=[]),'app.py','exec'),scope)

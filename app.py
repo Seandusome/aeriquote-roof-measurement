@@ -10,6 +10,7 @@ import urllib.request, urllib.parse, urllib.error
 import json, webbrowser, threading, uuid, math, time, os, sqlite3, hmac, hashlib, secrets
 from datetime import datetime
 from activation_metrics import account_metrics
+from account_recovery import init_recovery_db, auth_version, register_recovery, limited
 try:
     import psycopg
     from psycopg.rows import dict_row
@@ -108,8 +109,16 @@ def estimate_db():
         pass
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_dealer ON estimates(dealer_id)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimate_revisions_dealer ON estimate_revisions(dealer_id)")
+    init_recovery_db(con)
     con.commit()
     return con
+
+def login_auth_version(kind,account_id):
+    con=estimate_db()
+    try:return auth_version(con,kind,account_id)
+    finally:con.close()
+
+register_recovery(app,estimate_db,password_hash)
 HTML = r"""<!doctype html>
 <html>
 <head>
@@ -2348,24 +2357,28 @@ def bearing(lat1,lon1,lat2,lon2):
     return (math.degrees(math.atan2(y,x))+360)%360
 
 
-LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style></head><body><div class="box"><img src="/static/aeriquote-logo.png" alt="AeriQuote" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto 16px"><p style="text-align:center">Roof Measuring & Estimate Software</p>{% if error %}<div class="err">{{error}}</div>{% endif %}<form method="post"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>DEALER LOGIN</button></form></div></body></html>"""
+LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style></head><body><div class="box"><img src="/static/aeriquote-logo.png" alt="AeriQuote" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto 16px"><p style="text-align:center">Roof Measuring & Estimate Software</p>{% if error %}<div class="err">{{error}}</div>{% endif %}<form method="post"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>LOG IN</button></form><p><a href="/forgot-password">Forgot password?</a></p></div></body></html>"""
 
 @app.route("/dealer-login",methods=["GET","POST"])
 def dealer_login():
     if request.method=="POST":
         email=str(request.form.get("email") or "").strip().lower(); password=str(request.form.get("password") or "")
         con=estimate_db()
-        try: row=con.execute("SELECT * FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
+        try:
+            ip_blocked=limited(con,"login-ip:"+str(request.remote_addr),100)
+            email_blocked=limited(con,"login-email:"+email,20)
+            if ip_blocked or email_blocked:return render_template_string(LOGIN_HTML,error="Too many login attempts. Please try again in 15 minutes."),429
+            row=con.execute("SELECT * FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
         finally: con.close()
         if row and str(row["status"]).lower()=="active" and password_ok(password,row["password_hash"]):
-            session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner"
+            session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner";session["auth_version"]=login_auth_version("owner",row["id"])
             return redirect("/")
         con=estimate_db()
         try:
             emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id WHERE LOWER(e.email)=?",(email,)).fetchone()
         finally: con.close()
         if emp and str(emp["status"]).lower()=="active" and str(emp["dealer_status"]).lower()=="active" and password_ok(password,emp["password_hash"]):
-            session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee"
+            session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee";session["auth_version"]=login_auth_version("employee",emp["id"])
             return redirect("/")
         return render_template_string(LOGIN_HTML,error="Email or password is incorrect.")
     return render_template_string(LOGIN_HTML,error=None)
@@ -2860,7 +2873,8 @@ def head_office_dealer_password(dealer_id):
     try:
         row=con.execute("SELECT id FROM dealers WHERE id=?",(dealer_id,)).fetchone()
         if not row:return Response("Dealer not found.",status=404)
-        con.execute("UPDATE dealers SET password_hash=? WHERE id=?",(password_hash(password),dealer_id));con.commit()
+        con.execute("UPDATE dealers SET password_hash=? WHERE id=?",(password_hash(password),dealer_id))
+        con.execute("INSERT INTO account_auth_versions(account_type,account_id,version) VALUES('owner',?,1) ON CONFLICT(account_type,account_id) DO UPDATE SET version=account_auth_versions.version+1",(dealer_id,));con.commit()
     finally: con.close()
     return redirect("/head-office/dealers")
 
@@ -2975,7 +2989,7 @@ reset_trial_usage_for_v1196_testing_once()
 @app.before_request
 def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
-    if path in {"/dealer-login","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
+    if path in {"/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
         if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
         return redirect("/dealer-login")
@@ -2986,6 +3000,10 @@ def require_dealer_login():
         if active and is_employee():
             employee=con.execute("SELECT status FROM dealer_employees WHERE id=? AND dealer_id=?",(str(session.get("employee_id") or ""),session["dealer_id"])).fetchone()
             active=bool(employee and str(employee["status"]).lower()=="active")
+        if active:
+            kind="employee" if is_employee() else "owner"
+            account_id=str(session.get("employee_id") or "") if is_employee() else session["dealer_id"]
+            active=int(session.get("auth_version") or 0)==auth_version(con,kind,account_id)
     finally:con.close()
     if not active:
         session.clear()
