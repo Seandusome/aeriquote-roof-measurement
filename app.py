@@ -2357,7 +2357,7 @@ def bearing(lat1,lon1,lat2,lon2):
     return (math.degrees(math.atan2(y,x))+360)%360
 
 
-LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style></head><body><div class="box"><img src="/static/aeriquote-logo.png" alt="AeriQuote" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto 16px"><p style="text-align:center">Roof Measuring & Estimate Software</p>{% if error %}<div class="err">{{error}}</div>{% endif %}<form method="post"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>LOG IN</button></form><p><a href="/forgot-password">Forgot password?</a></p></div></body></html>"""
+LOGIN_HTML = r"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AeriQuote Login</title><style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:430px;margin:8vh auto;background:white;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:white;font-weight:900}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}</style><link rel="icon" type="image/svg+xml" href="/site/assets/favicon.svg"><link rel="stylesheet" href="/site/account-ui.css?v=20261015"></head><body class="aq-account-page"><div class="box"><a href="/site/" aria-label="AeriQuote home"><img src="/static/aeriquote-logo.png" alt="AeriQuote" style="display:block;width:100%;max-width:360px;height:auto;margin:0 auto 16px"></a><h1>Log in to AeriQuote</h1>{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}<form method="post"><label for="loginEmail">Email</label><input id="loginEmail" autocomplete="username" name="email" type="email" required><label for="loginPassword">Password</label><input id="loginPassword" autocomplete="current-password" name="password" type="password" required><button>LOG IN</button></form><p><a href="/forgot-password">Forgot password?</a></p></div><footer class="aq-account-footer"><a href="/site/contact-support">Contact &amp; Support</a><a href="/site/privacy-policy">Privacy</a><a href="/site/terms-of-use">Terms</a></footer></body></html>"""
 
 @app.route("/dealer-login",methods=["GET","POST"])
 def dealer_login():
@@ -2390,7 +2390,7 @@ def dealer_logout():
 SETUP_DEALER_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>Create AeriQuote Dealer</title>
 <style>body{font-family:Arial;background:#f1f5f9;color:#17212b}.box{max-width:480px;margin:6vh auto;background:#fff;padding:30px;border-radius:18px;box-shadow:0 10px 35px #0002}h1{color:#102a43}label{font-weight:800;display:block;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5ce;border-radius:9px;font-size:16px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#1677c8;color:#fff;font-weight:900;font-size:16px}.msg{padding:11px;border-radius:8px;background:#eef8ee}.err{padding:11px;border-radius:8px;background:#fff0f0;color:#a11}</style></head>
 <body><div class="box"><h1>Create Dealer Account</h1><p>AeriQuote Head Office setup</p>
-{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err">{{error}}</div>{% endif %}
+{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
 <form method="post">
 <label>Admin Setup Key</label><input name="setup_key" type="password" required>
 <label>Dealer Name</label><input name="dealer_name" value="AeriQuote Head Office" required>
@@ -2544,23 +2544,38 @@ SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
 def public_site_home():
     return _serve_site_resource("index.html")
 
+PUBLIC_SITE_PAGES=frozenset(['privacy-policy', 'about', 'roofer-setup', 'pressure-setup', 'refund-cancellation', 'commercial-setup', 'terms-of-use', 'contact-support', 'upgrade', 'landscaping-setup', 'pricing', 'features', 'login', 'faq', 'start-free-trial', 'trial-signup', 'paving-setup', 'snow-setup', 'choose-plan', 'checkout', 'how-it-works', 'industries/paving-sealcoating', 'industries/pressure-washing', 'industries/roofing', 'industries/commercial-property', 'industries/landscaping', 'industries/snow-removal'])
+
+def public_page_redirect(destination):
+    query=request.query_string.decode("latin-1")
+    return redirect(destination+("?"+query if query else ""),code=308)
+
 @app.get("/site/<path:filename>")
 def public_site_file(filename):
+    if filename in {"login","login.html"}:return public_page_redirect("/dealer-login")
+    if filename=="index.html":return public_page_redirect("/site/")
+    if filename.endswith(".html") and filename[:-5] in PUBLIC_SITE_PAGES:
+        return public_page_redirect("/site/"+filename[:-5])
+    if filename in PUBLIC_SITE_PAGES:filename+=".html"
     return _serve_site_resource(filename)
+
+@app.get("/favicon.ico")
+def public_favicon():
+    return _serve_site_resource("assets/favicon.svg")
 
 @app.get("/pricing")
 @app.get("/pricing.html")
 def public_pricing_direct():
-    return _serve_site_resource("pricing.html")
+    return public_page_redirect("/site/pricing")
 
 # Friendly direct routes used during signup testing.
 @app.get("/trial-signup.html")
 def public_trial_signup_direct():
-    return _serve_site_resource("trial-signup.html")
+    return public_page_redirect("/site/trial-signup")
 
 @app.get("/roofer-setup.html")
 def public_roofer_setup_direct():
-    return _serve_site_resource("roofer-setup.html")
+    return public_page_redirect("/site/roofer-setup")
 
 @app.post("/api/public/signup")
 def public_signup():
@@ -2632,7 +2647,7 @@ HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><t
 <div><label>Production Reorder Level (gal)</label><input name="reorder_level" type="number" min="0" step="0.1" value="{{inventory.reorder_level}}" required></div>
 <div><button type="submit">SAVE INVENTORY SETTINGS</button></div>
 </form></div>
-<div class="card"><h2>Create Dealer Account</h2>{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err">{{error}}</div>{% endif %}
+<div class="card"><h2>Create Dealer Account</h2>{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
 <form method="post"><div class="grid"><div><label>Dealer / Owner Name</label><input name="dealer_name" required></div><div><label>Company Name</label><input name="company"></div><div><label>Email / Login</label><input name="email" type="email" required></div><div><label>State</label><select name="state"><option value="">Select State</option>{% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></div><div><label>Temporary Password</label><input name="password" type="password" minlength="8" required></div><div><label>Account Status</label><select name="status"><option value="active">Active</option><option value="disabled">Disabled</option></select></div><div class="full"><label>Permission Level</label><input value="Dealer Owner" readonly></div><div class="full"><button type="submit">CREATE DEALER ACCOUNT</button></div></div></form></div>
 <div class="card"><h2>Dealer Accounts</h2>
 {% for d in dealers %}
@@ -2909,7 +2924,7 @@ def is_dealer_owner():
 DEALER_EMPLOYEES_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote Employees</title>
 <style>body{font-family:Arial;background:#f1f5f9;color:#17212b;margin:0}.wrap{max-width:900px;margin:28px auto;padding:0 16px}.card{background:#fff;border-radius:16px;box-shadow:0 8px 28px #0002;padding:22px;margin-bottom:18px}h1,h2{color:#102a43}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-weight:800;display:block;margin:5px 0}input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5ce;border-radius:8px}button,.btn{display:inline-block;border:0;border-radius:9px;padding:11px 15px;background:#1677c8;color:#fff;font-weight:900;text-decoration:none;cursor:pointer}.danger{background:#7a263a}.row{border:1px solid #d9e3ea;border-radius:12px;padding:14px;margin:10px 0}.err{background:#fff0f0;color:#a11;padding:10px;border-radius:8px}.msg{background:#edf7f0;color:#174f2b;padding:10px;border-radius:8px}@media(max-width:650px){.grid{grid-template-columns:1fr}}</style></head>
 <body><div class="wrap"><p><a class="btn" href="/">BACK TO ROOF ASSESSMENT</a></p><div class="card"><h1>Manage Employees</h1><p>Employees share your dealership's estimates and usage allowance. They cannot manage dealership settings or other employees.</p>
-{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err">{{error}}</div>{% endif %}
+{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
 <h2>Create Employee Login</h2><form method="post"><div class="grid"><div><label>Employee Name</label><input name="employee_name" required></div><div><label>Email / Login</label><input name="email" type="email" required></div><div><label>Temporary Password</label><input name="password" type="password" minlength="8" required></div><div style="align-self:end"><button>CREATE EMPLOYEE</button></div></div></form></div>
 <div class="card"><h2>Employees</h2>{% if not employees %}<p>No employees yet.</p>{% endif %}{% for e in employees %}<div class="row"><b>{{e.employee_name}}</b> — {{e.email}} — <b>{{e.status|title}}</b><form method="post" action="/dealer-employees/{{e.id}}/status" style="margin-top:10px"><input type="hidden" name="action" value="{{'activate' if e.status=='disabled' else 'disable'}}"><button class="{{'' if e.status=='disabled' else 'danger'}}">{{'ACTIVATE' if e.status=='disabled' else 'DISABLE'}}</button></form></div>{% endfor %}</div></div></body></html>"""
 
@@ -2989,7 +3004,7 @@ reset_trial_usage_for_v1196_testing_once()
 @app.before_request
 def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
-    if path in {"/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
+    if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
         if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
         return redirect("/dealer-login")

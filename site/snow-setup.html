@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AeriQuote — Snow Removal Setup</title>
 <link href="styles.css" rel="stylesheet"><link href="onboarding.css" rel="stylesheet">
-</head>
-<body class="setup-page">
-<header class="setup-header"><div class="wrap setup-nav"><a class="logo" href="index.html"><img alt="AeriQuote" src="assets/aeriquote-logo.png"></a><div class="setup-help">Snow Removal setup • Step <span id="stepNum">1</span> of 9</div></div><div class="progress"><i id="progressBar"></i></div></header>
-<main class="setup-shell"><form id="setupForm" onsubmit="return false">
+<link rel="icon" type="image/svg+xml" href="/site/assets/favicon.svg"><link rel="stylesheet" href="/site/site-ui.css?v=20261015"><script defer="" src="/site/site-ui.js?v=20261015"></script></head>
+<body class="setup-page"><a class="aq-skip-link" href="#main-content">Skip to main content</a>
+<header class="setup-header"><div class="wrap setup-nav"><a class="logo" href="/site/"><img alt="AeriQuote" src="assets/aeriquote-logo.png"></a><div class="setup-help">Snow Removal setup • Step <span id="stepNum">1</span> of 9</div></div><div class="progress"><i id="progressBar"></i></div></header>
+<main class="setup-shell" id="main-content" tabindex="-1"><form id="setupForm" onsubmit="return false">
 <section class="setup-step active" data-step="1"><div class="step-kicker">BUSINESS</div><h1>Tell us about your snow removal business.</h1><p class="lead">AeriQuote will use this information on your customer estimates.</p><div class="form-grid two">
 <label>Company Name<input id="companyName" placeholder="ABC Snow Services"></label><label>Your Name<input id="contactName" placeholder="John Smith"></label>
 <label>Phone<input id="companyPhone" type="tel" placeholder="306-555-1234"></label><label>Email<input id="companyEmail" type="email" placeholder="john@abcsnow.com"></label>
@@ -16,7 +14,7 @@
 </div></section>
 
 <section class="setup-step" data-step="2"><div class="step-kicker">SNOW REMOVAL SERVICES</div><h1>What snow services do you quote?</h1><p class="lead">Choose everything you offer.</p><div class="choice-grid">
-<label class="check-card"><input checked type="checkbox"><span><b>Snow Plowing</b><small>Parking lots, driveways and larger paved areas.</small></span></label>
+<label class="check-card"><input checked="" type="checkbox"><span><b>Snow Plowing</b><small>Parking lots, driveways and larger paved areas.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Sidewalk Clearing</b><small>Sidewalks, walkways and building entrances.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Salting / De-Icing</b><small>Salt or de-icing applications.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Sanding</b><small>Traction material application.</small></span></label>
@@ -24,14 +22,14 @@
 </div></section>
 
 <section class="setup-step" data-step="3"><div class="step-kicker">PROPERTY TYPES</div><h1>What properties do you normally quote?</h1><div class="choice-grid">
-<label class="check-card"><input checked type="checkbox"><span><b>Commercial Properties</b><small>Retail, offices and business properties.</small></span></label>
+<label class="check-card"><input checked="" type="checkbox"><span><b>Commercial Properties</b><small>Retail, offices and business properties.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Residential Properties</b><small>Homes, driveways and private walkways.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Multi-Family / Condos</b><small>Apartment, condo and townhouse properties.</small></span></label>
 <label class="check-card"><input type="checkbox"><span><b>Industrial Properties</b><small>Warehouses, yards and larger access areas.</small></span></label>
 </div></section>
 
 <section class="setup-step" data-step="4"><div class="step-kicker">PRICING</div><h1>How do you normally price measured snow areas?</h1><div class="radio-stack">
-<label class="radio-card"><input checked name="pricing" type="radio" value="sqft"><span><b>Price per sq. ft.</b><small>AeriQuote calculates from the measured service area.</small></span></label>
+<label class="radio-card"><input checked="" name="pricing" type="radio" value="sqft"><span><b>Price per sq. ft.</b><small>AeriQuote calculates from the measured service area.</small></span></label>
 <label class="radio-card"><input name="pricing" type="radio" value="manual"><span><b>I set each job price manually</b><small>Measure first, then enter the final job price.</small></span></label>
 </div><label class="price-field" id="defaultPriceField">Default Price per sq. ft.<div><span>$</span><input id="defaultPrice" step=".01" type="number" value="0.10"></div></label></section>
 
@@ -44,7 +42,7 @@
 
 <section class="setup-step" data-step="6"><div class="step-kicker">TAXES</div><h1>Set up your taxes.</h1><div class="tax-box"><div class="form-grid two">
 <label>Federal Tax %<input id="tax1" step=".01" type="number" value="5"></label><label>Provincial / State Tax %<input id="tax2" step=".01" type="number" value="6"></label>
-</div><div class="radio-inline"><label><input checked name="taxmode" type="radio" value="regular"> Prices before tax</label><label><input name="taxmode" type="radio" value="included"> Taxes included in price</label></div></div></section>
+</div><div class="radio-inline"><label><input checked="" name="taxmode" type="radio" value="regular"> Prices before tax</label><label><input name="taxmode" type="radio" value="included"> Taxes included in price</label></div></div></section>
 
 <section class="setup-step" data-step="7"><div class="step-kicker">BRANDING</div><h1>Brand your customer estimates.</h1><div class="brand-layout"><div>
 <label class="upload-box"><input accept="image/png,image/jpeg" id="logoUpload" type="file"><b>＋ Upload Company Logo</b><small>PNG or JPG works best.</small></label>
