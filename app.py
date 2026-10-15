@@ -11,6 +11,8 @@ import json, webbrowser, threading, uuid, math, time, os, sqlite3, hmac, hashlib
 from datetime import datetime
 from activation_metrics import account_metrics
 from account_recovery import init_recovery_db, auth_version, register_recovery, limited
+from support_center import init_support_db, register_support
+from storage_checks import init_storage_db, register_storage
 try:
     import psycopg
     from psycopg.rows import dict_row
@@ -109,6 +111,8 @@ def estimate_db():
         pass
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_dealer ON estimates(dealer_id)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimate_revisions_dealer ON estimate_revisions(dealer_id)")
+    init_support_db(con)
+    init_storage_db(con)
     init_recovery_db(con)
     con.commit()
     return con
@@ -119,6 +123,8 @@ def login_auth_version(kind,account_id):
     finally:con.close()
 
 register_recovery(app,estimate_db,password_hash)
+register_support(app,estimate_db,lambda: is_head_office())
+register_storage(app,estimate_db,lambda: is_head_office())
 HTML = r"""<!doctype html>
 <html>
 <head>
@@ -2647,7 +2653,7 @@ HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><t
 <div><label>Production Reorder Level (gal)</label><input name="reorder_level" type="number" min="0" step="0.1" value="{{inventory.reorder_level}}" required></div>
 <div><button type="submit">SAVE INVENTORY SETTINGS</button></div>
 </form></div>
-<div class="card"><h2>Create Dealer Account</h2>{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
+<div class="card"><a href="/head-office/support">Support requests</a> · <a href="/head-office/storage">Deployment storage check</a></div><div class="card"><h2>Create Dealer Account</h2>{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
 <form method="post"><div class="grid"><div><label>Dealer / Owner Name</label><input name="dealer_name" required></div><div><label>Company Name</label><input name="company"></div><div><label>Email / Login</label><input name="email" type="email" required></div><div><label>State</label><select name="state"><option value="">Select State</option>{% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></div><div><label>Temporary Password</label><input name="password" type="password" minlength="8" required></div><div><label>Account Status</label><select name="status"><option value="active">Active</option><option value="disabled">Disabled</option></select></div><div class="full"><label>Permission Level</label><input value="Dealer Owner" readonly></div><div class="full"><button type="submit">CREATE DEALER ACCOUNT</button></div></div></form></div>
 <div class="card"><h2>Dealer Accounts</h2>
 {% for d in dealers %}
@@ -3004,7 +3010,7 @@ reset_trial_usage_for_v1196_testing_once()
 @app.before_request
 def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
-    if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup"} or path.startswith("/static/") or path.startswith("/site/"):return None
+    if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup","/api/public/support","/api/public/support/config"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
         if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
         return redirect("/dealer-login")
@@ -3474,8 +3480,8 @@ def estimate_storage_status():
     dealer_id=str(session.get("dealer_id") or "")
     con=estimate_db()
     try:
-        estimate_count=con.execute("SELECT COUNT(*) FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()[0]
-        revision_count=con.execute("SELECT COUNT(*) FROM estimate_revisions WHERE dealer_id=?",(dealer_id,)).fetchone()[0]
+        estimate_count=con.execute("SELECT COUNT(*) AS total FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["total"]
+        revision_count=con.execute("SELECT COUNT(*) AS total FROM estimate_revisions WHERE dealer_id=?",(dealer_id,)).fetchone()["total"]
     finally:
         con.close()
     return jsonify(
