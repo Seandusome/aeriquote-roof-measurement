@@ -108,7 +108,8 @@ async function saveIndustrySetupLocal(industry){
  try{localStorage.setItem('aeriQuoteIndustry',industry)}catch(ignore){}
  return profile;
 }
-const setupIndustry=/roofer-setup\.html/i.test(location.pathname)?'roofing':/snow-setup\.html/i.test(location.pathname)?'snow':(/pressure-setup\.html/i.test(location.pathname)?'pressure':(/paving-setup\.html/i.test(location.pathname)?'paving':(/landscaping-setup\.html/i.test(location.pathname)?'landscaping':(/commercial-setup\.html/i.test(location.pathname)?'commercial':null))));
+const setupPage=location.pathname.replace(/\/$/,'').split('/').pop().replace(/\.html$/i,'');
+const setupIndustry=({'roofer-setup':'roofing','snow-setup':'snow','pressure-setup':'pressure','paving-setup':'paving','landscaping-setup':'landscaping','commercial-setup':'commercial'})[setupPage]||null;
 if(document.body.classList.contains('setup-page') && setupIndustry){
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
