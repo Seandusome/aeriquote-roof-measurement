@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert client.get('/site/index.html').headers['Location']=='/site/'
  for alias,dest in [('/pricing','/site/pricing'),('/pricing.html','/site/pricing'),('/trial-signup.html','/site/trial-signup'),('/roofer-setup.html','/site/roofer-setup')]:
   assert client.get(alias).headers['Location']==dest
- for asset in ['site-ui.css','site-ui.js','account-ui.css','assets/favicon.svg']:
+ for asset in ['site-ui.css','site-ui.js','account-ui.css','help-center.css','help-center.js','assets/favicon.svg']:
   assert client.get('/site/'+asset).status_code==200
  icon=client.get('/favicon.ico');assert icon.status_code==200 and 'image/' in icon.content_type
  assert client.get('/site/nonexistent-page').status_code==404
