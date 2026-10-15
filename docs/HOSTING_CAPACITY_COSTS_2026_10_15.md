@@ -1,6 +1,6 @@
 # Hosting capacity and costs — October 15, 2026
 
-Planning scenarios for 100 and 250 customer businesses. No services, plans or production/main code changed.
+Planning scenarios for 100 and 250 customer businesses. Updated for Sean’s approved six-month full-estimate / one-year lightweight-record retention policy. See docs/ESTIMATE_RETENTION_POLICY_2026_10_15.md. No services, plans or production/main code changed.
 
 ## Measurement status
 Code inspection confirms saved estimates may contain Street View image data; saving another quote for an existing property keeps the preceding payload in estimate_revisions. Therefore image sizes and revisions must be included.
@@ -10,9 +10,9 @@ The local scratch SQLite database has zero estimates/revisions and is NOT repres
 - 40 new estimates/business/month: 4,000 at 100 businesses; 10,000 at 250.
 - Illustrative mean stored payload: 0.25 MB, not measured.
 - 50% additional payload allowance for revisions.
-- One year retained: about 18 GB / 45 GB of payload before indexes/other tables.
-- Illustrative allocated storage: 25 GB / 60 GB. It can start lower and grow; these allocations are not verified requirements.
-- At 1 MB/estimate instead, payload grows to roughly 72 GB / 180 GB per year with the same revision allowance. 100 GB / 225 GB allocations illustrate extra headroom. Actual compression, revisions and image behavior affect physical size.
+- Six months of full estimates: about 9 GB / 22.5 GB of payload before indexes/other tables. Lightweight records remain for one year; their additional storage is not yet measured and must be added.
+- Illustrative allocated storage: 15 GB / 30 GB, including provisional headroom for the extra lightweight records and other data. It can start lower and grow; these allocations are not verified requirements.
+- At 1 MB/estimate instead, six months of full payload is roughly 36 GB / 90 GB with the same revision allowance, plus the extra lightweight records. The proposed 15 GB / 30 GB allocations would be insufficient. Actual compression, revisions and image behavior affect physical size.
 - Customer count is not simultaneous users. Load testing and runtime measurements must determine compute; the larger 250-customer configuration is a planning reserve rather than a proven requirement.
 
 ## Published Render rate inputs, checked October 15
@@ -30,12 +30,12 @@ USD/month, before tax:
 | --- | ---: | ---: |
 | Web compute | $25 | $85 |
 | PostgreSQL compute | $19 | $40 |
-| Database allocation | 25 GB / $7.50 | 60 GB / $18 |
+| Database allocation | 15 GB / $4.50 | 30 GB / $9 |
 | Pro workspace | $25 | $25 |
-| Base monthly sum | $76.50 | $168 |
+| Base monthly sum | $73.50 | $159 |
 | Working core-hosting budget with contingency | $100–125 | $200–250 |
 
-At 1 MB average estimate with 100 GB / 225 GB allocated, base sums become about $99 / $217.50. Actual workload can require more/less compute and storage. Baseline is one production web service, one production database, one workspace; not high availability or a multi-instance deployment.
+The original one-year full-estimate model was superseded by the approved retention policy. Shortening retention mainly reduces storage growth, not fixed compute/workspace charges. Automatic cleanup is NOT implemented; current data does not yet expire on this schedule. Actual workload can require more/less compute and storage. Baseline is one production web service, one production database, one workspace; not high availability or a multi-instance deployment.
 Excluded: Google Maps/imagery APIs, Resend subscription/overages, card fees, tax, exchange rates, separate test services, additional replicas/workers, bandwidth/build overages and independent long-term backup storage. This is not the total cost to operate AeriQuote. Runtime autoscaling bills every additional instance.
 
 ## Provider responsibilities
@@ -45,7 +45,7 @@ Large image/object storage could reduce database growth, but the current app has
 
 ## Read-only measurements to collect when work resumes
 Confirm connected backend and live persistence first. For Postgres, obtain pg_database_size(current_database()) and aggregate COUNT/AVG/MAX/SUM(octet_length(payload)) separately for estimates and estimate_revisions. Do not export customer details or secrets.
-Also inspect database/web RAM/CPU, latency, concurrent activity and bandwidth. Use these aggregates to replace the 0.25 MB assumption, validate the 40/month assumption against usage, and tune the plan. No database upgrade is authorized by this forecast alone.
+Also inspect database/web RAM/CPU, latency, concurrent activity and bandwidth. Use these aggregates to replace the 0.25 MB assumption, validate the 40/month assumption against usage, measure lightweight record sizes separately, and tune the plan. No database upgrade is authorized by this forecast alone.
 
 ## Official sources
 - https://render.com/pricing (current compute, workspace, storage rates)
