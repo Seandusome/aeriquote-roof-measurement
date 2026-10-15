@@ -21,3 +21,10 @@ Branch: landscaping-multi-area-recovery-oct11. Main remains untouched.
 - Frontend tests cover all six SVG cards, failed-network retry with retained values/same request ID, and saved reference confirmation.
 - Existing account-access, password-recovery, clean public routes and public UI checks pass locally. Embedded measurement application HTML is unchanged.
 - No real support email was sent during automated tests. After deployment, submit a clearly labeled test request, check sean@aeriquote.com and Head Office. Then save a storage checkpoint, redeploy the same commit, reload and inspect Missing counts. Render persistence is not yet proven by local tests.
+
+## Support workflow follow-up
+- Added Open, In Progress and Resolved ticket states, plus timestamped private support notes. Notes are internal and do not send customer email. Replies still use the support email inbox.
+- Resolved requests can be archived, viewed separately and restored. Test/spam deletion has a separate confirmation page and requires the exact ticket reference; it removes the ticket and its private notes, but does not remove previously sent emails.
+- Existing tickets migrate to Open with their messages intact. Email notification status is labeled separately from resolution.
+- Lifecycle tests cover migration, access/CSRF, notes escaping, status validation, archive/restore and confirmed deletion. No live customer tickets were changed during development.
+- Adding workflow columns can show existing support rows as Changed in a prior storage checkpoint; deliberate deletion of a test ticket will show it as Missing. This is expected and must not be confused with deployment data loss. Save a fresh checkpoint after cleanup before testing another deployment.
