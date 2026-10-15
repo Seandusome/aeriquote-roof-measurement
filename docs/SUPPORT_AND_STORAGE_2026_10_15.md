@@ -59,3 +59,9 @@ Official references: https://resend.com/docs/dashboard/receiving/introduction ; 
 - Internal notes and More actions (archive/delete/notification details) are collapsed by default. Accepted outgoing email details are secondary; failed/uncertain sends keep a visible retry action.
 - Incoming-mail setup guidance appears once above the inbox. This UI change does not activate the receiving connection or send email.
 - Extended reply tests check chronological interleaving, no duplicated original message, one status control, collapsed secondary actions and preserved escaping/retries.
+
+## Customer support email presentation
+- Sean confirmed a dashboard reply arrived in the customer mailbox on October 15; outbound sending is live-tested.
+- New replies include branded HTML with the existing approved logo, a readable single-column layout, preserved paragraphs/line breaks and a compact reference footer. Plain text remains available.
+- Message and reference content are escaped before entering HTML. Private notes are excluded. Sender, recipient, reply routing and provider idempotency remain unchanged.
+- Automated tests inspect both email formats and HTML escaping with a mocked provider. Appearance in a real email client still requires a new test reply after deployment.

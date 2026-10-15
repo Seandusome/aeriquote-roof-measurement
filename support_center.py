@@ -2,6 +2,7 @@
 import hashlib,hmac,json,os,re,secrets,time,uuid
 import urllib.request
 from datetime import datetime
+from html import escape
 from urllib.parse import urlsplit,urlunsplit
 from flask import request,session,jsonify,Response,render_template_string
 from account_recovery import limited,mail_config
@@ -236,12 +237,31 @@ DELETE_HTML='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta 
 REPLY_STATES={'accepted':'Accepted by email provider — inbox delivery not confirmed','pending':'Saved — sending not yet confirmed','failed':'Sending not confirmed — use Retry this email','not_configured':'Saved — email configuration is missing'}
 REPLY_RESULTS={'accepted':'Reply accepted by the email provider. A copy is saved below; inbox delivery is not confirmed.','failed':'Sending could not be confirmed. Your reply is saved below; use Retry this email.','not_configured':'Reply saved, but email is not configured. Configure email and retry.'}
 
+def customer_reply_html(ticket,message,base_url):
+    """Inline email styles and presentation tables work without client JavaScript."""
+    base=escape(base_url.rstrip('/'),quote=True)
+    reference=escape(str(ticket['reference']))
+    paragraphs=[]
+    for paragraph in str(message).replace('\r\n','\n').replace('\r','\n').split('\n\n'):
+        if paragraph.strip():paragraphs.append('<p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#173b61;overflow-wrap:anywhere;">'+escape(paragraph).replace('\n','<br>')+'</p>')
+    content=''.join(paragraphs)
+    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AeriQuote Support</title></head>
+<body style="margin:0;padding:0;background-color:#f2f6fa;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f6fa;"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #dde6ef;border-radius:12px;">
+<tr><td style="padding:28px 28px 20px;border-bottom:1px solid #e5edf4;"><a href="{base}/site/" style="text-decoration:none;"><img src="{base}/static/aeriquote-logo.png" alt="AeriQuote" width="200" style="display:block;width:200px;max-width:100%;height:auto;border:0;"></a><p style="margin:16px 0 0;font-size:14px;font-weight:bold;color:#465d75;">AeriQuote Support</p></td></tr>
+<tr><td style="padding:28px 28px 12px;">{content}</td></tr>
+<tr><td style="padding:20px 28px 26px;border-top:1px solid #e5edf4;"><p style="margin:0 0 8px;font-size:14px;line-height:1.6;color:#465d75;">Need anything else? Reply to this email and we’ll help.</p><p style="margin:0;font-size:12px;line-height:1.6;color:#52657d;">Support reference: <strong>{reference}</strong></p></td></tr>
+</table><p style="margin:16px 0 0;font-size:12px;color:#52657d;">AeriQuote · Property Measurement &amp; Estimate Software</p>
+</td></tr></table></body></html>'''
+
 def send_support_reply(ticket,reply):
     config=mail_config();inbox=support_inbox()
     if not config or not email_valid(inbox):return 'not_configured'
     if not email_valid(reply['recipient']):raise ValueError('Invalid reply recipient')
-    key,sender,_=config
+    key,sender,base=config
     payload={'from':sender,'to':[reply['recipient']],'reply_to':ticket.get('reply_to_address') or inbox,'subject':'Re: AeriQuote support '+ticket['reference'],'text':reply['message']+'\n\nAeriQuote Support\nReference: '+ticket['reference']+'\nReply to this email if you need more help.'}
+    payload['html']=customer_reply_html(ticket,reply['message'],base)
     req=urllib.request.Request('https://api.resend.com/emails',data=json.dumps(payload).encode(),headers={'Authorization':'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':'support-reply-'+reply['id'],'User-Agent':'AeriQuote'},method='POST')
     with urllib.request.urlopen(req,timeout=12) as response:
         if not 200<=response.status<300:raise RuntimeError('Reply rejected')

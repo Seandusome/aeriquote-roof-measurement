@@ -54,6 +54,12 @@ with tempfile.TemporaryDirectory() as tmp:
    req=transport.call_args.args[0];payload=json.loads(req.data)
    assert payload['to']==['customer@example.com'] and payload['reply_to']=='sean@aeriquote.com'
    assert 'PRIVATE' not in payload['text'] and ticket['reference'] in payload['subject']
+   assert 'PRIVATE' not in payload['html'] and ticket['reference'] in payload['html']
+   assert 'https://example.com/static/aeriquote-logo.png' in payload['html']
+   assert '&lt;script&gt;literal text&lt;/script&gt;' in payload['html'] and '<script>' not in payload['html']
+   assert fields['message'] in payload['text']
+   formatted=s.customer_reply_html(ticket,'First paragraph.\n\nSecond paragraph.\nNew line.', 'https://example.com')
+   assert 'First paragraph.</p><p' in formatted and 'Second paragraph.<br>New line.' in formatted
    assert req.get_header('Idempotency-key')=='support-reply-'+reply_id
  with patch.object(s,'mail_config',return_value=None):assert s.send_support_reply(ticket,row)=='not_configured'
  assert c.post('/head-office/support/'+ticket_id+'/delete',data=dict(csrf=token,reference=ticket['reference'])).status_code==302
