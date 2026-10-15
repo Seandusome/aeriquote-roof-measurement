@@ -52,3 +52,10 @@ Branch: landscaping-multi-area-recovery-oct11. Main remains untouched.
 6. Historical outgoing emails still point at the old Reply-To mailbox and are not retroactively imported. New outgoing replies use routing addresses after activation. Configuration presence is not proof of live delivery; run the full loop before claiming completion.
 
 Official references: https://resend.com/docs/dashboard/receiving/introduction ; https://resend.com/docs/dashboard/receiving/get-email-content ; https://resend.com/docs/webhooks/verify-webhooks-requests ; https://docs.svix.com/receiving/verifying-payloads/how-manual
+
+## Support screen simplification
+- One conversation per ticket combines the original request, outgoing replies and received customer messages in chronological order. No duplicated message sections or empty incoming-reply notices.
+- One status selector sits by the ticket heading; the primary Send reply action sits directly under the conversation.
+- Internal notes and More actions (archive/delete/notification details) are collapsed by default. Accepted outgoing email details are secondary; failed/uncertain sends keep a visible retry action.
+- Incoming-mail setup guidance appears once above the inbox. This UI change does not activate the receiving connection or send email.
+- Extended reply tests check chronological interleaving, no duplicated original message, one status control, collapsed secondary actions and preserved escaping/retries.

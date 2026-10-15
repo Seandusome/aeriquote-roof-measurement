@@ -17,7 +17,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert c.post(manage,data=dict(csrf=token,action='note',note='PRIVATE: do not email')).status_code==302
  html=c.get('/head-office/support').get_data(as_text=True)
  assert html.index('Reply to customer')<html.index('Internal notes (')
- assert '<details style="margin:22px 0"><summary' in html and '<details open' not in html
+ assert '<details class="secondary-details internal-notes"><summary' in html and '<details open' not in html
  assert 'To: ' not in html and 'Email to <b>customer@example.com</b>' in html
  fields=dict(csrf=token,reply_id=reply_id,message='Hello, your setup is ready. <script>literal text</script>')
  assert c.post(url,data=dict(fields,csrf='bad')).status_code==400
@@ -35,6 +35,18 @@ with tempfile.TemporaryDirectory() as tmp:
   assert send.call_count==1,'Accepted reply must not be sent again'
   assert c.post(url,data=dict(fields,message='different message')).status_code==409
  con=a.estimate_db();ticket=dict(con.execute('SELECT * FROM support_requests').fetchone());row=dict(con.execute('SELECT * FROM support_replies').fetchone());con.close()
+ # Original, outgoing and incoming messages form one ordered, escaped conversation.
+ con=a.estimate_db()
+ con.execute("UPDATE support_requests SET created_at='2026-01-01T00:00:00Z'")
+ con.execute("UPDATE support_replies SET created_at='2026-01-01T00:01:00Z'")
+ con.execute('INSERT INTO support_incoming(id,ticket_id,received_at,sender,subject,message,attachment_count,match_status,notification_status) VALUES(?,?,?,?,?,?,?,?,?)',(str(uuid.uuid4()),ticket_id,'2026-01-01T00:02:00Z','customer@example.com','Re: support','Customer confirms it works.',0,'matched','accepted'))
+ con.commit();con.close()
+ html=c.get('/head-office/support').get_data(as_text=True)
+ assert html.index(d['message'])<html.index('Hello, your setup is ready.')<html.index('Customer confirms it works.')
+ assert html.count(d['message'])==1
+ assert html.count('<select name="status"')==1 and html.count('class="primary"')==1
+ assert '<details class="secondary-details more-actions">' in html
+ assert 'No incoming customer replies yet.' not in html and 'Ticket status: Open' not in html
  with patch.object(s,'mail_config',return_value=('fake-key','AeriQuote <accounts@aeriquote.com>','https://example.com')):
   with patch.object(s.urllib.request,'urlopen') as transport:
    transport.return_value.__enter__.return_value.status=200

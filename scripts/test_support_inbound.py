@@ -55,7 +55,7 @@ with tempfile.TemporaryDirectory() as tmp:
  from flask import Flask
  admin=Flask(__name__);admin.secret_key='test';s.register_support(admin,a.estimate_db,lambda:True)
  body=admin.test_client().get('/head-office/support?view=archived').get_data(as_text=True)
- assert 'Customer messages' in body and 'Unmatched incoming emails' in body and 'response' in body
+ assert 'Conversation' in body and 'Unmatched incoming emails' in body and 'response' in body
  # Outgoing replies use a ticket-specific address only when enabled.
  with patch.object(s,'mail_config',return_value=('fake','AeriQuote <accounts@aeriquote.com>','https://example.com')):
   with patch.object(s.urllib.request,'urlopen') as transport:
