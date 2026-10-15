@@ -28,3 +28,10 @@ Branch: landscaping-multi-area-recovery-oct11. Main remains untouched.
 - Existing tickets migrate to Open with their messages intact. Email notification status is labeled separately from resolution.
 - Lifecycle tests cover migration, access/CSRF, notes escaping, status validation, archive/restore and confirmed deletion. No live customer tickets were changed during development.
 - Adding workflow columns can show existing support rows as Changed in a prior storage checkpoint; deliberate deletion of a test ticket will show it as Missing. This is expected and must not be confused with deployment data loss. Save a fresh checkpoint after cleanup before testing another deployment.
+
+## Customer replies and quieter internal notes
+- Reply to customer is the main ticket action, with an explicit recipient, Send reply button and saved outgoing email history. Uses existing Resend sender; Reply-To is sean@aeriquote.com (or SUPPORT_INBOX override).
+- Customer-facing replies are stored before transmission. Provider acceptance is distinguished from inbox delivery. Failed/uncertain attempts preserve text and can be retried using the same provider idempotency key; accepted replies are not re-sent on repeated form submissions.
+- Internal notes are collapsed by default in a native details control beneath replies/status. Private note submission is separate from email sending.
+- Customer email responses arrive in the support mailbox; inbound email synchronization is not implemented. No live email was sent by automated tests.
+- New tests cover admin/CSRF, exact recipient and Reply-To, private-note exclusion, escaped reply history, saved send failures, retries, repeated submissions and deletion cleanup.

@@ -21,6 +21,7 @@ jobs:
       - run: python scripts/test_public_routes.py
       - run: python scripts/test_support_storage.py
       - run: python scripts/test_support_workflow.py
+      - run: python scripts/test_support_replies.py
       - run: node scripts/test_activation_controls.cjs
       - run: python scripts/check_landscaping_multi_area.py
       - run: node scripts/test_landscaping_engine.cjs
