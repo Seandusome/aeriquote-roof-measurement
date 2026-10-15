@@ -35,3 +35,20 @@ Branch: landscaping-multi-area-recovery-oct11. Main remains untouched.
 - Internal notes are collapsed by default in a native details control beneath replies/status. Private note submission is separate from email sending.
 - Customer email responses arrive in the support mailbox; inbound email synchronization is not implemented. No live email was sent by automated tests.
 - New tests cover admin/CSRF, exact recipient and Reply-To, private-note exclusion, escaped reply history, saved send failures, retries, repeated submissions and deletion cleanup.
+
+## Incoming email — prepared, external setup still required
+- New signed endpoint: `/api/public/support/inbound`. Verifies raw bytes against Resend/Svix signature and a five-minute timestamp window. Received-email UUID deduplication prevents re-import and duplicate ticket reopening.
+- Retrieves body from Resend Receiving API; stores readable text, never renders raw email HTML or loads attachments. Attachments remain in Resend with a count notice in the ticket.
+- Outgoing support replies use a persisted, random per-ticket Reply-To address once configured. Matching requires that route plus the original customer sender; DMARC failures and unmatched emails stay separate for review. Automated responses are recorded without reopening. A matched customer reply reopens and unarchives its ticket.
+- Matching replies also notify the configured SUPPORT_INBOX; failures leave the customer message saved and can be retried from the ticket. No real mail was sent during development.
+- Sean specified production support recipient **Nancy@aeriquote.com** on October 15. Set `SUPPORT_INBOX=Nancy@aeriquote.com` on the production service when going live. Keep the commercial test service on Sean's inbox. Nancy does not automatically gain Head Office access; staff permissions remain unchanged.
+
+### Activation steps
+1. Deploy this recovery-branch update on the commercial test service.
+2. Resend → Emails → Receiving → receiving address (three-dot menu). Copy the account's actual `<id>.resend.app` domain. This option requires no GoDaddy DNS changes. A custom receiving subdomain can be configured later; do not replace MX records for aeriquote.com or disrupt existing mailboxes.
+3. Resend → Webhooks → Add webhook: `https://aeriquote-commercial-test.onrender.com/api/public/support/inbound`; select only `email.received`.
+4. Render Environment: set `SUPPORT_REPLY_DOMAIN` to the actual receiving domain (no @ or username), and `RESEND_WEBHOOK_SECRET` to that webhook's signing secret. Enter the secret directly in Render, not in chat or GitHub. The receiving API needs read permissions; if the existing sending key cannot retrieve received email, add `RESEND_RECEIVING_API_KEY` with appropriate access without changing the working sending key.
+5. Save/redeploy. Send a NEW customer reply from the dashboard to a real test inbox, reply from that inbox, then refresh Support requests. Verify the customer message appears once, a resolved/archived ticket reopens, and Sean's test inbox receives the notification. Test signed-webhook retry handling through Resend if needed.
+6. Historical outgoing emails still point at the old Reply-To mailbox and are not retroactively imported. New outgoing replies use routing addresses after activation. Configuration presence is not proof of live delivery; run the full loop before claiming completion.
+
+Official references: https://resend.com/docs/dashboard/receiving/introduction ; https://resend.com/docs/dashboard/receiving/get-email-content ; https://resend.com/docs/webhooks/verify-webhooks-requests ; https://docs.svix.com/receiving/verifying-payloads/how-manual

@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '24'
       - run: python -m pip install Jinja2==3.1.6 Flask==3.1.2
-      - run: python -m py_compile app.py activation_metrics.py account_recovery.py support_center.py storage_checks.py
+      - run: python -m py_compile app.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
       - run: python scripts/test_activation_metrics.py
       - run: python scripts/test_account_access.py
       - run: python scripts/test_password_recovery.py
@@ -22,6 +22,7 @@ jobs:
       - run: python scripts/test_support_storage.py
       - run: python scripts/test_support_workflow.py
       - run: python scripts/test_support_replies.py
+      - run: python scripts/test_support_inbound.py
       - run: node scripts/test_activation_controls.cjs
       - run: python scripts/check_landscaping_multi_area.py
       - run: node scripts/test_landscaping_engine.cjs

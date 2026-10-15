@@ -3010,7 +3010,7 @@ reset_trial_usage_for_v1196_testing_once()
 @app.before_request
 def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
-    if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup","/api/public/support","/api/public/support/config"} or path.startswith("/static/") or path.startswith("/site/"):return None
+    if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup","/api/public/support","/api/public/support/config","/api/public/support/inbound"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
         if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
         return redirect("/dealer-login")
