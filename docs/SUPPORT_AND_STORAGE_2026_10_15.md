@@ -65,3 +65,9 @@ Official references: https://resend.com/docs/dashboard/receiving/introduction ; 
 - New replies include branded HTML with the existing approved logo, a readable single-column layout, preserved paragraphs/line breaks and a compact reference footer. Plain text remains available.
 - Message and reference content are escaped before entering HTML. Private notes are excluded. Sender, recipient, reply routing and provider idempotency remain unchanged.
 - Automated tests inspect both email formats and HTML escaping with a mocked provider. Appearance in a real email client still requires a new test reply after deployment.
+
+## Incoming support reply confirmed and quote cleanup
+- Sean confirmed a customer reply appeared in its ticket after adding RESEND_RECEIVING_API_KEY with Full access. The original sending-only key remains unchanged. Outbound branded email appearance was also approved live.
+- Recognized quoted email history now appears in a collapsed Show quoted email disclosure. The customer’s new message remains prominent. This is display-only and applies to previously saved replies without changing their stored text.
+- Familiar dated reply headers, Original Message/Outlook blocks and final quoted lines are recognized conservatively. Unrecognized formats remain visible. No text is deleted, and quoted content is escaped in the disclosure.
+- Tests cover the reported reply format, single-line variants, Outlook, bottom-posted/ordinary replies, stored-text preservation and escaped disclosure markup.

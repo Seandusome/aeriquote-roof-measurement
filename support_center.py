@@ -44,6 +44,29 @@ def notify_support(ticket):
         if not 200<=response.status<300:raise RuntimeError('Support notification rejected')
     return 'accepted'
 
+def split_quoted_email(message):
+    """Display-only split: retain the stored email verbatim and avoid guessing at footers."""
+    text=str(message or '')
+    candidates=[]
+    # Familiar reply headers, including the single-line form some clients produce.
+    for match in re.finditer(r'(?im)(?<!\S)On [^\n]{1,300}?wrote:[ \t]*(?:\r?\n|(?=>))',text):
+        header=match.group()
+        if re.search(r'\b\d{4}\b|@',header):candidates.append(match.start())
+    for match in re.finditer(r'(?im)^[ \t]*[-_]{3,}[ \t]*Original Message[ \t]*[-_]{3,}[ \t]*$',text):candidates.append(match.start())
+    for match in re.finditer(r'(?im)^From:[^\n]+\nSent:[^\n]+\nTo:[^\n]+\n(?:Cc:[^\n]*\n)?Subject:[^\n]+',text):candidates.append(match.start())
+    # Without a recognizable header, collapse a final block of quoted lines only.
+    offset=len(text);quoted_start=None
+    for line in reversed(text.splitlines(keepends=True)):
+        offset-=len(line)
+        if not line.strip():continue
+        if line.lstrip().startswith('>'):quoted_start=offset
+        else:break
+    if quoted_start is not None:candidates.append(quoted_start)
+    for boundary in sorted(candidates):
+        preview=text[:boundary].rstrip()
+        if preview:return preview,text[boundary:]
+    return text,''
+
 INBOX_HTML='''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AeriQuote Support Inbox</title>
 <style>
@@ -57,7 +80,7 @@ INBOX_HTML='''<!doctype html>
 <article class="ticket" id="{{t.id}}"><div class="ticket-head"><div><h2>{{t.reference}} · {{topics[t.topic]}}</h2><div>{{t.name}}{% if t.company %} · {{t.company}}{% endif %}</div><a href="mailto:{{t.email}}">{{t.email}}</a></div>
 <form class="status-form" method="post" action="/head-office/support/{{t.id}}/manage"><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="action" value="update"><div><label for="status-{{t.id}}">Status</label><select name="status" id="status-{{t.id}}">{% for key,label in statuses.items() %}<option value="{{key}}" {{'selected' if t.status==key else ''}}>{{label}}</option>{% endfor %}</select></div><button>Save status</button></form></div>
 <section class="conversation" aria-label="Conversation"><h3>Conversation</h3>
-{% for m in conversations[t.id] %}<div class="entry {{'outgoing' if m.kind=='outgoing' else 'customer'}}"><header><b>{{m.label}}</b><time>{{m.created_at}}</time></header><div class="message">{{m.message}}</div>
+{% for m in conversations[t.id] %}<div class="entry {{'outgoing' if m.kind=='outgoing' else 'customer'}}"><header><b>{{m.label}}</b><time>{{m.created_at}}</time></header><div class="message">{{m.get("preview",m.message)}}</div>{% if m.get("quoted") %}<details class="delivery quoted-email"><summary>Show quoted email</summary><div class="message">{{m.quoted}}</div></details>{% endif %}
 {% if m.kind=='outgoing' %}
 {% if m.delivery_status=='accepted' %}<details class="delivery"><summary>Email details</summary><p>{{reply_states[m.delivery_status]}}<br>To: {{m.recipient}}</p></details>{% else %}<p class="delivery">{{reply_states.get(m.delivery_status,m.delivery_status)}}</p><form method="post" action="/head-office/support/{{t.id}}/reply"><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="reply_id" value="{{m.id}}"><input type="hidden" name="mode" value="retry"><button>Retry this email</button></form>{% endif %}
 {% elif m.kind=='incoming' %}{% if m.attachment_count %}<p class="meta">{{m.attachment_count}} attachment(s) — view in Resend; files are not imported.</p>{% endif %}{% if m.match_status=='matched' and m.notification_status!='accepted' %}<details class="delivery"><summary>Team notification needs attention</summary><p>{{m.notification_status}}</p><form method="post" action="/head-office/support/incoming/{{m.id}}/notify"><input type="hidden" name="csrf" value="{{csrf}}"><button>Retry team notification</button></form></details>{% endif %}{% endif %}</div>{% endfor %}</section>
@@ -134,6 +157,8 @@ def register_support(app,estimate_db,is_head_office):
                 messages=[dict(kind='original',label='Customer · original request',created_at=ticket['created_at'],message=ticket['message'])]
                 messages += [dict(row,kind='incoming',label='Automatic email' if row['match_status']=='automated' else 'Customer reply',created_at=row['received_at']) for row in incoming[ticket['id']]]
                 messages += [dict(row,kind='outgoing',label='AeriQuote support · '+row['author']) for row in replies[ticket['id']]]
+                for message in messages:
+                    if message['kind']=='incoming':message['preview'],message['quoted']=split_quoted_email(message['message'])
                 conversations[ticket['id']]=sorted(messages,key=lambda m:(m['created_at'],m.get('id','')))
         finally:con.close()
         response=Response(render_template_string(INBOX_HTML,tickets=tickets,topics=TOPICS,conversations=conversations,incoming=incoming,unmatched=unmatched,inbound=inbound_ready(),notes=notes,replies=replies,reply_ids={t["id"]:str(uuid.uuid4()) for t in tickets},reply_states=REPLY_STATES,result=REPLY_RESULTS.get(request.args.get("reply_result")),archived=archived,statuses=STATUSES,csrf=csrf(),inbox=support_inbox(),configured=bool(mail_config()) and email_valid(support_inbox())),content_type='text/html');response.headers['Cache-Control']='no-store';return response
