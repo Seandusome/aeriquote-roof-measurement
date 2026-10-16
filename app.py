@@ -56,16 +56,39 @@ class DBCompat:
     def commit(self): return self.con.commit()
     def close(self): return self.con.close()
 
+_ESTIMATE_SCHEMA_LOCK = threading.Lock()
+_ESTIMATE_SCHEMA_READY = set()
+
 def estimate_db():
     if DATABASE_URL:
         if psycopg is None:
             raise RuntimeError("DATABASE_URL is configured but psycopg is not installed. Add psycopg[binary] to requirements.txt.")
-        raw=psycopg.connect(DATABASE_URL, row_factory=dict_row)
+        raw=psycopg.connect(DATABASE_URL, row_factory=dict_row, connect_timeout=10)
         con=DBCompat(raw, True)
+        schema_key=("postgres",DATABASE_URL)
     else:
         raw=sqlite3.connect(ESTIMATE_DB)
         raw.row_factory=sqlite3.Row
         con=DBCompat(raw, False)
+        st=os.stat(ESTIMATE_DB)
+        schema_key=("sqlite",os.path.abspath(ESTIMATE_DB),st.st_dev,st.st_ino)
+    try:
+        # Authenticated imagery requests arrive concurrently. Never run ALTER TABLE
+        # on every connection: PostgreSQL lock upgrades can deadlock those requests.
+        with _ESTIMATE_SCHEMA_LOCK:
+            if schema_key not in _ESTIMATE_SCHEMA_READY:
+                if DATABASE_URL:
+                    # Serialize initialization between workers/deploy instances too.
+                    # Transaction-scoped: commit or connection close releases it.
+                    con.execute("SELECT pg_advisory_xact_lock(?)",(614728193,))
+                _initialize_estimate_schema(con)
+                _ESTIMATE_SCHEMA_READY.add(schema_key)
+        return con
+    except Exception:
+        con.close()
+        raise
+
+def _initialize_estimate_schema(con):
     con.execute("""CREATE TABLE IF NOT EXISTS estimates (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
     con.execute("""CREATE TABLE IF NOT EXISTS estimate_revisions (revision_id TEXT PRIMARY KEY, estimate_id TEXT NOT NULL, revised_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_address ON estimates(address)")
@@ -115,7 +138,6 @@ def estimate_db():
     init_storage_db(con)
     init_recovery_db(con)
     con.commit()
-    return con
 
 def login_auth_version(kind,account_id):
     con=estimate_db()
