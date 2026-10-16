@@ -26,3 +26,6 @@ Sean reported the next added roof left a pin without a visible result. The map c
 
 ## Diagnostic follow-up
 Live next-roof test returned the combined unavailable/unsafe-outline message. This does not distinguish mask retrieval from contour extraction or building-bounds rejection. Split these paths into visible AQ-MASK codes: session/reference, Data Layers, TIFF download including HTTP status where available, parsing, pixels/projection, contour and bounds. Strict errors apply only to newly added roofs; main-roof fallback behavior stays unchanged. No live root cause or corrected area is claimed. Extra tests exercise the real mask loader with HTTP/parser failures and a synthetic raster.
+
+## Full-width measurement workspace
+Sean's desktop photo showed unused margins around the app. Removed only the measurement template's 1,560px wrapper cap; retain 12px outer padding, existing map/pricing column proportions, map height and mobile stacking. This applies to all measurement industries and gives most extra width to the aerial. Customer preview/PDF widths and saved geometry are unchanged. The mask diagnostic test remains outstanding and is unrelated to this CSS adjustment.
