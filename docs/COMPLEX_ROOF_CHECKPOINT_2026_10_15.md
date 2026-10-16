@@ -1,5 +1,7 @@
 # Complex-roof correction — October 15, 2026
 
+**Latest policy:** Do not clip an automatic contour to make it fit a building box. Incomplete or mismatched automatic roofs require an individual pitched remeasurement before export. See the final section; it supersedes the earlier scoped-mask approach.
+
 Recovery branch only: landscaping-multi-area-recovery-oct11. Parent 74db268.
 
 ## Report and diagnosis
@@ -32,3 +34,16 @@ Sean's desktop photo showed unused margins around the app. Removed only the meas
 
 ## Confirmed bounds rejection and scoped mask tracing
 Sean's live next-roof result was AQ-MASK-BOUNDS: mask loading and contour extraction succeeded, but the connected contour extended outside Google's selected building bounding box. The underlying raster is a regional rooftop/non-rooftop mask, not per-building IDs; fetching a fresh mask alone does not isolate adjoining rooftop pixels. Additional-roof tracing now restricts candidate seed/flood-fill pixels to the matched Building Insights geographic bounds before extracting the actual mask contour. Empty intersections still fail, no rectangle is substituted, the outer boundary guard remains, and Google area is unchanged. Main-roof tracing is unchanged. Synthetic regression uses an entirely connected regional raster to verify selected-building isolation and rejects an empty intersection. Live Pinehouse outline/area review remains necessary, especially attached buildings whose Building Insights coverage may differ from the intended roof scope.
+
+## Whole-roof correction workflow (supersedes scoped mask clipping)
+Sean's live photo after 5158c6b showed the second outline cutting through the condo roof. Clipping was inadequate and must not be treated as a geometric or area fix. No actual Google response for this live job has been exported, so the precise provider coverage/alignment remains unverified.
+
+- Remove bounding-box clipping from the active extra-roof path. Keep raw mask extraction; if the component exceeds the matched building bounds, or provider ground-area coverage is below 95%, or mask footprint differs from the provider's roof footprint by over 25%, flag the result for remeasurement. These are conservative review thresholds, not an accuracy certification. Preserve provider ground areas/coverage ratio for diagnosis. Apply these review checks to an available main-roof contour too.
+- A flagged roof contributes zero area, shows Needs remeasurement rather than a clipped completed outline, and blocks creating a customer estimate until corrected. Other measured buildings remain intact.
+- Each Roofing property-summary row offers REMEASURE THIS ROOF. Trace the intended roof boundary and explicitly confirm the pitch. Save replaces that row's area with footprint divided by cos(pitch), preserves its building ID/order, leaves other buildings/rates/taxes untouched, and does not increment roof count. Cancel leaves the previous measurement intact. A single trace uses one confirmed pitch; different slopes may need separate roof-section traces using the existing added-roof tool. This is a manual correction, not a claim of automatic multi-pitch condo measurement.
+- Dealer/customer labels say dealer traced, confirmed pitch; snapshots retain corrected geometry, measurement source, chosen pitch and previous automatic area. Preview/PDF use existing pixel-aligned rendering. Traced outlines/labels use the manual colour.
+- No automatic scaling from incomplete provider statistics and no fabricated rectangular roof perimeter. Initial retrieval failures still show the diagnostic codes.
+
+Validation: real DOM/Leaflet tests exercise partial-coverage rejection, corrected-roof area/pricing, explicit pitch confirmation, unchanged neighbouring roof and roof count, customer source/area, snapshot data, cancellation and property reset; existing imagery/PDF and all-industry regressions remain required. Backend tests verify provider coverage fields. Live Pinehouse coverage, outline and PDF review still required.
+
+Full browser-width workspace remains enabled across industries. Paid web hosting, branded reconnect/loading UI and automatic unsaved-draft recovery are agreed pre-launch work, deliberately deferred. Saved accounts/estimates persistence and paid PostgreSQL PITR status remain as previously documented. Main/production untouched.

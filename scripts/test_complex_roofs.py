@@ -9,7 +9,7 @@ functions=[n for n in source.body if isinstance(n,ast.FunctionDef) and n.name in
 for n in functions:n.decorator_list=[]
 app=Flask(__name__);app.secret_key='test-only';sessions={};calls=[]
 def req_json(url):
- return 200,{'name':'buildings/stable-id','center':{'latitude':52,'longitude':-106},'boundingBox':{'sw':{'latitude':51.9999,'longitude':-106.0001},'ne':{'latitude':52.0001,'longitude':-105.9999}},'solarPotential':{'wholeRoofStats':{'areaMeters2':100},'roofSegmentStats':[]}}
+ return 200,{'name':'buildings/stable-id','center':{'latitude':52,'longitude':-106},'boundingBox':{'sw':{'latitude':51.9999,'longitude':-106.0001},'ne':{'latitude':52.0001,'longitude':-105.9999}},'solarPotential':{'wholeRoofStats':{'areaMeters2':100,'groundAreaMeters2':80},'buildingStats':{'groundAreaMeters2':100},'roofSegmentStats':[]}}
 def layers(key,lat,lng,radius):
  calls.append((lat,lng,radius));return {'maskUrl':'https://example.invalid/own-mask'}
 ns=dict(request=request,session=session,jsonify=jsonify,Response=Response,uuid=uuid,urllib=urllib,SESSIONS=sessions,req_json=req_json,SolarBuildingNotFound=type('SolarBuildingNotFound',(Exception,),{}),date_text=lambda x:'2023-10-16',roof_imagery_request=lambda roof:(roof['latitude'],roof['longitude'],100),solar_layers=layers,req_bytes=lambda url:('image/tiff',b'own-roof-mask'))
@@ -19,6 +19,7 @@ with app.test_request_context('/structure',method='POST',json={'token':'property
  session['dealer_id']='owner';roof=ns['structure']().get_json()
  assert roof['building_id']=='buildings/stable-id' and roof['bounding_box']['sw']['latitude']==51.9999
  assert abs(roof['total_roof_sqft']-1076.391041671)<1e-8
+ assert roof['roof_coverage_ratio']==.8 and abs(roof['roof_ground_sqft']-861.1128333368)<1e-8
  assert not calls,'Rejected duplicate must not incur a Data Layers call'
  mask_id=roof['mask_url'].split('/')[-1]
 with app.test_request_context(roof['mask_url']):
