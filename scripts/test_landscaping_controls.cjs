@@ -56,6 +56,21 @@ console.log('PASS: AI tracing controls removed; manual measurements remain avail
 const positions=w.eval(`(()=>{const occupied=[];for(let i=0;i<16;i++)measurementLabelPosition(350,220,72,26,occupied,700,440);return occupied})()`);
 assert.equal(positions.length,16);positions.forEach((b,i)=>{assert(b.x>=0&&b.y>=0&&b.x+b.w<=700&&b.y+b.h<=440);positions.slice(i+1).forEach(c=>assert(b.x+b.w<=c.x||c.x+c.w<=b.x||b.y+b.h<=c.y||c.y+c.h<=b.y))});console.log('PASS: sixteen crowded labels separate inside the aerial without removing measurements');
 // Saved estimates use a static aerial; labels must be painted into the same PDF canvas.
+// Expanded export uses the existing aerial, preserves all seven rows and quote data,
+// and removes its temporary pages on both success and capture failure.
+const expandedBefore=w.eval('JSON.stringify(quoteSnapshot)');
+btn('rProperty').innerHTML=Array.from({length:7},(_,i)=>`<div class="structure">Parking Lot ${i+1} - ${1000+i} ft²</div>`).join('');
+btn('rPricing').innerHTML=Array.from({length:7},(_,i)=>`<div class="line">Parking Lot ${i+1} - $${100+i}</div>`).join('')+'<div class="line grand">TOTAL $721.00</div>';
+w.eval(`el('streetViewChoice').value='auto';el('rMarketingPanel').classList.add('marketingHidden')`);w.HTMLImageElement.prototype.decode=async()=>{};
+const expandedCaptures=[],expandedCalls=[];w.jspdf={jsPDF:class{addPage(){expandedCalls.push('page')}addImage(){expandedCalls.push('image')}}};
+w.html2canvas=async node=>{expandedCaptures.push({id:node.id,text:node.textContent});return{width:1200,height:900,toDataURL:()=> 'data:image/jpeg;base64,test'}};
+await w.eval(`buildExpandedEstimatePDF(document.querySelector('#reportOverlay .report'))`);
+assert.equal(expandedCaptures[0].id,'customerMap');assert.equal(expandedCaptures.length,3);assert.equal(expandedCalls.filter(x=>x==='page').length,1);
+for(let i=1;i<=7;i++)assert(expandedCaptures[2].text.includes('Parking Lot '+i));assert(expandedCaptures[2].text.includes('TOTAL $721.00'));assert(expandedCaptures[2].text.includes('Page 2 of 2'));
+assert.equal(w.document.querySelector('.expandedPdfExport'),null);assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),expandedBefore);
+let expandedCaptureCount=0;w.html2canvas=async()=>{if(++expandedCaptureCount===2)throw Error('capture failure');return{toDataURL:()=> 'data:image/jpeg;base64,test'}};
+await assert.rejects(w.eval(`buildExpandedEstimatePDF(document.querySelector('#reportOverlay .report'))`),/capture failure/);assert.equal(w.document.querySelector('.expandedPdfExport'),null);
+console.log('PASS: expanded aerial then seven measurement/pricing rows, page numbers, unchanged snapshot and cleanup on failure');
 await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');
 const painted=[];let imagesPainted=0;
 w.HTMLCanvasElement.prototype.getContext=()=>({drawImage(){imagesPainted++},beginPath(){},moveTo(){},lineTo(){},stroke(){},save(){},restore(){},measureText(t){return{width:t.length*10}},fillRect(){},strokeRect(){},fillText(t,x,y){painted.push({t,x,y})}});

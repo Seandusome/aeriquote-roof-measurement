@@ -427,7 +427,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
    <div class="cta"><strong id="rCtaHeading">YOUR ESTIMATE</strong><div id="rCtaText" style="margin-top:5px;color:#f59d0a;font-weight:800"></div><div style="margin-top:9px"><b id="rDealerCompany"></b></div><div id="rDealerName" style="margin-top:2px"></div><div class="dealerContactCompact"><span id="rPhoneWrap">Call or Text: <b id="rPhone"></b></span><span id="rDealerEmailWrap"><span class="contactSep">•</span><span id="rDealerEmail"></span></span><br><span id="rDealerWebsite"></span><span id="rDealerAddressWrap"><span class="contactSep">•</span><span id="rDealerAddress"></span></span></div></div>
  </div></div>
  <div class="reportFoot">Remote aerial measurements are used for estimating. Final property conditions and measurements should be confirmed before work begins.</div>
- <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="window.print()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
+ <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option></select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="window.print()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
 </div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2239,6 +2239,50 @@ function paintCustomerPdfLabels(ctx,host){
   hidden.push({node:marker,visibility:marker.style.visibility});marker.style.visibility='hidden';
  });return hidden;
 }
+async function buildExpandedEstimatePDF(report){
+ // Reuse the approved map pixels. Never resize/refit Leaflet or alter quote data.
+ const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
+ const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none';
+ const aerial=hasAerial?await html2canvas(el('customerMap'),options):null;
+ const root=document.createElement('div');root.className='expandedPdfExport';
+ Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
+ document.body.appendChild(root);
+ const clone=node=>{if(!node)return null;const copy=node.cloneNode(true);copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));return copy};
+ const pages=[],bodies=[];
+ function page(title){const box=document.createElement('div');Object.assign(box.style,{width:'1200px',height:'927px',padding:'24px',boxSizing:'border-box',background:'#fff',position:'relative',overflow:'hidden'});root.appendChild(box);
+ const head=clone(report.querySelector('.reportHead'));head.style.gridTemplateColumns='230px 1fr 100px';head.querySelector('h1').style.fontSize='25px';box.appendChild(head);
+ const meta=clone(report.querySelector('.reportMeta'));meta.style.gridTemplateColumns='1.5fr .6fr 1fr';meta.style.fontSize='15px';meta.style.margin='10px 0';box.appendChild(meta);
+ const heading=document.createElement('div');heading.className='reportTitle';heading.textContent=title;box.appendChild(heading);
+ const body=document.createElement('div');Object.assign(body.style,{paddingTop:'12px',height:(877-(body.offsetTop||0))+'px'});box.appendChild(body);body.style.height=(877-body.offsetTop)+'px';
+ const foot=document.createElement('div');Object.assign(foot.style,{position:'absolute',left:'24px',right:'24px',bottom:'14px',fontSize:'12px',display:'flex',justifyContent:'space-between'});const note=document.createElement('span');note.textContent=report.querySelector('.reportFoot')?.textContent||'';const number=document.createElement('span');number.dataset.pageNumber='true';foot.append(note,number);box.appendChild(foot);pages.push(box);bodies.push(body);return body}
+ try{
+  const mapBody=page('PROPERTY AERIAL - MEASURED SERVICE AREAS');
+  if(aerial){const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);Object.assign(img.style,{display:'block',width:'100%',height:(mapBody.clientHeight-5)+'px',objectFit:'contain'});mapBody.appendChild(img);await img.decode()}
+  else{const note=document.createElement('p');note.textContent='Property imagery omitted from this estimate.';mapBody.appendChild(note)}
+  const left=[],right=[];
+  const title=text=>{const n=document.createElement('div');n.className='reportTitle';n.textContent=text;return n};
+  left.push(title('MEASUREMENTS'));
+  [...el('rProperty').children].forEach(n=>left.push(clone(n)));
+  right.push(title('ESTIMATE SUMMARY'));
+  [...el('rPricing').children].forEach(n=>right.push(clone(n)));
+  const marketing=el('rMarketingPanel');if(marketing&&!marketing.classList.contains('marketingHidden')){const heading=clone(el('rMarketingHeading'));left.push(heading);[...el('rMarketingBenefits').children].forEach(n=>left.push(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))left.push(clone(warranty))}
+  const cta=report.querySelector('.cta');if(cta)right.push(clone(cta));
+  const street=el('rStreet');if(street&&street.style.display!=='none'&&street.complete&&street.naturalWidth){const image=clone(street);image.style.height='170px';right.push(image);right.push(clone(el('rStreetMeta')))}
+  let continuation=false;
+  while(left.length||right.length){const body=page(continuation?'ESTIMATE DETAILS - CONTINUED':'MEASUREMENTS & ESTIMATE DETAILS');Object.assign(body.style,{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'22px',alignItems:'start'});
+   for(const queue of [left,right]){const col=document.createElement('div');col.style.minWidth='0';body.appendChild(col);let added=0;
+    while(queue.length){const block=queue[0];block.style.overflowWrap='anywhere';block.style.breakInside='avoid';col.appendChild(block);
+     if(col.scrollHeight>body.clientHeight){block.remove();if(!added)throw new Error('An estimate section is too long for one expanded page. Shorten that section before exporting.');break}
+     queue.shift();added++;
+    }
+   }continuation=true;
+  }
+  const {jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'landscape',unit:'in',format:'letter',compress:true});
+  for(let i=0;i<pages.length;i++){pages[i].querySelector('[data-page-number]').textContent='Page '+(i+1)+' of '+pages.length;const canvas=await html2canvas(pages[i],options);if(i)pdf.addPage();pdf.addImage(canvas.toDataURL('image/jpeg',.94),'JPEG',0,0,11,8.5,undefined,'FAST')}
+  return pdf;
+ }finally{root.remove()}
+}
+
 async function downloadEstimatePDF(){
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
@@ -2309,7 +2353,8 @@ async function downloadEstimatePDF(){
       host.appendChild(pdfTraceCanvas);
       customerMap.getPane('overlayPane')?.querySelectorAll('svg').forEach(svg=>{const anchor=document.createComment('PDF vector replacement');svg.replaceWith(anchor);pdfVectors.push({svg,anchor})});
     }
-    var canvas=await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+    var expandedPdf=el('estimatePdfLayout')?.value==='expanded'?await buildExpandedEstimatePDF(report):null;
+    var canvas=expandedPdf?null:await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
     pdfLabels.forEach(({node,visibility})=>node.style.visibility=visibility);
@@ -2317,10 +2362,12 @@ async function downloadEstimatePDF(){
     if(actions)actions.style.display=oldActionsDisplay;if(outlineControls)outlineControls.style.display=oldOutlineDisplay;
   }
 
-  const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'in',format:'letter',compress:true});
+  const {jsPDF}=window.jspdf;const pdf=expandedPdf||new jsPDF({orientation:'landscape',unit:'in',format:'letter',compress:true});
+  if(!expandedPdf){
   const pageW=11,pageH=8.5,margin=.18,maxW=pageW-margin*2,maxH=pageH-margin*2;
   const ratio=Math.min(maxW/canvas.width,maxH/canvas.height);const w=canvas.width*ratio,h=canvas.height*ratio;
   pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',(pageW-w)/2,(pageH-h)/2,w,h,undefined,'FAST');
+  }
   const raw=(el('address')?.value||'Customer').split(',')[0].trim()||'Customer';const safe=raw.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
   pdf.save(`AeriQuote_Estimate_${safe||'Customer'}.pdf`);status('Estimate PDF downloaded.','ok');
  }catch(e){console.error(e);status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}
