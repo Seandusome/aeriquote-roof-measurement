@@ -2244,20 +2244,23 @@ async function buildExpandedEstimatePDF(report){
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
  const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none';
  const aerial=hasAerial?await html2canvas(el('customerMap'),options):null;
+ const areas=(quoteSnapshot?.commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
+ if(aerial&&customerMap&&areas.length){const ctx=aerial.getContext('2d'),scale=aerial.width/el('customerMap').clientWidth;ctx.save();ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(p=>customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]))),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,Math.min(...pts.map(p=>p.x))+12)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,Math.min(...pts.map(p=>p.y))+12));ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
+
  const root=document.createElement('div');root.className='expandedPdfExport';
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
  document.body.appendChild(root);
  const clone=node=>{if(!node)return null;const copy=node.cloneNode(true);copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));return copy};
  const pages=[],bodies=[];
  function page(title){const box=document.createElement('div');Object.assign(box.style,{width:'1200px',height:'927px',padding:'24px',boxSizing:'border-box',background:'#fff',position:'relative',overflow:'hidden'});root.appendChild(box);
- const head=clone(report.querySelector('.reportHead'));head.style.gridTemplateColumns='230px 1fr 100px';head.querySelector('h1').style.fontSize='25px';box.appendChild(head);
- const meta=clone(report.querySelector('.reportMeta'));meta.style.gridTemplateColumns='1.5fr .6fr 1fr';meta.style.fontSize='15px';meta.style.margin='10px 0';box.appendChild(meta);
+ const head=document.createElement('div');Object.assign(head.style,{display:'flex',alignItems:'center',gap:'20px',borderBottom:'2px solid #0b193e',paddingBottom:'10px'});const logo=el('rDealerLogo');if(logo?.getAttribute('src')&&!logo.classList.contains('noDealerLogo')){const image=clone(logo);Object.assign(image.style,{width:'170px',maxHeight:'65px',objectFit:'contain'});head.appendChild(image)}const text=document.createElement('div');const name=document.createElement('strong');name.textContent=el('rEstimateTitle').textContent;Object.assign(name.style,{fontSize:'23px',color:'#0b193e'});const company=document.createElement('div');company.textContent=el('rEstimateSubtitle').textContent;text.append(name,company);head.appendChild(text);box.appendChild(head);
+ const meta=document.createElement('div');Object.assign(meta.style,{fontSize:'14px',margin:'10px 0',display:'grid',gridTemplateColumns:'1.5fr 1fr',gap:'12px'});const address=document.createElement('div');address.textContent=el('rAddress').textContent;const customer=document.createElement('div');customer.textContent=el('rCustomerName').textContent+' | '+el('rDate').textContent;meta.append(address,customer);box.appendChild(meta);
  const heading=document.createElement('div');heading.className='reportTitle';heading.textContent=title;box.appendChild(heading);
  const body=document.createElement('div');Object.assign(body.style,{paddingTop:'12px',height:(877-(body.offsetTop||0))+'px'});box.appendChild(body);body.style.height=(877-body.offsetTop)+'px';
  const foot=document.createElement('div');Object.assign(foot.style,{position:'absolute',left:'24px',right:'24px',bottom:'14px',fontSize:'12px',display:'flex',justifyContent:'space-between'});const note=document.createElement('span');note.textContent=report.querySelector('.reportFoot')?.textContent||'';const number=document.createElement('span');number.dataset.pageNumber='true';foot.append(note,number);box.appendChild(foot);pages.push(box);bodies.push(body);return body}
  try{
   const mapBody=page('PROPERTY AERIAL - MEASURED SERVICE AREAS');
-  if(aerial){const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);Object.assign(img.style,{display:'block',width:'100%',height:(mapBody.clientHeight-5)+'px',objectFit:'contain'});mapBody.appendChild(img);await img.decode()}
+  if(aerial){const legend=document.createElement('div');Object.assign(legend.style,{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px 14px',fontSize:'14px',paddingTop:'8px'});areas.forEach((a,i)=>{const item=document.createElement('div');item.textContent=(i+1)+'. '+(a.name||'Service Area')+' - '+fmt(a.sqft)+' ft²';legend.appendChild(item)});mapBody.appendChild(legend);const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);Object.assign(img.style,{display:'block',width:'100%',height:(mapBody.clientHeight-legend.offsetHeight-10)+'px',objectFit:'contain'});mapBody.insertBefore(img,legend);await img.decode()}
   else{const note=document.createElement('p');note.textContent='Property imagery omitted from this estimate.';mapBody.appendChild(note)}
   const left=[],right=[];
   const title=text=>{const n=document.createElement('div');n.className='reportTitle';n.textContent=text;return n};
@@ -2265,7 +2268,7 @@ async function buildExpandedEstimatePDF(report){
   [...el('rProperty').children].forEach(n=>left.push(clone(n)));
   right.push(title('ESTIMATE SUMMARY'));
   [...el('rPricing').children].forEach(n=>right.push(clone(n)));
-  const marketing=el('rMarketingPanel');if(marketing&&!marketing.classList.contains('marketingHidden')){const heading=clone(el('rMarketingHeading'));left.push(heading);[...el('rMarketingBenefits').children].forEach(n=>left.push(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))left.push(clone(warranty))}
+  const marketing=el('rMarketingPanel');if(marketing&&!marketing.classList.contains('marketingHidden')){const section=document.createElement('div');section.appendChild(clone(el('rMarketingHeading')));[...el('rMarketingBenefits').children].forEach(n=>section.appendChild(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))section.appendChild(clone(warranty));left.push(section)}
   const cta=report.querySelector('.cta');if(cta)right.push(clone(cta));
   const street=el('rStreet');if(street&&street.style.display!=='none'&&street.complete&&street.naturalWidth){const image=clone(street);image.style.height='170px';right.push(image);right.push(clone(el('rStreetMeta')))}
   let continuation=false;
