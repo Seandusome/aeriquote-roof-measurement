@@ -1885,6 +1885,7 @@ function drawSavedMeasurementLabels(ctx,snap,view,width,height){
   (st.segments||[]).forEach(seg=>{const c=seg.center,b=seg.bounding_box;const point=c?[c.latitude,c.longitude]:b?.sw&&b?.ne?[(b.sw.latitude+b.ne.latitude)/2,(b.sw.longitude+b.ne.longitude)/2]:null;if(point&&Number.isFinite(Number(seg.pitch_degrees)))label(point,Number(seg.pitch_degrees).toFixed(1)+'°','#7a3f08')});
  });
  (snap.manualPlanes||[]).forEach(st=>{const points=(st.points||[]).map(p=>[Number(p.lat??p[0]),Number(p.lng??p[1])]);if(points.length<3)return;edges(points,true,'#d97706');const bounds=L.latLngBounds(points).getCenter();label([bounds.lat,bounds.lng],Number(st.pitch_degrees||0).toFixed(1)+'°','#7a3f08')});
+ return occupied;
 }
 async function buildSavedHistoricalSnapshot(){
  const host=el('customerMap');if(!host)return;
@@ -1911,7 +1912,7 @@ async function buildSavedHistoricalSnapshot(){
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
-   canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height);host.appendChild(canvas);
+   canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
@@ -2248,7 +2249,8 @@ async function buildExpandedEstimatePDF(report){
  const areas=(quoteSnapshot?.commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
  if(aerial&&areas.length){const host=el('customerMap'),savedView=host.querySelector('canvas')?.dataset.mapView,view=savedView?JSON.parse(savedView):null;
  const project=p=>{if(customerMap)return customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));if(!view)throw new Error('Reopen this estimate to restore aerial coordinates before expanded export.');const world=256*Math.pow(2,view.zoom),xy=(lat,lng)=>{const v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},q=xy(p[0],p[1]),c=xy(view.latitude,view.longitude);return{x:host.clientWidth/2+(q[0]-c[0])*host.clientWidth/view.width,y:host.clientHeight/2+(q[1]-c[1])*host.clientHeight/view.height}};
- const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,(Math.min(...pts.map(p=>p.x))+Math.max(...pts.map(p=>p.x)))/2)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,(Math.min(...pts.map(p=>p.y))+Math.max(...pts.map(p=>p.y)))/2));ctx.beginPath();ctx.arc(x,y,11,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
+ const savedCanvas=host.querySelector('canvas'),occupied=customerMap?[...host.querySelectorAll('.aeri-edge-label,.linear-seg-label,.area-label,.edge-label,.seg-label,.manual-label')].map(n=>{const r=n.getBoundingClientRect(),h=host.getBoundingClientRect();return{x:r.left-h.left,y:r.top-h.top,w:r.width,h:r.height}}):JSON.parse(savedCanvas?.dataset.labelBoxes||'[]').map(b=>({x:b.x*host.clientWidth/savedCanvas.width,y:b.y*host.clientHeight/savedCanvas.height,w:b.w*host.clientWidth/savedCanvas.width,h:b.h*host.clientHeight/savedCanvas.height}));
+ const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,(Math.min(...pts.map(p=>p.x))+Math.max(...pts.map(p=>p.x)))/2)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,(Math.min(...pts.map(p=>p.y))+Math.max(...pts.map(p=>p.y)))/2));const box=measurementLabelPosition(x,y,26,26,occupied,host.clientWidth,host.clientHeight,5),bx=box.x+13,by=box.y+13;if(Math.hypot(bx-x,by-y)>5){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(bx,by);ctx.strokeStyle='#0b193e';ctx.lineWidth=1.5;ctx.stroke()}ctx.beginPath();ctx.arc(bx,by,11,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),bx,by)});ctx.restore()}
 
  const root=document.createElement('div');root.className='expandedPdfExport';
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
@@ -2284,10 +2286,12 @@ async function buildExpandedEstimatePDF(report){
    }continuation=true;
   }
   const {jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'landscape',unit:'in',format:'letter',compress:true});
+  let repeatedHeader=null;const repeatedHeaderHeight=pages[0].querySelector('.reportTitle').offsetTop;
   pages.forEach(p=>p.style.display='none');
   for(let i=0;i<pages.length;i++){pages[i].style.display='block';pages[i].querySelector('[data-page-number]').textContent='Page '+(i+1)+' of '+pages.length;const canvas=await html2canvas(pages[i],options);if(i)pdf.addPage();pdf.addImage(canvas.toDataURL('image/jpeg',.94),'JPEG',0,0,11,8.5,undefined,'FAST');
-   // Native continuation headings avoid off-screen HTML capture dropping repeated text.
-   if(i&&typeof pdf.text==='function'){pdf.setFillColor(255,255,255);pdf.rect(.22,.12,10.56,1.02,'F');pdf.setTextColor(11,25,62);pdf.setFont('helvetica','bold');pdf.setFontSize(16);pdf.text(el('rEstimateTitle').textContent,.22,.44,{maxWidth:10.4});pdf.setFont('helvetica','normal');pdf.setFontSize(11);pdf.text(el('rEstimateSubtitle').textContent,.22,.67,{maxWidth:10.4});pdf.setFontSize(9);pdf.text(el('rAddress').textContent,.22,.96,{maxWidth:6.2});pdf.text(el('rCustomerName').textContent,6.6,.96,{maxWidth:4.1})}
+   // Reuse the first page header pixels so every continuation has identical branding.
+   if(!i){const header=document.createElement('canvas');header.width=canvas.width;header.height=Math.round(canvas.height*repeatedHeaderHeight/927);header.getContext('2d').drawImage(canvas,0,0,header.width,header.height,0,0,header.width,header.height);repeatedHeader=header.toDataURL('image/jpeg',.95)}
+   else if(repeatedHeader)pdf.addImage(repeatedHeader,'JPEG',0,0,11,repeatedHeaderHeight/927*8.5,undefined,'FAST');
    pages[i].style.display='none'}
   return pdf;
  }finally{root.remove()}
