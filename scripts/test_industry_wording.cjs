@@ -51,7 +51,13 @@ if(industry!=='roofing'){
   if(target!=='snow')assert.equal(id('toolAreaBtn').querySelector('b').textContent,'+ ADD AREA');
  }
 
- console.log('PASS '+industry+': area + linear controls, instructions, estimate wording, quantities and pricing');
+ dom.reconfigure({url:'https://test.invalid/?industry='+industry});
+ w.eval(`el('businessType').value='${industry}';businessTypeChanged();el('marketingHeading').value='Custom company heading';el('marketingCtaText').value='Custom customer message';el('marketingEnabled').checked=false`);
+ const custom=w.eval('JSON.stringify(captureIndustryMarketing())');
+ const other=industry==='snow'?'pressure':'snow';dom.reconfigure({url:'https://test.invalid/?industry='+other});w.eval(`el('businessType').value='${other}';businessTypeChanged()`);
+ dom.reconfigure({url:'https://test.invalid/?industry='+industry});w.eval(`el('businessType').value='${industry}';businessTypeChanged()`);
+ assert.equal(w.eval('JSON.stringify(captureIndustryMarketing())'),custom,industry+' custom text and marketing off retained');
+ console.log('PASS '+industry+': area + linear controls, instructions, estimates, switching and custom marketing preservation');
 
  w.eval(`clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false;el('reportOverlay').style.display='none';document.body.classList.remove('report-open')`);
 }
