@@ -34,7 +34,14 @@ if(industry==='roofing'){
  reset();w.eval("measurementViewMode='auto';fallbackMode=true;manualOverrideMode=true;toggleTrace()");points(crossing);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),0);assert(w.eval('traceMode'));assert(id('status').textContent.includes('crosses itself'));
  w.eval('clearManual()');points(rectangle);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),1);assert(w.eval('manualPlanes[0].surface_sqft>areaSqFtTotal()'));
 }
-console.log('PASS '+industry+': analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection'+(industry==='roofing'?', manual roof guard':', remove/clear last area retains priced saved line'));
+// A slow account fetch may hydrate company details, but must not undo an explicit industry choice.
+ reset();w.eval("sessionToken='';areaMode=false;linearMode=false");let finishProfile;
+ w.fetch=()=>new Promise(resolve=>finishProfile=resolve);w.eval('loadDealerDefaults()');
+ const target=industry==='snow'?'pressure':'snow';dom.reconfigure({url:'https://test.invalid/?industry='+target});w.eval(`el('businessType').value='${target}';businessTypeChanged()`);
+ const chosenMessage=id('marketingCtaText').value;
+ finishProfile({ok:true,json:async()=>({profile:{businessType:industry,company:'Saved Company',marketingCtaText:'Old industry wording',price:.2,country:'CA'}})});
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(id('businessType').value,target);assert.equal(id('marketingCtaText').value,chosenMessage);assert.equal(id('dealerCompany').value,'Saved Company');
+ console.log('PASS '+industry+': analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection'+(industry==='roofing'?', manual roof guard':', remove/clear last area retains priced saved line'));
 await new Promise(resolve=>setTimeout(resolve,100));w.eval('_aeriTermObserver.disconnect();clearTimeout(_aeriTermTimer);clearTimeout(customerMapBuildTimer)');assert.deepEqual(errors,[]);dom.window.close();}
 console.log('PASS: six-industry measurement edge cases');
 })().catch(e=>{console.error(e);process.exit(1)});
