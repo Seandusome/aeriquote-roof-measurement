@@ -1911,7 +1911,7 @@ async function buildSavedHistoricalSnapshot(){
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
-   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height);host.appendChild(canvas);
+   canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height);host.appendChild(canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
@@ -2245,7 +2245,9 @@ async function buildExpandedEstimatePDF(report){
  const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none';
  const aerial=hasAerial?await html2canvas(el('customerMap'),options):null;
  const areas=(quoteSnapshot?.commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
- if(aerial&&customerMap&&areas.length){const ctx=aerial.getContext('2d'),scale=aerial.width/el('customerMap').clientWidth;ctx.save();ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(p=>customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]))),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,Math.min(...pts.map(p=>p.x))+12)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,Math.min(...pts.map(p=>p.y))+12));ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
+ if(aerial&&areas.length){const host=el('customerMap'),savedView=host.querySelector('canvas')?.dataset.mapView,view=savedView?JSON.parse(savedView):null;
+ const project=p=>{if(customerMap)return customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));if(!view)throw new Error('Reopen this estimate to restore aerial coordinates before expanded export.');const world=256*Math.pow(2,view.zoom),xy=(lat,lng)=>{const v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},q=xy(p[0],p[1]),c=xy(view.latitude,view.longitude);return{x:host.clientWidth/2+(q[0]-c[0])*host.clientWidth/view.width,y:host.clientHeight/2+(q[1]-c[1])*host.clientHeight/view.height}};
+ const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,Math.min(...pts.map(p=>p.x))+12)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,Math.min(...pts.map(p=>p.y))+12));ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
 
  const root=document.createElement('div');root.className='expandedPdfExport';
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
