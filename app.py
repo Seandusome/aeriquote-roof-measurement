@@ -492,7 +492,7 @@ const AERI_TOOL_COPY={
 };
 const _aeriOriginalText=new WeakMap();
 const _aeriOriginalAttributes=new WeakMap();
-function currentBusinessType(){const selected=(el('businessType')&&el('businessType').value)||'';const requested=new URLSearchParams(window.location.search).get('industry');return requested==='commercial'?'commercial':(selected||requested||'roofing')}
+function currentBusinessType(){const selected=(el('businessType')&&el('businessType').value)||'';const requested=new URLSearchParams(window.location.search).get('industry');return requested==='commercial'&&!quoteSnapshot?.savedPricing?'commercial':(selected||requested||'roofing')}
 function translateSnowText(t){
  const rules=[
   [/Additional Services \/ Repairs/gi,'Additional Snow Services'],
@@ -2052,6 +2052,7 @@ async function openHistoricalEstimate(estimateId,versionIndex){
   if(customerMapBuildTimer){clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null}
   quoteSnapshot={...JSON.parse(JSON.stringify(snap)),structures:JSON.parse(JSON.stringify(structures)),manualPlanes:JSON.parse(JSON.stringify(manualPlanes)),savedPricing:pr,measureSource:(snap.measureSource||el('measureSource')?.value||'google')};
 
+  if(snap.businessType&&el('businessType')?.querySelector('option[value="'+snap.businessType+'"]')){setSavedField('businessType',snap.businessType);industryChosenByUser=true;switchIndustryMarketing();applyBusinessTerminology()}
   closeEstimateHistory();
   // Let the modal finish closing before opening the report overlay.
   await new Promise(resolve=>setTimeout(resolve,60));
@@ -2247,7 +2248,7 @@ async function buildExpandedEstimatePDF(report){
  const areas=(quoteSnapshot?.commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
  if(aerial&&areas.length){const host=el('customerMap'),savedView=host.querySelector('canvas')?.dataset.mapView,view=savedView?JSON.parse(savedView):null;
  const project=p=>{if(customerMap)return customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));if(!view)throw new Error('Reopen this estimate to restore aerial coordinates before expanded export.');const world=256*Math.pow(2,view.zoom),xy=(lat,lng)=>{const v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},q=xy(p[0],p[1]),c=xy(view.latitude,view.longitude);return{x:host.clientWidth/2+(q[0]-c[0])*host.clientWidth/view.width,y:host.clientHeight/2+(q[1]-c[1])*host.clientHeight/view.height}};
- const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,Math.min(...pts.map(p=>p.x))+12)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,Math.min(...pts.map(p=>p.y))+12));ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
+ const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,Math.min(...pts.map(p=>p.x))+12)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,Math.min(...pts.map(p=>p.y))+12));ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x,y)});ctx.restore()}
 
  const root=document.createElement('div');root.className='expandedPdfExport';
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
@@ -2283,7 +2284,8 @@ async function buildExpandedEstimatePDF(report){
    }continuation=true;
   }
   const {jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'landscape',unit:'in',format:'letter',compress:true});
-  for(let i=0;i<pages.length;i++){pages[i].querySelector('[data-page-number]').textContent='Page '+(i+1)+' of '+pages.length;const canvas=await html2canvas(pages[i],options);if(i)pdf.addPage();pdf.addImage(canvas.toDataURL('image/jpeg',.94),'JPEG',0,0,11,8.5,undefined,'FAST')}
+  pages.forEach(p=>p.style.display='none');
+  for(let i=0;i<pages.length;i++){pages[i].style.display='block';pages[i].querySelector('[data-page-number]').textContent='Page '+(i+1)+' of '+pages.length;const canvas=await html2canvas(pages[i],options);if(i)pdf.addPage();pdf.addImage(canvas.toDataURL('image/jpeg',.94),'JPEG',0,0,11,8.5,undefined,'FAST');pages[i].style.display='none'}
   return pdf;
  }finally{root.remove()}
 }
