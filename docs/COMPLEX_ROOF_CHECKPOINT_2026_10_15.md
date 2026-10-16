@@ -1,6 +1,6 @@
 # Complex-roof correction — October 15, 2026
 
-**Latest policy:** Do not clip an automatic contour to make it fit a building box. Incomplete or mismatched automatic roofs require an individual pitched remeasurement before export. See the final section; it supersedes the earlier scoped-mask approach.
+**Latest policy (October 16):** See TESTER_FIXES_2026_10_16.md. Main-roof outline/coverage heuristics are advisory and preserve AutoMeasure area/outline; they must not force all ordinary roofs into manual remeasurement. Extra-roof strict checks and the per-roof pitched replacement workflow remain. Bounding-box clipping remains rejected.
 
 Recovery branch only: landscaping-multi-area-recovery-oct11. Parent 74db268.
 

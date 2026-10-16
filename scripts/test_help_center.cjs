@@ -18,6 +18,7 @@ for(let n=1;n<5;n++){ad.getElementById('aq-help-next').click();assert(dialog.tex
 ad.getElementById('aq-help-next').click();assert(!dialog.open);assert.equal(ad.activeElement,launch);
 ad.querySelector('[data-aq-help-topic="measure"]').click();assert(dialog.textContent.includes('Landscaping:'));assert(dialog.querySelector('.aq-help-nav').hidden);
 dialog.dispatchEvent(new a.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert(!dialog.open);
+ad.getElementById('businessType').value='snow';ad.querySelector('[data-aq-help-topic="measure"]').click();assert(dialog.textContent.includes('Snow Removal:'));assert(!/roof|garage|pitch|shingle/i.test(ad.getElementById('aq-help-dialog-lines').textContent));ad.getElementById('aq-help-close').click();ad.getElementById('businessType').value='landscaping';
 ad.querySelector('[data-aq-help-topic="price"]').click();const last=ad.querySelector('#aq-help-full').parentNode.querySelector('a:last-child');last.focus();dialog.dispatchEvent(new a.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));assert.equal(ad.activeElement.id,'aq-help-close');ad.getElementById('aq-help-close').click();
 assert.equal(ad.getElementById('streetAddress').value,'Existing job address');assert.equal(ad.getElementById('businessType').value,'landscaping');assert.equal(calls,0);
 assert(!ad.querySelector('#toolAiBtn'));app.window.close();
