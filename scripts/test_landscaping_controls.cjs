@@ -159,6 +159,10 @@ const complexPaint=[];w.complexCtx={save(){},restore(){},measureText(t){return{w
 w.eval(`drawSavedMeasurementLabels(complexCtx,quoteSnapshot,{latitude:52,longitude:-106,zoom:18,width:640,height:420},1280,840)`);
 assert.equal(complexPaint.filter(t=>t.startsWith('#')).length,12);assert.equal(complexPaint.filter(t=>t.endsWith(' ft')||t.endsWith('°')).length,0);
 assert.equal(w.eval(`outlineMatchesBuilding([[52,-106],[52.001,-106]],{latitude:52,bounding_box:{sw:{latitude:52,longitude:-106},ne:{latitude:52.0001,longitude:-105.9999}}})`),false);
+// Real mask loader distinguishes HTTP, parser and projector failures without leaking URLs.
+w.fetch=async()=>({ok:false,status:503,json:async()=>({code:'AQ-MASK-DOWNLOAD-403'})});await assert.rejects(w.eval("loadRoofMask('/test',true)"),e=>e.roofCode==='AQ-MASK-DOWNLOAD-403');assert.equal(await w.eval("loadRoofMask('/test')"),null);
+w.fetch=async()=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(1)});w.parseGeoraster=async()=>{throw new Error('bad tif')};await assert.rejects(w.eval("loadRoofMask('/test',true)"),e=>e.roofCode==='AQ-MASK-PARSE');
+w.parseGeoraster=async()=>({values:[Array.from({length:20},()=>Array(20).fill(1))],projection:4326,width:20,height:20,xmin:-106,ymax:52.0002,pixelWidth:.00001,pixelHeight:.00001});w.GeoRasterLayer=class{getProjector(){return{forward:p=>p}}};assert(await w.eval("loadRoofMask('/test',true)"));assert(w.eval("outlineFromMask").call(null,await w.eval("loadRoofMask('/test',true)"),52.0001,-105.9999));
 // Duplicate Google IDs must stop before requesting another mask, even if the centroid shifted.
 w.eval(`sessionToken='complex';clicked=L.latLng(52,-106);structures=[{building_id:'same',latitude:52,longitude:-106}]`);let maskLoads=0;
 w.fetch=async()=>({ok:true,json:async()=>({building_id:'same',latitude:52.001,longitude:-106,mask_url:'/must-not-load'})});w.loadRoofMask=async()=>{maskLoads++;return null};await w.eval('measureClicked()');assert.equal(maskLoads,0);assert.equal(w.eval('structures.length'),1);

@@ -899,9 +899,21 @@ function simplifyClosedContour(loop,eps=3.2){
  }if(next.length>=4)out=next;else break}
  return out;
 }
-async function loadRoofMask(url){
- try{const res=await fetch(url,{signal:AbortSignal.timeout(60000)});if(!res.ok)return null;const gr=await parseGeoraster(await res.arrayBuffer());let values=gr.values;if(!values&&gr.getValues)values=await gr.getValues({top:0,left:0,bottom:0,right:0,width:gr.width,height:gr.height});if(!values||!values[0])return null;const helper=new GeoRasterLayer({georaster:gr,resolution:16});let toRaster=null,toWgs=null;try{toRaster=helper.getProjector(4326,gr.projection).forward;toWgs=helper.getProjector(gr.projection,4326).forward}catch(e){return null}return{gr,band:values[0],toRaster,toWgs}}catch(e){console.warn('Roof mask unavailable',e);return null}
+async function loadRoofMask(url,strict=false){
+ let stage='DOWNLOAD';
+ try{
+  const res=await fetch(url,{signal:AbortSignal.timeout(60000)});
+  if(!res.ok){const error=new Error('Roof mask download failed');error.roofCode='AQ-MASK-HTTP-'+res.status;try{const body=await res.json();if(/^AQ-MASK-[A-Z0-9-]+$/.test(body.code||''))error.roofCode=body.code}catch(e){}throw error}
+  stage='PARSE';const gr=await parseGeoraster(await res.arrayBuffer());let values=gr.values;
+  if(!values&&gr.getValues)values=await gr.getValues({top:0,left:0,bottom:0,right:0,width:gr.width,height:gr.height});
+  stage='PIXELS';if(!values||!values[0])throw new Error('Roof mask has no pixels');
+  stage='PROJECTION';const helper=new GeoRasterLayer({georaster:gr,resolution:16});
+  const toRaster=helper.getProjector(4326,gr.projection).forward,toWgs=helper.getProjector(gr.projection,4326).forward;
+  if(typeof toRaster!=='function'||typeof toWgs!=='function')throw new Error('Roof projection unavailable');
+  return{gr,band:values[0],toRaster,toWgs};
+ }catch(e){if(strict){const error=new Error('Roof outline could not load');error.roofCode=e.roofCode||('AQ-MASK-'+(e.name==='TimeoutError'||e.name==='AbortError'?'TIMEOUT':stage));throw error}console.warn('Roof mask unavailable');return null}
 }
+
 function maskValue(mask,r,c){if(r<0||c<0||r>=mask.gr.height||c>=mask.gr.width)return 0;const row=mask.band[r];return row&&Number(row[c])>0?1:0}
 function nearestMaskPixel(mask,lat,lng){
  let xy;try{xy=mask.toRaster([lng,lat])}catch(e){return null}const gr=mask.gr,c0=Math.floor((xy[0]-gr.xmin)/Math.abs(gr.pixelWidth)),r0=Math.floor((gr.ymax-xy[1])/Math.abs(gr.pixelHeight));if(maskValue(mask,r0,c0))return[r0,c0];
@@ -1348,7 +1360,7 @@ function extraRoofStatus(message,kind=''){
  const guide=el('garageGuide');if(guide)guide.textContent=message;
  if(clickMarker){const text=document.createElement('div');text.textContent=message;clickMarker.setPopupContent(text).openPopup()}
 }
-async function measureClicked(){if(measureClicked.pending)return;if(!sessionToken||!clicked){extraRoofStatus('Click the centre of the extra structure first.','error');return}measureClicked.pending=true;try{extraRoofStatus('Measuring selected structure…');let r=await fetch('/structure',{signal:AbortSignal.timeout(45000),method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:sessionToken,latitude:clicked.lat,longitude:clicked.lng})}),d=await r.json();if(!r.ok)throw new Error(d.error||'Structure request failed');let dup=structures.some(s=>(s.building_id&&d.building_id&&s.building_id===d.building_id)||(Math.abs(s.latitude-d.latitude)<.00003&&Math.abs(s.longitude-d.longitude)<.00003));if(dup){extraRoofStatus('That building is already measured. Click nearer the centre of a different structure.','error');return}d.label=structures.length===1?'Detached Garage':`Extra Structure ${structures.length}`;extraRoofStatus('Roof measurement received. Loading its outline…');const ownMask=d.mask_url?await loadRoofMask(d.mask_url):null;d.outline=outlineFromMask(ownMask,d.latitude,d.longitude);delete d.mask_url;if(!d.outline||!outlineMatchesBuilding(d.outline,d)){extraRoofStatus('This roof outline is unavailable. It has not been added. Try again or use Add Missing Roof to measure it manually.','warn');return}structures.push(d);redrawRoofData();fitEntireQuote(map);usage.structures++;renderSummary();if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}clicked=null;if(el('garageGuide'))el('garageGuide').innerHTML=`<b>${d.label} is already saved in this quote.</b> To add another roof, click <b>+ ADD GARAGE / OTHER ROOF</b> again.`;if(el('garageSavedConfirm')){el('garageSavedConfirm').style.display='block';el('garageSavedConfirm').innerHTML=`<b>✓ ${d.label} SAVED TO QUOTE — ${fmt(d.total_roof_sqft)} ft² INCLUDED</b><br><span class="small">No other Save button is required. It is already included in Roofs in Quote and the estimate total.</span>`}extraRoofStatus(`${d.label} saved to quote — ${fmt(d.total_roof_sqft)} ft² included.`,'ok')}catch(e){extraRoofStatus(e.name==='TimeoutError'||e.name==='AbortError'?'This roof request timed out. It has not been added. Click + Add Garage / Other Roof to retry.':'This roof could not finish measuring. It has not been added. Try again or use Add Missing Roof.','warn')}finally{measureClicked.pending=false}}
+async function measureClicked(){if(measureClicked.pending)return;if(!sessionToken||!clicked){extraRoofStatus('Click the centre of the extra structure first.','error');return}measureClicked.pending=true;try{extraRoofStatus('Measuring selected structure…');let r=await fetch('/structure',{signal:AbortSignal.timeout(45000),method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:sessionToken,latitude:clicked.lat,longitude:clicked.lng})}),d=await r.json();if(!r.ok)throw new Error(d.error||'Structure request failed');let dup=structures.some(s=>(s.building_id&&d.building_id&&s.building_id===d.building_id)||(Math.abs(s.latitude-d.latitude)<.00003&&Math.abs(s.longitude-d.longitude)<.00003));if(dup){extraRoofStatus('That building is already measured. Click nearer the centre of a different structure.','error');return}d.label=structures.length===1?'Detached Garage':`Extra Structure ${structures.length}`;extraRoofStatus('Roof measurement received. Loading its outline…');const ownMask=d.mask_url?await loadRoofMask(d.mask_url,true):null;d.outline=outlineFromMask(ownMask,d.latitude,d.longitude);delete d.mask_url;if(!d.outline){extraRoofStatus('Google measured this roof, but no usable outline was found in its imagery (AQ-MASK-CONTOUR). It has not been added.','warn');return}if(!outlineMatchesBuilding(d.outline,d)){extraRoofStatus('The roof outline extends beyond Google’s building boundary (AQ-MASK-BOUNDS). It has not been added, to avoid including a neighbouring roof.','warn');return}structures.push(d);redrawRoofData();fitEntireQuote(map);usage.structures++;renderSummary();if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}clicked=null;if(el('garageGuide'))el('garageGuide').innerHTML=`<b>${d.label} is already saved in this quote.</b> To add another roof, click <b>+ ADD GARAGE / OTHER ROOF</b> again.`;if(el('garageSavedConfirm')){el('garageSavedConfirm').style.display='block';el('garageSavedConfirm').innerHTML=`<b>✓ ${d.label} SAVED TO QUOTE — ${fmt(d.total_roof_sqft)} ft² INCLUDED</b><br><span class="small">No other Save button is required. It is already included in Roofs in Quote and the estimate total.</span>`}extraRoofStatus(`${d.label} saved to quote — ${fmt(d.total_roof_sqft)} ft² included.`,'ok')}catch(e){extraRoofStatus(e.roofCode?'Google measured this roof, but its outline could not load ('+e.roofCode+'). It has not been added.':e.name==='TimeoutError'||e.name==='AbortError'?'This roof request timed out. It has not been added. Click + Add Garage / Other Roof to retry.':'This roof could not finish measuring. It has not been added. Try again or use Add Missing Roof.','warn')}finally{measureClicked.pending=false}}
 function removeLastExtra(){
  // Never touch the main house. Undo only something the dealer added after it.
  if(manualPlanes.length){
@@ -3328,21 +3340,25 @@ def structure():
 def structure_mask(token,mask_id):
     sess=SESSIONS.get(token)
     if not sess or sess.get("dealer_id")!=str(session.get("dealer_id") or ""):
-        return Response("Property session expired",status=404)
+        return jsonify(code="AQ-MASK-SESSION"),404
     item=(sess.get("structure_masks") or {}).get(mask_id)
-    if not item:return Response("Roof mask unavailable",status=404)
+    if not item:return jsonify(code="AQ-MASK-REFERENCE"),404
+    stage="LAYERS"
     try:
         if item["mask_cache"] is None:
             lat,lng,radius=roof_imagery_request(item["roof"])
             layers=solar_layers(sess["key"],lat,lng,radius)
             url=layers.get("maskUrl")
-            if not url:return Response("Roof mask unavailable",status=404)
+            if not url:return jsonify(code="AQ-MASK-NOT-PROVIDED"),404
             sep="&" if "?" in url else "?"
+            stage="DOWNLOAD"
             item["mask_cache"]=req_bytes(url+sep+"key="+urllib.parse.quote(sess["key"]))
         ct,body=item["mask_cache"]
         return Response(body,content_type=ct)
-    except Exception:
-        return Response("Roof outline unavailable. Try again or measure this roof manually.",status=503)
+    except Exception as e:
+        upstream=getattr(e,"code",None)
+        suffix="-"+str(upstream) if isinstance(upstream,int) else ""
+        return jsonify(code="AQ-MASK-"+stage+suffix),503
 
 @app.post("/locate-building")
 def locate_building():

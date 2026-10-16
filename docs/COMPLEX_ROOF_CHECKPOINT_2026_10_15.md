@@ -23,3 +23,6 @@ Backup status carried forward: paid PostgreSQL PITR is available for three days;
 
 ## Follow-up: pin with no visible result
 Sean reported the next added roof left a pin without a visible result. The map click starts measurement, but progress/errors were written only to the status above the map, while the popup kept its original measuring text. Progress, rejection and timeout now appear in the pin popup and adjacent guide. Building requests time out after 45 seconds and mask retrieval after 60 seconds; Add Roof cannot replace an in-flight pin. Tests cover visible mask failure/timeout and pending-click protection. The exact live Google/Render failure remains unconfirmed; do not claim the feedback correction independently verifies Pinehouse measurements.
+
+## Diagnostic follow-up
+Live next-roof test returned the combined unavailable/unsafe-outline message. This does not distinguish mask retrieval from contour extraction or building-bounds rejection. Split these paths into visible AQ-MASK codes: session/reference, Data Layers, TIFF download including HTTP status where available, parsing, pixels/projection, contour and bounds. Strict errors apply only to newly added roofs; main-roof fallback behavior stays unchanged. No live root cause or corrected area is claimed. Extra tests exercise the real mask loader with HTTP/parser failures and a synthetic raster.

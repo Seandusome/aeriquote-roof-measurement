@@ -27,9 +27,9 @@ with app.test_request_context(roof['mask_url']):
  assert calls==[(52.,-106.,100)],'Own roof coordinates, with cached repeat'
  assert sessions['property']['mask']=='original-main-mask','Main imagery must remain unchanged'
 with app.test_request_context(roof['mask_url']):
- session['dealer_id']='another-owner';assert ns['structure_mask']('property',mask_id).status_code==404
+ session['dealer_id']='another-owner';assert app.make_response(ns['structure_mask']('property',mask_id)).status_code==404
 ns['solar_layers']=lambda *args:(_ for _ in ()).throw(RuntimeError('API down'))
 sessions['property']['structure_masks'][mask_id]['mask_cache']=None
 with app.test_request_context(roof['mask_url']):
- session['dealer_id']='owner';assert ns['structure_mask']('property',mask_id).status_code==503
+ session['dealer_id']='owner';response=app.make_response(ns['structure_mask']('property',mask_id));assert response.status_code==503;assert response.get_json()['code']=='AQ-MASK-LAYERS'
 print('PASS: stable building ID/area, lazy per-building mask, caching, ownership, main imagery preservation and recoverable API failure')
