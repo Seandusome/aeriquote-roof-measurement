@@ -628,7 +628,7 @@ function applyBusinessTerminology(root=document.body){
   let original=_aeriOriginalAttributes.get(node);if(!original){original={};for(const attr of ['data-tip','title','aria-label'])if(node.hasAttribute(attr))original[attr]=node.getAttribute(attr);_aeriOriginalAttributes.set(node,original)}
   for(const [attr,base] of Object.entries(original))node.setAttribute(attr,mode==='snow'?(attr==='data-tip'&&/pitch/i.test(base)?'Measure the snow-clearing service area or linear route, then save the measurement.':translateSnowText(base)):base);
  });
- if(mode==='roofing'&&roofRemeasureTarget){if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Verified pitch for this roof ';if(el('manualRoofSummary'))el('manualRoofSummary').textContent='Replace measurement — '+roofRemeasureTarget.label;if(el('manualRoofWarning'))el('manualRoofWarning').textContent='Editing '+roofRemeasureTarget.label+' only. Its saved measurement stays unchanged until the replacement is saved.';if(el('clearManualBtn'))el('clearManualBtn').textContent='CLEAR THIS ROOF DRAWING'}
+ if(mode==='roofing'&&roofRemeasureTarget){if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Roof pitch — defaults to 5/12; change if needed ';if(el('manualRoofSummary'))el('manualRoofSummary').textContent='Replace measurement — '+roofRemeasureTarget.label;if(el('manualRoofWarning'))el('manualRoofWarning').textContent='Editing '+roofRemeasureTarget.label+' only. Its saved measurement stays unchanged until the replacement is saved.';if(el('clearManualBtn'))el('clearManualBtn').textContent='CLEAR THIS ROOF DRAWING'}
  const intro=document.querySelector('.measure-intro span');if(intro)intro.textContent=mode==='roofing'?"Use AutoMeasure for pitched roofs, Area for roof footprints, or Linear for roof lengths. The selected tool sets this estimate's measurement.":'Use one tool or combine multiple measurements on the same property.';
  const copy=AERI_TOOL_COPY[mode]||AERI_TOOL_COPY.roofing;
  const areaToolButton=el('toolAreaBtn'),linearToolButton=el('toolLinearBtn');
@@ -1378,11 +1378,11 @@ function startRoofRemeasure(index){
  const details=el('manualRoofDetails');if(details)details.open=true;
  let confirm=el('roofRemeasurePitch');if(!confirm){confirm=document.createElement('div');confirm.id='roofRemeasurePitch';confirm.className='small';confirm.style.padding='10px 12px';el('manualRoofHelp').after(confirm)}
  el('traceBtn').closest('.manualrow').insertBefore(confirm,el('finishTrace'));
- confirm.style.display='block';confirm.textContent='Choose the pitch that applies to this roof. Selecting it confirms the pitch and unlocks Save. Area and price will be recalculated. Different slopes require separate roof sections.';el('pitchSel').value='';el('pitchDeg').value='';
+ confirm.style.display='block';confirm.textContent='Area is calculated using the selected pitch. The starting pitch is 5/12; change it if needed. Different slopes require separate roof sections.';el('pitchSel').value='22.62';el('pitchDeg').value='22.62';el('pitchDeg').type='hidden';
  el('manualRoofHelp').textContent='Remeasuring '+roof.label+'. Trace the intended roof boundary. The existing area stays unchanged until you save.';
- if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Pitch used for this roof ';el('finishTrace').textContent='SAVE REPLACEMENT ROOF';el('traceBanner').textContent='REMEASURE '+roof.label+' — trace roof, confirm pitch, then save';
+ if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Roof pitch — defaults to 5/12; change if needed ';el('finishTrace').textContent='SAVE REPLACEMENT ROOF';el('traceBanner').textContent='REMEASURE '+roof.label+' — trace roof, confirm pitch, then save';
  updateManualReplacementUi();
- status('Remeasure '+roof.label+': trace its intended boundary and confirm the pitch. This replaces its area; it does not add another roof.','warn');
+ status('Remeasure '+roof.label+': trace its boundary, change the default 5/12 pitch if needed, then save. This replaces only this roof.','warn');
  renderSummary();
  el('manualRoofDetails')?.scrollIntoView?.({block:'start',behavior:'smooth'});
 }
