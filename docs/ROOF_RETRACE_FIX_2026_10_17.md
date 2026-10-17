@@ -23,3 +23,7 @@ Added real DOM/Leaflet regressions for rejected trace ALL-layer removal; latest 
 
 ## Still pending
 Direct browser and actual new PDF download QA remain blocked by the native credential-protection runtime error described in DETECTED_ROOF_REVIEW_2026_10_17.md. Do not claim these live checks passed. Whole-building automatic/mixed-pitch accuracy is still not established. This is dealer correction with verified uniform pitch.
+
+## Follow-up: repeated Remeasure while already editing
+Sean reported that repeatedly clicking REMEASURE THIS ROOF left the active outline in place. The handler previously rejected all active trace/review modes. Clicking remeasure for the SAME target now cancels its draft/review and starts an empty replacement trace, clearing all old handles and draft layers. It still refuses switching to a different roof mid-edit. The active selected-roof row reads RESTART THIS ROOF TRACE. Estimate creation is disabled throughout replacement editing, including already-valid saved roofs, and Cancel restores the prior saved readiness/display. No saved measurements are deleted on restart.
+The added DOM/Leaflet test repeats restart three times, checks every removed layer against the actual map, restarts from draggable outline review, verifies pitch confirmation reset, and verifies both saved roofs remain byte-equivalent. Full controls regression and Python compilation passed locally. Live browser/PDF verification remains blocked.
