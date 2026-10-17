@@ -1160,12 +1160,29 @@ function returnAreaToAutoMeasure(){if(areaMode&&areaPoints.length){status('Finis
 function roofRowActionHtml(roof,index){
  if(roofRemeasureTarget===roof)return '<span class="roof-editing-indicator">Editing this roof — use the controls beside the aerial.</span>';
  const flagged=roof.needs_remeasure||roof.automatic_review_warning;
- return '<button class="'+(flagged?'secondary':'ghost')+' roof-row-action" type="button"'+(traceMode?' disabled':'')+' onclick="correctSelectedRoof('+index+')">'+(flagged?'FIX ROOF':'EDIT ROOF')+'</button>';
+ const saved=roof.manually_measured&&!flagged?'<div class="good small" style="margin:6px 0">✓ Saved in this job — no additional roof Save needed.</div>':'';
+ return saved+'<button class="'+(flagged?'secondary':'ghost')+' roof-row-action" type="button"'+(traceMode?' disabled':'')+' onclick="correctSelectedRoof('+index+')">'+(flagged?'FIX ROOF':'EDIT ROOF')+'</button>';
 }
 function correctSelectedRoof(index){
  if(traceMode){status('Save or cancel the roof you are editing before selecting another roof.','warn');return}
  const roof=structures[index];if(!roof)return;
+ // An unverified provider boundary is not the dealer's saved correction.
+ // Fix starts clean; Edit still reviews a saved boundary. Preserve the explicit
+ // overlapping-manual-trace review rather than silently double-counting it.
+ if((roof.needs_remeasure||roof.automatic_review_warning)&&!roof.manually_measured&&!manualTracesForRoof(roof).length){startRoofRemeasure(index);return}
  if(detectedRoofReviewOutline(roof))startDetectedRoofReview(index);else startRoofRemeasure(index);
+}
+function updateRoofSaveGuidance(){
+ const button=el('createEstimateBtn');if(!button)return;
+ let help=el('roofSaveGuidance');
+ if(!help){help=document.createElement('div');help.id='roofSaveGuidance';help.setAttribute('role','status');help.setAttribute('aria-live','polite');help.style.marginTop='10px';button.closest('.simple-actions').after(help)}
+ const visible=currentBusinessType()==='roofing'&&measurementViewMode==='auto'&&(structures.length||manualPlanes.length);
+ help.hidden=!visible;if(!visible){help.textContent='';return}
+ const pending=structures.filter(s=>s.needs_remeasure||s.automatic_review_warning),saved=structures.filter(s=>s.manually_measured&&!s.needs_remeasure&&!s.automatic_review_warning);
+ const savedText=saved.length?saved.map(s=>s.label).join(', ')+(saved.length===1?' is':' are')+' saved in this job. ':'';
+ help.className=(roofRemeasureTarget||pending.length?'warning':'good')+' small';
+ help.textContent=roofRemeasureTarget?'Editing '+roofRemeasureTarget.label+'. Save or cancel this roof using the controls above the aerial before creating the estimate.':pending.length?savedText+'Estimate locked: '+pending.map(s=>s.label).join(', ')+(pending.length===1?' still needs':' still need')+' correction. Click FIX ROOF beside '+pending[0].label+' in Property Summary.':savedText+'Roof measurements are ready. Add customer details, then click CREATE CUSTOMER ESTIMATE to save the completed estimate.';
+ help.textContent+=' Measurements stay in this job until you leave or refresh; create the completed estimate before then.';
 }
 function syncRoofWorkspace(){
  const roofing=currentBusinessType()==='roofing',toolbar=document.querySelector('.measure-toolbar'),manual=el('manualRoofDetails'),advanced=el('roofCheckCard')?.querySelector('.roof-advanced'),advancedBody=advanced?.querySelector('.roof-advanced-body'),display=el('advancedOptions');
@@ -1208,7 +1225,7 @@ function updateMeasurementInterface(){
  else if(areaMeasurementSaved&&areaPoints.length>=3)rows.push(`<div class="jm-row"><span class="jm-kind">Service Area — Area</span><span class="jm-value">${fmt(areaSqFtTotal())} ft²</span><span class="jm-status">SAVED</span></div>`);
  if(linearMeasurementSaved&&linearPoints.length>=2)rows.push(`<div class="jm-row"><span class="jm-kind">Service Length — Linear</span><span class="jm-value">${linearFeetTotal().toFixed(1)} ft</span><span class="jm-status">SAVED</span></div>`);
  if(el('jobMeasurementsList'))el('jobMeasurementsList').innerHTML=rows.length?rows.join(''):'<div class="jm-empty">Load a property, then choose a measurement tool.</div>';
- syncRoofWorkspace();
+ syncRoofWorkspace();updateRoofSaveGuidance();
 }
 function updatePropertyActionButton(){
  const b=el('propertyActionBtn');if(!b)return;
@@ -4226,4 +4243,5 @@ if __name__=="__main__":
     print(f"Opening Chrome at http://127.0.0.1:{port}")
     print("Leave this window open while testing.")
     app.run(host="127.0.0.1",port=port,debug=False,use_reloader=False)
+
 
