@@ -5,9 +5,9 @@ const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs'),assert=requ
 for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  dom.reconfigure({url:'https://test.invalid/?industry='+industry});
  w.eval(`resetMeasurementForNewProperty();el('businessType').value='${industry}';businessTypeChanged();sessionToken='surface-ui';el('jobPrice').value='.2';selectMeasurementTool('area')`);
- assert.equal(btn('areaStartBtn').textContent,'SAVE AREA');assert(btn('areaStartBtn').disabled);assert.equal(btn('commercialAreaPanel').style.display,'none');assert.equal(w.getComputedStyle(btn('jobMeasurements')).display,'none');
+ assert.equal(btn('areaStartBtn').textContent,'SAVE AREA');assert(btn('areaStartBtn').disabled);assert.equal(btn('areaTotal').textContent,'Drawing: 0 ft²');assert.equal(btn('jsTotal').textContent,'Save measurement');assert.equal(btn('commercialAreaPanel').style.display,'none');assert.equal(w.getComputedStyle(btn('jobMeasurements')).display,'none');
  assert.equal(btn('areaCancelCorrectionBtn').textContent,'CANCEL');draw(0);
- assert.equal(btn('areaTool').style.display,'none');assert.equal(btn('areaStartBtn').style.display,'none');assert.equal(btn('commercialAddAreaBtn').style.display,'none');
+ assert.equal(btn('areaTool').style.display,'none');assert.equal(btn('jobPriceCard').style.display,'none');assert.equal(btn('areaStartBtn').style.display,'none');assert.equal(btn('commercialAddAreaBtn').style.display,'none');
  assert.equal(btn('commercialAreaList').querySelectorAll('.surface-saved-area').length,1);
  const rate=btn('commercialAreaList').querySelector('[aria-label="Rate per square foot"]');rate.value='.2';rate.dispatchEvent(new w.Event('change'));
  const name=btn('commercialAreaList').querySelector('[aria-label="Service area name"]');name.value='Front <lawn>';name.dispatchEvent(new w.Event('change'));assert(!btn('commercialAreaList').querySelector('lawn'));assert.equal(btn('commercialAreaList').querySelector('[aria-label="Service area name"]').value,'Front <lawn>');
@@ -20,7 +20,7 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  btn('toolAreaBtn').click();draw(.001);const secondRate=btn('commercialAreaList').querySelectorAll('[aria-label="Rate per square foot"]')[1];secondRate.value='.4';secondRate.dispatchEvent(new w.Event('change'));
  btn('toolLinearBtn').click();assert(w.eval('linearMode'));assert.equal(btn('linearStartBtn').textContent,'SAVE LINE');assert(btn('linearStartBtn').disabled);assert(!btn('surfaceLineCancel').hidden);
  w.eval(`[[52,-106],[52,-105.999]].forEach(p=>map.fire('click',{latlng:L.latLng(...p)}));el('jobPrice').value='.7';jobPriceChanged();if(el('commercialLinearRate'))el('commercialLinearRate').value='.7'`);assert(!btn('linearStartBtn').disabled);btn('linearStartBtn').click();
- assert(!btn('surfaceLineMore').open);assert.equal(btn('linearStartBtn').closest('details'),btn('surfaceLineMore'));assert.equal(btn('linearStartBtn').textContent,'EXTEND LINE');assert.equal(btn('linearClearBtn').textContent,'REMOVE LINE');assert.equal(btn('linearTool').style.display,'block');assert(btn('surfaceLineCancel').hidden);
+ assert(!btn('surfaceLineMore').open);if(industry==='commercial')assert.equal(btn('jobPriceCard').style.display,'none');else assert.notEqual(btn('jobPriceCard').style.display,'none');for(const id of ['landscapingAreaPriceBox','pressureAreaPriceBox','pavingAreaPriceBox'])if(btn(id))assert.equal(btn(id).style.display,'none');assert.equal(btn('linearStartBtn').closest('details'),btn('surfaceLineMore'));assert.equal(btn('linearStartBtn').textContent,'EXTEND LINE');assert.equal(btn('linearClearBtn').textContent,'REMOVE LINE');assert.equal(btn('linearTool').style.display,'block');assert(btn('surfaceLineCancel').hidden);
  const geometry=w.eval('JSON.stringify(commercialAreas)'),line=w.eval('JSON.stringify(linearPoints)'),feet=w.eval('linearFeetTotal()');
  const expected=w.eval('commercialAreas[0].sqft*.2+commercialAreas[1].sqft*.4')+feet*.7;assert(Math.abs(w.eval('priceCalc().subtotal')-expected)<1e-7);
  assert(btn('surfaceSaveGuidance').textContent.includes('CREATE CUSTOMER ESTIMATE'));
