@@ -1,3 +1,5 @@
+> **Latest interface simplification:** Read docs/SIMPLE_ROOF_WORKSPACE_2026_10_17.md. Roofing now uses one FIX ROOF / EDIT ROOF action per roof; the selected roof editor appears only while needed; Area/linear and advanced tools are collapsed. Earlier instructions to find separate Review/Remeasure buttons are superseded. All local controls, six-industry measurement and wording tests passed. Direct live visual/PDF QA remains blocked and unverified.
+
 > **Latest pitch/Save UX update:** Read docs/ROOF_PITCH_SAVE_UI_2026_10_17.md. Sean requested removing the extra pitch checkbox: choosing a verified pitch now provides confirmation. Replacement controls and local feedback are grouped; missing pitch remains guarded. Earlier checkbox instructions in baseline docs are superseded. Direct browser/PDF verification is still blocked.
 
 > **Latest October 17 follow-up:** Read docs/ROOF_RETRACE_FIX_2026_10_17.md for Sean's screenshot feedback and the latest-trace/ghost-overlay/Roofing wording corrections. Local controls, measurement and six-industry wording tests passed. Live browser/PDF QA remains blocked and must not be described as complete.
