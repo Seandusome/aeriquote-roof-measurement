@@ -9,7 +9,7 @@ function points(ps){for(const p of ps)w.eval(`map.fire('click',{latlng:L.latLng(
 const rectangle=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]];
 const crossing=[[52,-106],[52.0003,-105.9998],[52,-105.9998],[52.0002,-106]];
 reset();if(industry==='roofing')assert(w.document.querySelector('.measure-intro').textContent.includes('selected tool'));id('toolAreaBtn').click();points(crossing);const uses=w.eval('usage.area');id('areaStartBtn').click();
-assert(!w.eval('areaMeasurementSaved'));assert(w.eval('areaMode'));assert.equal(w.eval('usage.area'),uses);assert(id('status').textContent.includes('crosses itself'));assert(id('createEstimateBtn')?.disabled!==false);
+assert(!w.eval('areaMeasurementSaved'));assert(w.eval('areaMode'));assert.equal(w.eval('usage.area'),uses);assert(industry==='roofing'?id('status').textContent.includes('crosses itself'):id('areaStartBtn').disabled&&id('areaHelp').textContent.includes('crosses itself'));assert(id('createEstimateBtn')?.disabled!==false);
 // Leaving an unfinished outline must not silently save its quantity.
 const pending=w.eval('JSON.stringify(areaPoints)');id('toolLinearBtn').click();assert.equal(w.eval('measurementViewMode'),'area');assert.equal(w.eval('JSON.stringify(areaPoints)'),pending);
 id('areaClearBtn').click();points([[52,-106],[52,-105.9999],[52,-105.9998]]);id('areaStartBtn').click();assert(!w.eval('areaMeasurementSaved'),'Collinear area must not save');
@@ -27,8 +27,8 @@ if(industry!=='roofing'){
  id('toolAreaBtn').click();id('commercialAreaList').querySelector('button:last-child').click();
  assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('measurementViewMode'),'linear');assert.equal(w.eval('linearFeetTotal()'),feet);assert.equal(w.eval('priceCalc().unit'),'linear ft');assert(Math.abs(w.eval('priceCalc().subtotal')-feet*rate)<1e-8);
  assert.equal(w.eval('captureQuoteSnapshot().linearFeet'),feet);assert.equal(w.eval('captureQuoteSnapshot().areaSqFt'),0);
- // Clear the final saved area through the other visible control as well.
- id('toolAreaBtn').click();points(rectangle);id('areaStartBtn').click();id('areaClearBtn').click();assert.equal(w.eval('measurementViewMode'),'linear');assert(Math.abs(w.eval('priceCalc().subtotal')-feet*rate)<1e-8);
+ // Removing the last saved area uses its row action; Start Over is draft-only.
+ id('toolAreaBtn').click();points(rectangle);id('areaStartBtn').click();id('commercialAreaList').querySelector('button:last-child').click();assert.equal(w.eval('measurementViewMode'),'linear');assert(Math.abs(w.eval('priceCalc().subtotal')-feet*rate)<1e-8);
 }
 if(industry==='roofing'){
  reset();w.eval("measurementViewMode='auto';fallbackMode=true;manualOverrideMode=true;toggleTrace()");points(crossing);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),0);assert(w.eval('traceMode'));assert(id('status').textContent.includes('crosses itself'));
