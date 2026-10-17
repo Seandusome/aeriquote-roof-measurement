@@ -45,10 +45,11 @@ if(industry!=='roofing'){
  for(const target of ['snow','pressure','paving','landscaping','commercial','roofing']){
   dom.reconfigure({url:'https://test.invalid/?industry='+target});
   w.eval(`el('businessType').value='${target}';businessTypeChanged();applyBusinessTerminology()`);
-  const expected={roofing:['Lawns','Gutters'],snow:['Driveways','Sidewalks'],pressure:['Driveways','Gutters'],paving:['Driveways','Curbing'],landscaping:['Lawns','Edging'],commercial:['Parking lots','Curbs']}[target];
+  const expected={roofing:['Roof footprints','Gutters'],snow:['Driveways','Sidewalks'],pressure:['Driveways','Gutters'],paving:['Driveways','Curbing'],landscaping:['Lawns','Edging'],commercial:['Parking lots','Curbs']}[target];
   assert(id('toolAreaBtn').querySelector('small').textContent.startsWith(expected[0]),target+' area examples after switch');
   assert(id('toolLinearBtn').querySelector('small').textContent.startsWith(expected[1]),target+' linear examples after switch');
   if(target!=='snow')assert.equal(id('toolAreaBtn').querySelector('b').textContent,'+ ADD AREA');
+  if(target==='roofing'){assert(!/lawns|driveways|parking/i.test(id('toolAreaBtn').textContent));assert(!/fencing|curbing/i.test(id('toolLinearBtn').textContent));assert(w.document.querySelector('#areaTool .area-head .small').textContent.includes('does not adjust for pitch'));}
  }
 
  dom.reconfigure({url:'https://test.invalid/?industry='+industry});
