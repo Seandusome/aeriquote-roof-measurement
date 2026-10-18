@@ -2308,7 +2308,6 @@ async function resumeSavedEstimateWorkspace(){
  const r=await fetch('/api/estimates/'+encodeURIComponent(context.id)+'/editing-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_index:context.versionIndex})}),d=await r.json();
  if(!r.ok)throw new Error(d.error||'Could not restore this saved job.');
  resetMeasurementForNewProperty();savedEstimateEditContext=context;restoreSavedQuoteFields(context.payload,context.snapshot,context.pricing);
- if(commercialAreas.length){commercialEditingIndex=-1;areaPoints=[];areaMeasurementSaved=false}
  savedJobDetails=d.job_details||{};
  sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
  const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
@@ -2320,6 +2319,7 @@ async function resumeSavedEstimateWorkspace(){
  savedPropertyEditActive=true;quoteSnapshot=null;lastHistorySaveKey='';
  updatePropertyActionButton();updateAreaUi();updateLinearUi();renderSummary();
  setSavedField('commercialLinearRate',context.snapshot.commercialLinearRate??0);
+ setSavedField('measureSource',context.snapshot.measureSource||((manualPlanes.length&&!structures.length)?'manual':(manualPlanes.length?'hybrid':'google')));
  for(const [id,value] of Object.entries({landscapingAreaRate:context.snapshot.landscapingAreaRate,pressureAreaRate:context.snapshot.pressureAreaRate,pavingAreaRate:context.snapshot.pavingAreaRate}))if(value!==undefined)setSavedField(id,value);
  renderSummary();
  if(savedStreetImageData){el('street').src=savedStreetImageData;el('street').style.visibility='visible'}else el('street').style.visibility='hidden';

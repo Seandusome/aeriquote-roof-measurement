@@ -12,7 +12,7 @@ with tempfile.TemporaryDirectory() as tmp:
  con.commit();con.close()
  client=a.app.test_client()
  with client.session_transaction() as s:s['dealer_id']='owner';s['auth_version']=0
- p={'customer_name':'QA only','address':'2301 Ave C North #115, Saskatoon, SK, Canada','total_area':100,'total_price':11.1,'quote':{'commercialAreas':[{'sqft':100,'rate':.1,'points':[[52,-106],[52,-105.999],[52.001,-106]]}],'linearPoints':[[52,-106],[52.002,-105.998]]}}
+ p={'customer_name':'QA only','address':'2301 Ave C North #115, Saskatoon, SK, Canada','job_status':'Booked','scheduled_date':'2026-10-25','amount_paid':25,'total_area':100,'total_price':11.1,'quote':{'commercialAreas':[{'sqft':100,'rate':.1,'points':[[52,-106],[52,-105.999],[52.001,-106]]}],'linearPoints':[[52,-106],[52.002,-105.998]]}}
  eid=client.post('/api/estimates',json=p).get_json()['id']
  before=client.get('/api/estimates/'+eid).get_json()['payload']
  # No Google request is permitted for restoring a saved job's coordinates.
@@ -21,6 +21,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert r.status_code==200,r.data
  d=r.get_json();assert d['bounds']==[[52.0,-106.0],[52.002,-105.998]] and len(d['token'])==32
  assert 'test-key' not in r.get_data(as_text=True)
+ assert d['job_details']['job_status']=='Booked' and d['job_details']['amount_paid']==25
  assert client.get('/api/estimates/'+eid).get_json()['payload']==before
  a.SESSIONS.clear();assert client.get('/fallback-meta/'+d['token']).status_code==200
  other=a.app.test_client()
