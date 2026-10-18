@@ -1,0 +1,47 @@
+/* Phone layout only; PDF export keeps its fixed customer layout. */
+@media screen and (max-width:980px){
+ .header{flex-direction:column;align-items:stretch}
+ .header .brand,.brandLogoWrap{min-width:0;max-width:100%}
+ .header-actions{flex-wrap:wrap;min-width:0}
+ .industryBrandTag{white-space:normal;line-height:1.5;overflow-wrap:anywhere}
+ .main>*,.grid2>*,.grid3>*,.customer-grid>*{min-width:0}
+}
+@media screen and (max-width:700px){
+ .wrap{margin:6px auto;padding:0 6px}
+ .header,.setup{padding:12px}
+ .brand img.aeriquote-main-logo{width:260px;max-width:100%;max-height:82px}
+ .brandLogoWrap .aeriquote-main-logo{margin-bottom:-12px}
+ .industryBrandTag{margin-left:0;font-size:9px;letter-spacing:1.1px}
+ .header-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch!important}
+ .header-actions>*{min-width:0;min-height:44px;white-space:normal!important;padding:10px 8px!important;text-align:center;font-size:12px}
+ .stepbar{padding:10px 12px;gap:6px}
+ .stepchip{padding:8px;font-size:12px}
+ .stepchip strong{font-size:13px}
+ .stepnum{width:22px;height:22px;margin-right:3px}
+ .job-summary-bar{margin:0 12px 12px}
+ .main{padding:0 12px 12px;gap:12px}
+ .status{padding:9px 12px}
+ .customer-grid,.dealer-branding-grid{grid-template-columns:minmax(0,1fr)}
+ #addressParts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+ #postalCode{grid-column:1/-1}
+ input,select,textarea{font-size:16px;min-width:0;max-width:100%}
+ button{min-height:44px}
+ .surface-simple .measure-toolbar,.roofing-simplified .measure-toolbar{grid-template-columns:minmax(0,1fr)}
+ .area-tool .area-head{align-items:flex-start;flex-direction:column}
+ .area-total,.linear-total{max-width:100%;flex-wrap:wrap}
+ #map{height:clamp(360px,60vh,520px)}
+ .historyHead{align-items:flex-start;flex-wrap:wrap}
+ .historyActions{flex-wrap:wrap}
+ #reportOverlay{padding:8px}
+ #reportOverlay .report:not(.pdf-export){width:100%!important;padding:12px;border-radius:10px;min-width:0}
+ .report:not(.pdf-export) .reportHead,.report:not(.pdf-export) .reportMeta,.report:not(.pdf-export) .reportGrid{grid-template-columns:minmax(0,1fr)}
+ .report:not(.pdf-export) .reportHead h1{font-size:24px;overflow-wrap:anywhere}
+ .report:not(.pdf-export) .reportHead .logo,.report:not(.pdf-export) .reportHead .shield{max-width:100%}
+ .report:not(.pdf-export) .reportMeta div{min-width:0;overflow-wrap:anywhere}
+ .report:not(.pdf-export) .reportActions{flex-wrap:wrap}
+ .report:not(.pdf-export) .reportActions>*{max-width:100%}
+ .report:not(.pdf-export) .reportActions button{width:100%}
+ .report:not(.pdf-export) .reportActions label{width:100%}
+ .report:not(.pdf-export) .line>div:first-child{min-width:0;overflow-wrap:anywhere}
+ .report:not(.pdf-export) .line>div:last-child{flex-shrink:0}
+}
