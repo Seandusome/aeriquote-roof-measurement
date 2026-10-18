@@ -14,8 +14,10 @@ jobs:
         with:
           node-version: '24'
       - run: python -m pip install Jinja2==3.1.6 Flask==3.1.2
-      - run: python -m py_compile app.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
+      - run: python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
       - run: python scripts/test_database_initialization.py
+      - run: python scripts/test_property_session_recovery.py
+      - run: python scripts/test_property_address.py
       - run: python scripts/test_complex_roofs.py
       - run: python scripts/test_activation_metrics.py
       - run: python scripts/test_account_access.py
@@ -34,6 +36,7 @@ jobs:
       - run: node scripts/test_landscaping_controls.cjs
       - run: node scripts/test_surface_workspace.cjs
       - run: node scripts/test_industry_wording.cjs
+      - run: node scripts/test_unit_address_ui.cjs
       - run: node scripts/test_price_rounding.cjs
       - run: node scripts/test_measurement_edges.cjs
       - run: node scripts/test_public_ui.cjs

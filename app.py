@@ -10,6 +10,8 @@ import urllib.request, urllib.parse, urllib.error
 import json, webbrowser, threading, uuid, math, time, os, sqlite3, hmac, hashlib, secrets
 from datetime import datetime
 from activation_metrics import account_metrics
+from property_sessions import PropertySessions
+from property_address import unit_address, building_address
 from account_recovery import init_recovery_db, auth_version, register_recovery, limited
 from support_center import init_support_db, register_support
 from storage_checks import init_storage_db, register_storage
@@ -34,7 +36,7 @@ def password_ok(password, stored):
         actual=password_hash(password,salt).split("$",1)[1]
         return hmac.compare_digest(actual,expected)
     except Exception:return False
-SESSIONS = {}
+SESSIONS = PropertySessions(lambda: estimate_db(), lambda: session.get("dealer_id"), lambda: GOOGLE_MAPS_API_KEY)
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GOOGLE_MAPS_API_KEY", "")
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", "")
 # Persistent estimate storage:
@@ -89,6 +91,8 @@ def estimate_db():
         raise
 
 def _initialize_estimate_schema(con):
+    con.execute("CREATE TABLE IF NOT EXISTS property_sessions (token TEXT PRIMARY KEY, dealer_id TEXT NOT NULL, expires_at DOUBLE PRECISION NOT NULL, payload TEXT NOT NULL)")
+    con.execute("CREATE INDEX IF NOT EXISTS idx_property_sessions_expiry ON property_sessions(expires_at)")
     con.execute("""CREATE TABLE IF NOT EXISTS estimates (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
     con.execute("""CREATE TABLE IF NOT EXISTS estimate_revisions (revision_id TEXT PRIMARY KEY, estimate_id TEXT NOT NULL, revised_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_address ON estimates(address)")
@@ -1674,6 +1678,11 @@ async function loadExactPinAerial(token,targetMap=map){
 
 function showTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.add('open')}function closeTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.remove('open')}
 async function loadProperty(){
+ const unitGuess=unitAddressSuggestion(el('streetAddress')?.value,propertyLookupProvince());
+ if(!coordinatesEntered()&&unitGuess){
+  if(!window.confirm('Is '+unitGuess.unit+' the unit and '+unitGuess.number+' the building number?\n\nUse: '+unitGuess.address+'\n\nChoose Cancel to edit the address.')){status('Enter the building address, then # and the unit number if needed.','warn');return}
+  el('streetAddress').value=unitGuess.address;
+ }
  const requestedMeasurementMode=pendingMeasurementMode||measurementViewMode||'auto';
  const enteredStreet=(el('streetAddress')?.value||'').trim(),enteredCity=(el('cityTown')?.value||'').trim(),enteredProvince=propertyLookupProvince(),enteredNumber=enteredStreetNumber();
  const cc=coordinatesEntered();
@@ -2696,6 +2705,7 @@ function startNewProperty(){
  window.scrollTo({top:0,behavior:'smooth'});
  setTimeout(()=>{if(street)street.focus()},250);
 }
+function unitAddressSuggestion(street,province){const m=String(street||'').trim().match(/^(\d+[A-Za-z]?)\s+(\d{3,}[A-Za-z]?)\s+([A-Za-z].*)$/);return m&&Number(m[1])<Number(m[2])&&CANADIAN_PROVINCES.has(String(province||'').toUpperCase())?{unit:m[1],number:m[2],address:m[2]+' '+m[3]+' #'+m[1]}:null}
 function enteredStreetNumber(){const v=(el('streetAddress')?.value||'').trim();const m=v.match(/^\s*(\d+[A-Za-z]?)(?:\s|,|$)/);return m?m[1]:''}
 function applyAddressParts(parts){if(!parts)return;if(parts.city&&el('cityTown'))el('cityTown').value=parts.city;if(parts.province&&el('propertyProvince')){el('propertyProvince').value=parts.province;syncPropertyProvince()}if(parts.postal&&el('postalCode'))el('postalCode').value=parts.postal}
 function clearAddressVerificationState(message='Address changed — enter/confirm city and state, then Google will verify it.'){
@@ -2718,6 +2728,7 @@ async function previewAddress(){
  const key="{{GOOGLE_MAPS_API_KEY}}",street=(el('streetAddress')?.value||'').trim();if(!key||!street||street.length<4)return;
  const city=(el('cityTown')?.value||'').trim(),prov=propertyLookupProvince();
  if(!city||!prov){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Enter the City and State/Province. ZIP/postal code is not required.';el('addressAutoStatus').style.color='#666'}return}
+ const unitGuess=unitAddressSuggestion(street,prov);if(unitGuess){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Unit address? Use '+unitGuess.address+', or select Load Property to confirm.';el('addressAutoStatus').style.color='#9a6700'}return}
  const q=[street,city,prov,propertyCountryFromProvince(prov)].join(', ');
  try{if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Checking '+city+', '+prov+'…';el('addressAutoStatus').style.color='#666'}
   const r=await fetch('/address-preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,address:q,expected_city:city,expected_province:prov,expected_street_number:enteredStreetNumber()})});const d=await r.json();if(seq!==addressPreviewSeq)return;
@@ -3615,7 +3626,9 @@ def google_geocode_first(key,address,components_country=False,expected_province=
     last=None
     canadian={"AB","BC","MB","NB","NL","NS","NT","NU","ON","PE","QC","SK","YT"}
     is_canada=str(expected_province or "").strip().upper() in canadian
-    for q in usa_address_variants(address):
+    normalized,_=unit_address(address,expected_province)
+    queries=list(dict.fromkeys([normalized]+usa_address_variants(address)))
+    for q in queries:
         params={"address":q,"key":key}
         if components_country:
             params["components"]="country:CA" if is_canada else "country:US"
@@ -3652,6 +3665,8 @@ def address_preview():
     if not key or len(address)<4:return jsonify(error="Address and API key are required."),400
     try:
         expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
+        normalized_address,unit_number=unit_address(address,expected_province)
+        expected_street_number=unit_number or expected_street_number
         gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
         if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Address not found"),404
         g=geo["results"][0];parts=geocode_parts(g)
@@ -3661,8 +3676,11 @@ def address_preview():
     except Exception as e:return jsonify(error=str(e)),400
 
 def street_view_info(key,address,lat,lng,target_lat,target_lng):
-    mq=urllib.parse.urlencode({"location":address,"key":key,"source":"outdoor"})
+    mq=urllib.parse.urlencode({"location":building_address(address),"key":key,"source":"outdoor"})
     ms,meta=req_json("https://maps.googleapis.com/maps/api/streetview/metadata?"+mq)
+    if ms==200 and meta.get("status")=="ZERO_RESULTS" and lat is not None and lng is not None:
+        mq=urllib.parse.urlencode({"location":f"{lat},{lng}","key":key,"source":"outdoor"})
+        ms,meta=req_json("https://maps.googleapis.com/maps/api/streetview/metadata?"+mq)
     street_url=None;street_date=None
     if ms==200 and meta.get("status")=="OK":
         ploc=meta.get("location") or {};head=bearing(float(ploc.get("lat",lat)),float(ploc.get("lng",lng)),target_lat,target_lng)
@@ -3742,6 +3760,19 @@ def create_session(key,lat,lng,street_url=None,mode="solar",layers=None,anchor_l
         if time.time()-SESSIONS[t]["created"]>3600:SESSIONS.pop(t,None)
     return token
 
+@app.after_request
+def retain_property_session(response):
+    if request.method == "POST" and response.status_code == 200 and request.path in {"/property","/structure","/locate-building"}:
+        result = response.get_json(silent=True) or {}
+        data = request.get_json(silent=True) or {}
+        token = result.get("token") or data.get("token")
+        if token:
+            try:
+                SESSIONS.persist(token)
+            except Exception:
+                app.logger.warning("Property imagery recovery metadata could not be retained")
+    return response
+
 @app.post("/property")
 def property_data():
     d=request.get_json(silent=True) or {};key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
@@ -3763,6 +3794,8 @@ def property_data():
             formatted=f"{lat:.6f}, {lng:.6f}"
         else:
             expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
+            normalized_address,unit_number=unit_address(address,expected_province)
+            expected_street_number=unit_number or expected_street_number
             gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
             if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Google could not find that address. Check the address and try again.",user_error="Google could not find that address. Check the address and try again."),404
             g=geo["results"][0];parts=geocode_parts(g)
