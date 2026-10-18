@@ -491,6 +491,7 @@ let quoteSnapshot=null;
 let commercialAreas=[],commercialAreaLayers=[],commercialEditingIndex=-1;
 let savedLinearJobRate=null;
 let savedStreetImageData='';
+let savedEstimateEditContext=null,savedPropertyEditActive=false,savedJobDetails=null;
 let exactPinDisplay=false;
 let estimateOpenInProgress=false,customerMapBuildTimer=null,pdfInProgress=false;
 let usage={property:0,structures:0,reports:0,saved:0,area:0,linear:0};
@@ -1601,6 +1602,7 @@ function resetReportForNewProperty(){
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
 function resetMeasurementForNewProperty(){
+ savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;
  surfaceLineDraftOriginal=null;
  linearCorrectionOriginal=null;linearMode=false;linearPoints=[];linearMeasurementSaved=false;areaMode=false;commercialAreas=[];commercialEditingIndex=-1;savedLinearJobRate=null;commercialAreaLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});commercialAreaLayers=[];areaPoints=[];areaMeasurementSaved=false;measurementViewMode=pendingMeasurementMode||'auto';clearLinearLayers();clearAreaLayers();updateLinearUi();updateAreaUi();updatePropertyActionButton();updateMeasurementInterface();
  cancelCurrentTrace();
@@ -1794,7 +1796,7 @@ function removeLastExtra(){
 
 function captureQuoteSnapshot(){
  const clone=x=>JSON.parse(JSON.stringify(x||[]));
- quoteSnapshot={structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
+ quoteSnapshot={structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),dealerCountry:el('dealerCountry')?.value||'US',commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
  return quoteSnapshot;
 }
 function clearReportOutlineTemp(){reportOutlineTemp.forEach(x=>{try{customerMap&&customerMap.removeLayer(x)}catch(e){}});reportOutlineTemp=[];const svg=el('reportDrawLayer');if(svg)svg.innerHTML=''}
@@ -2212,9 +2214,9 @@ async function buildCustomerMap(){
 async function saveEstimateHistory(){
  try{
   const calc=priceCalc(),snap=quoteSnapshot||captureQuoteSnapshot();
-  let streetImageData='';
+  let streetImageData=savedPropertyEditActive?savedStreetImageData:'';
   const imageChoice=(el('streetViewChoice')?.value||'auto');
-  if(imageChoice==='auto'&&sessionToken){
+  if(imageChoice==='auto'&&sessionToken&&!savedPropertyEditActive){
    try{
     const sr=await fetch('/street/'+sessionToken+'?save=1');
     if(sr.ok){
@@ -2223,7 +2225,7 @@ async function saveEstimateHistory(){
     }
    }catch(e){console.warn('Street View could not be stored with estimate',e)}
   }
-  const payload={customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:'Estimate',scheduled_date:'',completion_date:'',amount_paid:0,address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData};
+  const payload={customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:savedJobDetails?.job_status||'Estimate',scheduled_date:savedJobDetails?.scheduled_date||'',completion_date:savedJobDetails?.completion_date||'',amount_paid:Number(savedJobDetails?.amount_paid||0),address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData};
   const saveKey=[payload.address,payload.customer_name,payload.customer_phone,payload.customer_email,payload.total_area,payload.total_price,payload.customer_notes].join('|');
   if(saveKey===lastHistorySaveKey)return;
   const r=await fetch('/api/estimates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('save failed');
@@ -2278,33 +2280,62 @@ function savedVersionCard(v,label,estimateId,versionIndex){
  return `<div style="padding:12px;border:1px solid var(--line);border-radius:10px;margin-top:9px;background:#fff"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start"><div><b>${escapeHistory(label)}</b><div class="small">${escapeHistory((v.saved_at||v.created_at||v.revised_at||'').replace('T',' ').replace('Z',''))}</div></div><div style="font-size:18px;font-weight:900;color:var(--green2)">${money(p.total_price??v.total_price??0)}</div></div><div style="margin-top:7px"><b>${escapeHistory(p.customer_name||v.customer_name||'Homeowner')}</b></div><div class="small">${escapeHistory(p.address||v.address||'')}</div><div class="small">${savedMeasurementSummary(p,v)}${p.customer_phone?' • '+escapeHistory(p.customer_phone):''}${p.customer_email?' • '+escapeHistory(p.customer_email):''}</div>${p.customer_notes?'<details style="margin-top:8px"><summary>INTERNAL JOB NOTES</summary><div style="white-space:pre-wrap;padding:8px 0">'+escapeHistory(p.customer_notes)+'</div></details>':''}<div style="margin-top:10px"><button class="secondary" onclick="openHistoricalEstimate('${estimateId}',${versionIndex})">OPEN ESTIMATE</button></div></div>`;
 }
 function setSavedField(id,value){const n=el(id);if(n)n.value=value??''}
+function restoreSavedQuoteFields(p,snap,pr){
+ const country=snap.dealerCountry||(/,\s*Canada\s*$/i.test(p.address||'')?'CA':(/,\s*(USA|United States)\s*$/i.test(p.address||'')?'US':null));if(country)setSavedField('dealerCountry',country);
+ structures=JSON.parse(JSON.stringify(snap.structures||[]));manualPlanes=JSON.parse(JSON.stringify(snap.manualPlanes||[]));
+ commercialAreas=JSON.parse(JSON.stringify(snap.commercialAreas||[]));commercialEditingIndex=commercialAreas.length?0:-1;
+ areaPoints=(commercialAreas[0]?.points||snap.areaPoints||[]).map(p=>L.latLng(p[0],p[1]));areaMeasurementSaved=areaPoints.length>=3;areaMode=false;
+ linearPoints=(snap.linearPoints||[]).map(p=>L.latLng(p[0],p[1]));linearMeasurementSaved=linearPoints.length>=2;linearMode=false;measurementViewMode=snap.measurementMode||'auto';pendingMeasurementMode=measurementViewMode;
+ if(el('measureSource'))el('measureSource').value=snap.measureSource||((manualPlanes.length&&!structures.length)?'manual':(manualPlanes.length?'hybrid':'google'));
+ for(const [id,value] of Object.entries({address:p.address||'',customerName:p.customer_name||'',customerPhone:p.customer_phone||'',customerEmail:p.customer_email||'',customerNotes:p.customer_notes||'',extraServiceDescription:p.extra_service_description||'',extraServiceAmount:Number(p.extra_service_amount||0).toFixed(2)}))setSavedField(id,value);
+ if(Number.isFinite(Number(pr.price)))setSavedField('jobPrice',Number(pr.price).toFixed(2));
+ if(pr.mode)setSavedField('pricingMode',pr.mode);
+ if(Number.isFinite(Number(pr.disc)))setSavedField('discountPct',pr.disc);
+ if(Number.isFinite(Number(pr.gst)))setSavedField('gst',pr.gst);
+ if(Number.isFinite(Number(pr.pst)))setSavedField('pst',pr.pst);
+ if(p.image_choice)setSavedField('streetViewChoice',p.image_choice);
+ if(el('streetMeta'))el('streetMeta').textContent=p.street_meta||'Saved estimate';
+ savedStreetImageData=String(p.street_image_data||'');
+ if(snap.businessType&&el('businessType')?.querySelector('option[value="'+snap.businessType+'"]')){setSavedField('businessType',snap.businessType);industryChosenByUser=true;switchIndustryMarketing();applyBusinessTerminology()}
+ const lineRate=Number(snap.landscapingLinearRate??snap.pressureLinearRate??snap.pavingLinearRate??pr.price??0);
+ savedLinearJobRate=Number.isFinite(lineRate)?Math.max(0,lineRate):0;
+ setSavedField('commercialLinearRate',snap.commercialLinearRate??0);
+ for(const [id,value] of Object.entries({landscapingAreaRate:snap.landscapingAreaRate,pressureAreaRate:snap.pressureAreaRate,pavingAreaRate:snap.pavingAreaRate}))if(value!==undefined)setSavedField(id,value);
+ if(surfaceIndustry())setSavedField('jobPrice',measurementViewMode==='linear'&&snap.businessType!=='commercial'?savedLinearJobRate:(commercialAreas[0]?.rate??pr.price??0));
+}
+async function resumeSavedEstimateWorkspace(){
+ const context=savedEstimateEditContext;if(!context)return;
+ const r=await fetch('/api/estimates/'+encodeURIComponent(context.id)+'/editing-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_index:context.versionIndex})}),d=await r.json();
+ if(!r.ok)throw new Error(d.error||'Could not restore this saved job.');
+ resetMeasurementForNewProperty();savedEstimateEditContext=context;restoreSavedQuoteFields(context.payload,context.snapshot,context.pricing);
+ if(commercialAreas.length){commercialEditingIndex=-1;areaPoints=[];areaMeasurementSaved=false}
+ savedJobDetails=d.job_details||{};
+ sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
+ const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
+ setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
+ const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setSavedField('propertyProvince',province);lastLoadedStreet=el('streetAddress')?.value||'';
+ setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
+ await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
+ redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
+ savedPropertyEditActive=true;quoteSnapshot=null;lastHistorySaveKey='';
+ updatePropertyActionButton();updateAreaUi();updateLinearUi();renderSummary();
+ setSavedField('commercialLinearRate',context.snapshot.commercialLinearRate??0);
+ for(const [id,value] of Object.entries({landscapingAreaRate:context.snapshot.landscapingAreaRate,pressureAreaRate:context.snapshot.pressureAreaRate,pavingAreaRate:context.snapshot.pavingAreaRate}))if(value!==undefined)setSavedField(id,value);
+ renderSummary();
+ if(savedStreetImageData){el('street').src=savedStreetImageData;el('street').style.visibility='visible'}else el('street').style.visibility='hidden';
+ if(el('addressAutoStatus'))el('addressAutoStatus').textContent='Saved property restored — measurements and rates retained.';
+ if(el('googleMatch'))el('googleMatch').textContent='';
+ savedEstimateEditContext=null;
+ status('Saved job ready to edit. Create the updated estimate to save your changes.','ok');
+}
 async function openHistoricalEstimate(estimateId,versionIndex){
  try{
   const r=await fetch('/api/estimates/'+encodeURIComponent(estimateId)+'/versions'),d=await r.json();if(!r.ok)throw new Error(d.error||'History failed');
   const v=versionIndex<0?d.current:(d.revisions||[])[versionIndex];if(!v)throw new Error('Version not found');
   const p=v.payload||{},snap=p.quote||{},pr=p.pricing||{};
-  structures=JSON.parse(JSON.stringify(snap.structures||[]));
-  manualPlanes=JSON.parse(JSON.stringify(snap.manualPlanes||[]));
-  if(!structures.length&&!manualPlanes.length&&!snap.areaPoints?.length&&!snap.commercialAreas?.length&&!snap.linearPoints?.length)throw new Error('Saved version has no measurement snapshot');
-  commercialAreas=JSON.parse(JSON.stringify(snap.commercialAreas||[]));commercialEditingIndex=commercialAreas.length?0:-1;
-  areaPoints=(commercialAreas[0]?.points||snap.areaPoints||[]).map(p=>L.latLng(p[0],p[1]));areaMeasurementSaved=areaPoints.length>=3;areaMode=false;
-  linearPoints=(snap.linearPoints||[]).map(p=>L.latLng(p[0],p[1]));linearMeasurementSaved=linearPoints.length>=2;linearMode=false;measurementViewMode=snap.measurementMode||'auto';
-  if(el('measureSource'))el('measureSource').value=snap.measureSource||((manualPlanes.length&&!structures.length)?'manual':(manualPlanes.length?'hybrid':'google'));
-  setSavedField('address',p.address||'');
-  setSavedField('customerName',p.customer_name||'');
-  setSavedField('customerPhone',p.customer_phone||'');
-  setSavedField('customerEmail',p.customer_email||'');
-  setSavedField('customerNotes',p.customer_notes||'');
-  setSavedField('extraServiceDescription',p.extra_service_description||'');
-  setSavedField('extraServiceAmount',Number(p.extra_service_amount||0).toFixed(2));
-  if(Number.isFinite(Number(pr.price)))setSavedField('jobPrice',Number(pr.price).toFixed(2));
-  if(pr.mode)setSavedField('pricingMode',pr.mode);
-  if(Number.isFinite(Number(pr.disc)))setSavedField('discountPct',pr.disc);
-  if(Number.isFinite(Number(pr.gst)))setSavedField('gst',pr.gst);
-  if(Number.isFinite(Number(pr.pst)))setSavedField('pst',pr.pst);
-  if(p.image_choice)setSavedField('streetViewChoice',p.image_choice);
-  if(el('streetMeta'))el('streetMeta').textContent=p.street_meta||'Saved estimate';
-  savedStreetImageData=String(p.street_image_data||'');
+  if(!snap.structures?.length&&!snap.manualPlanes?.length&&!snap.areaPoints?.length&&!snap.commercialAreas?.length&&!snap.linearPoints?.length)throw new Error('Saved version has no measurement snapshot');
+  restoreSavedQuoteFields(p,snap,pr);
+  savedEstimateEditContext={id:estimateId,versionIndex,payload:JSON.parse(JSON.stringify(p)),snapshot:JSON.parse(JSON.stringify(snap)),pricing:JSON.parse(JSON.stringify(pr))};
 
   // Reset only report UI state. The roof measurement engine is not called.
   document.body.classList.remove('report-open');
@@ -2343,6 +2374,7 @@ async function viewEstimateVersions(id){
 }
 
 async function showCustomerEstimate(historicalMode=false,historicalDate=''){
+ if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
  const estimateRoofs=historicalMode?(quoteSnapshot?.structures||[]):structures;
  if((!historicalMode&&roofRemeasureTarget)||estimateRoofs.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('Finish remeasuring the incomplete roof or roof with mismatched area and outline before creating the customer estimate.','warn');return}
  if(!historicalMode&&linearCorrectionOriginal){status('Save or cancel the line edit before creating the estimate.','warn');return}
@@ -2365,7 +2397,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  const dealerAddress=(el('dealerAddress')?el('dealerAddress').value.trim():'')||'';
  el('rPhone').textContent=el('dealerPhone').value;if(el('rPhoneWrap'))el('rPhoneWrap').style.display=el('dealerPhone').value.trim()?'inline':'none';if(el('rDealerCompany'))el('rDealerCompany').textContent=dealerCompany;if(el('rDealerName'))el('rDealerName').textContent=(dealerName&&dealerName!==dealerCompany)?dealerName:'';if(el('rDealerEmail'))el('rDealerEmail').textContent=dealerEmail;if(el('rDealerEmailWrap'))el('rDealerEmailWrap').style.display=dealerEmail?'inline':'none';if(el('rDealerWebsite'))el('rDealerWebsite').textContent=dealerWebsite;if(el('rDealerAddress'))el('rDealerAddress').textContent=dealerAddress;if(el('rDealerAddressWrap'))el('rDealerAddressWrap').style.display=dealerAddress?'inline':'none';if(el('rDealerLogo')){const rdl=el('rDealerLogo'),dls=dealerLogoSrc();if(dls){rdl.src=dls;rdl.classList.remove('noDealerLogo')}else{rdl.removeAttribute('src');rdl.classList.add('noDealerLogo')}}if(el('rEstimateSubtitle'))el('rEstimateSubtitle').textContent=dealerCompany;if(el('rEstimateDealerSub'))el('rEstimateDealerSub').textContent='Prepared by '+dealerCompany;if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='commercial'?'Commercial Property Measurement & Estimate':currentBusinessType()==='paving'?'Paving & Sealcoating Measurement & Estimate':currentBusinessType()==='landscaping'?'Landscaping Measurement & Estimate':currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':currentBusinessType()==='snow'?'Snow Removal Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));applyDealerMarketing()
 
- let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=historicalMode&&imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&imageChoice==='auto')||useSavedStreet,useAerial=imageChoice!=='none';
+ let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&!savedPropertyEditActive&&imageChoice==='auto')||useSavedStreet,useAerial=imageChoice!=='none';
  if(el('streetPlaceholder'))el('streetPlaceholder').style.display=useStreet?'none':'flex';
  if(el('customerMap'))el('customerMap').style.display=useAerial?'block':'none';
  if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display=useAerial?'none':'flex';
@@ -2682,11 +2714,12 @@ function armReportClose(e){
  if(!b||!e||e.currentTarget!==b)return;
  reportCloseArmedAt=Date.now();
 }
-function closeReport(e){
+async function closeReport(e){
  const b=el('backToDealerBtn');
  const deliberate=!!(e&&b&&e.currentTarget===b&&reportCloseArmedAt&&Date.now()-reportCloseArmedAt<1500);
  reportCloseArmedAt=0;
  if(!deliberate)return;
+ if(savedEstimateEditContext){b.disabled=true;try{await resumeSavedEstimateWorkspace()}catch(err){status(err.message||'Could not restore saved job for editing.','error');return}finally{b.disabled=false}}
  document.body.classList.remove('report-open');
  el('reportOverlay').style.display='none';
  if(customerMap){try{customerMap.remove()}catch(err){}customerMap=null}
@@ -4229,6 +4262,25 @@ def estimate_history_versions(estimate_id):
         return jsonify(current=unpack(current,"created_at"),revisions=[unpack(r,"revised_at") for r in revisions])
     finally:
         con.close()
+
+@app.post("/api/estimates/<estimate_id>/editing-session")
+def saved_estimate_editing_session(estimate_id):
+    from saved_estimate_edit import measurement_bounds
+    versions=estimate_history_versions(estimate_id)
+    if isinstance(versions,tuple):return versions
+    data=versions.get_json()
+    try:
+        index=(request.get_json(silent=True) or {}).get("version_index",-1)
+        if isinstance(index,bool) or not isinstance(index,int) or index < -1:raise ValueError("Invalid saved version")
+        version=data["current"] if index==-1 else data["revisions"][index]
+        payload=version.get("payload") or {};bounds=measurement_bounds(payload)
+    except (ValueError,IndexError,KeyError) as e:return jsonify(error=str(e) or "Saved version unavailable"),400
+    if not GOOGLE_MAPS_API_KEY:return jsonify(error="Google Maps API key is not configured"),503
+    lat=(bounds[0][0]+bounds[1][0])/2;lng=(bounds[0][1]+bounds[1][1])/2
+    token=uuid.uuid4().hex
+    SESSIONS[token]={"key":GOOGLE_MAPS_API_KEY,"dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
+    SESSIONS.persist(token)
+    return jsonify(token=token,center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
 
 @app.get("/exact-pin-meta/<token>")
 def exact_pin_meta(token):
