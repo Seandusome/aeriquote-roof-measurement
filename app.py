@@ -2566,14 +2566,22 @@ async function captureSinglePageEstimate(report){
  // Phone presentation must not become a tiny, tall strip on landscape paper.
  // Freeze the approved map pixels before cloning; never resize/refit live Leaflet.
  const sourceMap=report.querySelector('#customerMap');
- const mapPixels=sourceMap&&sourceMap.style.display!=='none'?await html2canvas(sourceMap,options):null;
+ const savedPixels=sourceMap?.querySelector('canvas[data-map-view]');
+ let mapPixels=null;
+ if(sourceMap&&sourceMap.style.display!=='none'){
+  if(savedPixels){mapPixels=document.createElement('canvas');mapPixels.width=savedPixels.width;mapPixels.height=savedPixels.height;mapPixels.getContext('2d').drawImage(savedPixels,0,0);}
+  else mapPixels=await html2canvas(sourceMap,options);
+ }
  const copy=report.cloneNode(true);copy.classList.add('pdf-export');
  Object.assign(copy.style,{position:'absolute',left:'-20000px',top:'0',width:'1320px',maxWidth:'none',margin:'0'});
- if(mapPixels){const host=copy.querySelector('#customerMap');host.replaceChildren(mapPixels);Object.assign(host.style,{height:'430px',position:'relative'});Object.assign(mapPixels.style,{display:'block',width:'100%',height:'100%',objectFit:'contain'});}
+ if(mapPixels){const host=copy.querySelector('#customerMap');host.replaceChildren(mapPixels);Object.assign(host.style,{height:'430px',position:'relative',display:'flex',alignItems:'center',justifyContent:'center'});}
  copy.querySelectorAll('.reportActions,#reportOutlineControls,.reportDrawLayer').forEach(n=>n.remove());
  copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
  document.body.appendChild(copy);
- try{return await html2canvas(copy,{...options,windowWidth:1440})}finally{copy.remove()}
+ try{
+  if(mapPixels){const host=mapPixels.parentElement,fit=Math.min((host.clientWidth||850)/mapPixels.width,430/mapPixels.height);Object.assign(mapPixels.style,{display:'block',width:(mapPixels.width*fit)+'px',height:(mapPixels.height*fit)+'px',maxWidth:'100%'});}
+  return await html2canvas(copy,{...options,windowWidth:1440});
+ }finally{copy.remove()}
 }
 
 async function downloadEstimatePDF(){
