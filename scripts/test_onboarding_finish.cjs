@@ -15,9 +15,9 @@ for(const [page,industry] of [['roofer','roofing'],['snow','snow'],['pressure','
   assert.equal(field('companyName').value,'QA Company');assert.equal(field('companyEmail').value,'qa@example.invalid');
   assert.equal(field('brandCompany').value,'QA Company',page+' no repeat contact entry');
   assert.equal(field('country').value,'United States');assert.equal(field('region').value,'');assert([...field('region').options].some(o=>o.value==='CA'&&o.textContent==='California'));
-  assert(![...field('region').options].some(o=>o.value==='SK'),page+' no Canadian state');
+  assert(![...field('region').options].some(o=>o.value==='SK'),page+' no Canadian state');assert(field('tax1').closest('label').textContent.includes('Sales Tax'));assert(field('tax2').closest('label').textContent.includes('Additional Tax')); 
   next();assert(d.querySelector('[data-step="1"]').classList.contains('active'),page+' require region');assert(!field('setupError').hidden);
-  field('region').value='CA';next();assert(d.querySelector('[data-step="4"]').classList.contains('active'));
+  field('country').value='Canada';field('country').dispatchEvent(new w.Event('change',{bubbles:true}));field('region').value='SK';next();assert(d.querySelector('[data-step="4"]').classList.contains('active'));
   next();assert(d.querySelector('[data-step="4"]').classList.contains('active'),page+' require explicit taxes');
   field('tax1').value='5';field('tax2').value='6';d.querySelector('input[name=taxmode][value=included]').checked=true;
   field('defaultPrice').value='-1';next();assert(d.querySelector('[data-step="4"]').classList.contains('active'),page+' invalid rate');field('defaultPrice').value='0.37';
@@ -30,10 +30,10 @@ for(const [page,industry] of [['roofer','roofing'],['snow','snow'],['pressure','
   fail=false;finish.click();finish.click();await tick();
   assert.equal(destination,'/?industry='+industry,page+suffix+' navigate');
   const posts=calls.filter(c=>c.options.method==='POST');assert.equal(posts.length,2,page+' failed attempt plus one successful retry');
-  const saved=JSON.parse(posts.at(-1).options.body);savedFixtures[industry]=saved;assert.equal(saved.businessType,industry);assert.equal(saved.province,'CA');assert.equal(saved.country,'US');assert.equal(saved.gst,'5');assert.equal(saved.pst,'6');assert.equal(saved.pricingMode,'included');assert.equal(saved.price,'0.37');assert.equal(saved.name,'QA Owner');assert.equal(saved.warrantyStatement,'Customer service terms');assert.equal(saved.estimateMessage,'Customer message');assert.equal(saved.ctaHeading,'Arrange this service');
+  const saved=JSON.parse(posts.at(-1).options.body);savedFixtures[industry]=saved;assert.equal(saved.businessType,industry);assert.equal(saved.province,'SK');assert.equal(saved.country,'CA');assert.equal(saved.gst,'5');assert.equal(saved.pst,'6');assert.equal(saved.pricingMode,'included');assert.equal(saved.price,'0.37');assert.equal(saved.name,'QA Owner');assert.equal(saved.warrantyStatement,'Customer service terms');assert.equal(saved.estimateMessage,'Customer message');assert.equal(saved.ctaHeading,'Arrange this service');
   assert.equal(JSON.parse(w.localStorage.getItem('sxDealerDefaults')).gst,'5');assert.equal(w.localStorage.getItem('aeriQuoteIndustry'),industry);
   // Changing country clears incompatible region, supports all Canadian provinces/territories.
-  field('country').value='Canada';field('country').dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(field('region').value,'');assert.equal(field('region').options.length,14);assert([...field('region').options].some(o=>o.value==='NU'));
+  field('country').value='Canada';field('country').dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(field('region').value,'');assert.equal(field('tax1').value,'');assert.equal(field('tax2').value,'');assert(field('tax1').closest('label').textContent.includes('Federal / HST'));assert.equal(field('region').options.length,14);assert([...field('region').options].some(o=>o.value==='NU'));field('country').value='United States';field('country').dispatchEvent(new w.Event('change',{bubbles:true}));assert(field('tax2').closest('label').hidden);assert.equal(field('tax2').value,'0');field('tax2').value='6';assert.equal((await w.saveIndustrySetupLocal(industry)).pst,'0',page+' US has one sales tax matching the estimate engine');
   dom.window.close();
  }
 }

@@ -14,7 +14,7 @@ function validateStep(index){
 }
 function updateSetupReview(){const review=document.getElementById('setupReview');if(!review)return;review.replaceChildren();
  const region=document.getElementById('region');const rate=document.querySelector('input[name="pricing"]:checked')?.value==='manual'?'Set the rate on each job':'$'+document.getElementById('defaultPrice').value+' / sq. ft.';
- for(const [title,value] of [['Business',document.getElementById('companyName').value],['Location',region.selectedOptions[0]?.textContent+', '+document.getElementById('country').value],['Starting price',rate],['Taxes',document.getElementById('tax1').value+'% + '+document.getElementById('tax2').value+'% · '+(document.querySelector('input[name="taxmode"]:checked')?.value==='included'?'included in price':'added to price')]]){const row=document.createElement('p'),b=document.createElement('b');b.textContent=title+': ';row.append(b,document.createTextNode(value));review.append(row)}
+ for(const [title,value] of [['Business',document.getElementById('companyName').value],['Location',region.selectedOptions[0]?.textContent+', '+document.getElementById('country').value],['Starting price',rate],['Taxes',document.getElementById('tax1').value+'%'+(document.getElementById('country').value==='Canada'?' + '+document.getElementById('tax2').value+'%':'')+' · '+(document.querySelector('input[name="taxmode"]:checked')?.value==='included'?'included in price':'added to price')]]){const row=document.createElement('p'),b=document.createElement('b');b.textContent=title+': ';row.append(b,document.createTextNode(value));review.append(row)}
 }
 function showStep(n){
  current=Math.max(1,Math.min(total,n));
@@ -35,10 +35,14 @@ const setupRegions={Canada:'AB:Alberta|BC:British Columbia|MB:Manitoba|NB:New Br
 function updateSetupRegions(value=''){
  const r=document.getElementById('regionLabel'),field=document.getElementById('region');if(!country||!field)return;
  const label=country.value==='Canada'?'Province / territory':'State';if(r?.childNodes[0])r.childNodes[0].nodeValue=label;
+ const primary=document.getElementById('tax1')?.closest('label'),secondary=document.getElementById('tax2')?.closest('label');
+ if(primary?.firstChild)primary.firstChild.nodeValue=country.value==='Canada'?'Federal / HST Tax %':'Sales Tax %';
+ if(secondary?.firstChild)secondary.firstChild.nodeValue=country.value==='Canada'?'Provincial Tax %':'Additional Tax %';
+ if(secondary){secondary.hidden=country.value!=='Canada';if(secondary.hidden)document.getElementById('tax2').value='0'}
  field.replaceChildren(new Option('Choose your '+label.toLowerCase(),''));field.required=true;
  for(const pair of setupRegions[country.value].split('|')){const [code,name]=pair.split(':');field.add(new Option(name,code));if(value===code||value===name)field.value=code}
 }
-if(country)country.addEventListener('change',()=>updateSetupRegions());
+if(country)country.addEventListener('change',()=>{updateSetupRegions();for(const id of ['tax1','tax2']){const f=document.getElementById(id);if(f){f.value=id==='tax2'&&country.value!=='Canada'?'0':'';f.dispatchEvent(new Event('input',{bubbles:true}))}}});
 updateSetupRegions();
 function syncBusiness(){
  const c=document.getElementById('companyName')?.value||'';
@@ -71,7 +75,7 @@ async function saveIndustrySetupLocal(industry){
   province:document.getElementById('region')?.value||'',
   businessType:industry,pricingMethod:pricing,price:pricing==='manual'?'0':(document.getElementById('defaultPrice')?.value||'0'),
   coverage:'0',services:checkedTexts(2),propertyTypes:checkedTexts(3),
-  gst:document.getElementById('tax1')?.value||'0',pst:document.getElementById('tax2')?.value||'0',
+  gst:document.getElementById('tax1')?.value||'0',pst:country.value==='Canada'?(document.getElementById('tax2')?.value||'0'):'0',
   pricingMode:document.querySelector('input[name="taxmode"]:checked')?.value||'regular',
   warrantyStatement:document.getElementById('warrantyStatement')?.value||'',
   estimateMessage:document.getElementById('estimateMessage')?.value||'',
@@ -139,7 +143,7 @@ if(document.body.classList.contains('setup-page') && setupIndustry){
   if(!account)return;const p=account.profile||{};
   for(const [id,value] of [['companyName',p.company],['contactName',p.name],['companyPhone',p.phone],['companyEmail',p.email],['companyWebsite',p.website]]){const field=document.getElementById(id);if(field&&!edited.has(id)&&value)field.value=value}
   if(!edited.has('country')&&!edited.has('region')){country.value=p.country==='US'?'United States':'Canada';updateSetupRegions(p.province||'')}
-  for(const [id,key] of [['tax1','gst'],['tax2','pst']]){if(!edited.has(id)&&p[key]!==undefined)document.getElementById(id).value=p[key]}
+  for(const [id,key] of [['tax1','gst'],['tax2','pst']]){if(!edited.has(id)&&p[key]!==undefined)document.getElementById(id).value=id==='tax2'&&country.value!=='Canada'?'0':p[key]}
   syncBusiness();
  }).catch(()=>{});
  const finish=document.getElementById('finishSetup');
