@@ -45,3 +45,14 @@
  .report:not(.pdf-export) .line>div:first-child{min-width:0;overflow-wrap:anywhere}
  .report:not(.pdf-export) .line>div:last-child{flex-shrink:0}
 }
+@media screen and (max-width:700px){
+ /* Keep the aerial stationary as the first points reveal drawing actions. */
+ .area-active #areaTool .simple-actions,.linear-active #linearTool>.linear-body>.simple-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"save cancel" "undo clear";grid-auto-rows:52px;align-items:stretch}
+ .area-active #areaStartBtn,.linear-active #linearStartBtn{grid-area:save}
+ .area-active #areaCancelCorrectionBtn,.linear-active #surfaceLineCancel{grid-area:cancel}
+ .area-active #areaUndoBtn,.linear-active #linearUndoBtn{grid-area:undo}
+ .area-active #areaClearBtn,.linear-active #linearClearBtn{grid-area:clear}
+ .area-active #areaUndoBtn,.area-active #areaClearBtn,.linear-active #linearUndoBtn,.linear-active #linearClearBtn{display:block!important;min-width:0}
+ .area-active #areaUndoBtn[style*="display: none"],.area-active #areaUndoBtn[style*="display:none"],.area-active #areaClearBtn[style*="display: none"],.area-active #areaClearBtn[style*="display:none"],.linear-active #linearUndoBtn[style*="display: none"],.linear-active #linearUndoBtn[style*="display:none"],.linear-active #linearClearBtn[style*="display: none"],.linear-active #linearClearBtn[style*="display:none"]{visibility:hidden;pointer-events:none}
+ .area-active #areaHelp,.linear-active #linearHelp{min-height:5em}
+}
