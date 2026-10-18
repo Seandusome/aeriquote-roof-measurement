@@ -67,3 +67,32 @@ Sean reported topping up usage and authorized continuing. The same-commit redepl
 ## Phone/tablet follow-up
 
 Read docs/MOBILE_VISUAL_QA_2026_10_18.md. Application 95d61058415f6cb9d89330b1b6d4a144e7b1df47 is live and both CI workflows passed. Fixed missing phone viewport, clipped header/account actions, phone fields/tools/report actions, moving aerial during first drawing points, tablet overflow, and unreadably tiny Single page PDF exports from phones. Six workspace layouts and six setup-to-review flows inspected at phone widths; signup inspected without creating another account. Live phone-width area + line saved and reopened, actual Single page and Expanded PDFs rendered/inspected. Physical touch/keyboard/device-specific download/print checks remain; this browser used fixed-width same-origin frames, not device emulation.
+
+
+## Saved-estimate editing review — October 18, 15:30 Edmonton
+
+Sean authorized testing edits to saved jobs across all six industries. Live Head Office sign-in was completed securely by Sean; use labelled QA records only and do not save over its profile.
+
+### Reproduced and corrected
+
+- Viewing a historical estimate restored the report but Back to Dealer View left no usable property session, address fields or measurement controls. ADD AREA demanded a fresh property load. The report now offers EDIT MEASUREMENTS / PRICE and explicitly restores an editable workspace.
+- Owned POST `/api/estimates/<id>/editing-session` restores the selected saved geometry into a new persisted imagery session without Google geocoding/Solar calls or consuming a property lookup. Other owners and invalid version indexes are rejected. Existing estimate payload/revisions stay unchanged until the user creates an updated estimate.
+- Restores industry, customer, notes, selected source, country, rates, tax/discount, all area/line/roof geometry and saved Street View. Current job/payment metadata is retained even when editing an older revision. New properties clear stale saved imagery/context. Report viewing itself continues to use frozen measurements/prices.
+- Follow-up keeps the restored first area saved/active so Create Estimate is enabled, and restores Roofing source after its dynamic control exists. Deployed application c9f405b3512c02d942942ac5b44a25fa58fa84c1; both GitHub workflows passed.
+- Live price entry exposed a stale saved-area row amount beside its changed rate, although summary/report calculations were correct. Follow-up refreshes that row on committed rate/name changes; regression checks its displayed amount.
+
+### Actual live evidence
+
+Opened current QA TEST - New user Landscaping - DO NOT SEND at 2301 Ave C North #115, Saskatoon, SK, Canada. Original 10,107 ft², CAD $1,121.88. Restored address, aerial, Street View and controls with property lookup counter zero. Dragging an area corner then Cancel restored 10,107 ft² and the original total. Saving the same corner correction produced 10,420 ft²; added second area 3,655 ft², total 14,075 ft². Added a three-point line of 246.6 ft. Independently changed rates by normal keyboard entry to $0.13/ft², $0.21/ft² and $0.75/linear ft. Entered QA internal notes and CREATE CUSTOMER ESTIMATE succeeded.
+
+Saved report showed $1,354.60 + $767.55 + $184.94 = $2,307.09 subtotal; taxes 5% $115.35 and 6% $138.43; CAD $2,560.87 total. Linear amount uses the unrounded saved length, with displayed quantity rounded to one decimal. No customer correspondence or profile save. Earlier QA history was not deleted.
+
+Line Edit/Cancel returned the original 246.6 ft and prices. The attempted drag did not visibly change the length, so do not claim a live changed-line Save pass. Actual changed-line Save/Cancel/tool-switch cases pass the DOM/Leaflet regression suite in all six industries.
+
+### Verification and exact remaining scope
+
+Local six-industry restoration test uses actual app HTML/Leaflet, saved fixture rates/geometry/customer/source, nine aerial tiles per job, Cancel, ready-to-create state, independent rate entry and stale-row amount fix. Isolated Flask tests verify ownership, version validation, unchanged history, metadata, no lookup usage and no provider call. Full measurement/roof guard/PDF regression suite and five-surface workspace tests passed. These tests are separate from live browser evidence.
+
+At the first revised PDF download, the browser refused further observation due to native credential-state protection, then reset its kernel. Its suggested fresh-tab recovery failed. Explicit runtime reset and one clean tab retry also failed. This is browser tooling restriction, not evidence of an app outage or bot block. Do not repeatedly probe protected browser state or claim revised PDFs were downloaded.
+
+Remaining LIVE for this editing pass: reopen the newly saved Landscaping revision and verify its figures/notes; real changed-line Save, tax edits and tool switching; the equivalent saved-edit cycles in Snow, Pressure, Paving, Commercial and Roofing; actual Single and Expanded PDF downloads/rendered inspection after edits. Earlier first-estimate/mixed PDF and mobile passes documented above remain valid for their fixtures, not proof of completion of this saved-edit pass. Roofing retains selected-mode pricing, underquoting guards, manual 5/12 default and no AI Trace. Main untouched.

@@ -19,7 +19,7 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial','ro
  if(industry!=='roofing'){
  assert.equal(w.eval('commercialAreas.length'),2);assert.equal(btn('commercialAreaList').querySelectorAll('.surface-saved-area').length,2);assert.equal(w.eval('savedLinearJobRate'),.7);if(industry==='commercial')assert.equal(btn('commercialLinearRate').value,'0.9');assert.equal(w.eval('priceCalc().area'),snap.commercialAreas.reduce((n,a)=>n+a.sqft,0));
  const before=w.eval('JSON.stringify(commercialAreas)'),savedLine=w.eval('JSON.stringify(linearPoints)');btn('commercialAreaList').querySelector('button').click();btn('areaClearBtn').click();btn('areaCancelCorrectionBtn').click();assert.deepEqual(JSON.parse(w.eval('JSON.stringify(commercialAreas)')),JSON.parse(before));assert.equal(w.eval('JSON.stringify(linearPoints)'),savedLine);
- const rate=btn('commercialAreaList').querySelector('[aria-label="Rate per square foot"]');rate.value='.3';rate.dispatchEvent(new w.Event('change'));assert.equal(w.eval('commercialAreas[0].rate'),.3);assert.equal(w.eval('commercialAreas[1].rate'),.4);
+ const rate=btn('commercialAreaList').querySelector('[aria-label="Rate per square foot"]');rate.value='.3';rate.dispatchEvent(new w.Event('change'));assert.equal(w.eval('commercialAreas[0].rate'),.3);assert.equal(w.eval('commercialAreas[1].rate'),.4);assert.ok(btn('commercialAreaList').querySelector('.surface-area-price b').textContent.includes((snap.commercialAreas[0].sqft*.3).toFixed(2)), 'Saved area row amount updates with its rate');
  }
  console.log('PASS '+industry+': owned saved workspace, geometry, rates, customer, aerial and Cancel restored');
 }

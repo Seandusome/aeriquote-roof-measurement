@@ -73,3 +73,10 @@ Sean will test independently tonight. Tomorrow, first read his new findings and 
 
 ## Short restart prompt for Sean
 Resume AeriQuote from docs/RESUME_HERE_2026_10_16.md on landscaping-multi-area-recovery-oct11. Read my overnight test feedback first. Main remains untouched, AI Trace stays removed. Preserve today's measurement, industry, pricing, saved-estimate and expanded-PDF fixes. Pinehouse whole-building AutoMeasure remains unresolved; keep the underquoting safeguard. Reproduce, fix and test directly before asking me to retest.
+
+
+## Latest saved-edit checkpoint — October 18 afternoon
+
+Read the final Saved-estimate editing review in NEW_USER_FLOW_2026_10_18.md before resuming. Application c9f405b restores owned historical estimates into the measurement workspace with no new property lookup; both workflows passed. A subsequent small fix refreshes saved-area row amounts when rates change. Live Landscaping QA at 2301 Ave C North #115 now saved as 14,075 ft² (10,420 @ $0.13 + 3,655 @ $0.21) plus 246.6 linear ft @ $0.75; total CAD $2,560.87, 5% + 6%. Existing QA history retained; no profile saved or correspondence sent.
+
+Automated restoration checks cover all six industries. Live remaining saved-edit/reopen/tax/changed-line/PDF checks are explicitly listed in NEW_USER_FLOW. Browser native credential-state protection blocked PDF download and both documented recovery paths; do not claim these live checks completed or repeatedly probe protected state. Preserve roof guards, manual 5/12, every earlier fix, recovery branch only, no AI Trace.
