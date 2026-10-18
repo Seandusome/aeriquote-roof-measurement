@@ -21,6 +21,7 @@ jobs:
       - run: python scripts/test_complex_roofs.py
       - run: python scripts/test_activation_metrics.py
       - run: python scripts/test_account_access.py
+      - run: python scripts/test_business_isolation.py
       - run: python scripts/test_password_recovery.py
       - run: python scripts/test_public_routes.py
       - run: python scripts/test_support_storage.py

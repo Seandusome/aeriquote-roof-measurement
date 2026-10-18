@@ -2375,6 +2375,9 @@ async function viewEstimateVersions(id){
 
 async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
+ // Historical aerials are frozen canvases, not interactive outline editors.
+ // Never leave another report's roof/area/line buttons above the saved image.
+ if(historicalMode&&el('reportOutlineControls')){el('reportOutlineControls').style.display='none';el('reportOutlineTargetButtons')?.replaceChildren()}
  const estimateRoofs=historicalMode?(quoteSnapshot?.structures||[]):structures;
  if((!historicalMode&&roofRemeasureTarget)||estimateRoofs.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('Finish remeasuring the incomplete roof or roof with mismatched area and outline before creating the customer estimate.','warn');return}
  if(!historicalMode&&linearCorrectionOriginal){status('Save or cancel the line edit before creating the estimate.','warn');return}
