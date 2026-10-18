@@ -39,6 +39,7 @@ jobs:
       - run: node scripts/test_unit_address_ui.cjs
       - run: node scripts/test_phone_pdf.cjs
       - run: node scripts/test_saved_editing.cjs
+      - run: node scripts/test_estimate_save_integrity.cjs
       - run: python scripts/test_saved_editing_session.py
       - run: node scripts/test_price_rounding.cjs
       - run: node scripts/test_measurement_edges.cjs

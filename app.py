@@ -2226,11 +2226,11 @@ async function saveEstimateHistory(){
    }catch(e){console.warn('Street View could not be stored with estimate',e)}
   }
   const payload={customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:savedJobDetails?.job_status||'Estimate',scheduled_date:savedJobDetails?.scheduled_date||'',completion_date:savedJobDetails?.completion_date||'',amount_paid:Number(savedJobDetails?.amount_paid||0),address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData};
-  const saveKey=[payload.address,payload.customer_name,payload.customer_phone,payload.customer_email,payload.total_area,payload.total_price,payload.customer_notes].join('|');
-  if(saveKey===lastHistorySaveKey)return;
+  const saveKey=JSON.stringify(payload);
+  if(saveKey===lastHistorySaveKey)return true;
   const r=await fetch('/api/estimates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('save failed');
-  lastHistorySaveKey=saveKey;
- }catch(e){console.warn('Estimate history save failed',e)}
+  lastHistorySaveKey=saveKey;return true;
+ }catch(e){console.warn('Estimate history save failed',e);status('Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
 function closeEstimateHistory(){el('historyModal').classList.remove('open')}
@@ -2449,7 +2449,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  }
  price+=`<div class="line grand"><span>TOTAL (${currencyCode()})</span><span>${money(calc.total)}</span></div>`;
  el('rPricing').innerHTML=price;
- if(!historicalMode)await saveEstimateHistory();
+ if(!historicalMode&&(await saveEstimateHistory())===false){estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;return}
  reportOpenedAt=Date.now();
  document.body.classList.add('report-open');
  el('reportOverlay').style.display='block';

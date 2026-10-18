@@ -21,6 +21,13 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial','ro
  const before=w.eval('JSON.stringify(commercialAreas)'),savedLine=w.eval('JSON.stringify(linearPoints)');btn('commercialAreaList').querySelector('button').click();btn('areaClearBtn').click();btn('areaCancelCorrectionBtn').click();assert.deepEqual(JSON.parse(w.eval('JSON.stringify(commercialAreas)')),JSON.parse(before));assert.equal(w.eval('JSON.stringify(linearPoints)'),savedLine);
  const rate=btn('commercialAreaList').querySelector('[aria-label="Rate per square foot"]');rate.value='.3';rate.dispatchEvent(new w.Event('change'));assert.equal(w.eval('commercialAreas[0].rate'),.3);assert.equal(w.eval('commercialAreas[1].rate'),.4);assert.ok(btn('commercialAreaList').querySelector('.surface-area-price b').textContent.includes((snap.commercialAreas[0].sqft*.3).toFixed(2)), 'Saved area row amount updates with its rate');
  }
+ if(industry==='landscaping'){
+ const originalFetch=w.fetch;w.fetch=async(url,opt)=>{if(url==='/api/estimates')return{ok:false};return originalFetch(url,opt)};
+ w.eval("el('streetViewChoice').value='none';document.body.classList.remove('report-open')");
+ await w.eval('showCustomerEstimate()');
+ assert.equal(w.document.body.classList.contains('report-open'),false,'Failed save must not open a report');assert.equal(w.eval('estimateOpenInProgress'),false,'Failure releases retry guard');assert.equal(btn('createEstimateBtn').disabled,false,'Failure permits retry');assert.ok(btn('status').textContent.includes('not saved'));
+ w.fetch=originalFetch;
+ }
  console.log('PASS '+industry+': owned saved workspace, geometry, rates, customer, aerial and Cancel restored');
 }
 assert.equal(aerialCalls.length,54);
