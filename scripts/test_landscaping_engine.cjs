@@ -20,7 +20,7 @@ assert.equal(c.priceCalc().subtotal,subtotal);
 c.areaMode=true;c.areaMeasurementSaved=false;c.areaPoints=[];assert.equal(c.priceCalc().subtotal,subtotal);
 c.areaMode=false;c.linearMeasurementSaved=true;c.linearPoints=[{},{}];c.measurementViewMode='linear';fields.jobPrice.value='2';c.jobPriceChanged();
 assert.equal(c.priceCalc().subtotal,subtotal+80);assert.equal(c.priceCalc().unit,'ft²');
-assert(Math.abs(c.priceCalc().total-(subtotal+80)*1.11)<1e-8);
+assert.equal(Math.round(c.priceCalc().total*100),Math.round((subtotal+80)*100)+Math.round((subtotal+80)*5)+Math.round((subtotal+80)*6));
 const snap=c.captureQuoteSnapshot();assert.equal(snap.commercialAreas.length,2);assert.equal(snap.areaSqFt,c.multiAreaTotal());
 assert(c.landscapingSavedPriceLines(snap).includes('Service Area 2'));
 c.measurementViewMode='area';c.commercialSelectArea(0);fields.jobPrice.value='.3';c.jobPriceChanged();assert.equal(c.commercialAreas[0].rate,.3);assert.equal(c.priceCalc().subtotal,c.landscapingAreaSubtotal()+80,'Switching back to area must retain the linear rate');
