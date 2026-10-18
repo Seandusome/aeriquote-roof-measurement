@@ -1,32 +1,53 @@
 let current=1;
-const total=9;
 const steps=[...document.querySelectorAll('.setup-step')];
+const total=steps.length;
 const next=document.getElementById('nextBtn'), back=document.getElementById('backBtn');
+function setupError(message='',field){const box=document.getElementById('setupError');if(box){box.textContent=message;box.hidden=!message}if(field){field.closest('details')?.setAttribute('open','');field.focus();field.reportValidity?.()}}
+function validateStep(index){
+ const section=steps[index-1];
+ for(const field of section.querySelectorAll('input,select,textarea')){
+  if(field.required&&!field.value.trim()){setupError('Please complete '+(field.closest('label')?.childNodes[0]?.textContent.trim()||'this field')+'.',field);return false}
+  if(!field.checkValidity()){setupError('Please check '+(field.closest('label')?.childNodes[0]?.textContent.trim()||'this field')+'.',field);return false}
+ }
+ if(section.dataset.step==='4'&&document.querySelector('input[name="pricing"]:checked')?.value!=='manual'&&!(Number(document.getElementById('defaultPrice').value)>0)){setupError('Enter a starting rate greater than 0, or choose “I set each job’s rate”.',document.getElementById('defaultPrice'));return false}
+ setupError();return true;
+}
+function updateSetupReview(){const review=document.getElementById('setupReview');if(!review)return;review.replaceChildren();
+ const region=document.getElementById('region');const rate=document.querySelector('input[name="pricing"]:checked')?.value==='manual'?'Set the rate on each job':'$'+document.getElementById('defaultPrice').value+' / sq. ft.';
+ for(const [title,value] of [['Business',document.getElementById('companyName').value],['Location',region.selectedOptions[0]?.textContent+', '+document.getElementById('country').value],['Starting price',rate],['Taxes',document.getElementById('tax1').value+'% + '+document.getElementById('tax2').value+'% · '+(document.querySelector('input[name="taxmode"]:checked')?.value==='included'?'included in price':'added to price')]]){const row=document.createElement('p'),b=document.createElement('b');b.textContent=title+': ';row.append(b,document.createTextNode(value));review.append(row)}
+}
 function showStep(n){
  current=Math.max(1,Math.min(total,n));
- steps.forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===current));
+ steps.forEach((s,i)=>s.classList.toggle('active',i+1===current));
  const sn=document.getElementById('stepNum'), pb=document.getElementById('progressBar');
  if(sn)sn.textContent=current;if(pb)pb.style.width=(current/total*100)+'%';
  if(back)back.style.visibility=current===1?'hidden':'visible';
  if(next)next.style.display=current===total?'none':'inline-block';
- window.scrollTo({top:0,behavior:'smooth'});
+ if(current===total)updateSetupReview();
+ const heading=steps[current-1]?.querySelector('h1');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true})}
+ window.scrollTo({top:0,behavior:'instant'});
 }
-if(next)next.addEventListener('click',()=>showStep(current+1));
-if(back)back.addEventListener('click',()=>showStep(current-1));
+if(next)next.addEventListener('click',()=>{if(validateStep(current))showStep(current+1)});
+if(back)back.addEventListener('click',()=>{setupError();showStep(current-1)});
 
 const country=document.getElementById('country');
-if(country)country.addEventListener('change',e=>{
- const r=document.getElementById('regionLabel');
- if(r && r.childNodes[0])r.childNodes[0].nodeValue=e.target.value==='Canada'?'Province':'State';
-});
+const setupRegions={Canada:'AB:Alberta|BC:British Columbia|MB:Manitoba|NB:New Brunswick|NL:Newfoundland and Labrador|NS:Nova Scotia|NT:Northwest Territories|NU:Nunavut|ON:Ontario|PE:Prince Edward Island|QC:Quebec|SK:Saskatchewan|YT:Yukon','United States':'AL:Alabama|AK:Alaska|AZ:Arizona|AR:Arkansas|CA:California|CO:Colorado|CT:Connecticut|DE:Delaware|FL:Florida|GA:Georgia|HI:Hawaii|ID:Idaho|IL:Illinois|IN:Indiana|IA:Iowa|KS:Kansas|KY:Kentucky|LA:Louisiana|ME:Maine|MD:Maryland|MA:Massachusetts|MI:Michigan|MN:Minnesota|MS:Mississippi|MO:Missouri|MT:Montana|NE:Nebraska|NV:Nevada|NH:New Hampshire|NJ:New Jersey|NM:New Mexico|NY:New York|NC:North Carolina|ND:North Dakota|OH:Ohio|OK:Oklahoma|OR:Oregon|PA:Pennsylvania|RI:Rhode Island|SC:South Carolina|SD:South Dakota|TN:Tennessee|TX:Texas|UT:Utah|VT:Vermont|VA:Virginia|WA:Washington|WV:West Virginia|WI:Wisconsin|WY:Wyoming|DC:District of Columbia'};
+function updateSetupRegions(value=''){
+ const r=document.getElementById('regionLabel'),field=document.getElementById('region');if(!country||!field)return;
+ const label=country.value==='Canada'?'Province / territory':'State';if(r?.childNodes[0])r.childNodes[0].nodeValue=label;
+ field.replaceChildren(new Option('Choose your '+label.toLowerCase(),''));field.required=true;
+ for(const pair of setupRegions[country.value].split('|')){const [code,name]=pair.split(':');field.add(new Option(name,code));if(value===code||value===name)field.value=code}
+}
+if(country)country.addEventListener('change',()=>updateSetupRegions());
+updateSetupRegions();
 function syncBusiness(){
  const c=document.getElementById('companyName')?.value||'';
  const p=document.getElementById('companyPhone')?.value||'';
  const e=document.getElementById('companyEmail')?.value||'';
- if(c){document.getElementById('brandCompany').value=c;document.getElementById('previewCompany').textContent=c.toUpperCase();}
- if(p)document.getElementById('brandPhone').value=p;
- if(e)document.getElementById('brandEmail').value=e;
+ for(const [id,value] of [['brandCompany',c],['brandPhone',p],['brandEmail',e]]){const field=document.getElementById(id);if(field&&!field.dataset.edited)field.value=value}
+ if(c)document.getElementById('previewCompany').textContent=document.getElementById('brandCompany').value.toUpperCase();
 }
+['brandCompany','brandPhone','brandEmail'].forEach(id=>document.getElementById(id)?.addEventListener('input',e=>e.target.dataset.edited='true'));
 ['companyName','companyPhone','companyEmail'].forEach(id=>document.getElementById(id)?.addEventListener('input',syncBusiness));
 document.querySelectorAll('input[name="pricing"]').forEach(r=>r.addEventListener('change',()=>{
  const f=document.getElementById('defaultPriceField');
@@ -95,8 +116,10 @@ async function saveIndustrySetupLocal(industry){
      profile.logoData=resized;
    }catch(err){profile.logoData='';}
  }
- // Store company details even when logo storage is full. The account API
- // receives the compact logo independently of the browser's cache.
+ return profile;
+}
+function cacheSavedSetup(profile,industry){
+ // Account save is authoritative; unavailable browser storage must not block navigation.
  const cachedProfile={...profile};delete cachedProfile.logoData;
  try{localStorage.setItem('sxDealerDefaults',JSON.stringify(cachedProfile))}catch(err){
    try{localStorage.removeItem('sxDealerDefaults');localStorage.setItem('sxDealerDefaults',JSON.stringify(cachedProfile))}catch(ignore){}
@@ -106,25 +129,35 @@ async function saveIndustrySetupLocal(industry){
    catch(err){try{localStorage.removeItem('sxDealerLogo')}catch(ignore){}}
  }
  try{localStorage.setItem('aeriQuoteIndustry',industry)}catch(ignore){}
- return profile;
 }
 const setupPage=location.pathname.replace(/\/$/,'').split('/').pop().replace(/\.html$/i,'');
 const setupIndustry=({'roofer-setup':'roofing','snow-setup':'snow','pressure-setup':'pressure','paving-setup':'paving','landscaping-setup':'landscaping','commercial-setup':'commercial'})[setupPage]||null;
 if(document.body.classList.contains('setup-page') && setupIndustry){
+ const edited=new Set();document.getElementById('setupForm')?.addEventListener('input',e=>edited.add(e.target.id));document.getElementById('setupForm')?.addEventListener('change',e=>edited.add(e.target.id));
+ // Reuse the details just supplied at signup without overwriting an active edit.
+ fetch('/api/account/profile',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(account=>{
+  if(!account)return;const p=account.profile||{};
+  for(const [id,value] of [['companyName',p.company],['contactName',p.name],['companyPhone',p.phone],['companyEmail',p.email],['companyWebsite',p.website]]){const field=document.getElementById(id);if(field&&!edited.has(id)&&value)field.value=value}
+  if(!edited.has('country')&&!edited.has('region')){country.value=p.country==='US'?'United States':'Canada';updateSetupRegions(p.province||'')}
+  for(const [id,key] of [['tax1','gst'],['tax2','pst']]){if(!edited.has(id)&&p[key]!==undefined)document.getElementById(id).value=p[key]}
+  syncBusiness();
+ }).catch(()=>{});
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
    event.preventDefault();
    if(this.dataset.opening==='true')return;
+   for(let i=1;i<=total;i++){if(!validateStep(i)){showStep(i);return}}
    const originalText=this.textContent;
    this.dataset.opening='true';this.disabled=true;this.textContent='OPENING MEASURING SYSTEM…';
    try{
      const profile=await saveIndustrySetupLocal(setupIndustry);
      const response=await fetch('/api/account/profile',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(profile)});
      if(!response.ok)throw new Error('Your setup could not be saved to your account. Please sign in and try again.');
+     cacheSavedSetup(profile,setupIndustry);
      // Carry the selected industry into the measuring URL as well as localStorage.
      window.location.assign('/?industry='+encodeURIComponent(setupIndustry));
    }catch(e){
-     alert('Could not save setup in this browser. '+(e?.message||''));
+     setupError('Setup was not saved. '+(e?.message||'Please check your connection and try again.'));
      this.dataset.opening='false';this.disabled=false;this.textContent=originalText;
    }
  });

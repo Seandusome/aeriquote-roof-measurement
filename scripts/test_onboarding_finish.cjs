@@ -1,34 +1,50 @@
-/* Exercise the actual shared handler at both legacy and clean industry setup URLs. */
+/* Exercise shipped setup pages and handler with isolated account/network fixtures. */
 const fs=require('fs'),path=require('path'),assert=require('assert'),{JSDOM}=require('jsdom');
 const root=path.resolve(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'site/onboarding.js'),'utf8').replace('window.location.assign(', 'window.__navigate(');
+const savedFixtures={};
+const tick=()=>new Promise(r=>setTimeout(r,0));
 (async()=>{
 for(const [page,industry] of [['roofer','roofing'],['snow','snow'],['pressure','pressure'],['paving','paving'],['landscaping','landscaping'],['commercial','commercial']]){
  for(const suffix of ['', '.html']){
   const dom=new JSDOM(fs.readFileSync(path.join(root,'site/'+page+'-setup.html'),'utf8'),{url:'https://test.invalid/site/'+page+'-setup'+suffix,runScripts:'outside-only'});
-  const w=dom.window;let destination=null;const calls=[],alerts=[];
-  w.scrollTo=()=>{};w.__navigate=url=>destination=url;w.alert=message=>alerts.push(message);
-  w.fetch=async(url,options)=>{calls.push({url,options});return {ok:true,json:async()=>({})};};
-  w.document.getElementById('companyName').value='Test Company';
-  for(const [id,value] of [['warrantyStatement','Customer service terms'],['estimateMessage','Customer estimate message'],['ctaHeading','Arrange this service']]){
-   assert(w.document.getElementById(id),page+' missing '+id);w.document.getElementById(id).value=value;
-  }
-  const format=w.document.querySelector('[data-step="5"]');assert.equal(format.querySelectorAll('select,input').length,0,page+' unsupported setup controls');
-  assert(format.textContent.includes('square feet'));assert(format.textContent.includes('linear feet'));
-  assert(!w.document.body.textContent.includes('enter the final job price'),page+' unsupported final-price promise');
-
-  w.eval(source);const finish=w.document.getElementById('finishSetup');assert(finish,page+' finish');finish.click();
-  await new Promise(resolve=>setTimeout(resolve,0));
-  assert.equal(destination,'/?industry='+industry,page+suffix+' navigate');assert.equal(alerts.length,0,page+suffix+' alert');
-  assert(calls.some(c=>c.url==='/api/account/profile'&&c.options.method==='POST'),page+' server save');
-  assert.equal(w.localStorage.getItem('aeriQuoteIndustry'),industry,page+' stored industry');
-  assert.equal(JSON.parse(calls.find(c=>c.url==='/api/account/profile').options.body).businessType,industry,page+' profile industry');
-  const saved=JSON.parse(calls.find(c=>c.url==='/api/account/profile').options.body);
-  assert.equal(saved.warrantyStatement,'Customer service terms',page+' service terms saved');
-  assert.equal(saved.estimateMessage,'Customer estimate message',page+' customer message saved');
-  assert.equal(saved.ctaHeading,'Arrange this service',page+' call to action saved');
+  const w=dom.window,d=w.document;let destination=null,fail=false;const calls=[];
+  w.scrollTo=()=>{};w.__navigate=url=>destination=url;w.fetch=async(url,options={})=>{calls.push({url,options});return {ok:!fail,json:async()=>({profile:{company:'QA Company',name:'QA Owner',email:'qa@example.invalid',country:'US'}})};};
+  w.eval(source);await tick();const field=id=>d.getElementById(id),next=()=>field('nextBtn').click();
+  assert.equal(d.querySelectorAll('.setup-step').length,4,page+' four steps');assert(d.querySelector('.setup-help').textContent.includes('of 4'));
+  assert.equal(field('companyName').value,'QA Company');assert.equal(field('companyEmail').value,'qa@example.invalid');
+  assert.equal(field('brandCompany').value,'QA Company',page+' no repeat contact entry');
+  assert.equal(field('country').value,'United States');assert.equal(field('region').value,'');assert([...field('region').options].some(o=>o.value==='CA'&&o.textContent==='California'));
+  assert(![...field('region').options].some(o=>o.value==='SK'),page+' no Canadian state');
+  next();assert(d.querySelector('[data-step="1"]').classList.contains('active'),page+' require region');assert(!field('setupError').hidden);
+  field('region').value='CA';next();assert(d.querySelector('[data-step="4"]').classList.contains('active'));
+  next();assert(d.querySelector('[data-step="4"]').classList.contains('active'),page+' require explicit taxes');
+  field('tax1').value='5';field('tax2').value='6';d.querySelector('input[name=taxmode][value=included]').checked=true;
+  field('defaultPrice').value='-1';next();assert(d.querySelector('[data-step="4"]').classList.contains('active'),page+' invalid rate');field('defaultPrice').value='0.37';
+  next();assert(d.querySelector('[data-step="7"]').classList.contains('active'));
+  assert(!field('warrantyStatement').closest('details').open,page+' optional message collapsed');
+  field('warrantyStatement').value='Customer service terms';field('estimateMessage').value='Customer message';field('ctaHeading').value='Arrange this service';
+  next();assert(d.querySelector('[data-step="9"]').classList.contains('active'));assert(field('setupReview').textContent.includes('5% + 6%'));assert(field('setupReview').textContent.includes('included in price'));
+  field('backBtn').click();assert.equal(field('estimateMessage').value,'Customer message',page+' back preserves input');next();
+  const finish=field('finishSetup');fail=true;finish.click();await tick();assert.equal(destination,null);assert(!field('setupError').hidden);assert.equal(w.localStorage.getItem('sxDealerDefaults'),null,page+' failed account save not cached');assert(!finish.disabled);
+  fail=false;finish.click();finish.click();await tick();
+  assert.equal(destination,'/?industry='+industry,page+suffix+' navigate');
+  const posts=calls.filter(c=>c.options.method==='POST');assert.equal(posts.length,2,page+' failed attempt plus one successful retry');
+  const saved=JSON.parse(posts.at(-1).options.body);savedFixtures[industry]=saved;assert.equal(saved.businessType,industry);assert.equal(saved.province,'CA');assert.equal(saved.country,'US');assert.equal(saved.gst,'5');assert.equal(saved.pst,'6');assert.equal(saved.pricingMode,'included');assert.equal(saved.price,'0.37');assert.equal(saved.name,'QA Owner');assert.equal(saved.warrantyStatement,'Customer service terms');assert.equal(saved.estimateMessage,'Customer message');assert.equal(saved.ctaHeading,'Arrange this service');
+  assert.equal(JSON.parse(w.localStorage.getItem('sxDealerDefaults')).gst,'5');assert.equal(w.localStorage.getItem('aeriQuoteIndustry'),industry);
+  // Changing country clears incompatible region, supports all Canadian provinces/territories.
+  field('country').value='Canada';field('country').dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(field('region').value,'');assert.equal(field('region').options.length,14);assert([...field('region').options].some(o=>o.value==='NU'));
   dom.window.close();
  }
 }
-console.log('PASS: all six industry finish buttons save profile and open the right measuring industry on clean and .html URLs (12 flows)');
+// Slow prefill cannot undo choices already made by the user.
+{
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'site/roofer-setup.html'),'utf8'),{url:'https://test.invalid/site/roofer-setup',runScripts:'outside-only'}),w=dom.window,d=w.document;let respond;
+ w.scrollTo=()=>{};w.fetch=()=>new Promise(r=>respond=r);w.eval(source);
+ for(const [id,value] of [['companyName','Typed Company'],['country','United States'],['tax1','3']]){d.getElementById(id).value=value;d.getElementById(id).dispatchEvent(new w.Event('input',{bubbles:true}));}
+ respond({ok:true,json:async()=>({profile:{company:'Old Company',country:'CA',province:'SK',gst:'5'}})});await tick();
+ assert.equal(d.getElementById('companyName').value,'Typed Company');assert.equal(d.getElementById('country').value,'United States');assert.equal(d.getElementById('tax1').value,'3');dom.window.close();
+}
+if(process.env.ONBOARDING_FIXTURES_PATH)fs.writeFileSync(process.env.ONBOARDING_FIXTURES_PATH,JSON.stringify(savedFixtures));
+console.log('PASS: 12 four-step setup flows, signup prefill, CA/US region codes, explicit taxes and pricing, saved services/messages, validation, failed-save retry and duplicate-click prevention; late account response preserves edits');
 })().catch(error=>{console.error(error);process.exit(1)});

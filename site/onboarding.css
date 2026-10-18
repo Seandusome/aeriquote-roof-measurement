@@ -37,3 +37,15 @@ input:focus,select:focus,textarea:focus{border-color:#118bf2;box-shadow:0 0 0 3p
 .setup-actions{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid #dfe7f0}
 .setup-actions button{border-radius:9px;padding:13px 23px;font-weight:900;font-size:14px;cursor:pointer}.back{background:#fff;border:1px solid #cdd8e5;color:#334a68}.next{background:#118bf2;border:1px solid #118bf2;color:#fff}
 @media(max-width:700px){.form-grid.two,.choice-grid,.brand-layout,.benefit-preview{grid-template-columns:1fr}.setup-step h1{font-size:31px}.radio-inline{flex-direction:column;gap:12px}.setup-shell{padding-top:38px}.setup-nav .logo img{width:175px}}
+/* Four clear steps; additional preferences stay available without blocking setup. */
+.setup-optional{margin-top:22px;border:1px solid #dbe4ef;border-radius:12px;background:#fff;padding:15px 18px}
+.setup-optional>summary{font-weight:800;cursor:pointer;color:#244b72}
+.setup-optional[open]>summary{margin-bottom:20px}
+.setup-section{margin-top:24px}.setup-section h2{font-size:24px;line-height:1.25;margin:10px 0}
+.setup-section .lead{font-size:15px;margin-bottom:18px}
+.setup-section .step-kicker{display:none}
+.setup-error{padding:14px 16px;background:#fff1ee;color:#8d2919;border:1px solid #edb9ae;border-radius:8px;font-weight:700}
+.setup-error[hidden]{display:none}.setup-example{color:#52627a;font-size:12px;margin:0 0 16px}
+#setupReview{display:block;width:100%;padding:8px 0}#setupReview p{line-height:1.5;margin:12px 0}
+.setup-step h1:focus{outline:none}
+@media(max-width:700px){.setup-nav{height:auto;min-height:70px;gap:12px}.setup-help{font-size:12px}.setup-nav .logo img{width:145px}.setup-shell{padding:28px 18px 45px}.setup-optional{padding:12px}.setup-actions{margin-top:24px}}
