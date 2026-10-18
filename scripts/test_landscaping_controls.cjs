@@ -21,6 +21,9 @@ const roofImage=await w.eval("loadCustomerWideAerial('roof-detail',map)");assert
 // Saved commercial polygons must keep every edge label when the user switches to Linear.
 dom.reconfigure({url:'https://test.invalid/?industry=commercial'});w.eval("el('businessType').value='commercial';measurementViewMode='linear';clearAreaLayers();commercialAreaDrawSaved()");const edgeCount=w.eval('commercialAreas.reduce((n,a)=>n+a.points.length,0)');assert.equal(btn('map').querySelectorAll('.aeri-edge-label').length,edgeCount);assert.equal(btn('map').querySelectorAll('.area-label').length,3);console.log('PASS: every saved commercial area retains feet on every edge in linear view');
 // The actual PDF exporter must preserve satellite image overlays while replacing vector paths.
+// JSDOM has no layout engine; explicitly identify this existing fixture as desktop.
+// Narrow-screen cloning is exercised independently in test_phone_pdf.cjs.
+w.document.querySelector('#reportOverlay .report').getBoundingClientRect=()=>({width:1320});
 const pdfPainted=[];w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/jpeg;base64,test';w.HTMLCanvasElement.prototype.getContext=()=>({drawImage(){},scale(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},fill(){},stroke(){},save(){},restore(){},fillRect(){},strokeRect(){},fillText(t){pdfPainted.push(t)}});
 w.eval("el('reportOverlay').style.display='block';customerMap=L.map('customerMap').setView([52,-106],18);customerRgbLayer=L.imageOverlay('data:image/png;base64,test',staticMapBounds(52,-106,18)).addTo(customerMap);L.polygon(commercialAreas[0].points).addTo(customerMap);L.polygon(commercialAreas[1].points,{renderer:L.svg()}).addTo(customerMap);quoteSnapshot=captureQuoteSnapshot()");
 w.eval('commercialAreas.forEach(a=>drawCustomerAreaEdgeLabels(a.points));layoutCustomerMeasurementLabels()');assert.equal(btn('customerMap').querySelectorAll('.aeri-edge-label').length,edgeCount);

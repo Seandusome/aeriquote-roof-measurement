@@ -60,3 +60,8 @@
 .report.pdf-export .reportHead{grid-template-columns:240px minmax(0,1fr) 190px}
 .report.pdf-export .reportMeta{grid-template-columns:1.3fr .7fr .7fr}
 .report.pdf-export .reportGrid{grid-template-columns:minmax(0,1.5fr) minmax(0,.72fr)}
+@media screen and (min-width:701px) and (max-width:980px){
+ #reportOverlay .report:not(.pdf-export){width:100%!important;min-width:0}
+ .report:not(.pdf-export) .reportActions{flex-wrap:wrap}
+ .report:not(.pdf-export) .reportActions>*{max-width:100%}
+}
