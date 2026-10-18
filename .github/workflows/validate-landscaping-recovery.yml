@@ -37,6 +37,7 @@ jobs:
       - run: node scripts/test_surface_workspace.cjs
       - run: node scripts/test_industry_wording.cjs
       - run: node scripts/test_unit_address_ui.cjs
+      - run: node scripts/test_phone_pdf.cjs
       - run: node scripts/test_price_rounding.cjs
       - run: node scripts/test_measurement_edges.cjs
       - run: node scripts/test_public_ui.cjs

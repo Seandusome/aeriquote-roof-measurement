@@ -2560,6 +2560,22 @@ async function buildExpandedEstimatePDF(report){
  }finally{root.remove()}
 }
 
+async function captureSinglePageEstimate(report){
+ const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
+ if(report.getBoundingClientRect().width>=900)return html2canvas(report,options);
+ // Phone presentation must not become a tiny, tall strip on landscape paper.
+ // Freeze the approved map pixels before cloning; never resize/refit live Leaflet.
+ const sourceMap=report.querySelector('#customerMap');
+ const mapPixels=sourceMap&&sourceMap.style.display!=='none'?await html2canvas(sourceMap,options):null;
+ const copy=report.cloneNode(true);copy.classList.add('pdf-export');
+ Object.assign(copy.style,{position:'absolute',left:'-20000px',top:'0',width:'1320px',maxWidth:'none',margin:'0'});
+ if(mapPixels){const host=copy.querySelector('#customerMap');host.replaceChildren(mapPixels);Object.assign(host.style,{height:'430px',position:'relative'});Object.assign(mapPixels.style,{display:'block',width:'100%',height:'100%',objectFit:'contain'});}
+ copy.querySelectorAll('.reportActions,#reportOutlineControls,.reportDrawLayer').forEach(n=>n.remove());
+ copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+ document.body.appendChild(copy);
+ try{return await html2canvas(copy,{...options,windowWidth:1440})}finally{copy.remove()}
+}
+
 async function downloadEstimatePDF(){
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
@@ -2631,7 +2647,7 @@ async function downloadEstimatePDF(){
       customerMap.getPane('overlayPane')?.querySelectorAll('svg').forEach(svg=>{const anchor=document.createComment('PDF vector replacement');svg.replaceWith(anchor);pdfVectors.push({svg,anchor})});
     }
     var expandedPdf=el('estimatePdfLayout')?.value==='expanded'?await buildExpandedEstimatePDF(report):null;
-    var canvas=expandedPdf?null:await html2canvas(report,{scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false});
+    var canvas=expandedPdf?null:await captureSinglePageEstimate(report);
   }finally{
     if(pdfTraceCanvas)pdfTraceCanvas.remove();
     pdfLabels.forEach(({node,visibility})=>node.style.visibility=visibility);
