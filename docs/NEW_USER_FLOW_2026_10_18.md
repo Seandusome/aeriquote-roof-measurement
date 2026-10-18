@@ -21,3 +21,33 @@ Subsequent live PDF/all-industry estimate checks were interrupted by browser nat
 Follow-up aligns tax labels with country and clears stale rates when changing country. US exposes the single sales-tax field the existing estimate engine supports; Canadian second tax is not silently carried into US setup. Local tests cover this; final follow-up live visual check remains pending browser recovery.
 
 Signed in securely to Head Office for measurement testing; do not save test setup over its profile. Actual new account creation in the live browser requires manual signup/terms acceptance; do not claim it was completed by automation. Isolated signup/profile integration tests are separate from live new-account verification.
+
+## Resumed live QA — October 18, afternoon
+
+Sean manually created the separate QA account in the built-in browser (Roofing signup). Signed-in Roofing setup was visibly confirmed; credentials were never read or copied. Company was labelled AeriQuote QA. This is ONE live new-account signup followed by all six setup flows on that account, not six separately created live accounts. Head Office was not edited.
+
+All four setup screens were completed and saved for Roofing, Snow, Pressure, Paving, Landscaping and Commercial. Each reached the correct measuring workspace; business/contact/location/starting-price/tax values carried through. Roofing used CAD $1/ft²; surfaces $0.10/ft²; Saskatchewan, 5% + 6%. Later US/California Roofing setup check showed Sales Tax %, blank after country change, with the Canadian second field hidden; this last US check was not saved.
+
+Fresh first-estimate previews and actual Single page PDF downloads were exercised in all six industries. Pages were rendered with Poppler and visually inspected. Roofing QA used an illustrative manual rectangle and assumed 5/12 at 1715 2nd Ave N: 1,790 ft², original pre-rounding total $1,987.15. It is NOT a verified customer roof measurement. The automatic scope mismatch correctly blocked the estimate before replacement. Source label was corrected from Google segments to traced segments for manually measured roofs. Roof guards and 5/12 default remain intact.
+
+Surface area-only fixtures at 2301 Ave C North: Snow 20,788 ft²/$2,307.47; Pressure 17,325/$1,923.08; Paving 17,152/$1,903.87; Landscaping 16,372/$1,817.29; Commercial 17,463/$1,938.39 before rounding fix. These are illustrative QA shapes, not certified property measurements. Initial Landscaping and early Commercial mixed exports had blank Street View during deployment; do not mark those files clean. Fresh post-rollout mixed exports below show both aerial and Street View correctly. Deployment/restart interruption of in-memory imagery sessions is not fixed by this work.
+
+### Live area + linear verification
+
+Sean specifically asked whether both had been measured together. Initially only automated mixed checks had passed; the subsequent LIVE mixed pass covered ALL FIVE surface industries:
+
+- Commercial: fresh post-rollout area 17,152 ft² @ $0.10 + line 535.3 ft @ $0.25. Displayed services $1,715.20 + $133.82; subtotal $1,849.02; taxes $92.45 + $110.94; total CAD $2,052.41. Single page PDF visually inspected, both geometries/dimensions and Street View present.
+- Landscaping: area 16,372 ft² @ $0.10 + line 463.2 ft @ $0.70. Displayed services $1,637.20 + $324.27; subtotal $1,961.47; taxes $98.07 + $117.69; total CAD $2,177.23.
+- The same saved area/line fixture was switched through Snow, Pressure and Paving using the visible Business Type control. Geometry, independent rates and combined total stayed intact. Labelled QA estimates were saved and actual Single page PDFs downloaded/rendered/visually inspected in EACH industry. Each had the correct industry heading, both outlines/dimensions, both service prices, aerial and Street View.
+- Paving's CURRENT estimate was reopened from Previous Estimates > View History. It retained both measured quantities/rates and $2,177.23. The actual reopened Expanded PDF was downloaded, rendered and inspected: two pages, aerial+area+line first, measurements/pricing/marketing/Street View second. Other mixed versions were visible in history, not individually reopened in this pass. Existing versions were not deleted.
+- Combined Roofing services remain a separate feature; Roofing uses its selected AutoMeasure/Area/Linear mode, as before. Do not claim this mixed surface test adds combined Roofing pricing.
+
+### Fixes and verification
+
+Application 33b7b4d571d28fff26c68c846d98bb5a84209125: Snow + ADD AREA label restored, redundant initial Pressure/Paving area-rate fields hidden in Area view, optional blank phone label hidden, manual roof pitch source made truthful. Render live; both GitHub workflows passed.
+
+Application a41feda17a3d89c47b51201337985dbfca2bc29b: displayed taxes and total rounded to cents consistently for regular, discount and tax-included modes. Live 17,463 ft² Commercial fixture now displays $1,746.30 + $87.32 + $104.78 = $1,938.40 (previous $1,938.39 exposed the bug). Existing saved historical prices are preserved. Exact geometry/raw subtotal precision is retained; current monetary tax base/discount/taxes/total use cents. Added independent regression for fractional roof quantities, half-cent tax, discount, included and zero taxes; updated the engine's tax expectation. Surface workspace, six-industry wording/edges, actual DOM/Leaflet controls, public UI and compilation passed locally; BOTH GitHub workflows passed; Render deploy dep-dbahrv942hec73dl5mc0 is live. Fresh mixed tests above used this version.
+
+Checked QA Expanded sample saved as AeriQuote_QA_Area_and_Linear_Expanded.pdf, Library identity libfile_4e99ca6660148191b9de75dc141b21ce. Local transient copy /workspace/scratch/AeriQuote_QA_Area_and_Linear_Expanded.pdf. No customer correspondence was sent.
+
+Remaining: live mobile visual QA; six separate fresh live signup accounts have NOT been created (one shared QA account was used); deployment/restart image-session recovery remains a known watch item. Do not call the entire prelaunch audit complete. Main untouched; AI Trace remains removed; payments deferred.
