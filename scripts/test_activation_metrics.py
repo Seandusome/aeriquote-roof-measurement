@@ -71,6 +71,7 @@ with tempfile.TemporaryDirectory() as tmp:
  for did,name,email in [('qa-head','Head Office','qa-head@example.invalid'),('qa-customer','Customer','qa-customer@example.invalid')]:
   con.execute('INSERT INTO dealers(id,dealer_name,email,password_hash,status,created_at,plan_code) VALUES(?,?,?,?,?,?,?)',(did,name,email,'unused','active','2026-10-14T08:00:00Z','trial'))
  con.execute('INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)',('qa-customer','{"company":"QA TEST - reporting fixture"}','2026-10-14'))
+ con.execute("INSERT INTO account_admin_roles(dealer_id) VALUES('qa-head')")
  con.commit();con.close()
  c=actual.app.test_client()
  with c.session_transaction() as sess: sess.update(dealer_id='qa-head',account_type='owner',auth_version=0)

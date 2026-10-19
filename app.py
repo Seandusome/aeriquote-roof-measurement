@@ -3260,7 +3260,7 @@ def is_head_office():
     con=estimate_db()
     try:
         row=con.execute("SELECT dealer_name,email,status FROM dealers WHERE id=?",(session["dealer_id"],)).fetchone()
-        return bool(row and str(row["status"]).lower()=="active" and (str(row["dealer_name"] or "").strip().lower()=="head office" or str(row["email"]).strip().lower()=="sdusome@diitalk.com"))
+        return bool(row and str(row["status"]).lower()=="active" and (str(row["email"]).strip().lower()=="sdusome@diitalk.com" or con.execute("SELECT dealer_id FROM account_admin_roles WHERE dealer_id=?",(session["dealer_id"],)).fetchone()))
     finally:
         con.close()
 

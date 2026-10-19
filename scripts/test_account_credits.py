@@ -12,6 +12,7 @@ with tempfile.TemporaryDirectory() as tmp:
  for did,name in [('office','Head Office'),('dealer','QA TEST Credits'),('other','QA TEST Other')]:
   con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,status,lookup_limit,estimate_limit,created_at,plan_code) VALUES(?,?,?,'unused','active',1,1,'2026-10-19','basic')",(did,name,did+'@example.invalid'))
  con.execute("INSERT INTO dealer_employees(id,dealer_id,employee_name,email,password_hash,status,created_at) VALUES('employee','dealer','QA TEST employee','employee@example.invalid','unused','active','2026-10-19')")
+ con.execute("INSERT INTO account_admin_roles(dealer_id) VALUES('office')")
  con.commit();con.close()
  def client(did,eid=None):
   c=a.app.test_client()
@@ -23,6 +24,11 @@ with tempfile.TemporaryDirectory() as tmp:
  for c in [owner,employee,other]:
   assert c.get('/head-office/credits').status_code==403
   assert c.post('/head-office/credits',data={}).status_code==403
+ # Account display names must never grant Head Office privileges.
+ assert other.post('/api/account/profile',json={'name':'Head Office'}).status_code==200
+ assert other.get('/head-office/dealers').status_code==403
+ assert other.get('/head-office/credits').status_code==403
+ assert other.post('/api/account/profile',json={'name':'QA TEST Other'}).status_code==200
  assert office.get('/head-office/credits').status_code==200
  with office.session_transaction() as s:token=s['credit_csrf']
  def data(action='grant',**kw):

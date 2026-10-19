@@ -10,6 +10,14 @@ def month_key(now=None):
     return (now or datetime.now(timezone.utc)).astimezone(ZoneInfo('America/Edmonton')).strftime('%Y-%m')
 
 def init_credit_db(con):
+    con.execute("CREATE TABLE IF NOT EXISTS account_admin_roles (dealer_id TEXT PRIMARY KEY)")
+    con.execute("CREATE TABLE IF NOT EXISTS account_credit_migrations (id TEXT PRIMARY KEY)")
+    if not con.execute("SELECT id FROM account_credit_migrations WHERE id='head-office-role-v1'").fetchone():
+        # Preserve existing roles once; never derive new roles from editable names.
+        con.execute("""INSERT INTO account_admin_roles(dealer_id) SELECT id FROM dealers
+            WHERE lower(trim(dealer_name))='head office' OR lower(trim(email))='sdusome@diitalk.com'
+            ON CONFLICT(dealer_id) DO NOTHING""")
+        con.execute("INSERT INTO account_credit_migrations(id) VALUES('head-office-role-v1')")
     con.execute("""CREATE TABLE IF NOT EXISTS account_allowances (
       dealer_id TEXT PRIMARY KEY, complimentary INTEGER NOT NULL DEFAULT 0,
       brand TEXT NOT NULL DEFAULT '', lookup_bonus INTEGER NOT NULL DEFAULT 0,
