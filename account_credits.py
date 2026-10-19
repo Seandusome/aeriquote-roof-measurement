@@ -102,17 +102,24 @@ def register_credits(app, db, is_head_office):
                                     (operation,did,str(session['dealer_id']),datetime.now(timezone.utc).isoformat(),action,amount if action=='grant' else 0,reason,details))
                     con.commit()
                 finally: con.close()
-                return redirect('/head-office/credits?saved=1')
+                from urllib.parse import urlencode
+                return redirect('/head-office/credits?'+urlencode({'saved':'1','q':account['email']}))
             except (ValueError, TypeError) as exc:
                 error = str(exc) or 'Check the entered values.'
+        query=str(request.args.get('q') or '').strip()[:200]
         con = db()
         try:
             accounts = [dict(r) for r in con.execute("""SELECT d.id,d.dealer_name,d.email,d.plan_code,d.status,
                 COALESCE(a.complimentary,0) AS complimentary,COALESCE(a.brand,'') AS brand,
-                COALESCE(a.lookup_bonus,0) AS lookup_bonus,COALESCE(a.estimate_bonus,0) AS estimate_bonus
-                FROM dealers d LEFT JOIN account_allowances a ON a.dealer_id=d.id
+                COALESCE(a.lookup_bonus,0) AS lookup_bonus,COALESCE(a.estimate_bonus,0) AS estimate_bonus,p.profile_json
+                FROM dealers d LEFT JOIN dealer_profiles p ON p.dealer_id=d.id LEFT JOIN account_allowances a ON a.dealer_id=d.id
                 WHERE lower(d.dealer_name)<>'head office' AND lower(d.email)<>'sdusome@diitalk.com'
                 ORDER BY lower(d.dealer_name)""").fetchall()]
+            import json
+            for account in accounts:
+                try: account['company']=str(json.loads(account.pop('profile_json') or '{}').get('company') or '')
+                except (ValueError,TypeError,AttributeError): account['company']=''
+            accounts=[a for a in accounts if len(query)>=2 and query.casefold() in ' '.join([a['dealer_name'],a['email'],a['company']]).casefold()][:20]
             for account in accounts:
                 usage=con.execute('SELECT lookups,estimates FROM account_month_usage WHERE dealer_id=? AND period=?',(account['id'],month_key())).fetchone()
                 account['month_lookups']=int(usage['lookups']) if usage else 0
@@ -122,7 +129,7 @@ def register_credits(app, db, is_head_office):
                 ORDER BY a.created_at DESC LIMIT 100""").fetchall()]
         finally: con.close()
         return render_template_string(PAGE, accounts=accounts,audit=audit,csrf=token,error=error,
-                                      saved=request.args.get('saved')=='1', brands=BRANDS, new_id=lambda:str(uuid.uuid4()))
+                                      saved=request.args.get('saved')=='1', query=query, brands=BRANDS, new_id=lambda:str(uuid.uuid4()))
 
 PAGE = """<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>AeriQuote Account Credits</title>
 <style>body{font:16px system-ui;background:#f3f6fa;color:#172b45;margin:0}main{max-width:1100px;margin:28px auto;padding:16px}section{background:white;border:1px solid #dce5ef;border-radius:12px;padding:20px;margin:18px 0}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:9px;max-width:100%;box-sizing:border-box}input[name=reason]{width:100%}button{background:#1469b0;color:white;border:0;border-radius:7px;cursor:pointer}form{margin:18px 0;border-top:1px solid #ddd;padding-top:12px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%}td,th{padding:10px;border-bottom:1px solid #ddd;text-align:left}small{display:block;color:#52647a}.error{color:#a11}</style></head><body><main>
@@ -130,14 +137,15 @@ PAGE = """<!doctype html><html><head><meta name="viewport" content="width=device
 <p>Extra credits add both property measurements and saved estimates. They carry forward until used. Complimentary dealers receive 200 of each per calendar month, renewing on the first in America/Edmonton. Unused monthly credits do not roll over. Employees share their business allowance.</p>
 <p>Complimentary access does not change the underlying plan or create a paid subscription. Turning it off restores the existing plan and its usage. Warranty branding is independent of complimentary access.</p>
 {% if saved %}<p role="status">Account updated and audit entry saved.</p>{% endif %}{% if error %}<p class="error" role="alert">{{error}}</p>{% endif %}
-<label>Find account <input type="search" oninput="document.querySelectorAll('section.account').forEach(s=>s.hidden=!s.dataset.search.includes(this.value.toLowerCase()))" placeholder="Name or email"></label>
-{% for a in accounts %}<section class="account" data-search="{{(a.dealer_name+' '+a.email)|lower}}"><h2>{{a.dealer_name}}</h2><p>{{a.email}} · {{a.status}} · Underlying plan: {{a.plan_code}}</p>
+<form method="get"><label>Find account <input type="search" name="q" value="{{query}}" minlength="2" required placeholder="Business name or signup email"></label><button>SEARCH ACCOUNTS</button></form>
+{% if not query %}<p>Search for an account to manage its credits or dealer access.</p>{% elif not accounts %}<p role="status">No matching accounts. Enter at least two characters of the business name, owner name or signup email.</p>{% else %}<p>{{accounts|length}} matching account(s), showing up to 20. Check the signup email before making changes.</p>{% endif %}
+{% for a in accounts %}<section class="account"><h2>{{a.company or a.dealer_name}}</h2><p>{{a.email}} · {{a.status}} · Underlying plan: {{a.plan_code}}</p>
 <p>{% if a.complimentary %}This month: {{a.month_lookups}} measurements · {{a.month_estimates}} estimates used.{% endif %}</p><p><b>{{'Complimentary dealer — 200 monthly' if a.complimentary else 'Standard account allowance'}}</b><small>Extra credits remaining: {{a.lookup_bonus}} measurements · {{a.estimate_bonus}} estimates. Brand: {{brands[a.brand]}}</small></p>
 <form method="post"><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="operation" value="{{new_id()}}"><input type="hidden" name="dealer_id" value="{{a.id}}"><input type="hidden" name="action" value="grant">
-<label>Add credits <select name="amount"><option>25</option><option>75</option><option>150</option></select></label>
-<label>Reason <input name="reason" maxlength="500" required placeholder="Service adjustment or dealer support"></label><button>Add credits to this account</button></form>
+<h3>One-time extra credits</h3><p>Adds credits once. This does not enable the 200 monthly allowance.</p><label>Extra credits <select name="amount"><option>25</option><option>75</option><option>150</option></select></label>
+<label>Reason <input name="reason" maxlength="500" required placeholder="Service adjustment or dealer support"></label><button>ADD SELECTED ONE-TIME CREDITS</button></form>
 <form method="post"><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="operation" value="{{new_id()}}"><input type="hidden" name="dealer_id" value="{{a.id}}"><input type="hidden" name="action" value="configure">
-<label><input type="checkbox" name="complimentary" value="1" {% if a.complimentary %}checked{% endif %}> Complimentary dealer — 200 measurements and estimates per month</label>
+<h3>Monthly dealer access and warranty brand</h3><label><input type="checkbox" name="complimentary" value="1" {% if a.complimentary %}checked{% endif %}> Complimentary dealer — 200 measurements and estimates per month</label>
 <label>Approved warranty brand <select name="brand">{% for key,label in brands.items() %}<option value="{{key}}" {% if key==a.brand %}selected{% endif %}>{{label}}</option>{% endfor %}</select></label>
-<label>Reason <input name="reason" maxlength="500" required></label><button>Save dealer access and brand</button></form></section>{% endfor %}
+<label>Reason <input name="reason" maxlength="500" required></label><button>SAVE MONTHLY ACCESS AND BRAND</button></form></section>{% endfor %}
 <section><h2>Recent adjustments</h2><div class="scroll"><table><tr><th>Date</th><th>Account</th><th>Issued by</th><th>Change</th><th>Reason</th></tr>{% for e in audit %}<tr><td>{{e.created_at}}</td><td>{{e.email}}</td><td>{{e.actor_email or e.actor}}</td><td>{{e.details}}</td><td>{{e.reason}}</td></tr>{% else %}<tr><td colspan="5">No adjustments yet.</td></tr>{% endfor %}</table></div></section></main></body></html>"""

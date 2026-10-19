@@ -29,7 +29,11 @@ with tempfile.TemporaryDirectory() as tmp:
  assert other.get('/head-office/dealers').status_code==403
  assert other.get('/head-office/credits').status_code==403
  assert other.post('/api/account/profile',json={'name':'QA TEST Other'}).status_code==200
- assert office.get('/head-office/credits').status_code==200
+ first=office.get('/head-office/credits')
+ assert first.status_code==200 and b'<section class="account">' not in first.data
+ result=office.get('/head-office/credits?q=dealer%40example.invalid')
+ assert b'<section class="account">' in result.data and b'QA TEST Other</h2>' not in result.data
+ assert b'<section class="account">' not in office.get('/head-office/credits?q=does-not-exist').data
  with office.session_transaction() as s:token=s['credit_csrf']
  def data(action='grant',**kw):
   return dict(csrf=token,operation=str(uuid.uuid4()),dealer_id='dealer',action=action,amount='25',reason='QA TEST ONLY',**kw)
