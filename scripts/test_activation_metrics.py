@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from activation_metrics import account_metrics
+from activation_metrics import account_metrics, account_plan_report
 now=datetime(2026,10,14,20,tzinfo=timezone.utc)
 accounts=[{'created_at':'2026-10-14T05:59:59Z','first_measured_at':'2026-10-14T06:00:00Z'},
           {'created_at':'2026-10-14T06:00:00Z','first_measured_at':'2026-10-14T07:00:00Z'},
@@ -43,7 +43,40 @@ print('PASS: Edmonton period boundaries/DST, signup-cohort conversion, employee 
 # Render the actual admin template, checking responsive reporting labels and all three periods.
 from jinja2 import Template
 html=next(ast.literal_eval(n.value) for n in module.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='AERIQUOTE_ADMIN_HTML' for t in n.targets))
-rendered=Template(html).render(accounts=[],total_accounts=0,active_accounts=0,activated_accounts=0,metrics=account_metrics([],now))
+rendered=Template(html).render(accounts=[],total_accounts=0,active_accounts=0,activated_accounts=0,metrics=account_metrics([],now),plan_report=account_plan_report([],now))
 assert all(x in rendered for x in ['Today','This week','This month','Not connected','Signup conversion','America/Edmonton'])
 assert 'Dealer Management' not in rendered
 print('PASS: admin dashboard renders activation/conversion/revenue for each reporting period')
+
+# Assigned plans are distinct from payments; explicit QA businesses are excluded.
+fixture=[dict(dealer_name='Customer',plan_code='trial',status='active',created_at='2026-10-14T08:00:00Z'),
+         dict(dealer_name='Owner',company='QA TEST - DO NOT SEND',plan_code='business',status='active',created_at='2026-10-14T08:00:00Z'),
+         dict(dealer_name='Paid-looking legacy import',plan_code='pro',status='disabled',created_at='2026-10-13T08:00:00Z'),
+         dict(dealer_name='Future',plan_code='basic',status='active',created_at='2027-01-01T00:00:00Z')]
+report=account_plan_report(fixture,now)
+assert report['qa_count']==1 and len(report['customers'])==3
+assert report['periods'][0]['signups']==1 and report['periods'][0]['trials']==1 and report['periods'][0]['qa']==1
+assert report['periods'][1]['assigned_plans']==1
+assert report['plans'][2]['total']==1 and report['plans'][2]['enabled']==0
+assert report['plans'][3]['total']==0
+assert all(word in rendered for word in ['Subscriptions &amp; Trials','verified billing records','QA signups excluded','not a count of new paid subscriptions'])
+print('PASS: customer/QA separation, current plan mix, disabled versus paid distinction, future signup exclusion')
+# Exercise the real Head Office route with the joined business profile in a temp DB.
+import os, tempfile
+with tempfile.TemporaryDirectory() as tmp:
+ os.environ['DATABASE_URL']=''
+ os.environ['ESTIMATE_DB_PATH']=str(Path(tmp)/'reporting.db')
+ import app as actual
+ con=actual.estimate_db()
+ for did,name,email in [('qa-head','Head Office','qa-head@example.invalid'),('qa-customer','Customer','qa-customer@example.invalid')]:
+  con.execute('INSERT INTO dealers(id,dealer_name,email,password_hash,status,created_at,plan_code) VALUES(?,?,?,?,?,?,?)',(did,name,email,'unused','active','2026-10-14T08:00:00Z','trial'))
+ con.execute('INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)',('qa-customer','{"company":"QA TEST - reporting fixture"}','2026-10-14'))
+ con.commit();con.close()
+ c=actual.app.test_client()
+ with c.session_transaction() as sess: sess.update(dealer_id='qa-head',account_type='owner',auth_version=0)
+ response=c.get('/head-office/dealers')
+ assert response.status_code==200,response.data[:1000]
+ assert b'1 explicitly labelled QA accounts excluded' in response.data
+ assert b'Paid subscriptions, upgrades, cancellations' in response.data
+ assert b'QA TEST PROPERTY' not in response.data
+print('PASS: real Head Office report route and profile-based QA exclusion')

@@ -33,3 +33,33 @@ def account_metrics(accounts, now=None):
                          activations=activations, cohort_activated=cohort_activated,
                          conversion=round(100*cohort_activated/signups,1) if signups else None))
     return rows
+
+
+def account_plan_report(accounts, now=None):
+    """Current plan assignments are not verified billing subscriptions.
+
+    Periods group registration dates by the CURRENT plan, never a historical
+    payment, upgrade or cancellation date. Only explicitly QA-labelled businesses
+    are excluded; customer estimate contents are never inspected.
+    """
+    import re
+    def is_qa(account):
+        return any(re.match(r'^qa[ -]+test(?:\b|_)', str(account.get(key) or '').strip(), re.I)
+                   for key in ('dealer_name', 'company'))
+    qa = [a for a in accounts if is_qa(a)]
+    customers = [a for a in accounts if not is_qa(a)]
+    plans = []
+    for code, label in [('trial', 'Free trial'), ('basic', 'Basic'), ('pro', 'Pro'),
+                        ('business', 'Business'), ('legacy', 'Legacy / other')]:
+        group = [a for a in customers if (str(a.get('plan_code') or 'legacy').lower()
+                 if str(a.get('plan_code') or 'legacy').lower() in {'trial','basic','pro','business'}
+                 else 'legacy') == code]
+        plans.append(dict(label=label, total=len(group),
+                          enabled=sum(str(a.get('status') or '').lower()=='active' for a in group)))
+    periods = account_metrics(customers, now)
+    for i, row in enumerate(periods):
+        row['trials'] = account_metrics([a for a in customers if a.get('plan_code')=='trial'], now)[i]['signups']
+        row['assigned_plans'] = account_metrics([a for a in customers if a.get('plan_code') in {'basic','pro','business'}], now)[i]['signups']
+        row['legacy'] = row['signups']-row['trials']-row['assigned_plans']
+        row['qa'] = account_metrics(qa, now)[i]['signups']
+    return dict(customers=customers, qa_count=len(qa), plans=plans, periods=periods)
