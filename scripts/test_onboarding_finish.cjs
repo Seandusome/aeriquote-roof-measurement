@@ -37,6 +37,20 @@ for(const [page,industry] of [['roofer','roofing'],['snow','snow'],['pressure','
   dom.window.close();
  }
 }
+// Alberta needs no provincial-tax entry, including stale saved PST and zero-GST businesses.
+for(const page of ['roofer','snow','pressure','paving','landscaping','commercial']){
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'site/'+page+'-setup.html'),'utf8'),{url:'https://test.invalid/site/'+page+'-setup',runScripts:'outside-only'}),w=dom.window,d=w.document;
+ w.scrollTo=()=>{};w.fetch=async()=>({ok:true,json:async()=>({profile:{company:'QA Alberta',name:'QA Owner',email:'qa@example.invalid',country:'CA',province:'AB',gst:'5',pst:'6'}})});
+ w.eval(source);await tick();const f=id=>d.getElementById(id);
+ assert.equal(f('region').value,'AB');assert.equal(f('tax1').value,'5');assert(f('tax1').closest('label').textContent.includes('GST %'));
+ assert.equal(f('tax2').value,'0');assert(f('tax2').disabled);assert(!f('tax2').required);assert(f('tax2').closest('label').hidden);
+ f('nextBtn').click();f('nextBtn').click();assert(d.querySelector('[data-step="7"]').classList.contains('active'),page+' Alberta advances without PST');
+ for(const gst of ['5','0']){f('tax1').value=gst;assert(w.validateStep(2));const saved=await w.saveIndustrySetupLocal(page);assert.equal(saved.gst,gst);assert.equal(saved.pst,'0');}
+ f('tax1').value='';assert(!w.validateStep(2),'GST still requires an explicit value including 0');f('tax1').value='5';
+ f('region').value='SK';f('region').dispatchEvent(new w.Event('change'));assert(!f('tax2').disabled);assert(f('tax2').required);assert(!f('tax2').closest('label').hidden);assert.equal(f('tax2').value,'');assert.equal(f('tax1').value,'5');assert(!w.validateStep(2));
+ f('tax2').value='6';f('region').value='AB';f('region').dispatchEvent(new w.Event('change'));assert.equal(f('tax2').value,'0');assert(w.validateStep(2));
+ dom.window.close();
+}
 // Slow prefill cannot undo choices already made by the user.
 {
  const dom=new JSDOM(fs.readFileSync(path.join(root,'site/roofer-setup.html'),'utf8'),{url:'https://test.invalid/site/roofer-setup',runScripts:'outside-only'}),w=dom.window,d=w.document;let respond;

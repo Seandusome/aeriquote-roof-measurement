@@ -32,18 +32,30 @@ if(back)back.addEventListener('click',()=>{setupError();showStep(current-1)});
 
 const country=document.getElementById('country');
 const setupRegions={Canada:'AB:Alberta|BC:British Columbia|MB:Manitoba|NB:New Brunswick|NL:Newfoundland and Labrador|NS:Nova Scotia|NT:Northwest Territories|NU:Nunavut|ON:Ontario|PE:Prince Edward Island|QC:Quebec|SK:Saskatchewan|YT:Yukon','United States':'AL:Alabama|AK:Alaska|AZ:Arizona|AR:Arkansas|CA:California|CO:Colorado|CT:Connecticut|DE:Delaware|FL:Florida|GA:Georgia|HI:Hawaii|ID:Idaho|IL:Illinois|IN:Indiana|IA:Iowa|KS:Kansas|KY:Kentucky|LA:Louisiana|ME:Maine|MD:Maryland|MA:Massachusetts|MI:Michigan|MN:Minnesota|MS:Mississippi|MO:Missouri|MT:Montana|NE:Nebraska|NV:Nevada|NH:New Hampshire|NJ:New Jersey|NM:New Mexico|NY:New York|NC:North Carolina|ND:North Dakota|OH:Ohio|OK:Oklahoma|OR:Oregon|PA:Pennsylvania|RI:Rhode Island|SC:South Carolina|SD:South Dakota|TN:Tennessee|TX:Texas|UT:Utah|VT:Vermont|VA:Virginia|WA:Washington|WV:West Virginia|WI:Wisconsin|WY:Wyoming|DC:District of Columbia'};
+let setupAlbertaTax=false;
+function syncSetupTaxes(){
+ const primary=document.getElementById('tax1'),secondary=document.getElementById('tax2');if(!primary||!secondary)return;
+ const canadian=country.value==='Canada',alberta=canadian&&document.getElementById('region')?.value==='AB';
+ const primaryLabel=primary.closest('label'),secondaryLabel=secondary.closest('label');
+ if(primaryLabel?.firstChild)primaryLabel.firstChild.nodeValue=alberta?'GST %':canadian?'Federal / HST Tax %':'Sales Tax %';
+ if(secondaryLabel?.firstChild)secondaryLabel.firstChild.nodeValue=canadian?'Provincial Tax %':'Additional Tax %';
+ if(secondaryLabel)secondaryLabel.hidden=!canadian||alberta;
+ secondary.disabled=!canadian||alberta;secondary.required=canadian&&!alberta;
+ if(secondary.disabled)secondary.value='0';else if(setupAlbertaTax)secondary.value='';
+ const help=primary.closest('.setup-section')?.querySelector('.lead');
+ if(help){if(!help.dataset.taxHelp)help.dataset.taxHelp=help.textContent;help.textContent=alberta?'Alberta has no provincial sales tax. Provincial tax is set to 0%. Enter the GST percentage your business charges, or 0 if you do not charge GST.':help.dataset.taxHelp}
+ setupAlbertaTax=alberta;
+}
 function updateSetupRegions(value=''){
  const r=document.getElementById('regionLabel'),field=document.getElementById('region');if(!country||!field)return;
  const label=country.value==='Canada'?'Province / territory':'State';if(r?.childNodes[0])r.childNodes[0].nodeValue=label;
- const primary=document.getElementById('tax1')?.closest('label'),secondary=document.getElementById('tax2')?.closest('label');
- if(primary?.firstChild)primary.firstChild.nodeValue=country.value==='Canada'?'Federal / HST Tax %':'Sales Tax %';
- if(secondary?.firstChild)secondary.firstChild.nodeValue=country.value==='Canada'?'Provincial Tax %':'Additional Tax %';
- if(secondary){secondary.hidden=country.value!=='Canada';if(secondary.hidden)document.getElementById('tax2').value='0'}
  field.replaceChildren(new Option('Choose your '+label.toLowerCase(),''));field.required=true;
  for(const pair of setupRegions[country.value].split('|')){const [code,name]=pair.split(':');field.add(new Option(name,code));if(value===code||value===name)field.value=code}
+ syncSetupTaxes();
 }
 if(country)country.addEventListener('change',()=>{updateSetupRegions();for(const id of ['tax1','tax2']){const f=document.getElementById(id);if(f){f.value=id==='tax2'&&country.value!=='Canada'?'0':'';f.dispatchEvent(new Event('input',{bubbles:true}))}}});
 updateSetupRegions();
+document.getElementById('region')?.addEventListener('change',syncSetupTaxes);
 function syncBusiness(){
  const c=document.getElementById('companyName')?.value||'';
  const p=document.getElementById('companyPhone')?.value||'';
@@ -75,7 +87,7 @@ async function saveIndustrySetupLocal(industry){
   province:document.getElementById('region')?.value||'',
   businessType:industry,pricingMethod:pricing,price:pricing==='manual'?'0':(document.getElementById('defaultPrice')?.value||'0'),
   coverage:'0',services:checkedTexts(2),propertyTypes:checkedTexts(3),
-  gst:document.getElementById('tax1')?.value||'0',pst:country.value==='Canada'?(document.getElementById('tax2')?.value||'0'):'0',
+  gst:document.getElementById('tax1')?.value||'0',pst:country.value==='Canada'&&document.getElementById('region')?.value!=='AB'?(document.getElementById('tax2')?.value||'0'):'0',
   pricingMode:document.querySelector('input[name="taxmode"]:checked')?.value||'regular',
   warrantyStatement:document.getElementById('warrantyStatement')?.value||'',
   estimateMessage:document.getElementById('estimateMessage')?.value||'',
@@ -144,7 +156,7 @@ if(document.body.classList.contains('setup-page') && setupIndustry){
   for(const [id,value] of [['companyName',p.company],['contactName',p.name],['companyPhone',p.phone],['companyEmail',p.email],['companyWebsite',p.website]]){const field=document.getElementById(id);if(field&&!edited.has(id)&&value)field.value=value}
   if(!edited.has('country')&&!edited.has('region')){country.value=p.country==='US'?'United States':'Canada';updateSetupRegions(p.province||'')}
   for(const [id,key] of [['tax1','gst'],['tax2','pst']]){if(!edited.has(id)&&p[key]!==undefined)document.getElementById(id).value=id==='tax2'&&country.value!=='Canada'?'0':p[key]}
-  syncBusiness();
+  syncSetupTaxes();syncBusiness();
  }).catch(()=>{});
  const finish=document.getElementById('finishSetup');
  finish?.addEventListener('click',async function(event){
