@@ -156,3 +156,10 @@ Remaining: owner-session visibility of this employee job/revision; live employee
 
 
 Owner follow-up, October 19 14:33 Edmonton: successful owner session verified by EMPLOYEES access. Previous Estimates shows the employee-created QA job at CAD $3,393.52. VIEW HISTORY shows current CAD $3,393.52 and previous version CAD $3,351.62, both 3,774 ft² and the same explicit QA label/notes. Owner then disabled ONLY `QA TEST - Permissions - DO NOT SEND` (`sean@aeriquote.com`); page verified Disabled with ACTIVATE available. No real employee touched; QA estimate/history retained. Owner visibility and disable action now live-verified. An already signed-in employee session was not retained separately, so immediate live session revocation is still not claimed; that case remains covered by the isolated real-Flask regression. Separate foreign-ID live API/image checks remain outstanding.
+
+
+### User-performed live employee revocation — October 19, 14:50 Edmonton
+
+Sean completed the two-browser test and reported the results in chat. First, login as the disabled QA employee was rejected. Then he activated the same labelled QA employee in the owner browser, signed into a separate employee browser, and opened the QA estimate at CAD $3,393.52 (pasted its details). He disabled the employee in the owner browser (pasted Disabled / ACTIVATE state). The existing employee browser could no longer use estimate access; after refresh it returned to Log in to AeriQuote, which he explicitly confirmed. This completes the USER-PERFORMED live disabled-login and existing-session revocation checks. These observations were reported by Sean, not independently operated/observed by the agent in both browsers. QA employee left disabled.
+
+An earlier agent attempt did not prove revocation because the shared cloud browser switched to owner and replaced the employee session; do not count that attempt. Direct cross-business foreign-ID read/write/image checks remain covered by isolated real-Flask tests and outstanding as separately logged-in live checks. No application change required for the successful user-performed revocation test.
