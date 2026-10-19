@@ -17,7 +17,7 @@ with tempfile.TemporaryDirectory() as tmp:
  def client(did,eid=None):
   c=a.app.test_client()
   with c.session_transaction() as s:
-   s.update(dealer_id=did,account_type='employee' if eid else 'owner',auth_version=0)
+   s.update(dealer_id=did,account_type='employee' if eid else 'owner',auth_version=a.login_auth_version('employee' if eid else 'owner',eid or did))
    if eid:s['employee_id']=eid
   return c
  office=client('office');owner=client('dealer');employee=client('dealer','employee');other=client('other')
@@ -89,4 +89,27 @@ with tempfile.TemporaryDirectory() as tmp:
  assert con.execute("SELECT COUNT(*) AS n FROM account_credit_audit WHERE action='grant'").fetchone()['n']==1
  assert con.execute("SELECT COUNT(*) AS n FROM account_credit_audit WHERE dealer_id='other'").fetchone()['n']==0
  con.close()
+ # Disable in the credit console blocks existing owner/employee sessions, preserves data,
+ # stops monthly access and does not award new credits on reactivation.
+ owner=client('dealer');employee=client('dealer','employee');dormant=client('dealer')
+ con=a.estimate_db()
+ before_count=con.execute("SELECT COUNT(*) AS n FROM estimates WHERE dealer_id='dealer'").fetchone()['n']
+ before_cfg=settings(con,'dealer');con.close()
+ disable=data('disable')
+ assert office.post('/head-office/credits',data=disable).status_code==302
+ assert office.post('/head-office/credits',data=disable).status_code==302
+ assert owner.get('/api/account/profile').status_code==401
+ assert employee.get('/api/estimates').status_code==401
+ con=a.estimate_db()
+ assert settings(con,'dealer')['complimentary']==0
+ assert settings(con,'dealer')['lookup_bonus']==before_cfg['lookup_bonus']
+ assert con.execute("SELECT COUNT(*) AS n FROM estimates WHERE dealer_id='dealer'").fetchone()['n']==before_count
+ assert con.execute("SELECT COUNT(*) AS n FROM account_credit_audit WHERE action='disable'").fetchone()['n']==1
+ con.close()
+ assert office.post('/head-office/credits',data=data('reactivate')).status_code==302
+ assert dormant.get('/api/account/profile').status_code==401,'Reactivation never revives an old login session'
+ revived=client('dealer').get('/api/account/profile')
+ assert revived.status_code==200 and not revived.json['allowance']['complimentary']
+ assert office.post('/head-office/credits',data={**data('disable'),'dealer_id':'office'}).status_code==200
+ assert office.get('/head-office/credits').status_code==200,'Head Office cannot disable itself'
  print('PASS: Head Office-only grants, CSRF, duplicate retry, invalid inputs, profile escalation rejection, employee-shared limits, ordinary extra credits, 200 monthly quotas in both channels, Edmonton rollover, no reset on brand/resave, free revisions and separate reporting')

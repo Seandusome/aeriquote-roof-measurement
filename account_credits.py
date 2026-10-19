@@ -77,7 +77,7 @@ def register_credits(app, db, is_head_office):
                 uuid.UUID(operation)
                 amount = int(request.form.get('amount') or 0)
                 if not reason or len(reason)>500: raise ValueError('Enter a reason of 1 to 500 characters.')
-                if action not in {'grant','configure'}: raise ValueError('Unknown action.')
+                if action not in {'grant','configure','disable','reactivate'}: raise ValueError('Unknown action.')
                 if action=='grant' and not 1<=amount<=10000: raise ValueError('Choose 1 to 10,000 credits.')
                 brand = str(request.form.get('brand') or '')
                 if brand not in BRANDS: raise ValueError('Unknown brand.')
@@ -86,8 +86,8 @@ def register_credits(app, db, is_head_office):
                 try:
                     account = lock_account(con, did)
                     if not account: raise ValueError('Account not found.')
-                    if str(account['dealer_name']).strip().lower()=='head office' or str(account['email']).lower()=='sdusome@diitalk.com':
-                        raise ValueError('Head Office does not need credits.')
+                    if con.execute('SELECT dealer_id FROM account_admin_roles WHERE dealer_id=?',(did,)).fetchone() or str(account['email']).lower()=='sdusome@diitalk.com':
+                        raise ValueError('Head Office accounts are protected.')
                     # A repeated browser submission never awards credits twice.
                     if not con.execute('SELECT id FROM account_credit_audit WHERE id=?', (operation,)).fetchone():
                         con.execute('INSERT INTO account_allowances(dealer_id) VALUES(?) ON CONFLICT(dealer_id) DO NOTHING', (did,))
@@ -95,6 +95,15 @@ def register_credits(app, db, is_head_office):
                         if action=='grant':
                             con.execute('UPDATE account_allowances SET lookup_bonus=lookup_bonus+?,estimate_bonus=estimate_bonus+? WHERE dealer_id=?', (amount, amount, did))
                             details = f'Added {amount} measurements and {amount} estimates. Extra credits carry forward.'
+                        elif action in {'disable','reactivate'}:
+                            status='disabled' if action=='disable' else 'active'
+                            con.execute('UPDATE dealers SET status=? WHERE id=?',(status,did))
+                            if action=='disable':
+                                con.execute('UPDATE account_allowances SET complimentary=0 WHERE dealer_id=?',(did,))
+                                identities=[('owner',did)]+[('employee',r['id']) for r in con.execute('SELECT id FROM dealer_employees WHERE dealer_id=?',(did,)).fetchall()]
+                                for kind,identity in identities:
+                                    con.execute('INSERT INTO account_auth_versions(account_type,account_id,version) VALUES(?,?,1) ON CONFLICT(account_type,account_id) DO UPDATE SET version=account_auth_versions.version+1',(kind,identity))
+                            details=f"Account {account['status']} → {status}. "+('Complimentary monthly access stopped; owner and employee access blocked. ' if action=='disable' else 'Monthly access remains off until explicitly enabled. ')+'Saved estimates and unused extra credits retained.'
                         else:
                             con.execute('UPDATE account_allowances SET complimentary=?,brand=? WHERE dealer_id=?', (complimentary, brand, did))
                             details = f"Complimentary {before['complimentary']} → {complimentary}; brand {before['brand']} → {brand}. Existing usage preserved."
@@ -147,5 +156,8 @@ PAGE = """<!doctype html><html><head><meta name="viewport" content="width=device
 <form method="post"><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="operation" value="{{new_id()}}"><input type="hidden" name="dealer_id" value="{{a.id}}"><input type="hidden" name="action" value="configure">
 <h3>Monthly dealer access and warranty brand</h3><label><input type="checkbox" name="complimentary" value="1" {% if a.complimentary %}checked{% endif %}> Complimentary dealer — 200 measurements and estimates per month</label>
 <label>Approved warranty brand <select name="brand">{% for key,label in brands.items() %}<option value="{{key}}" {% if key==a.brand %}selected{% endif %}>{{label}}</option>{% endfor %}</select></label>
-<label>Reason <input name="reason" maxlength="500" required></label><button>SAVE MONTHLY ACCESS AND BRAND</button></form></section>{% endfor %}
+<label>Reason <input name="reason" maxlength="500" required></label><button>SAVE MONTHLY ACCESS AND BRAND</button></form>
+<form method="post"><h3>Account access</h3><input type="hidden" name="csrf" value="{{csrf}}"><input type="hidden" name="operation" value="{{new_id()}}"><input type="hidden" name="dealer_id" value="{{a.id}}">
+{% if a.status|lower=='active' %}<input type="hidden" name="action" value="disable"><p>Disabling blocks the owner and all employees and stops complimentary monthly access. Estimates and unused extra credits remain saved.</p><label>Reason <input name="reason" required maxlength="500" placeholder="Dealer left the program"></label><button style="background:#9a2435">DISABLE ACCOUNT AND MONTHLY ACCESS</button>
+{% else %}<input type="hidden" name="action" value="reactivate"><p>Reactivate login access. Complimentary monthly access must be enabled separately.</p><label>Reason <input name="reason" required maxlength="500"></label><button>REACTIVATE ACCOUNT</button>{% endif %}</form></section>{% endfor %}
 <section><h2>Recent adjustments</h2><div class="scroll"><table><tr><th>Date</th><th>Account</th><th>Issued by</th><th>Change</th><th>Reason</th></tr>{% for e in audit %}<tr><td>{{e.created_at}}</td><td>{{e.email}}</td><td>{{e.actor_email or e.actor}}</td><td>{{e.details}}</td><td>{{e.reason}}</td></tr>{% else %}<tr><td colspan="5">No adjustments yet.</td></tr>{% endfor %}</table></div></section></main></body></html>"""
