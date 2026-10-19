@@ -35,6 +35,7 @@ const setupRegions={Canada:'AB:Alberta|BC:British Columbia|MB:Manitoba|NB:New Br
 let setupAlbertaTax=false;
 function syncSetupTaxes(){
  const primary=document.getElementById('tax1'),secondary=document.getElementById('tax2');if(!primary||!secondary)return;
+ for(const field of [primary,secondary]){field.step='any';field.placeholder='Example: 5 for 5%'}
  const canadian=country.value==='Canada',alberta=canadian&&document.getElementById('region')?.value==='AB';
  const primaryLabel=primary.closest('label'),secondaryLabel=secondary.closest('label');
  if(primaryLabel?.firstChild)primaryLabel.firstChild.nodeValue=alberta?'GST %':canadian?'Federal / HST Tax %':'Sales Tax %';
@@ -43,7 +44,7 @@ function syncSetupTaxes(){
  secondary.disabled=!canadian||alberta;secondary.required=canadian&&!alberta;
  if(secondary.disabled)secondary.value='0';else if(setupAlbertaTax)secondary.value='';
  const help=primary.closest('.setup-section')?.querySelector('.lead');
- if(help){if(!help.dataset.taxHelp)help.dataset.taxHelp=help.textContent;help.textContent=alberta?'Alberta has no provincial sales tax. Provincial tax is set to 0%. Enter the GST percentage your business charges, or 0 if you do not charge GST.':help.dataset.taxHelp}
+ if(help){if(!help.dataset.taxHelp)help.dataset.taxHelp=help.textContent;help.textContent=alberta?'Alberta has no provincial sales tax. Provincial tax is set to 0%. Enter the GST percentage your business charges, or 0 if you do not charge GST.':help.dataset.taxHelp;help.textContent+=' Enter 5 for 5% (not 0.05). Decimal rates such as 7.25 are supported.'}
  setupAlbertaTax=alberta;
 }
 function updateSetupRegions(value=''){
