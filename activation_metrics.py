@@ -50,16 +50,19 @@ def account_plan_report(accounts, now=None):
     customers = [a for a in accounts if not is_qa(a)]
     plans = []
     for code, label in [('trial', 'Free trial'), ('basic', 'Basic'), ('pro', 'Pro'),
-                        ('business', 'Business'), ('legacy', 'Legacy / other')]:
-        group = [a for a in customers if (str(a.get('plan_code') or 'legacy').lower()
-                 if str(a.get('plan_code') or 'legacy').lower() in {'trial','basic','pro','business'}
-                 else 'legacy') == code]
+                        ('business', 'Business'), ('complimentary', 'Complimentary dealers'), ('legacy', 'Legacy / other')]:
+        def category(a):
+            if a.get('complimentary'): return 'complimentary'
+            plan=str(a.get('plan_code') or 'legacy').lower()
+            return plan if plan in {'trial','basic','pro','business'} else 'legacy'
+        group = [a for a in customers if category(a)==code]
         plans.append(dict(label=label, total=len(group),
                           enabled=sum(str(a.get('status') or '').lower()=='active' for a in group)))
     periods = account_metrics(customers, now)
     for i, row in enumerate(periods):
-        row['trials'] = account_metrics([a for a in customers if a.get('plan_code')=='trial'], now)[i]['signups']
-        row['assigned_plans'] = account_metrics([a for a in customers if a.get('plan_code') in {'basic','pro','business'}], now)[i]['signups']
-        row['legacy'] = row['signups']-row['trials']-row['assigned_plans']
+        row['trials'] = account_metrics([a for a in customers if not a.get('complimentary') and a.get('plan_code')=='trial'], now)[i]['signups']
+        row['assigned_plans'] = account_metrics([a for a in customers if not a.get('complimentary') and a.get('plan_code') in {'basic','pro','business'}], now)[i]['signups']
+        row['complimentary'] = account_metrics([a for a in customers if a.get('complimentary')], now)[i]['signups']
+        row['legacy'] = row['signups']-row['trials']-row['assigned_plans']-row['complimentary']
         row['qa'] = account_metrics(qa, now)[i]['signups']
     return dict(customers=customers, qa_count=len(qa), plans=plans, periods=periods)
