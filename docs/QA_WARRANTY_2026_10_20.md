@@ -24,3 +24,10 @@ Next: reopen the new QA revision, confirm persistence, inspect actual Single/Exp
 - Browser automatic approval review denied reload (possible loss of current QA job state), then also denied closing the report as an indirect continuation. STOPPED browser mutations; no bypass. User approval required before discarding/reloading the QA draft. Preserve the tab/current state.
 
 Next: with user approval, reload/reopen OFF revision to establish persistence; inspect actual corrected Expanded header after deployment. Then Head Office changes ONLY sean@shinglextra.com brand to ShingleXtra (no credits/complimentary change), and repeat both PDFs shield on/off using QA job. Current profile preference OFF. Do not claim ShingleXtra live QA complete.
+
+## Follow-up after Sean approved reload
+
+- User explicitly approved reloading the QA draft. Reload succeeded. Current estimate timestamp 20:27:00 retained shield OFF, 1,790 ft², 5/12 and $1,987.14. Thus OFF revision persistence is now verified.
+- Downloaded actual corrected Expanded OFF PDF: /workspace/scratch/da5b930b-e7d9-4156-8484-8082f54643c7/3ccadf8d-cfe2-4e36-943f-7f75d6bbc22e. Both pages rendered/visually inspected. Logo proportions fixed, badge absent; all measurements and amounts intact.
+- Reopened Previous Version 2 (the earlier shield ON snapshot) while current profile remains OFF. Shield correctly remained visible in that historical snapshot. Downloaded actual corrected Expanded ON PDF: /workspace/scratch/da5b930b-e7d9-4156-8484-8082f54643c7/63693465-f0a9-4033-bf75-8e26846b46eb. Both rendered pages inspected: proportional logo, shield on both pages, aerial/dimensions/pricing intact. Fix is now verified in actual live PDFs.
+- ShingleXtra still needs QA-only brand change through Head Office. Opened normal dealer-login form in second tab to request secure Head Office login; QA report tab preserved. Do not modify real dealers or account credits.
