@@ -43,11 +43,15 @@ el('rEstimateTitle').textContent='QA TEST Roofing Estimate';el('rEstimateSubtitl
 w.jspdf={jsPDF:class{addPage(){}addImage(){}save(){}}};
 w.HTMLImageElement.prototype.decode=async()=>{};w.HTMLCanvasElement.prototype.getContext=()=>({drawImage(){}});w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/jpeg;base64,qa';el('customerMap').style.display='none';el('rMarketingPanel').classList.add('marketingHidden');
 el('streetViewChoice').value='none';
+el('rDealerLogo').src='https://test.invalid/qa-logo.png';el('rDealerLogo').classList.remove('noDealerLogo');
+Object.defineProperty(el('rDealerLogo'),'naturalWidth',{value:400});Object.defineProperty(el('rDealerLogo'),'naturalHeight',{value:800});
 const captures=[];
 w.html2canvas=async node=>{captures.push(node.cloneNode(true));return {width:1200,height:927,getContext:()=>({drawImage(){}}),toDataURL:()=> 'data:image/jpeg;base64,qa'}};
 d.querySelector('#reportOverlay').style.display='block';
 await w.eval("buildExpandedEstimatePDF(document.querySelector('#reportOverlay .report'))");
 assert(captures.length>0);
+const expandedLogo=captures[0].querySelector('img[src="https://test.invalid/qa-logo.png"]');
+assert.equal(expandedLogo.style.width,'32.5px');assert.equal(expandedLogo.style.height,'65px','Expanded logo preserves intrinsic proportions without relying on html2canvas object-fit');
 assert(captures[0].querySelector('img[src="'+shieldSrc+'"]'),'expanded PDF header retains the approved shield');
 captures.length=0;
 await w.eval("captureSinglePageEstimate(document.querySelector('#reportOverlay .report'))");
