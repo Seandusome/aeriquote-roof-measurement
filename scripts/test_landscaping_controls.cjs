@@ -349,5 +349,13 @@ for(const node of w.document.querySelectorAll('[data-tip]'))assert(!/roof|shingl
 w.eval(`status('Main house measured. Roof area ready.');applyBusinessTerminology()`);assert(!/roof|main house/i.test(btn('status').textContent));
 dom.reconfigure({url:'https://test.invalid/?industry=roofing'});w.eval(`el('businessType').value='roofing';applyBusinessTerminology()`);assert(/shingle|roof/.test(btn('extraServiceDescription').placeholder));assert([...w.document.querySelectorAll('[data-tip]')].some(n=>/pitch/.test(n.dataset.tip)),'Switching back must restore roofing tips');
 console.log('PASS: main AutoMeasure retains measured area; Snow placeholders, hover help, statuses and reversible Roofing terms');
+// Clearing a saved area price must stay blank/invalid, never silently turn into a free service.
+w.eval(`resetMeasurementForNewProperty();el('businessType').value='commercial';businessTypeChanged();sessionToken='pricing-guard';measurementViewMode='area';el('gst').value='5';el('pst').value='6';el('pricingMode').value='regular';el('jobPrice').value='1';commercialAreas=[{name:'QA priced area',rate:1,sqft:100,points:[[52,-106],[52,-105.9999],[52.0001,-106]]}];commercialEditingIndex=0;areaPoints=commercialAreas[0].points.map(p=>L.latLng(...p));areaMeasurementSaved=true;renderSummary();commercialAreaField(0,'rate','')`);
+assert.equal(w.eval('commercialAreas[0].rate'),null);assert(btn('createEstimateBtn').disabled);assert(btn('quotePricingError').textContent.includes('every saved service area'));
+assert.equal(btn('commercialAreaList').querySelector('input[type=number]').value,'');
+w.eval(`commercialAreaField(0,'rate','0')`);assert.equal(w.eval('commercialAreas[0].rate'),0);assert.equal(w.eval('quotePricingError()'),'');
+w.eval(`el('pricingMode').value='discount';el('discountPct').value='101';renderSummary()`);assert(btn('createEstimateBtn').disabled);assert(btn('quotePricingError').textContent.includes('discount'));
+w.eval(`el('discountPct').value='10';renderSummary()`);assert.equal(w.eval('quotePricingError()'),'');
+console.log('PASS: real saved-area rate entry preserves blank and blocks quote; explicit zero allowed; excessive discount blocked and corrected discount recovers');
 await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');console.log('Script errors:',errors);dom.window.close();if(errors.length)process.exitCode=1;})().catch(e=>{console.error(e);process.exit(1)});
 
