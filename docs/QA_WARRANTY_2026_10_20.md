@@ -31,3 +31,9 @@ Next: with user approval, reload/reopen OFF revision to establish persistence; i
 - Downloaded actual corrected Expanded OFF PDF: /workspace/scratch/da5b930b-e7d9-4156-8484-8082f54643c7/3ccadf8d-cfe2-4e36-943f-7f75d6bbc22e. Both pages rendered/visually inspected. Logo proportions fixed, badge absent; all measurements and amounts intact.
 - Reopened Previous Version 2 (the earlier shield ON snapshot) while current profile remains OFF. Shield correctly remained visible in that historical snapshot. Downloaded actual corrected Expanded ON PDF: /workspace/scratch/da5b930b-e7d9-4156-8484-8082f54643c7/63693465-f0a9-4033-bf75-8e26846b46eb. Both rendered pages inspected: proportional logo, shield on both pages, aerial/dimensions/pricing intact. Fix is now verified in actual live PDFs.
 - ShingleXtra still needs QA-only brand change through Head Office. Opened normal dealer-login form in second tab to request secure Head Office login; QA report tab preserved. Do not modify real dealers or account credits.
+
+## Head Office brand switch completed
+
+- Sean explicitly authorized Head Office sign-in solely for QA brand switch. Initial secure login was rejected; Sean manually signed in successfully as Head Office (Admin Dashboard visible).
+- Head Office credits search returned exactly AeriQuote QA / sean@shinglextra.com, trial, standard allowance, zero extra credits, complimentary unchecked. Changed Approved warranty brand to ShingleXtra only. Saved audit at 2026-10-20T20:40:17.819491+00:00: complimentary 0 → 0; brand shingle_guard → shinglextra; existing usage preserved. No real account modified.
+- Navigated QA report tab to normal dealer-login to sign back in as QA. Secure credential request submitted, but visible result says Email or password is incorrect. No QA login success claimed, no ShingleXtra report/PDF created. Manual QA login handoff needed for sean@shinglextra.com, not Head Office.
