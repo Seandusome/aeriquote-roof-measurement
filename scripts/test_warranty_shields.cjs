@@ -2,6 +2,22 @@
 const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs'),assert=require('assert/strict'),path=require('path'),{execFileSync}=require('child_process');
 (async()=>{const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const raw=execFileSync('python',['-c',"import ast; from pathlib import Path; m=ast.parse(Path('app.py').read_text()); print(next(ast.literal_eval(n.value) for n in m.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='HTML' for t in n.targets)))"],{maxBuffer:4000000}).toString();const leafletRoot=path.dirname(require.resolve('leaflet/package.json'));const html=raw.replace(/<script[^>]+src=[^>]+>\s*<\/script>/g,'').replace(/<link[^>]+>/g,'').replace(/\{%.*?%\}/g,'').replace(/\{\{GOOGLE_MAPS_API_KEY\}\}/g,'test-key').replace(/\{\{.*?\}\}/g,'').replace('</head>','<style>'+fs.readFileSync(path.join(leafletRoot,'dist/leaflet.css'),'utf8')+'</style><script>'+fs.readFileSync(path.join(leafletRoot,'dist/leaflet.js'),'utf8')+'</script><script>L.Browser.svg=true;</script></head>');const dom=new JSDOM(html,{url:'https://test.invalid/?industry=landscaping',runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){w.fetch=async()=>({ok:true,json:async()=>({})});w.alert=()=>{};Object.defineProperty(w.HTMLElement.prototype,'clientWidth',{get(){return this.id==='map'?700:1440}});Object.defineProperty(w.HTMLElement.prototype,'clientHeight',{get(){return this.id==='map'?550:800}});w.HTMLElement.prototype.scrollIntoView=()=>{};}});const w=dom.window;await new Promise(r=>w.addEventListener('load',r,{once:true}));
 const d=w.document, el=id=>d.getElementById(id);
+
+w.localStorage.setItem('sxDealerDefaults',JSON.stringify({company:'QA TEST Old Company'}));
+w.localStorage.setItem('sxDealerLogo','data:image/png;base64,old');
+w.eval("prepareAccountBrandingCache('qa-owner-a')");
+assert.equal(w.localStorage.getItem('sxDealerDefaults'),null,'Unattributed legacy defaults must not cross an account boundary');
+assert.equal(w.localStorage.getItem('sxDealerLogo'),null);
+w.localStorage.setItem('sxDealerDefaults',JSON.stringify({company:'QA TEST Owner A'}));
+w.localStorage.setItem('sxDealerLogo','data:image/png;base64,owner-a');
+w.eval("prepareAccountBrandingCache('qa-owner-a')");
+assert(w.localStorage.getItem('sxDealerDefaults').includes('Owner A'),'Same-account browser edits retained');
+assert.equal(w.localStorage.getItem('sxDealerLogo'),'data:image/png;base64,owner-a');
+w.eval("prepareAccountBrandingCache('qa-owner-b')");
+assert.equal(w.localStorage.getItem('sxDealerDefaults'),null,'Another account cannot inherit company settings');
+assert.equal(w.localStorage.getItem('sxDealerLogo'),null,'Another account cannot inherit logo');
+assert.equal(w.localStorage.getItem('aqBrandingAccount'),'qa-owner-b');
+
 w.eval("el('businessType').value='roofing';sessionToken='qa';");
 w.eval("applyWarrantyAccount({allowance:{brand:'shingle_guard'},profile:{}});applyReportWarranty()");
 assert.equal(el('warrantyShieldSettings').style.display,'block');
