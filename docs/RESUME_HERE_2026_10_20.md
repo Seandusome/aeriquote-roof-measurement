@@ -1,0 +1,23 @@
+# Resume AeriQuote after October 20, 2026
+
+Recovery branch: landscaping-multi-area-recovery-oct11. Main/production untouched. Use AeriQuote QA owner sean@shinglextra.com only; company AeriQuote QA. Head Office sdusome@diitalk.com is NOT needed for normal QA. Confirmed Render workspace Shingle Guard / tea-daaurjp5efls7391kvj0; test service srv-db5a2g5ckfvc739fui70. Real dealers, credit grants and complimentary settings must remain unchanged. AI Trace stays removed.
+
+## Completed today
+- Actual Shingle Guard and ShingleXtra Single/Expanded shield ON/OFF exports rendered and visually inspected. Shingle Guard Expanded logo proportions fixed and live verified. See QA_WARRANTY_2026_10_20.md. QA shield preference remains OFF.
+- Pinehouse main and second automatic roof results correctly blocked from quoting for mismatched scopes. Targeted synthetic corrections, second-roof Edit/Cancel, separate roof preservation, save/reopen, actual Single/Expanded PDFs passed. These polygons and 5/12 pitches are synthetic, NOT certified roof measurements.
+- Fixed FIX ROOF retaining the previous building viewport. d62cb19 live verified: selecting main after second centres on main once imagery settles. Preserve all underquote safeguards. Whole-building Pinehouse AutoMeasure remains unresolved.
+- Pre-user broad pass: initial 40/40 local workflow checks passed. Live Commercial restored existing QA job, added second area, independent prices, saved labelled revision: QA TEST Prelaunch Commercial Oct20 DO NOT SEND. 11,560 ft² @ $0.10 + 3,991 ft² @ $0.20 + 291.7 ft @ $0.35 -> $2,056.31 subtotal + $102.82 + $123.38 = $2,282.51 CAD. Synthetic QA only. New revision reopen/actual export still pending.
+- At first Commercial PDF download, native retained credential-data restriction reset browser kernel before download path. Do not claim export or six-industry current live pass complete. No workaround/bypass attempted after reset. Prior successful actual exports remain separate evidence.
+- Fixed profile save false success: await server {ok:true}, prevent concurrent submissions, retain entries/cache/job rate on failed request, retry feedback, allow confirmed server save with unavailable storage. App 08b522d deployed live via dep-dbbu56u7bikc73e0fffg. Full post-fix workflow 41/41 passed. Actual profile-save live error/success recheck remains pending. Details in PRELAUNCH_QA_2026_10_20.md.
+- Follow-up found server profile restore silently stopped if localStorage write threw. New test reproduced company/rate/taxes failing to hydrate. Guarded optional cache write; same test now passes both unavailable storage and normal storage, while active job settings/rate remain unchanged. New test_profile_restore.cjs added to CI. This is account-setting restoration; do not infer every logo/storage path is independently verified.
+- After restore fix: profile save + restore tests, six-industry saved editing, both warranty brands, 12 setup paths and isolated six new-account/profile integration passed; compile/whitespace passed. These are local synthetic checks, not fresh live signup/PDF evidence. Final deploy/full-run status follows in later checkpoint if completed.
+
+## Next live checks
+1. Obtain working QA browser session through supported authentication/handoff. Never read credentials or bypass native credential restrictions. Sign-in previously worked manually but browser export was subsequently blocked.
+2. Reopen new Commercial $2,282.51 revision; verify two areas, line, rates, notes, and total. Download ACTUAL Single/Expanded, render all pages, inspect imagery/labels/pricing.
+3. Check both profile-save feedback and account-settings restoration in live UI. Do not force failures on real accounts.
+4. Finish current-build six-industry workflow and setup/mobile pass. October 18 already has a prior six-industry saved-edit/reopen/Single/Expanded pass; do not erase or mislabel that evidence. See NEW_USER_FLOW_2026_10_18.md.
+5. Broader prelaunch gaps: actual physical devices; separate ordinary-owner live foreign-ID write/image rejection; production backup restore; API usage/cost audit; implemented retention policy; paid billing-cycle renewal/Stripe. Payments deferred. Current green tests are not a launch-ready certificate.
+
+## Local checkout preservation
+/workspace/scratch/93dfcfceb87a/aeriquote-qa contains local equivalent commits/edits and test logs. Automatic review rejected git switch -C as potentially discarding ahead commits. Never reset this checkout without comparison. Read-only fetch is fine; publish exact changed blobs against verified remote tree with expected-head lease. Do not overwrite newer fixes/docs. Source hashes were compared before publishing.
