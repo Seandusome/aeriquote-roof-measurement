@@ -333,6 +333,8 @@ assert(btn('createEstimateBtn').disabled);assert(btn('roofSaveGuidance').textCon
 assert(btn('roofSaveGuidance').textContent.includes('Estimate locked: Main House still needs correction.'));
 assert(btn('roofSaveGuidance').textContent.includes('Click FIX ROOF beside Main House'));
 btn('summary').querySelectorAll('.roof-row-action')[0].click();assert.equal(w.eval('tracePoints.length'),0);
+assert(w.eval('map.getCenter().distanceTo(L.latLng(structures[0].latitude,structures[0].longitude))')<1,'Fix main roof must leave the previously edited second roof and centre the selected main roof');
+assert.equal(w.eval('JSON.stringify(structures[1])'),savedSecond);
 assert(btn('roofSaveGuidance').textContent.includes('Editing Main House. Save or cancel'));
 btn('traceBtn').click();assert(btn('createEstimateBtn').disabled);assert.equal(w.eval('JSON.stringify(structures[1])'),savedSecond);
 w.eval('delete structures[0].automatic_review_warning;renderSummary()');assert(!btn('createEstimateBtn').disabled);
