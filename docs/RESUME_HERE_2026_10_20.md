@@ -21,3 +21,11 @@ Recovery branch: landscaping-multi-area-recovery-oct11. Main/production untouche
 
 ## Local checkout preservation
 /workspace/scratch/93dfcfceb87a/aeriquote-qa contains local equivalent commits/edits and test logs. Automatic review rejected git switch -C as potentially discarding ahead commits. Never reset this checkout without comparison. Read-only fetch is fine; publish exact changed blobs against verified remote tree with expected-head lease. Do not overwrite newer fixes/docs. Source hashes were compared before publishing.
+
+## Final verified status
+
+- Account-settings restore fix app c7225d546b67b114f2a9dc4083b4692b7c6b7c42 deployed live to test service in dep-dbbu84c9v7es73b25370, finished 2026-10-20T21:59:23.423128Z. No error-level logs returned through 21:59:48 UTC. Deployment is confirmed; live browser behavior verification is still pending.
+- Full final regression rerun: 42/42 workflow Python/Node script invocations passed after restore fix. Includes profile-save and profile-restore new tests, all prior measurement/rounding/geometry/PDF/shield, signup/setup, saved-edit, support, isolation/permissions/credits and property-session recovery tests. Log /workspace/scratch/93dfcfceb87a/end-of-day-regressions.json. Compile and whitespace checks also passed.
+- No additional live browser interaction after the credential-protection kernel reset. No user-facing messages, real-account/profile changes, credit grants or main updates performed in final source/regression pass. Do not call the pre-user live pass complete.
+
+Suggested next-chat prompt: Resume AeriQuote on landscaping-multi-area-recovery-oct11. Read docs/RESUME_HERE_2026_10_20.md and docs/PRELAUNCH_QA_2026_10_20.md. Preserve all fixes. Continue pending live QA using sean@shinglextra.com (AeriQuote QA), starting with Commercial $2,282.51 reopen and actual Single/Expanded PDFs, then profile save/restore and remaining industries/mobile. Leave main, credits and real dealers untouched.
