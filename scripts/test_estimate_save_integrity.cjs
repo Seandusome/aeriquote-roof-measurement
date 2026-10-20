@@ -14,5 +14,19 @@ const c={quotePricingError:()=>'',el:id=>fields[id],priceCalc:()=>({area:100,tot
  fields.extraServiceDescription.value='Retry me';const previousKey=c.lastHistorySaveKey;fail=true;assert.equal(await c.saveEstimateHistory(),false);assert.equal(c.lastHistorySaveKey,previousKey);assert(messages.some(x=>x[0].includes('not saved')),'Save failure must be visible');
  fail=false;assert.equal(await c.saveEstimateHistory(),true);assert.equal(saved.length,6,'Failed save can retry');
  assert(s.includes('if(!historicalMode&&(await saveEstimateHistory())===false)'), 'Report opening must stop on failed save');
+ // Delay image loading and edit the form while the save is in flight.
+ fields.streetViewChoice.value='auto';c.savedPropertyEditActive=false;c.sessionToken='original-session';
+ fields.extraServiceDescription.value='Frozen service';fields.extraServiceAmount.value=10;
+ c.quoteSnapshot.commercialAreas[0].name='Frozen area';
+ let releaseImage;const posted=[];
+ c.fetch=async(url,options)=>{if(url.startsWith('/street/')){await new Promise(resolve=>releaseImage=resolve);return {ok:false}}posted.push(JSON.parse(options.body));return {ok:true}};
+ const pending=c.saveEstimateHistory();
+ fields.extraServiceDescription.value='Later service';fields.extraServiceAmount.value=99;
+ c.quoteSnapshot.commercialAreas[0].name='Later area';fields.address.value='Later address';
+ releaseImage();assert.equal(await pending,true);
+ assert.equal(posted[0].extra_service_description,'Frozen service');
+ assert.equal(posted[0].extra_service_amount,10);
+ assert.equal(posted[0].quote.commercialAreas[0].name,'Frozen area');
+ assert.equal(posted[0].address,'QA property');
  console.log('PASS: unchanged-total edits persist, duplicate skips, job metadata preserved, failed save visible and retryable');
 })().catch(e=>{console.error(e);process.exit(1)});
