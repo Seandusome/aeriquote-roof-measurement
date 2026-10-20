@@ -25,3 +25,13 @@ Recovery branch only. Main, real dealers, credit grants, complimentary settings 
 ## Remaining accuracy limit
 
 Pinehouse whole-building AutoMeasure remains unresolved. Google partial-unit scope is not a whole-building area. No thresholds relaxed, no clipping/scaling, and no accuracy certification from synthetic QA traces. The guard continues to require dealer correction before quoting.
+
+## Deployed fix verified live
+
+- Sean confirmed Render workspace Shingle Guard / sdusome@diitalk.com, ID tea-daaurjp5efls7391kvj0. Reuse this confirmed workspace for this test service; do not request it again.
+- Render confirms aeriquote-commercial-test on the recovery branch, autoDeploy enabled, app commit d62cb195e861cb976fbb0a13f74bedde77ace2f1 live in deploy dep-dbbtifajnfac738cjqm0 (finished 2026-10-20T21:13:19.793019Z). No manual deploy triggered.
+- Reloaded QA session and confirmed new correction code present. Fresh Pinehouse main measurement returned the same unverified 1,178 ft² and correctly blocked the estimate. Updated garage-guide wording says FIX ROOF.
+- Added right-hand second roof; its partial automatic result was excluded. Selected second-roof FIX: empty trace, default 5/12, disabled Save, viewport centred on that building once imagery settled. Cancel retained both roofs.
+- Selected main-house FIX after the second-roof view. Settled viewport moved to the main-roof location rather than staying on the right-hand second roof. Empty trace/default pitch and disabled Save remained correct. Screenshot: /workspace/scratch/roof-focus-main-live-oct20.jpg. Cancel retained two roof records and both review blockers. No new estimate or manual geometry was saved during this deployment recheck.
+- No error-level Render logs returned since deployment through 21:16:37 UTC. Six-industry measurement-edge regression also passed. This completes live verification of the viewport fix, not Pinehouse whole-building automatic accuracy.
+- Main, credits/complimentary settings, warranty preference and real dealers unchanged. QA browser left on fresh unsaved review-required Pinehouse job, edit cancelled. Existing saved synthetic test remains available in history.
