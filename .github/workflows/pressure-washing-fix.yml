@@ -2,9 +2,7 @@ name: Validate AeriQuote application
 
 on:
   push:
-    paths:
-      - 'app.py'
-      - '.github/workflows/pressure-washing-fix.yml'
+    branches: [landscaping-multi-area-recovery-oct11]
   workflow_dispatch:
 
 permissions:
@@ -12,11 +10,14 @@ permissions:
 
 jobs:
   validate:
+    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Verify deployable source and static assets
+        run: python scripts/check_release_files.py
       - name: Validate app.py syntax
         run: python -m py_compile app.py

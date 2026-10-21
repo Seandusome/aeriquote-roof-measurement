@@ -2,7 +2,7 @@
 const fs=require('fs'), vm=require('vm'), assert=require('assert/strict');
 const source=fs.readFileSync('app.py','utf8');const industry=process.argv[2]||'landscaping';
 const names=['estimatePeriodValue','surfaceLinearJobRate','savedSurfaceHasAreas','surfaceServiceLabel','savedSurfacePriceLines','startServiceAreaTool','toggleAreaMeasure','correctAreaOutline','cancelAreaCorrection','commercialActive','multiAreaTotal','multiAreaSaved','landscapingHasAreas','landscapingAreaSubtotal','landscapingSavedPriceLines','landscapingCombined','landscapingAreaRate','commercialSyncCurrent','commercialAddArea','commercialSelectArea','commercialRemoveArea','restoreSavedLineAfterLastArea','commercialAreaField','priceCalc','captureQuoteSnapshot','jobPriceChanged','currentJobPrice','localPolygonAreaM2','measuredPolygonError','areaSqFtTotal'];
-const funcs=names.map(n=>(()=>{const lines=source.split('\n'),i=lines.findIndex(l=>l.startsWith('function '+n+'('));if(lines[i].endsWith('}'))return lines[i];const j=lines.findIndex((l,k)=>k>i&&l==='}');return lines.slice(i,j+1).join('\n')})()).join('\n');
+const funcs=names.map(n=>(()=>{const lines=source.split('\n'),i=lines.findIndex(l=>l.startsWith('function '+n+'('));assert(i>=0,'Missing application function '+n);if(lines[i].endsWith('}'))return lines[i];const j=lines.findIndex((l,k)=>k>i&&l==='}');return lines.slice(i,j+1).join('\n')})()).join('\n');
 const fields={jobPrice:{value:'0.10'},pricingMode:{value:'added'},discountPct:{value:'0'},gst:{value:'5'},pst:{value:'6'},landscapingAreaRate:{value:'0.10'}};
 const c={console,accountWarrantyBrand:"", commercialAreas:[],commercialAreaLayers:[],commercialEditingIndex:-1,areaPoints:[],areaMode:false,areaMeasurementSaved:false,linearPoints:[],linearMeasurementSaved:false,measurementViewMode:'area',structures:[],manualPlanes:[],quoteSnapshot:null,savedLinearJobRate:null,sessionToken:'test-property',areaCorrectionOriginal:null,linearCorrectionOriginal:null,usage:{area:0},linearMode:false,
  el:id=>fields[id],currentBusinessType:()=> industry,linearFeetTotal:()=>40, commercialHasAreas:()=>false,commercialHasLinear:()=>false,pressureCombined:()=>false,pavingCombined:()=>false,estimateArea:()=>999,
@@ -29,3 +29,15 @@ c.commercialEditingIndex=-1;save();assert.equal(c.commercialAreas.length,2);asse
 c.commercialSelectArea(0);const original=JSON.stringify(c.commercialAreas[0].points);c.correctAreaOutline();assert.equal(c.areaPoints.length,4,'Explicit correction keeps the saved corners');c.areaPoints[0].lat+=.001;c.cancelAreaCorrection();assert.equal(JSON.stringify(c.areaPoints.map(p=>[p.lat,p.lng])),original);
 c.commercialRemoveArea(1);c.commercialRemoveArea(0);assert.equal(c.multiAreaTotal(),0);assert.equal(c.measurementViewMode,'linear');assert.equal(c.priceCalc().subtotal,80,'Removing the last area must retain the saved line and its rate');
 console.log('PASS '+industry+': independent areas, draft preservation, per-area rates, mixed units, tax, snapshots, editing, removal, append after removal');
+
+// Execute the real period helper through priceCalc; changing period labels must not change money.
+assert.equal(c.priceCalc().estimatePeriod,'one_time');
+const periodTotal=c.priceCalc().total;
+fields.estimatePeriod={value:'season'};
+for(const period of ['one_time','visit','snowfall','month','season','year']){
+ fields.estimatePeriod.value=period;
+ assert.equal(c.priceCalc().estimatePeriod,['snow','landscaping','commercial'].includes(industry)?period:'one_time');
+ assert.equal(c.priceCalc().total,periodTotal,'Period labels must never multiply the quote');
+}
+fields.estimatePeriod.value='invalid';assert.equal(c.priceCalc().estimatePeriod,'one_time');
+console.log('PASS '+industry+': actual recurring-period helper is included, validates labels, and preserves totals');
