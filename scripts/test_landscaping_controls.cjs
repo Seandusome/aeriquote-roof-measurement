@@ -353,7 +353,11 @@ console.log('PASS: main AutoMeasure retains measured area; Snow placeholders, ho
 w.eval(`resetMeasurementForNewProperty();el('businessType').value='commercial';businessTypeChanged();sessionToken='pricing-guard';measurementViewMode='area';el('gst').value='5';el('pst').value='6';el('pricingMode').value='regular';el('jobPrice').value='1';commercialAreas=[{name:'QA priced area',rate:1,sqft:100,points:[[52,-106],[52,-105.9999],[52.0001,-106]]}];commercialEditingIndex=0;areaPoints=commercialAreas[0].points.map(p=>L.latLng(...p));areaMeasurementSaved=true;renderSummary();commercialAreaField(0,'rate','')`);
 assert.equal(w.eval('commercialAreas[0].rate'),null);assert(btn('createEstimateBtn').disabled);assert(btn('quotePricingError').textContent.includes('every saved service area'));
 assert.equal(btn('commercialAreaList').querySelector('input[type=number]').value,'');
-w.eval(`commercialAreaField(0,'rate','0')`);assert.equal(w.eval('commercialAreas[0].rate'),0);assert.equal(w.eval('quotePricingError()'),'');
+assert(btn('commercialAreaList').textContent.includes('Rate required'));
+assert(!btn('commercialAreaList').textContent.includes('$0.00'),'Missing rate must not look like a free service');
+assert(!btn('summary').textContent.includes('$0.00'),'Invalid pricing must not show a zero-priced quote');
+assert.equal(btn('jsTotal').textContent,'Price required');
+w.eval(`commercialAreaField(0,'rate','0')`);assert.equal(w.eval('commercialAreas[0].rate'),0);assert.equal(w.eval('quotePricingError()'),'');assert(btn('summary').textContent.includes('$0.00'),'Explicit free service must still show a total');assert(!btn('createEstimateBtn').disabled);assert.notEqual(btn('jsTotal').textContent,'Price required');
 w.eval(`el('pricingMode').value='discount';el('discountPct').value='101';renderSummary()`);assert(btn('createEstimateBtn').disabled);assert(btn('quotePricingError').textContent.includes('discount'));
 w.eval(`el('discountPct').value='10';renderSummary()`);assert.equal(w.eval('quotePricingError()'),'');
 console.log('PASS: real saved-area rate entry preserves blank and blocks quote; explicit zero allowed; excessive discount blocked and corrected discount recovers');
