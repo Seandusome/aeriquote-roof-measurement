@@ -1,0 +1,62 @@
+name: Validate landscaping recovery
+on:
+  push:
+    branches: [landscaping-multi-area-recovery-oct11]
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: python -m pip install Jinja2==3.1.6 Flask==3.1.2
+      - run: python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
+      - run: python scripts/test_database_initialization.py
+      - run: python scripts/test_property_session_recovery.py
+      - run: python scripts/test_property_address.py
+      - run: python scripts/test_complex_roofs.py
+      - run: python scripts/test_activation_metrics.py
+      - run: python scripts/test_account_access.py
+      - run: python scripts/test_business_isolation.py
+      - run: python scripts/test_account_credits.py
+      - run: python scripts/test_password_recovery.py
+      - run: python scripts/test_public_routes.py
+      - run: python scripts/test_support_storage.py
+      - run: python scripts/test_support_workflow.py
+      - run: python scripts/test_support_replies.py
+      - run: python scripts/test_support_inbound.py
+      - run: python scripts/test_support_quote_display.py
+      - run: node scripts/test_activation_controls.cjs
+      - run: python scripts/check_landscaping_multi_area.py
+      - run: node scripts/test_landscaping_engine.cjs
+      - run: python scripts/test_landscaping_rendering.py
+      - run: npm install --no-save --package-lock=false jsdom@30.1.2 leaflet@1.9.4
+      - run: node scripts/test_landscaping_controls.cjs
+      - run: node scripts/test_warranty_shields.cjs
+      - run: node scripts/test_surface_workspace.cjs
+      - run: node scripts/test_industry_wording.cjs
+      - run: node scripts/test_unit_address_ui.cjs
+      - run: node scripts/test_phone_pdf.cjs
+      - run: node scripts/test_saved_editing.cjs
+      - run: node scripts/test_estimate_save_integrity.cjs
+      - run: node scripts/test_profile_save.cjs
+      - run: node scripts/test_profile_restore.cjs
+      - run: node scripts/test_quote_pricing_validation.cjs
+      - run: python scripts/test_estimate_pricing_api.py
+      - run: python scripts/test_saved_editing_session.py
+      - run: node scripts/test_price_rounding.cjs
+      - run: node scripts/test_measurement_edges.cjs
+      - run: node scripts/test_public_ui.cjs
+      - run: node scripts/test_help_center.cjs
+      - run: node scripts/test_support_form.cjs
+      - run: node scripts/test_onboarding_finish.cjs
+      - run: node scripts/test_signup_flow.cjs
+      - run: python scripts/test_new_user_flow.py
+      - run: python scripts/test_recovery_allowance.py
+      - run: node scripts/test_landscaping_engine.cjs paving
+      - run: node scripts/test_landscaping_engine.cjs pressure
+      - run: node scripts/test_landscaping_engine.cjs snow

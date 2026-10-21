@@ -19,3 +19,7 @@ Code checkpoint pushed for the test service. Post-deployment browser smoke verif
 ## Limits and next batches
 
 This validation checks snapshot numeric validity and total consistency, not independent polygon recomputation or a complete server price recalculation. Legacy minimal payloads remain compatible. Further coverage needed for geometry-to-quote mismatches, all six industries, interruption/repeated clicks, mobile layout, employee access and authentication/recovery. Existing known display issues: history lacks recurring suffix, blank linear helper can show fallback rate despite blocked quote, combined Landscaping helper wording, expanded imagery callout overlap. AI Trace remains removed.
+
+## Deployment recovery
+
+Post-checkpoint inspection found previous documentation-only commits had omitted source files from their Git trees; Render failed because requirements.txt was absent. Restore complete tested local source tree plus all retained remote checkpoint documents. Use explicit full tree entries (base-tree preservation was not reliable through this connector). Previous working deployment continued serving traffic. This correction touches recovery only.

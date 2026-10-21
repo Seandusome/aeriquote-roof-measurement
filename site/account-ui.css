@@ -1,0 +1,24 @@
+/* Shared account presentation only. Authentication and onboarding behavior stay in their existing handlers. */
+:root{--aq-account-action:#b94108}
+.aq-account-page{margin:0;background:#f4f8fc;color:#173b61;font-family:Arial,Helvetica,sans-serif;line-height:1.5;padding:32px 16px}
+.aq-account-page .box{box-sizing:border-box;width:100%;max-width:460px;margin:4vh auto;background:#fff;padding:32px;border:1px solid #dce5ef;border-radius:16px;box-shadow:0 12px 32px #102a4310}
+.aq-account-page .box>a:first-child{display:block;text-align:center;margin-bottom:24px}
+.aq-account-page .box img{display:block!important;width:220px!important;max-width:100%!important;height:auto!important;margin:0 auto!important}
+.aq-account-page h1{font-size:28px;line-height:1.2;margin:0 0 20px;color:#173b61}
+.aq-account-page label{display:block;font-size:15px;font-weight:700;margin:16px 0 6px}
+.aq-account-page input:not([type=hidden]),.aq-account-page select{width:100%;min-height:46px;padding:12px;border:1px solid #b9cadd;border-radius:8px;box-sizing:border-box;font-size:16px}
+.aq-account-page button,.aq-account-section .wide-btn,.aq-account-section .action{background:var(--aq-account-action)!important;color:#fff!important;border:0;border-radius:8px;min-height:46px;padding:13px 16px;font-size:15px;font-weight:800}
+.aq-account-page button{width:100%;margin:22px 0 12px}
+.aq-account-page a{color:#0757a6;line-height:1.6}
+.aq-account-page :is(a,button,input,select):focus-visible,.aq-account-section :is(a,button,input,select):focus-visible{outline:3px solid #075fb8!important;outline-offset:4px}
+.aq-account-page .message,.aq-account-page .err{border-radius:8px;padding:14px;font-size:15px;line-height:1.6}
+.aq-account-section .panel{border-radius:16px;border-color:#dce5ef;box-shadow:0 12px 32px #102a4310}
+.aq-account-section label{font-size:15px}
+.aq-account-section input,.aq-account-section select{font-size:16px!important;min-height:46px}
+.aq-account-section .plans{align-items:stretch}
+.aq-account-section .plan{min-width:0}
+.aq-account-section .plan:focus-visible{outline:3px solid #075fb8;outline-offset:3px}
+@media(max-width:600px){.aq-account-page{padding:20px 16px}.aq-account-page .box{margin:16px auto;padding:24px}.aq-account-page h1{font-size:26px}.aq-account-section main{margin-block:28px}.aq-account-section .panel{padding:22px}.aq-account-section h1{font-size:30px;line-height:1.15}}
+.aq-account-page .aq-account-footer{box-sizing:border-box;max-width:460px;margin:24px auto 0;padding:18px 24px;background:#071a3d;border-radius:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.aq-account-page .aq-account-footer a{color:#e2ebf6}
+.aq-account-page .aq-account-footer a:focus-visible{outline-color:#fff!important}
