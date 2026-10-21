@@ -1392,9 +1392,9 @@ function undoLinearPoint(){if(!linearPoints.length)return;linearPoints.pop();red
 function clearLinearMeasure(){linearCorrectionOriginal=null;linearPoints=[];linearMeasurementSaved=false;clearLinearLayers();updateLinearUi();renderSummary();status('Linear measurement cleared.','ok')}
 function measuredPolygonError(points){
  const bad='Place at least three distinct corners around an area before saving.';
- if(!Array.isArray(points)||points.length<3||points.some(p=>!Number.isFinite(p.lat)||!Number.isFinite(p.lng)))return bad;
+ if(!Array.isArray(points)||points.length<3||points.some(p=>!Number.isFinite(p.lat)||!Number.isFinite(p.lng)||Math.abs(p.lat)>90||Math.abs(p.lng)>180))return bad;
  const origin=points[0],scale=6378137*Math.PI/180,cos=Math.cos(origin.lat*Math.PI/180),eps=1e-7;
- const xy=[];for(const p of points){const q={x:(p.lng-origin.lng)*scale*cos,y:(p.lat-origin.lat)*scale};const last=xy[xy.length-1];if(!last||Math.hypot(q.x-last.x,q.y-last.y)>eps)xy.push(q);}
+ const xy=[];for(const p of points){const q={x:((p.lng-origin.lng+540)%360-180)*scale*cos,y:(p.lat-origin.lat)*scale};const last=xy[xy.length-1];if(!last||Math.hypot(q.x-last.x,q.y-last.y)>eps)xy.push(q);}
  if(xy.length>1&&Math.hypot(xy[0].x-xy[xy.length-1].x,xy[0].y-xy[xy.length-1].y)<=eps)xy.pop();
  if(xy.length<3)return bad;
  const turn=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
@@ -1407,7 +1407,7 @@ function measuredPolygonError(points){
  let area=0;for(let i=0;i<xy.length;i++){const b=xy[(i+1)%xy.length];area+=xy[i].x*b.y-b.x*xy[i].y;}
  return Math.abs(area)<1e-6?bad:'';
 }
-function localPolygonAreaM2(points){if(points.length<3)return 0;const R=6378137,lat0=points.reduce((a,p)=>a+p.lat,0)/points.length*Math.PI/180,xy=points.map(p=>({x:R*(p.lng*Math.PI/180)*Math.cos(lat0),y:R*(p.lat*Math.PI/180)}));let a=0;for(let i=0;i<xy.length;i++){const j=(i+1)%xy.length;a+=xy[i].x*xy[j].y-xy[j].x*xy[i].y}return Math.abs(a)/2}
+function localPolygonAreaM2(points){if(points.length<3)return 0;const R=6378137,origin=points[0],lat0=points.reduce((a,p)=>a+p.lat,0)/points.length*Math.PI/180,xy=points.map(p=>({x:R*((p.lng-origin.lng+540)%360-180)*Math.PI/180*Math.cos(lat0),y:R*((p.lat-origin.lat)*Math.PI/180)}));let a=0;for(let i=0;i<xy.length;i++){const j=(i+1)%xy.length;a+=xy[i].x*xy[j].y-xy[j].x*xy[i].y}return Math.abs(a)/2}
 function setTraceControls(active){['tracePitchControl','finishTrace','undoTraceBtn','clearManualBtn'].forEach(id=>{if(el(id))el(id).style.display=active?'':'none'})}
 function tracedRoofContains(roof,latitude,longitude){
  if(!roof.manually_measured||!Array.isArray(roof.outline))return false;
@@ -1595,6 +1595,24 @@ function updateEstimatePeriodUi(){
   const total=el('jsTotal');if(total&&total.textContent.startsWith('$'))total.textContent=total.textContent.replace(/ per (visit|snowfall|month|season|year)$/,'')+suffix;
  }
 }
+function savedAreaGeometryError(){
+ const areas=commercialAreas.filter(a=>Number(a.sqft)>0);
+ const inside=(p,poly)=>{let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[j],b=poly[i],cross=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);if(Math.abs(cross)<1e-16&&p[0]>=Math.min(a[0],b[0])-1e-12&&p[0]<=Math.max(a[0],b[0])+1e-12&&p[1]>=Math.min(a[1],b[1])-1e-12&&p[1]<=Math.max(a[1],b[1])+1e-12)return false;if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])hit=!hit}return hit};
+ const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+ for(let i=0;i<areas.length;i++){
+  const a=areas[i],points=(a.points||[]).map(p=>({lat:p[0],lng:p[1]}));
+  if(measuredPolygonError(points))return 'Saved service area outline is invalid. Remeasure before quoting.';
+  const actual=localPolygonAreaM2(points)*10.76391041671;
+  if(Math.abs(actual-Number(a.sqft))>Math.max(1,actual*.001))return 'Saved service area quantity does not match its outline. Remeasure before quoting.';
+  for(const b of areas.slice(0,i)){
+   let overlap=false;const origin=a.points[0][1],project=points=>points.map(p=>[p[0],(p[1]-origin+540)%360-180]),aa=project(a.points),bb=project(b.points);
+   for(let j=0;j<aa.length;j++)for(let k=0;k<bb.length;k++){const p=aa[j],q=aa[(j+1)%aa.length],r=bb[k],t=bb[(k+1)%bb.length];if(cross(p,q,r)*cross(p,q,t)<-1e-28&&cross(r,t,p)*cross(r,t,q)<-1e-28)overlap=true}
+   for(const [poly,other] of [[aa,bb],[bb,aa]]){const samples=poly.concat(poly.map((p,j)=>[(p[0]+poly[(j+1)%poly.length][0])/2,(p[1]+poly[(j+1)%poly.length][1])/2]));const center=[poly.reduce((n,p)=>n+p[0],0)/poly.length,poly.reduce((n,p)=>n+p[1],0)/poly.length];if(inside(center,poly))samples.push(center);for(let k=0;k<poly.length;k++){const p=poly[k],q=poly[(k+1)%poly.length],length=Math.hypot(q[0]-p[0],q[1]-p[1]);if(length)for(const side of [-1,1]){const near=[(p[0]+q[0])/2+side*(q[1]-p[1])/length*1e-9,(p[1]+q[1])/2-side*(q[0]-p[0])/length*1e-9];if(inside(near,poly))samples.push(near)}}if(samples.some(p=>inside(p,other)))overlap=true}
+   if(overlap)return 'Saved service areas overlap. Correct the outlines before quoting to avoid counting coverage twice.';
+  }
+ }
+ return '';
+}
 function quotePricingError(calc=null){
  const valid=(value,max=Infinity)=>value!==null&&value!==undefined&&String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>=0&&Number(value)<=max;
  for(const id of ['gst','pst'])if(!valid(el(id)?.value,100))return 'Enter a tax percentage from 0 to 100. Enter 0 when no tax is charged.';
@@ -1610,18 +1628,19 @@ function quotePricingError(calc=null){
   if(savedAreas&&linearMeasurementSaved&&!valid(surfaceLinearJobRate()))return 'Enter a linear service rate of 0 or more.';
   for(const [combined,id] of [[landscapingCombined(),'landscapingAreaRate'],[pressureCombined(),'pressureAreaRate'],[pavingCombined(),'pavingAreaRate']])if(combined&&!savedAreas&&!valid(el(id)?.value))return 'Enter an area service rate of 0 or more.';
  }
+ const geometryIssue=savedAreaGeometryError();if(geometryIssue)return geometryIssue;
  const totals=calc||priceCalc();
  if(['subtotal','extraAmount','taxBase','gstAmt','pstAmt','total'].some(key=>!Number.isFinite(totals[key])||totals[key]<0))return 'Review the prices and taxes. The estimate must have valid, non-negative amounts.';
  return '';
 }
 function updateQuotePricingValidation(calc){
- const issue=quotePricingError(calc);let box=el('quotePricingError');
+ const issue=quotePricingError(calc),label=/outline|overlap|quantity/.test(issue)?'Measurement review required':'Price required';let box=el('quotePricingError');
  if(!box){box=document.createElement('div');box.id='quotePricingError';box.className='warning';box.setAttribute('role','alert');el('createEstimateBtn')?.before(box)}
  box.textContent=issue;box.style.display=issue?'block':'none';
  if(issue){
   if(el('createEstimateBtn'))el('createEstimateBtn').disabled=true;
-  if(el('jsTotal'))el('jsTotal').textContent='Price required';
-  el('summary')?.querySelectorAll('.price-summary,.estimate').forEach(preview=>{preview.innerHTML='<h3>Price required</h3><div class="warning">'+escapeHistory(issue)+'</div>'});
+  if(el('jsTotal'))el('jsTotal').textContent=label;
+  el('summary')?.querySelectorAll('.price-summary,.estimate').forEach(preview=>{preview.innerHTML='<h3>'+label+'</h3><div class="warning">'+escapeHistory(issue)+'</div>'});
  }
 }
 function currentJobPrice(){const jp=el('jobPrice');const raw=jp?jp.value:'';const v=parseFloat(raw);if(Number.isFinite(v)&&v>=0)return v;const fallback=parseFloat((el('price')&&el('price').value)||0);return Number.isFinite(fallback)&&fallback>=0?fallback:0}
@@ -3057,6 +3076,9 @@ SETUP_DEALER_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>Cr
 <label>Password</label><input name="password" type="password" minlength="8" required>
 <button type="submit">CREATE DEALER ACCOUNT</button></form></div></body></html>"""
 
+def login_email_in_use(con,email):
+    return bool(con.execute("SELECT id FROM dealers WHERE LOWER(email)=? UNION ALL SELECT id FROM dealer_employees WHERE LOWER(email)=?",(email,email)).fetchone())
+
 @app.route("/setup-dealer",methods=["GET","POST"],strict_slashes=False)
 def setup_dealer():
     if request.method=="POST":
@@ -3072,7 +3094,7 @@ def setup_dealer():
             return render_template_string(SETUP_DEALER_HTML,error="Name, email and a password of at least 8 characters are required.",message=None),400
         con=estimate_db()
         try:
-            existing=con.execute("SELECT id FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
+            existing=login_email_in_use(con,email)
             if existing:
                 return render_template_string(SETUP_DEALER_HTML,error="A dealer account with that email already exists.",message=None),400
             did=str(uuid.uuid4()); created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
@@ -3096,6 +3118,7 @@ def create_dealer():
     if not name or not email or len(password)<8:return jsonify(error="Dealer name, email and password (8+ characters) required"),400
     did=str(uuid.uuid4()); created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()); con=estimate_db()
     try:
+        if login_email_in_use(con,email):return jsonify(error="An AeriQuote login already exists with that email."),409
         con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at) VALUES(?,?,?,?,?,'active',250,150,?)",(did,name,email,password_hash(password),str(d.get("state") or ""),created));con.commit()
     except Exception:return jsonify(error="Could not create dealer"),400
     finally:con.close()
@@ -3160,6 +3183,7 @@ def create_signup_account():
     profile=dict(d.get("profile") or {}); profile.update({k:v for k,v in {"name":name,"company":company,"email":email,"country":d.get("country"),"businessType":industry}.items() if v not in (None,"")})
     con=estimate_db()
     try:
+        if login_email_in_use(con,email):return jsonify(error="An AeriQuote login already exists with that email."),409
         con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at,plan_code,industry) VALUES(?,?,?,?,?,'active',?,?,?,?,?)",(did,name,email,password_hash(password),str(d.get("state") or d.get("province") or ""),limit,limit,created,plan,industry))
         con.execute("INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)",(did,json.dumps(profile),created));con.commit()
     except Exception:return jsonify(error="Could not create account. The email may already be in use."),400
@@ -3249,7 +3273,7 @@ def public_signup():
     profile={"name":name,"company":company,"email":email,"country":"CA" if country.lower().startswith("can") else "US","businessType":industry}
     con=estimate_db()
     try:
-        if con.execute("SELECT id FROM dealers WHERE LOWER(email)=?",(email,)).fetchone():
+        if login_email_in_use(con,email):
             return jsonify(error="An AeriQuote account already exists with that email."),409
         con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at,plan_code,industry) VALUES(?,?,?,?,?,'active',?,?,?,?,?)",(did,name,email,password_hash(password),"",limit,limit,created,"trial",industry))
         con.execute("INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)",(did,json.dumps(profile),created));con.commit()
@@ -3408,7 +3432,7 @@ def head_office_dealers():
         else:
             con=estimate_db()
             try:
-                existing=con.execute("SELECT id FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
+                existing=login_email_in_use(con,email)
                 if existing: error="A dealer account with that email already exists."
                 else:
                     did=str(uuid.uuid4()); created=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
@@ -4195,12 +4219,14 @@ def estimate_storage_status():
         revision_count=revision_count
     )
 
+from measurement_integrity import snapshot_error
+
 def estimate_pricing_error(payload):
     if not isinstance(payload,dict):return "Estimate details must be an object."
     def valid(value,maximum=float("inf")):
         try:return value is not None and not isinstance(value,bool) and str(value).strip()!="" and math.isfinite(float(value)) and 0<=float(value)<=maximum
         except (TypeError,ValueError,OverflowError):return False
-    for key in ("total_price","total_area","extra_service_amount","linear_feet","area_sqft"):
+    for key in ("total_price","total_area","extra_service_amount","linear_feet","area_sqft","amount_paid"):
         if key in payload and not valid(payload[key]):return "Enter valid non-negative estimate amounts and quantities."
     pricing=payload.get("pricing",{})
     if not isinstance(pricing,dict):return "Pricing details must be an object."
@@ -4229,7 +4255,7 @@ def estimate_pricing_error(payload):
         if not isinstance(roofs,list) or any(not isinstance(roof,dict) for roof in roofs):return "Saved roofs must be a list."
         if any(roof.get("needs_remeasure") or roof.get("automatic_review_warning") for roof in roofs):
             return "Remeasure the flagged roof before saving an estimate."
-    return ""
+    return snapshot_error(payload)
 
 @app.route("/api/estimates", methods=["GET","POST"])
 def estimate_history_api():
@@ -4314,8 +4340,11 @@ def estimate_amount_paid(estimate_id):
     dealer_id=session.get("dealer_id")
     if not dealer_id:return jsonify(ok=False,error="Login required."),401
     d=request.get_json(silent=True) or {}
-    try: amount_paid=max(0.0,float(d.get("amount_paid") or 0))
-    except (TypeError,ValueError):return jsonify(ok=False,error="Invalid amount."),400
+    try:
+        raw_amount=d.get("amount_paid",0)
+        amount_paid=float(raw_amount)
+        if isinstance(raw_amount,bool) or not math.isfinite(amount_paid) or amount_paid<0:raise ValueError()
+    except (TypeError,ValueError,OverflowError):return jsonify(ok=False,error="Invalid amount."),400
     con=estimate_db()
     try:
         row=con.execute("SELECT payload FROM estimates WHERE id=? AND dealer_id=?",(estimate_id,dealer_id)).fetchone()

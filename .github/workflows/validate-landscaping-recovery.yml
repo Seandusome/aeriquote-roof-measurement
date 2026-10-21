@@ -60,3 +60,5 @@ jobs:
       - run: node scripts/test_landscaping_engine.cjs paving
       - run: node scripts/test_landscaping_engine.cjs pressure
       - run: node scripts/test_landscaping_engine.cjs snow
+      - run: python scripts/test_geometry_integrity.py
+      - run: node scripts/test_geometry_client.cjs

@@ -48,6 +48,11 @@ with tempfile.TemporaryDirectory() as tmp:
  assert not owner.get('/api/account/profile').json['allowance']['brand']
  # Normal-plan saved estimates exhaust base first, then bonuses; revisions are free.
  payload={'address':'QA TEST first','customer_name':'QA TEST ONLY','total_price':1}
+ from measurement_integrity import polygon_sqft
+ points=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]
+ quantity=round(polygon_sqft(points))
+ payload['quote']={'commercialAreas':[{'points':points,'sqft':quantity,'rate':.1}]}
+ payload['total_area']=quantity
  assert owner.post('/api/estimates',json=payload).status_code==200
  for i in range(25):
   assert employee.post('/api/estimates',json={**payload,'address':f'QA TEST extra {i}'}).status_code==200

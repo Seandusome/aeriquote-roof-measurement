@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
 const s=fs.readFileSync('app.py','utf8');const helper=s.slice(s.indexOf('function quotePricingError('),s.indexOf('function updateQuotePricingValidation('));
 let industry='roofing',areas=false,line=false,linearRate=.25;const fields={gst:{value:'5'},pst:{value:'6'},jobPrice:{value:'1'},discountPct:{value:'0'},pricingMode:{value:'regular'},extraServiceAmount:{value:'0'},commercialLinearRate:{value:'.25'}};
-const ctx=vm.createContext({el:id=>fields[id],commercialAreas:[],measurementViewMode:'auto',linearMeasurementSaved:false,currentBusinessType:()=>industry,savedSurfaceHasAreas:()=>areas&&industry!=='commercial',commercialHasAreas:()=>areas,commercialHasLinear:()=>line,surfaceLinearJobRate:()=>linearRate,landscapingCombined:()=>false,pressureCombined:()=>false,pavingCombined:()=>false,priceCalc:()=>({subtotal:100,extraAmount:0,taxBase:100,gstAmt:5,pstAmt:6,total:111})});vm.runInContext(helper,ctx);
+const ctx=vm.createContext({el:id=>fields[id],savedAreaGeometryError:()=>'',commercialAreas:[],measurementViewMode:'auto',linearMeasurementSaved:false,currentBusinessType:()=>industry,savedSurfaceHasAreas:()=>areas&&industry!=='commercial',commercialHasAreas:()=>areas,commercialHasLinear:()=>line,surfaceLinearJobRate:()=>linearRate,landscapingCombined:()=>false,pressureCombined:()=>false,pavingCombined:()=>false,priceCalc:()=>({subtotal:100,extraAmount:0,taxBase:100,gstAmt:5,pstAmt:6,total:111})});vm.runInContext(helper,ctx);
 const error=()=>ctx.quotePricingError();
 for(industry of ['roofing','snow','pressure','paving','landscaping','commercial']){
  assert.equal(error(),'');

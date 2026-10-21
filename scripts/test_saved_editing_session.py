@@ -13,6 +13,9 @@ with tempfile.TemporaryDirectory() as tmp:
  client=a.app.test_client()
  with client.session_transaction() as s:s['dealer_id']='owner';s['auth_version']=0
  p={'customer_name':'QA only','address':'2301 Ave C North #115, Saskatoon, SK, Canada','job_status':'Booked','scheduled_date':'2026-10-25','amount_paid':25,'total_area':100,'total_price':11.1,'quote':{'commercialAreas':[{'sqft':100,'rate':.1,'points':[[52,-106],[52,-105.999],[52.001,-106]]}],'linearPoints':[[52,-106],[52.002,-105.998]]}}
+ from measurement_integrity import polygon_sqft
+ p['quote']['commercialAreas'][0]['sqft']=round(polygon_sqft(p['quote']['commercialAreas'][0]['points']))
+ p['total_area']=p['quote']['commercialAreas'][0]['sqft']
  eid=client.post('/api/estimates',json=p).get_json()['id']
  before=client.get('/api/estimates/'+eid).get_json()['payload']
  # No Google request is permitted for restoring a saved job's coordinates.

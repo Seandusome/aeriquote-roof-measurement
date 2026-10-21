@@ -9,6 +9,11 @@ with tempfile.TemporaryDirectory() as tmp:
  client=a.app.test_client()
  with client.session_transaction() as session:session['dealer_id']='qa-owner';session['auth_version']=0
  original={'address':'QA TEST Property','customer_name':'QA TEST DO NOT SEND','total_area':100,'total_price':111,'pricing':{'subtotal':100,'taxBase':100,'gst':5,'pst':6,'gstAmt':5,'pstAmt':6,'total':111}}
+ from measurement_integrity import polygon_sqft
+ points=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]
+ quantity=round(polygon_sqft(points))
+ original['quote']={'commercialAreas':[{'points':points,'sqft':quantity,'rate':.1}]}
+ original['total_area']=quantity
  eid=client.post('/api/estimates',json=original).get_json()['id']
  before=client.get('/api/estimates/'+eid).get_json()
  for key in ('total_price','total_area','extra_service_amount'):
