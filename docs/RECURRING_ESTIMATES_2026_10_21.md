@@ -1,0 +1,15 @@
+# Recurring estimate periods - October 21, 2026
+
+Recovery branch only. App 202aaffcdb521f671620cc3192fce0d0d0f3d0e3 LIVE in test deployment dep-dbchr6m1egvs73apcjvg, finished 2026-10-21T20:17:09.46751Z. Source equivalent to local 05488fa. Main, real dealer profiles, credits, and Ali demo settings untouched.
+
+Price covers selector added above summary for Snow Removal, Landscaping, and Commercial Properties: one_time, visit, snowfall, month, season, year. priceCalc stores estimatePeriod in saved pricing; total amount/tax math unchanged. Summary/top total and customer report total append period. Single and Expanded PDFs clone report pricing, so period appears there. Additional services use the same period, explained beside selector. This labels the quoted amount; it does not multiply by months/visits, create invoices, or collect recurring payments. No date-range controls added.
+
+Old records missing period restore explicitly to one_time, never inherit the current form's month/year choice. New property resets to one_time. Other industries force one_time and hide selector. Existing one-time PDFs keep previous total wording.
+
+Validation: comprehensive rendered DOM test_landscaping_controls.cjs passed with Script errors: []. New actual report/save/restore tests cover all three industries, unchanged money, monthly suffix, persisted pricing metadata, legacy default, new-property reset, hidden Roofing selector. test_estimate_save_integrity.cjs verifies period-only changes save even when total unchanged. test_price_rounding.cjs, six-industry pricing guards, six-industry saved editing, compilation and whitespace passed.
+
+Live dedicated QA account: opened existing Snow record, verified One-time service default; selected Per month, total stayed $2,177.23. Created revision, reloaded, reopened current version: report says TOTAL (CAD) $2,177.23 per month. Actual reopened Single PDF (1 page) and Expanded (2 pages) downloaded/rendered, all pages visually inspected; monthly total clear, imagery/geometry/labels/rates preserved. Live monthly save and PDF specifically verified for Snow; Landscaping and Commercial covered by rendered DOM save/report/restore tests, not separately live monthly exports yet.
+
+QA Snow current revision remains monthly at $2,177.23; previous one-time revision retained as previous version 12. Screenshot /workspace/scratch/aq-monthly-estimate-verified-oct21.jpg. Actual PDFs /workspace/scratch/8f0e6790-88a9-4c69-99f0-77f6df093484/35964580-50ac-4cbf-9b08-a5945beca5c3 and /workspace/scratch/8f0e6790-88a9-4c69-99f0-77f6df093484/0c33b858-2c9d-4934-ba56-3de66efb5ef1 (ephemeral).
+
+Remaining polish: history cards/search list still show numeric total without billing-period suffix; opening report shows saved period. Snow blank linear-rate applied helper fallback wording remains a prior noted polish item, while Create and totals correctly block invalid prices. Existing Expanded numbered callout can overlap an area label. Broader prelaunch gaps remain in earlier checkpoints.
