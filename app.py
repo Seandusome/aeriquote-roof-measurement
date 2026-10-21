@@ -2647,6 +2647,13 @@ function paintCustomerPdfLabels(ctx,host){
   hidden.push({node:marker,visibility:marker.style.visibility});marker.style.visibility='hidden';
  });return hidden;
 }
+function fitExpandedStreetBlock(block,column,maxHeight){
+ const image=block.querySelector('[data-expanded-street-image]');
+ if(!image||column.scrollHeight<=maxHeight)return;
+ const height=parseFloat(image.style.height),reduced=height-(column.scrollHeight-maxHeight)-2;
+ if(reduced>=100)image.style.height=reduced+'px';
+}
+
 async function buildExpandedEstimatePDF(report){
  // Reuse the approved map pixels. Never resize/refit Leaflet or alter quote data.
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
@@ -2681,11 +2688,11 @@ async function buildExpandedEstimatePDF(report){
   [...el('rPricing').children].forEach(n=>right.push(clone(n)));
   const marketing=el('rMarketingPanel');if(marketing&&!marketing.classList.contains('marketingHidden')){const section=document.createElement('div');section.appendChild(clone(el('rMarketingHeading')));[...el('rMarketingBenefits').children].forEach(n=>section.appendChild(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))section.appendChild(clone(warranty));left.push(section)}
   const cta=report.querySelector('.cta');if(cta)right.push(clone(cta));
-  const street=el('rStreet');if(street&&street.style.display!=='none'&&street.complete&&street.naturalWidth){const image=clone(street);image.style.height='170px';right.push(image);right.push(clone(el('rStreetMeta')))}
+  const street=el('rStreet');if(street&&street.style.display!=='none'&&street.complete&&street.naturalWidth){const image=clone(street);image.style.height='170px';image.dataset.expandedStreetImage='true';const block=document.createElement('div');block.appendChild(image);block.appendChild(clone(el('rStreetMeta')));right.push(block)}
   let continuation=false;
   while(left.length||right.length){const body=page(continuation?'ESTIMATE DETAILS - CONTINUED':'MEASUREMENTS & ESTIMATE DETAILS');Object.assign(body.style,{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'22px',alignItems:'start'});
    for(const queue of [left,right]){const col=document.createElement('div');col.style.minWidth='0';body.appendChild(col);let added=0;
-    while(queue.length){const block=queue[0];block.style.overflowWrap='anywhere';block.style.breakInside='avoid';col.appendChild(block);
+    while(queue.length){const block=queue[0];block.style.overflowWrap='anywhere';block.style.breakInside='avoid';col.appendChild(block);fitExpandedStreetBlock(block,col,body.clientHeight);
      if(col.scrollHeight>body.clientHeight){block.remove();if(!added)throw new Error('An estimate section is too long for one expanded page. Shorten that section before exporting.');break}
      queue.shift();added++;
     }

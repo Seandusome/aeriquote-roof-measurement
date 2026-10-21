@@ -41,6 +41,7 @@ jobs:
       - run: node scripts/test_industry_wording.cjs
       - run: node scripts/test_unit_address_ui.cjs
       - run: node scripts/test_phone_pdf.cjs
+      - run: node scripts/test_expanded_pdf.cjs
       - run: node scripts/test_saved_editing.cjs
       - run: node scripts/test_estimate_save_integrity.cjs
       - run: node scripts/test_profile_save.cjs
