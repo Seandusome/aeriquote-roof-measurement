@@ -1,1 +1,0 @@
-V6.17 - Landscaping lawn detail image clarity fix only. Replaced only the large Lawn Renovation/detail image with a higher-resolution enhanced asset. All other pages, images, layout, pricing, navigation, and content unchanged.
