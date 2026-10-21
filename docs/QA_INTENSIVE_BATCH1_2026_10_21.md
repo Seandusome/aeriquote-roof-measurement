@@ -23,3 +23,11 @@ This validation checks snapshot numeric validity and total consistency, not inde
 ## Deployment recovery
 
 Post-checkpoint inspection found previous documentation-only commits had omitted source files from their Git trees; Render failed because requirements.txt was absent. Restore complete tested local source tree plus all retained remote checkpoint documents. Use explicit full tree entries (base-tree preservation was not reliable through this connector). Previous working deployment continued serving traffic. This correction touches recovery only.
+
+## Verified live result
+
+Commit c5367155cd775a7ed6165b1275fa9d1e56c7fd23 deployed LIVE on test service, deployment dep-dbcif27avr4c73c75sog, 2026-10-21T20:59:29Z. Fetched GitHub tree and confirmed app.py, scripts and requirements.txt identical to tested local commit; checkpoint documents retained.
+
+Actual browser, QA account AeriQuote QA (sean@shinglextra.com): reopened existing 2301 Avenue C North Landscaping job, edited Price covers from month to season, created estimate, reloaded page and reopened saved current history. New revision persisted at20:59:59. Area16,372ft² @0.10 =1,637.20; line463.2ft displayed @0.70 =324.27 (unrounded underlying length); subtotal1,961.47; taxes5%=98.07 and6%=117.69; total CAD2,177.23 per season. Prior monthly version retained. Downloaded actual Single page PDF after reopening, rendered with pdftoppm, visually verified aerial/outlined area/line, street imagery, both measurement rows, all prices/taxes, seasonal total. PDF is rasterized so pdftotext yields no text; verification was visual. Screenshot captured. Malformed API tests performed locally only; no malformed live requests, no real customer or Ali demo account changes.
+
+Remaining browser testing and geometry recalculation coverage listed above are NOT claimed passed. Batch complete; continue next batch from this checkpoint without repeating completed tests.
