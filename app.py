@@ -1624,6 +1624,7 @@ function savedAreaGeometryError(){
  return '';
 }
 function quotePricingError(calc=null){
+ if(typeof propertyAddressNeedsReload==='function'&&propertyAddressNeedsReload())return 'The address has changed. Your previous measurements are retained. Load the new property before creating an estimate.';
  const valid=(value,max=Infinity)=>value!==null&&value!==undefined&&String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>=0&&Number(value)<=max;
  for(const id of ['gst','pst'])if(!valid(el(id)?.value,100))return 'Enter a tax percentage from 0 to 100. Enter 0 when no tax is charged.';
  if(el('pricingMode')?.value==='discount'&&!valid(el('discountPct')?.value,100))return 'Enter a promotion discount from 0 to 100%.';
@@ -1707,7 +1708,7 @@ function resetReportForNewProperty(){
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
 function resetMeasurementForNewProperty(){
- saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;
+ saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;loadProperty.loadedAddressKey=null;
  savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;if(el('estimatePeriod'))el('estimatePeriod').value='one_time';
  surfaceLineDraftOriginal=null;
  linearCorrectionOriginal=null;linearMode=false;linearPoints=[];linearMeasurementSaved=false;areaMode=false;commercialAreas=[];commercialEditingIndex=-1;savedLinearJobRate=null;commercialAreaLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});commercialAreaLayers=[];areaPoints=[];areaMeasurementSaved=false;measurementViewMode=pendingMeasurementMode||'auto';clearLinearLayers();clearAreaLayers();updateLinearUi();updateAreaUi();updatePropertyActionButton();updateMeasurementInterface();
@@ -1812,9 +1813,10 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify(payload)}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   loadProperty.pending=null;
+ if((el('address')?.value||'')!==authoritativeAddress)['customerName','customerPhone','customerEmail','customerNotes'].forEach(id=>{if(el(id))el(id).value=''});
  resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
   resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
-  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
+  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
     if(cc){if(verifyEl){verifyEl.style.display='block';verifyEl.style.color='#176b43';verifyEl.textContent='✓ Using exact dropped-pin coordinates — address matching bypassed.'}}
@@ -2453,7 +2455,7 @@ async function resumeSavedEstimateWorkspace(){
  sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
  const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
- const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setSavedField('propertyProvince',province);lastLoadedStreet=el('streetAddress')?.value||'';
+ const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setSavedField('propertyProvince',province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
  setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
  await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
  redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
@@ -2923,7 +2925,7 @@ function applyAddressParts(parts){if(!parts)return;if(parts.city&&el('cityTown')
 function clearAddressVerificationState(message='Address changed — enter/confirm city and state, then Google will verify it.'){
  addressPreviewSeq++;
  if(el('postalCode'))el('postalCode').value='';
- if(el('address'))el('address').value='';
+ if(!sessionToken&&el('address'))el('address').value='';
  if(el('googleMatch'))el('googleMatch').textContent='';
  if(el('propertyVerify')){el('propertyVerify').style.display='none';el('propertyVerify').textContent='';}
  if(el('addressAutoStatus')){el('addressAutoStatus').textContent=message;el('addressAutoStatus').style.color='#666';}
@@ -2950,26 +2952,23 @@ async function previewAddress(){
   if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google found: '+d.formatted_address;el('addressAutoStatus').style.color='#176b43'}
  }catch(e){if(el('addressAutoStatus')){el('addressAutoStatus').textContent='Google could not verify this address yet.';el('addressAutoStatus').style.color='#9a6700'}}
 }
+function propertyInputAddressKey(){
+ const coords=coordinatesEntered();
+ return JSON.stringify(coords?[coords.lat,coords.lng]:['streetAddress','cityTown','propertyProvince'].map(id=>(el(id)?.value||'').trim().toLowerCase()));
+}
+function propertyAddressNeedsReload(){return !!sessionToken&&!!loadProperty.loadedAddressKey&&loadProperty.loadedAddressKey!==propertyInputAddressKey()}
 function addressFieldChanged(){
- const hadLoaded=!!sessionToken||structures.length||manualPlanes.length||fallbackMode;
- const street=(el('streetAddress')?.value||'').trim(),city=(el('cityTown')?.value||'').trim(),prov=(el('propertyProvince')?.value||'').trim();
- if(hadLoaded){clearLoadedPropertyForNewAddress();if(el('streetAddress'))el('streetAddress').value=street;if(el('cityTown'))el('cityTown').value=city;if(el('propertyProvince'))el('propertyProvince').value=prov;}
  clearAddressVerificationState();
  clearTimeout(addressPreviewTimer);addressPreviewTimer=setTimeout(previewAddress,650);
+ renderSummary();
 }
 function addressTyped(){
- // A street-address edit starts a new property. Never carry the prior city's/state's values forward.
+ // Keep the old workspace until a new property is accepted; require explicit city/province.
  const hadLoaded=!!sessionToken||structures.length||manualPlanes.length||fallbackMode;
  if(hadLoaded){
-  const street=(el('streetAddress')?.value||'').trim();
-  clearLoadedPropertyForNewAddress();
-  if(el('streetAddress'))el('streetAddress').value=street;
   if(el('cityTown'))el('cityTown').value='';
   if(el('propertyProvince'))el('propertyProvince').value='';
   if(el('postalCode'))el('postalCode').value='';
-  clearAddressVerificationState('New address — enter/confirm city and state/province, then Google will verify it.');
-  clearTimeout(addressPreviewTimer);addressPreviewTimer=setTimeout(previewAddress,650);
-  return;
  }
  addressFieldChanged();
 }

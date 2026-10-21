@@ -39,5 +39,15 @@ vm.createContext(c);vm.runInContext(save,c);
  let prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
  f.saveEstimateHistory.cleanWorkspace=f.workspaceSaveFingerprint();prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false);
  fields.customerName.value='QA TEST unsaved after successful save';listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
+ // Real address input handlers retain old geometry/customer/address and block mismatched quotes.
+ const addressSource=source.slice(source.indexOf('function propertyInputAddressKey(){'),source.indexOf('function propertyProvinceChanged(){'));
+ const addressFields={streetAddress:{value:'Old street'},cityTown:{value:'Saskatoon'},propertyProvince:{value:'SK'},address:{value:'Old stored property'},customerName:{value:'QA TEST existing customer'}};
+ const addressContext={el:id=>addressFields[id],coordinatesEntered:()=>null,sessionToken:'saved-token',structures:[],manualPlanes:[],fallbackMode:false,loadProperty(){},clearAddressVerificationState(){},clearTimeout(){},setTimeout(){},previewAddress(){},renderSummary(){},areaPoints:[[52,-106]],addressPreviewTimer:null};
+ vm.createContext(addressContext);vm.runInContext(addressSource,addressContext);
+ addressContext.loadProperty.loadedAddressKey=addressContext.propertyInputAddressKey();
+ addressFields.streetAddress.value='Invalid new street';addressContext.addressTyped();assert(addressContext.propertyAddressNeedsReload());
+ assert.equal(addressContext.sessionToken,'saved-token');assert.equal(addressContext.areaPoints.length,1);assert.equal(addressFields.address.value,'Old stored property');assert.equal(addressFields.customerName.value,'QA TEST existing customer');
+ addressFields.streetAddress.value='Old street';addressFields.cityTown.value='Saskatoon';addressFields.propertyProvince.value='SK';assert.equal(addressContext.propertyAddressNeedsReload(),false);
+ addressFields.streetAddress.value='Invalid new street';vm.runInContext(source.slice(source.indexOf('function quotePricingError(calc=null){'),source.indexOf('function updateQuotePricingValidation(calc){')),addressContext);assert(addressContext.quotePricingError().includes('address has changed'),'Actual validation must block mismatched quotes');
  console.log('PASS: single-flight create/lookup, stable retry identity, lost response, timeout, expired login, conflict message and existing workspace preservation');
 })().catch(e=>{console.error(e);process.exit(1)});
