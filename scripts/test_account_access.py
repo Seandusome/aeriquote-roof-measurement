@@ -1,8 +1,10 @@
 """Exercise actual account routes against an isolated SQLite database."""
-import ast, sqlite3, json
+import ast, sqlite3, json, sys
 from pathlib import Path
 from types import SimpleNamespace
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root))
+from account_credits import lock_account
 source=(root/'app.py').read_text()
 tree=ast.parse(source)
 con=sqlite3.connect(':memory:');con.row_factory=sqlite3.Row
@@ -14,12 +16,13 @@ INSERT INTO dealers VALUES('a','active',25),('b','active',25);
 INSERT INTO dealer_employees VALUES('ea','a','active'),('eb','b','active');
 INSERT INTO estimates VALUES('qa','a','2026-10-14','Alice','','','A',100,10,'{}'),('qb','b','2026-10-14','Bob','','','B',200,20,'{}');''')
 class DB:
+ postgres=False
  def execute(self,*args):return con.execute(*args)
  def close(self):pass
  def commit(self):con.commit()
 session={'dealer_id':'a','account_type':'employee','employee_id':'ea'}
-req=SimpleNamespace(path='/api/estimates',method='GET',get_json=lambda **kw:{},args={})
-scope=dict(session=session,request=req,estimate_db=DB,jsonify=lambda *a,**kw:a[0] if a else kw,redirect=lambda url:('redirect',url),is_head_office=lambda:False,auth_version=lambda *args:0,json=json,Response=lambda body,**kw:(body,kw))
+req=SimpleNamespace(is_json=False,path='/api/estimates',method='GET',get_json=lambda **kw:{},args={})
+scope=dict(lock_account=lock_account,session=session,request=req,estimate_db=DB,jsonify=lambda *a,**kw:a[0] if a else kw,redirect=lambda url:('redirect',url),is_head_office=lambda:False,auth_version=lambda *args:0,json=json,Response=lambda body,**kw:(body,kw))
 for name in ['is_employee','is_dealer_owner','require_dealer_login','account_profile_api','estimate_history_one','estimate_history_versions','dealer_employee_status']:
  n=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==name);n.decorator_list=[]
  exec(compile(ast.Module(body=[n],type_ignores=[]),'app.py','exec'),scope)
@@ -38,7 +41,7 @@ con.execute("UPDATE dealer_employees SET status='active' WHERE id='ea'")
 session.update(dealer_id='a',account_type='employee',employee_id='ea');assert scope['require_dealer_login']() is None
 session['employee_id']='eb';assert scope['require_dealer_login']()[1]==401 and not session
 session.update(dealer_id='a',account_type='owner');assert scope['require_dealer_login']() is None
-req.form={'action':'disable'};scope['dealer_employee_status']('eb')
+con.commit();req.form={'action':'disable'};scope['dealer_employee_status']('eb')
 assert con.execute("SELECT status FROM dealer_employees WHERE id='eb'").fetchone()[0]=='active'
 con.execute("UPDATE dealers SET status='disabled' WHERE id='a'");assert scope['require_dealer_login']()[1]==401 and not session
 session.update(dealer_id='a',account_type='employee',employee_id='ea');assert scope['require_dealer_login']()[1]==401

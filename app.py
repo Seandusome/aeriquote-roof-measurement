@@ -96,6 +96,7 @@ def _initialize_estimate_schema(con):
     con.execute("CREATE INDEX IF NOT EXISTS idx_property_sessions_expiry ON property_sessions(expires_at)")
     con.execute("""CREATE TABLE IF NOT EXISTS estimates (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
     con.execute("""CREATE TABLE IF NOT EXISTS estimate_revisions (revision_id TEXT PRIMARY KEY, estimate_id TEXT NOT NULL, revised_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
+    con.execute("CREATE TABLE IF NOT EXISTS estimate_save_receipts (dealer_id TEXT NOT NULL, operation_id TEXT NOT NULL, payload_hash TEXT NOT NULL, response_json TEXT NOT NULL, PRIMARY KEY(dealer_id,operation_id))")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_address ON estimates(address)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_estimates_customer ON estimates(customer_name)")
     con.execute("""CREATE TABLE IF NOT EXISTS dealers (id TEXT PRIMARY KEY, dealer_name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, state TEXT, status TEXT NOT NULL DEFAULT 'active', lookup_limit INTEGER NOT NULL DEFAULT 250, estimate_limit INTEGER NOT NULL DEFAULT 150, created_at TEXT NOT NULL)""")
@@ -118,6 +119,9 @@ def _initialize_estimate_schema(con):
     # PostgreSQL must use IF NOT EXISTS: catching a duplicate-column error without a
     # rollback leaves the whole transaction aborted and breaks Previous Estimates.
     if DATABASE_URL:
+        # PostgreSQL REAL is float32: large quote totals can lose customer-visible cents.
+        for table in ("estimates","estimate_revisions"):
+            con.execute(f"ALTER TABLE {table} ALTER COLUMN total_area TYPE DOUBLE PRECISION, ALTER COLUMN total_price TYPE DOUBLE PRECISION")
         con.execute("ALTER TABLE estimates ADD COLUMN IF NOT EXISTS dealer_id TEXT")
         con.execute("ALTER TABLE estimate_revisions ADD COLUMN IF NOT EXISTS dealer_id TEXT")
     else:
@@ -1703,6 +1707,7 @@ function resetReportForNewProperty(){
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
 function resetMeasurementForNewProperty(){
+ saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;
  savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;if(el('estimatePeriod'))el('estimatePeriod').value='one_time';
  surfaceLineDraftOriginal=null;
  linearCorrectionOriginal=null;linearMode=false;linearPoints=[];linearMeasurementSaved=false;areaMode=false;commercialAreas=[];commercialEditingIndex=-1;savedLinearJobRate=null;commercialAreaLayers.forEach(l=>{try{map.removeLayer(l)}catch(e){}});commercialAreaLayers=[];areaPoints=[];areaMeasurementSaved=false;measurementViewMode=pendingMeasurementMode||'auto';clearLinearLayers();clearAreaLayers();updateLinearUi();updateAreaUi();updatePropertyActionButton();updateMeasurementInterface();
@@ -1782,6 +1787,11 @@ async function loadExactPinAerial(token,targetMap=map){
 
 function showTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.add('open')}function closeTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.remove('open')}
 async function loadProperty(){
+ if(loadProperty.inFlight)return loadProperty.inFlight;
+ loadProperty.inFlight=performLoadProperty();
+ try{return await loadProperty.inFlight}finally{loadProperty.inFlight=null}
+}
+async function performLoadProperty(){
  const unitGuess=unitAddressSuggestion(el('streetAddress')?.value,propertyLookupProvince());
  if(!coordinatesEntered()&&unitGuess){
   if(!window.confirm('Is '+unitGuess.unit+' the unit and '+unitGuess.number+' the building number?\n\nUse: '+unitGuess.address+'\n\nChoose Cancel to edit the address.')){status('Enter the building address, then # and the unit number if needed.','warn');return}
@@ -1793,14 +1803,17 @@ async function loadProperty(){
  if(!cc&&(!enteredStreet||!enteredCity||!enteredProvince)){status('Enter the street address, City and State/Province. ZIP/postal code is not required.','error');return}
  // Freeze exactly what the dealer entered BEFORE any report/measurement reset can change UI state.
  const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,propertyCountryFromProvince(enteredProvince)].join(', ');
- resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
+
  if(cc&&el('googleMatch'))el('googleMatch').textContent='Loading exact coordinates: '+authoritativeAddress;
 const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!address){status('Enter API key and address.','error');return}
  try{
-  status('Loading property…');showLoad(true);resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null}
-  removeStaleAerialLayers();
+  status('Loading property…');showLoad(true);
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
-  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d=await r.json();if(!r.ok){if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
+  const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
+  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify(payload)}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
+  loadProperty.pending=null;
+ resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
+  resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
   sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
@@ -2312,13 +2325,31 @@ async function buildCustomerMap(){
  }
  return buildInteractiveCustomerMap();
 }
+function workspaceSaveFingerprint(){
+ const previous=quoteSnapshot;
+ try{return JSON.stringify({quote:captureQuoteSnapshot(),pricing:priceCalc(),fields:['address','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice'].map(id=>el(id)?.value||'')})}catch(e){return null}finally{quoteSnapshot=previous}
+}
+window.addEventListener('beforeunload',event=>{
+ if(historicalMode||!sessionToken||(!areaPoints.length&&!linearPoints.length&&!structures.length&&!manualPlanes.length))return;
+ if(saveEstimateHistory.cleanWorkspace&&saveEstimateHistory.cleanWorkspace===workspaceSaveFingerprint())return;
+ event.preventDefault();event.returnValue='';
+});
 async function saveEstimateHistory(){
+ if(saveEstimateHistory.inFlight)return saveEstimateHistory.inFlight;
+ saveEstimateHistory.inFlight=performEstimateHistorySave();
+ try{return await saveEstimateHistory.inFlight}finally{saveEstimateHistory.inFlight=null}
+}
+async function performEstimateHistorySave(){
  const pricingIssue=quotePricingError();if(pricingIssue){status(pricingIssue,'error');return false}
  try{
+  const workspaceStamp=typeof workspaceSaveFingerprint==='function'?workspaceSaveFingerprint():null;
   const calc=priceCalc(),snap=quoteSnapshot||captureQuoteSnapshot();
   let streetImageData=savedPropertyEditActive?savedStreetImageData:'';
   const imageChoice=(el('streetViewChoice')?.value||'auto');
   const payload=JSON.parse(JSON.stringify({customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:savedJobDetails?.job_status||'Estimate',scheduled_date:savedJobDetails?.scheduled_date||'',completion_date:savedJobDetails?.completion_date||'',amount_paid:Number(savedJobDetails?.amount_paid||0),address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData}));
+  const requestKey=JSON.stringify(payload);
+  if(saveEstimateHistory.pending?.requestKey!==requestKey)saveEstimateHistory.pending={requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),payload:null};
+  const operation=saveEstimateHistory.pending;
   const imageSessionToken=sessionToken;
   if(imageChoice==='auto'&&sessionToken&&!savedPropertyEditActive){
    try{
@@ -2330,11 +2361,16 @@ async function saveEstimateHistory(){
    }catch(e){console.warn('Street View could not be stored with estimate',e)}
   }
   payload.street_image_data=streetImageData;
-  const saveKey=JSON.stringify(payload);
+  if(!operation.payload)operation.payload=payload;
+  const frozen=operation.payload,saveKey=JSON.stringify(frozen);
   if(saveKey===lastHistorySaveKey)return true;
-  const r=await fetch('/api/estimates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok)throw new Error('save failed');
-  lastHistorySaveKey=saveKey;return true;
- }catch(e){console.warn('Estimate history save failed',e);status('Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
+  const headers={'Content-Type':'application/json','Idempotency-Key':operation.id};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
+  try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}
+  if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
+  let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
+  lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;return true;
+ }catch(e){console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
 function closeEstimateHistory(){el('historyModal').classList.remove('open')}
@@ -2413,7 +2449,7 @@ async function resumeSavedEstimateWorkspace(){
  const r=await fetch('/api/estimates/'+encodeURIComponent(context.id)+'/editing-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_index:context.versionIndex})}),d=await r.json();
  if(!r.ok)throw new Error(d.error||'Could not restore this saved job.');
  resetMeasurementForNewProperty();savedEstimateEditContext=context;restoreSavedQuoteFields(context.payload,context.snapshot,context.pricing);
- savedJobDetails=d.job_details||{};
+ savedJobDetails=d.job_details||{};saveEstimateHistory.baseVersion=d.version||null;
  sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
  const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
@@ -3642,6 +3678,9 @@ def dealer_employees():
         else:
             con=estimate_db()
             try:
+                # All employee creators share one identity lock, including different owners.
+                if con.postgres:con.execute("SELECT pg_advisory_xact_lock(?)",(614728194,))
+                lock_account(con,did)
                 dup1=con.execute("SELECT id FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
                 dup2=con.execute("SELECT id FROM dealer_employees WHERE LOWER(email)=?",(email,)).fetchone()
                 if dup1 or dup2:error="That email is already used by another login."
@@ -3658,7 +3697,13 @@ def dealer_employee_status(employee_id):
     if not is_dealer_owner(): return Response("Dealer Owner permission required.",status=403)
     did=str(session["dealer_id"]);new_status="disabled" if str(request.form.get("action") or "").lower()=="disable" else "active"
     con=estimate_db()
-    try:con.execute("UPDATE dealer_employees SET status=? WHERE id=? AND dealer_id=?",(new_status,employee_id,did));con.commit()
+    try:
+        lock_account(con,did)
+        current=con.execute("SELECT status FROM dealer_employees WHERE id=? AND dealer_id=?",(employee_id,did)).fetchone()
+        if current and str(current["status"]).lower()!=new_status:
+            con.execute("UPDATE dealer_employees SET status=? WHERE id=? AND dealer_id=?",(new_status,employee_id,did))
+            if new_status=="disabled":con.execute("INSERT INTO account_auth_versions(account_type,account_id,version) VALUES('employee',?,1) ON CONFLICT(account_type,account_id) DO UPDATE SET version=account_auth_versions.version+1",(employee_id,))
+        con.commit()
     finally:con.close()
     return redirect("/dealer-employees")
 
@@ -3667,10 +3712,10 @@ def is_recovery_test_service():
     return (os.environ.get("RENDER_SERVICE_ID", "") == "srv-db5a2g5ckfvc739fui70"
             or os.environ.get("RENDER_EXTERNAL_HOSTNAME", "") == "aeriquote-commercial-test.onrender.com")
 
-def consume_property_lookup(dealer_id):
-    con=estimate_db()
+def consume_property_lookup(dealer_id, connection=None):
+    con=connection or estimate_db()
     try:
-        d=lock_account(con,dealer_id)
+        d=lock_account(con,dealer_id) if connection is None else con.execute("SELECT * FROM dealers WHERE id=?",(dealer_id,)).fetchone()
         if not d or str(d["status"]).lower()!="active":return False,0,0
         cfg=credit_settings(con,dealer_id)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
@@ -3680,9 +3725,10 @@ def consume_property_lookup(dealer_id):
         allowed,used,limit=consume_credit(con,dealer_id,"lookups",used,limit)
         if allowed:
             con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1) ON CONFLICT(dealer_id) DO UPDATE SET property_lookups=dealer_usage.property_lookups+1",(dealer_id,))
-            con.commit()
+            if connection is None:con.commit()
         return allowed,used,limit
-    finally:con.close()
+    finally:
+        if connection is None:con.close()
 
 
 def reset_trial_usage_for_v1196_testing_once():
@@ -3703,7 +3749,7 @@ def require_dealer_login():
     path=(request.path or "").rstrip("/") or "/"
     if path in {"/site","/favicon.ico","/pricing","/pricing.html","/trial-signup.html","/roofer-setup.html","/dealer-login","/forgot-password","/reset-password","/setup-dealer","/health","/api/admin/create-dealer","/api/public/signup","/api/public/support","/api/public/support/config","/api/public/support/inbound"} or path.startswith("/static/") or path.startswith("/site/"):return None
     if not session.get("dealer_id"):
-        if request.path.startswith("/api/"):return jsonify(error="Dealer login required"),401
+        if request.path.startswith("/api/") or request.is_json:return jsonify(error="Dealer login required"),401
         return redirect("/dealer-login")
     con=estimate_db()
     try:
@@ -3719,7 +3765,7 @@ def require_dealer_login():
     finally:con.close()
     if not active:
         session.clear()
-        if request.path.startswith("/api/"):return jsonify(error="Account access disabled. Please log in again."),401
+        if request.path.startswith("/api/") or request.is_json:return jsonify(error="Account access disabled. Please log in again."),401
         return redirect("/dealer-login")
 
 
@@ -3958,22 +4004,41 @@ def retain_property_session(response):
 
 @app.post("/property")
 def property_data():
-    d=request.get_json(silent=True) or {};key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
+    dealer_id=str(session.get("dealer_id") or "")
+    d=request.get_json(silent=True) or {}
+    if not isinstance(d,dict):return jsonify(error="Property details must be an object."),400
+    operation=str(request.headers.get("Idempotency-Key") or "")
+    if operation and not re.fullmatch(r"[A-Za-z0-9_-]{1,128}",operation):return jsonify(error="Invalid lookup identifier."),400
+    try:digest=estimate_version(d)
+    except (ValueError,TypeError):return jsonify(error="Invalid property details."),400
+    con=estimate_db()
+    try:
+        lock_account(con,dealer_id)
+        if operation:
+            old=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"lookup:"+operation)).fetchone()
+            if old:
+                if old["payload_hash"]!=digest:return jsonify(error="This lookup identifier was used for a different property."),409
+                return jsonify(json.loads(old["response_json"]))
+        allowed,used,limit=consume_property_lookup(dealer_id,con)
+        if not allowed:
+            row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+            if row and str(row["plan_code"] or "").lower()=="trial":return jsonify(error="Free trial complete.",code="trial_limit_reached",user_error="You’ve used all 3 free property measurements included with your AeriQuote trial."),403
+            return jsonify(error="Property lookup allowance reached.",user_error=f"Your account has used all {limit} property measurements included with the current plan."),403
+        response=app.make_response(perform_property_lookup(d))
+        if response.status_code==200:
+            if operation:con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"lookup:"+operation,digest,json.dumps(response.get_json())))
+            con.commit()
+        return response
+    finally:con.close()
+
+def perform_property_lookup(d):
+    key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
     if not key or not address:return jsonify(error="API key and address are required."),400
-    allowed,used,limit=consume_property_lookup(str(session.get("dealer_id") or ""))
-    if not allowed:
-        con=estimate_db()
-        try:
-            row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(str(session.get("dealer_id") or ""),)).fetchone()
-            is_trial=bool(row and str(row["plan_code"] or "").lower()=="trial")
-        finally:con.close()
-        if is_trial:return jsonify(error="Free trial complete.",code="trial_limit_reached",user_error="You’ve used all 3 free property measurements included with your AeriQuote trial."),403
-        return jsonify(error="Property lookup allowance reached.",user_error=f"Your account has used all {limit} property measurements included with the current plan."),403
     try:
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
             lat=float(d.get("latitude"));lng=float(d.get("longitude"))
-            if abs(lat)>90 or abs(lng)>180: return jsonify(error="Invalid coordinates.",user_error="Enter valid latitude and longitude coordinates."),400
+            if not math.isfinite(lat) or not math.isfinite(lng) or abs(lat)>90 or abs(lng)>180: return jsonify(error="Invalid coordinates.",user_error="Enter valid latitude and longitude coordinates."),400
             formatted=f"{lat:.6f}, {lng:.6f}"
         else:
             expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
@@ -4272,6 +4337,10 @@ def estimate_pricing_error(payload):
             return "Remeasure the flagged roof before saving an estimate."
     return snapshot_error(payload) or pricing_error(payload)
 
+def estimate_version(payload):
+    if isinstance(payload,str):payload=json.loads(payload)
+    return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+
 @app.route("/api/estimates", methods=["GET","POST"])
 def estimate_history_api():
     dealer_id=str(session.get("dealer_id") or "")
@@ -4284,6 +4353,20 @@ def estimate_history_api():
             if pricing_error:return jsonify(error=pricing_error),400
             address=str(d.get("address") or "").strip()
             if not address:return jsonify(error="Property address is required"),400
+            operation=str(request.headers.get("Idempotency-Key") or "")
+            if operation and not re.fullmatch(r"[A-Za-z0-9_-]{1,128}",operation):return jsonify(error="Invalid save request identifier."),400
+            try:request_hash=estimate_version(d)
+            except (ValueError,TypeError):return jsonify(error="Estimate contains invalid values."),400
+            if operation:
+                receipt=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,operation)).fetchone()
+                if receipt:
+                    if receipt["payload_hash"]!=request_hash:return jsonify(error="This save identifier was already used for different estimate details."),409
+                    return jsonify(json.loads(receipt["response_json"]))
+            def finish_save(result):
+                result["version"]=estimate_version(d)
+                if operation:con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,operation,request_hash,json.dumps(result)))
+                con.commit()
+                return jsonify(result)
             # One active estimate per property PER DEALER. Another dealer can quote
             # the same address without seeing or overwriting this dealer's record.
             norm=lambda v:" ".join(str(v or "").lower().replace(","," ").replace("."," ").split())
@@ -4292,6 +4375,15 @@ def estimate_history_api():
             for row in con.execute("SELECT * FROM estimates WHERE dealer_id=? ORDER BY created_at DESC",(dealer_id,)).fetchall():
                 if norm(row["address"])==address_key:
                     existing=row;break
+            if existing:
+                base=request.headers.get("If-Match")
+                if base and base!=estimate_version(existing["payload"]):return jsonify(error="This estimate changed in another session. Your measurements are still here. Reopen the latest saved version before saving changes."),409
+                # Pricing edits do not own booking/payment fields; dedicated endpoints do.
+                saved=json.loads(existing["payload"])
+                for key in ("job_status","scheduled_date","completion_date","amount_paid"):
+                    if key in saved:d[key]=saved[key]
+                if estimate_version(d)==estimate_version(saved):
+                    return finish_save(dict(id=existing["id"],created_at=existing["created_at"],updated=False))
             if not existing:
                 cfg=credit_settings(con,dealer_id)
                 if not is_head_office() and (cfg["complimentary"] or not is_recovery_test_service()):
@@ -4308,10 +4400,10 @@ def estimate_history_api():
             if existing:
                 con.execute("INSERT INTO estimate_revisions(revision_id,estimate_id,revised_at,customer_name,customer_phone,customer_email,address,total_area,total_price,payload,dealer_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)",(str(uuid.uuid4()),existing["id"],created,existing["customer_name"],existing["customer_phone"],existing["customer_email"],existing["address"],existing["total_area"],existing["total_price"],existing["payload"],dealer_id))
                 con.execute("UPDATE estimates SET created_at=?,customer_name=?,customer_phone=?,customer_email=?,address=?,total_area=?,total_price=?,payload=? WHERE id=? AND dealer_id=?",(created,*vals,existing["id"],dealer_id))
-                con.commit();return jsonify(id=existing["id"],created_at=created,updated=True)
+                return finish_save(dict(id=existing["id"],created_at=created,updated=True))
             eid=str(uuid.uuid4())
             con.execute("INSERT INTO estimates(id,created_at,customer_name,customer_phone,customer_email,address,total_area,total_price,payload,dealer_id) VALUES(?,?,?,?,?,?,?,?,?,?)",(eid,created,*vals,dealer_id))
-            con.commit();return jsonify(id=eid,created_at=created,updated=False)
+            return finish_save(dict(id=eid,created_at=created,updated=False))
         q=str(request.args.get("q") or "").strip()
         if q:
             like="%"+q+"%"; rows=con.execute("SELECT id,created_at,customer_name,customer_phone,customer_email,address,total_area,total_price FROM estimates WHERE dealer_id=? AND (customer_name LIKE ? OR customer_phone LIKE ? OR customer_email LIKE ? OR address LIKE ?) ORDER BY created_at DESC LIMIT 100",(dealer_id,like,like,like,like)).fetchall()
@@ -4343,6 +4435,7 @@ def estimate_completion_date(estimate_id):
         except ValueError:return jsonify(ok=False,error="Invalid completion date."),400
     con=estimate_db()
     try:
+        lock_account(con,str(dealer_id))
         row=con.execute("SELECT payload FROM estimates WHERE id=? AND dealer_id=?",(estimate_id,dealer_id)).fetchone()
         if not row:return jsonify(ok=False,error="Estimate not found."),404
         raw=row["payload"] if hasattr(row,"keys") else row[0];payload=json.loads(raw or "{}");payload["completion_date"]=completion_date
@@ -4362,6 +4455,7 @@ def estimate_amount_paid(estimate_id):
     except (TypeError,ValueError,OverflowError):return jsonify(ok=False,error="Invalid amount."),400
     con=estimate_db()
     try:
+        lock_account(con,str(dealer_id))
         row=con.execute("SELECT payload FROM estimates WHERE id=? AND dealer_id=?",(estimate_id,dealer_id)).fetchone()
         if not row:return jsonify(ok=False,error="Estimate not found."),404
         raw=row["payload"] if hasattr(row,"keys") else row[0];payload=json.loads(raw or "{}");payload["amount_paid"]=amount_paid
@@ -4380,6 +4474,7 @@ def estimate_scheduled_date(estimate_id):
         except ValueError:return jsonify(ok=False,error="Invalid scheduled date."),400
     con=estimate_db()
     try:
+        lock_account(con,str(dealer_id))
         row=con.execute("SELECT payload FROM estimates WHERE id=? AND dealer_id=?",(estimate_id,dealer_id)).fetchone()
         if not row:return jsonify(ok=False,error="Estimate not found."),404
         raw=row["payload"] if hasattr(row,"keys") else row[0]
@@ -4400,6 +4495,7 @@ def estimate_job_status(estimate_id):
         return jsonify(error="Invalid job status"),400
     con=estimate_db()
     try:
+        lock_account(con,str(dealer_id))
         row=con.execute("SELECT payload FROM estimates WHERE id=? AND dealer_id=?",(estimate_id,dealer_id)).fetchone()
         if not row:return jsonify(error="Estimate not found"),404
         try: payload=json.loads(row["payload"] or "{}")
@@ -4454,7 +4550,7 @@ def saved_estimate_editing_session(estimate_id):
     token=uuid.uuid4().hex
     SESSIONS[token]={"key":GOOGLE_MAPS_API_KEY,"dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
     SESSIONS.persist(token)
-    return jsonify(token=token,center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
+    return jsonify(token=token,version=estimate_version(data["current"]["payload"]),center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
 
 @app.get("/exact-pin-meta/<token>")
 def exact_pin_meta(token):

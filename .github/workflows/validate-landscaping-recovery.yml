@@ -71,3 +71,30 @@ jobs:
       - run: python scripts/test_automatic_roof_api.py
       - run: node scripts/test_roof_integrity.cjs
       - run: python scripts/test_qa_auth_flow.py
+      - run: python scripts/test_failure_recovery.py
+      - run: node scripts/test_failure_recovery.cjs
+
+  postgres_integrity:
+    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: qa
+          POSTGRES_PASSWORD: qa-disposable-only
+          POSTGRES_DB: aeriquote_qa
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U qa -d aeriquote_qa"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      QA_POSTGRES_URL: postgresql://qa:qa-disposable-only@127.0.0.1:5432/aeriquote_qa
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements.txt
+      - name: Real PostgreSQL concurrent requests and failure recovery
+        run: python scripts/test_failure_recovery.py --postgres
