@@ -5,7 +5,7 @@ const priceCalc=source.split('\n').find(line=>line.startsWith('function priceCal
 const fields={pricingMode:{value:'added'},discountPct:{value:0},gst:{value:5},pst:{value:6}};
 let area=1790.2248;
 const c={el:id=>fields[id],commercialActive:()=>false,measurementViewMode:'auto',estimateArea:()=>area,currentJobPrice:()=>1,savedSurfaceHasAreas:()=>false,currentBusinessType:()=> 'roofing',landscapingCombined:()=>false,pressureCombined:()=>false,pavingCombined:()=>false,multiAreaSaved:()=>false,commercialHasAreas:()=>false};
-vm.createContext(c);vm.runInContext(priceCalc,c);
+vm.createContext(c);vm.runInContext(source.slice(source.indexOf('function estimatePeriodValue('),source.indexOf('function updateEstimatePeriodUi(')),c);vm.runInContext(priceCalc,c);
 const cents=n=>Math.round(n*100);
 function check(expected){const r=c.priceCalc();assert.equal(cents(r.total),expected);assert.equal(cents(r.taxBase)+cents(r.gstAmt)+cents(r.pstAmt),expected);return r;}
 check(198714);area=1746.30;check(193840);

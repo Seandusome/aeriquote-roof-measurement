@@ -361,5 +361,20 @@ w.eval(`commercialAreaField(0,'rate','0')`);assert.equal(w.eval('commercialAreas
 w.eval(`el('pricingMode').value='discount';el('discountPct').value='101';renderSummary()`);assert(btn('createEstimateBtn').disabled);assert(btn('quotePricingError').textContent.includes('discount'));
 w.eval(`el('discountPct').value='10';renderSummary()`);assert.equal(w.eval('quotePricingError()'),'');
 console.log('PASS: real saved-area rate entry preserves blank and blocks quote; explicit zero allowed; excessive discount blocked and corrected discount recovers');
+// Billing periods must preserve money, save metadata, restore history, and reset for a new job.
+for(const industry of ['snow','landscaping','commercial']){
+ dom.reconfigure({url:'https://test.invalid/?industry='+industry});
+ w.eval(`resetMeasurementForNewProperty();el('businessType').value='${industry}';businessTypeChanged();sessionToken='period-${industry}';measurementViewMode='area';el('pricingMode').value='regular';el('gst').value='5';el('pst').value='6';el('extraServiceAmount').value='0';el('jobPrice').value='1';el('customerName').value='QA recurring';el('address').value='QA property';el('streetViewChoice').value='none';commercialAreas=[{name:'QA area',rate:1,sqft:100,points:[[52,-106],[52,-105.9999],[52.0001,-106]]}];commercialEditingIndex=0;areaPoints=commercialAreas[0].points.map(p=>L.latLng(...p));areaMeasurementSaved=true;renderSummary()`);
+ const amount=w.eval('priceCalc().total');w.eval(`el('estimatePeriod').value='month';renderSummary()`);
+ assert.equal(w.eval('priceCalc().total'),amount);assert.equal(btn('estimatePeriodWrap').style.display,'block');assert(btn('summary').textContent.includes('per month'));assert(btn('jsTotal').textContent.endsWith('per month'));
+ const posts=[];w.fetch=async(url,options)=>{if(options?.body)posts.push(JSON.parse(options.body));return{ok:true,json:async()=>({ok:true})}};
+ w.eval(`estimateOpenInProgress=false;document.body.classList.remove('report-open');el('reportOverlay').style.display='none'`);await w.eval('showCustomerEstimate()');
+ assert(btn('rPricing').textContent.includes('per month'));assert.equal(posts.at(-1).pricing.estimatePeriod,'month');assert.equal(posts.at(-1).pricing.total,amount);
+ w.periodPayload=posts.at(-1);w.eval(`el('estimatePeriod').value='year';restoreSavedQuoteFields(periodPayload,periodPayload.quote,periodPayload.pricing);renderSummary()`);assert.equal(btn('estimatePeriod').value,'month');assert.equal(w.eval('priceCalc().total'),amount);
+ w.eval(`delete periodPayload.pricing.estimatePeriod;restoreSavedQuoteFields(periodPayload,periodPayload.quote,periodPayload.pricing)`);assert.equal(btn('estimatePeriod').value,'one_time','Legacy record must not inherit period');
+ w.eval(`resetMeasurementForNewProperty();clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false`);assert.equal(btn('estimatePeriod').value,'one_time');
+ console.log('PASS '+industry+': monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset');
+}
+dom.reconfigure({url:'https://test.invalid/?industry=roofing'});w.eval(`el('businessType').value='roofing';el('estimatePeriod').value='month';renderSummary()`);assert.equal(btn('estimatePeriodWrap').style.display,'none');assert.equal(w.eval('priceCalc().estimatePeriod'),'one_time');
 await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');console.log('Script errors:',errors);dom.window.close();if(errors.length)process.exitCode=1;})().catch(e=>{console.error(e);process.exit(1)});
 
