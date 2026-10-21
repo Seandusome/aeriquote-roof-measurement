@@ -1075,11 +1075,17 @@ function outlineMatchesBuilding(points,roof){
  return points.every(p=>p[0]>=box.sw.latitude-dy&&p[0]<=box.ne.latitude+dy&&p[1]>=box.sw.longitude-dx&&p[1]<=box.ne.longitude+dx);
 }
 function automaticRoofReviewDetails(roof,outline){
- const issues=[],ground=Number(roof.roof_ground_sqft||0),footprint=localPolygonAreaM2(outline.map(p=>L.latLng(p)))*10.76391041671;
- if(!outlineMatchesBuilding(outline,roof))issues.push('The extracted outline extends beyond Google’s matched building boundary.');
+ const issues=[],ground=Number(roof.roof_ground_sqft||0),area=Number(roof.automatic_roof_sqft||roof.total_roof_sqft||0),validOutline=Array.isArray(outline)&&outline.length>=3&&outline.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180),footprint=validOutline?localPolygonAreaM2(outline.map(p=>L.latLng(p)))*10.76391041671:0;
+ if(!validOutline||footprint<=0)issues.push('The complete automatic roof outline is unavailable. Remeasure this roof.');
+ if(!Number.isFinite(area)||area<=0||!Number.isFinite(ground)||ground<=0)issues.push('Automatic roof area or footprint data is incomplete.');
+ const buildingGround=Number(roof.building_ground_sqft||0);if(!Number.isFinite(buildingGround)||buildingGround<=0)issues.push('The complete building footprint is unavailable. Remeasure this roof.');else if(ground/buildingGround<.95)issues.push('Automatic roof data is missing building sections.');
+ if(validOutline&&!outlineMatchesBuilding(outline,roof))issues.push('The extracted outline extends beyond Google’s matched building boundary.');
  if(Number.isFinite(roof.roof_coverage_ratio)&&roof.roof_coverage_ratio<.95)issues.push('Google’s roof data covers '+(roof.roof_coverage_ratio*100).toFixed(1)+'% of its reported building footprint.');
  if(ground>0&&(footprint/ground<.75||footprint/ground>1.25))issues.push('The extracted outline footprint differs from Google’s reported roof footprint by more than 25%.');
- return {issues,outline_ground_sqft:footprint,google_roof_ground_sqft:ground,google_roof_sqft:Number(roof.automatic_roof_sqft||roof.total_roof_sqft||0)};
+ if(ground>0&&area<ground*.98)issues.push('Automatic roof surface area is smaller than its ground footprint.');
+ const segments=roof.segments;if(!Array.isArray(segments)||!segments.length||segments.some(seg=>!Number.isFinite(seg.pitch_degrees)||seg.pitch_degrees<0||seg.pitch_degrees>=80||!Number.isFinite(seg.area_sqft)||seg.area_sqft<=0))issues.push('Automatic roof sections or pitches are incomplete.');
+ if(Array.isArray(segments)&&segments.length&&segments.every(seg=>Number.isFinite(seg.pitch_degrees)&&Number.isFinite(seg.area_sqft))){const segmentArea=segments.reduce((n,seg)=>n+seg.area_sqft,0),segmentGround=segments.reduce((n,seg)=>n+seg.area_sqft*Math.cos(seg.pitch_degrees*Math.PI/180),0);if(Math.abs(segmentArea-area)>Math.max(1,area*.01)||ground>0&&(segmentGround/ground<.75||segmentGround/ground>1.25))issues.push('Automatic roof sections do not match the complete roof area and pitch.')}
+ return {issues,outline_ground_sqft:footprint,google_roof_ground_sqft:ground,google_roof_sqft:area};
 }
 function automaticRoofNeedsReview(roof,outline){return automaticRoofReviewDetails(roof,outline).issues.length>0}
 function automaticRoofReviewHtml(roof){
@@ -1087,12 +1093,12 @@ function automaticRoofReviewHtml(roof){
  return '<details class="small" style="margin-top:7px"><summary>Why this roof needs review</summary><div style="padding:7px 0">'+review.issues.map(t=>'<div>'+escapeHistory(t)+'</div>').join('')+'<div>Google returned roof area: '+fmt(review.google_roof_sqft)+' ft².</div><div>Google roof footprint: '+fmt(review.google_roof_ground_sqft)+' ft². Extracted outline footprint: '+fmt(review.outline_ground_sqft)+' ft².</div></div></details>';
 }
 function reviewAutomaticRoof(roof,requireRemeasure=false){
- if(roof.outline){
+ {
   const review=automaticRoofReviewDetails(roof,roof.outline);
   if(review.issues.length){
    roof.automatic_review=review;
-   roof.detected_outline=roof.outline.map(p=>[p[0],p[1]]);
-   if(requireRemeasure){roof.automatic_roof_sqft=roof.total_roof_sqft;roof.total_roof_sqft=0;roof.needs_remeasure=true;roof.outline=null}
+   roof.detected_outline=Array.isArray(roof.outline)?roof.outline.map(p=>[p[0],p[1]]):null;
+   if(requireRemeasure||!Array.isArray(roof.outline)||roof.outline.length<3){roof.automatic_roof_sqft=roof.automatic_roof_sqft??roof.total_roof_sqft;roof.total_roof_sqft=0;roof.needs_remeasure=true;roof.outline=null}
    else roof.automatic_review_warning=true;
   }
  }
@@ -1644,7 +1650,7 @@ function updateQuotePricingValidation(calc){
  }
 }
 function currentJobPrice(){const jp=el('jobPrice');const raw=jp?jp.value:'';const v=parseFloat(raw);if(Number.isFinite(v)&&v>=0)return v;const fallback=parseFloat((el('price')&&el('price').value)||0);return Number.isFinite(fallback)&&fallback>=0?fallback:0}
-function priceCalc(){const currencyAmount=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;if(commercialActive()&&areaMeasurementSaved)commercialSyncCurrent();let linearActive=measurementViewMode==='linear',areaActive=measurementViewMode==='area',area=linearActive?linearFeetTotal():(areaActive?(multiAreaSaved()?multiAreaTotal():Math.round(areaSqFtTotal())):estimateArea()),price=currentJobPrice(),mode=el('pricingMode').value,disc=Number(el('discountPct').value||0),gst=Number(el('gst').value||0),pst=Number(el('pst').value||0),subtotal=(savedSurfaceHasAreas()?landscapingAreaSubtotal()+(linearMeasurementSaved&&linearPoints.length>1?linearFeetTotal()*surfaceLinearJobRate():0):currentBusinessType()==='commercial'&&(commercialHasAreas()||commercialHasLinear())?commercialAreas.reduce((sum,a)=>sum+(a.sqft||0)*(a.rate||0),0)+(commercialHasLinear()?linearFeetTotal()*commercialLinearRate():0):landscapingCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*landscapingAreaRate()+linearFeetTotal()*price:pressureCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*pressureAreaRate()+linearFeetTotal()*price:pavingCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*pavingAreaRate()+linearFeetTotal()*price:area*price),extraDescription=(el('extraServiceDescription')?.value||'').trim(),extraAmount=Math.max(0,Number(el('extraServiceAmount')?.value||0)),discount=0,taxBase=subtotal+extraAmount,gstAmt=0,pstAmt=0,total=0;taxBase=currencyAmount(subtotal+extraAmount);if(mode==='discount'){discount=currencyAmount(subtotal*(disc/100));taxBase=currencyAmount(subtotal-discount+extraAmount);gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);total=currencyAmount(taxBase+gstAmt+pstAmt)}else if(mode==='included'){total=currencyAmount(subtotal+extraAmount);taxBase=currencyAmount(total/(1+(gst+pst)/100));gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);taxBase=currencyAmount(total-gstAmt-pstAmt)}else{taxBase=currencyAmount(subtotal+extraAmount);gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);total=currencyAmount(taxBase+gstAmt+pstAmt)}if(multiAreaSaved())area=multiAreaTotal();return{estimatePeriod:estimatePeriodValue(),area,price,mode,disc,subtotal,extraDescription,extraAmount,discount,taxBase,gst,pst,gstAmt,pstAmt,total,measurementMode:linearActive?'linear':(areaActive?'area':'auto'),unit:(commercialHasAreas()||savedSurfaceHasAreas())?'ft²':(linearActive?'linear ft':'ft²')}}
+function priceCalc(){const currencyAmount=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;if(commercialActive()&&areaMeasurementSaved)commercialSyncCurrent();let linearActive=measurementViewMode==='linear',areaActive=measurementViewMode==='area',area=linearActive?linearFeetTotal():(areaActive?(multiAreaSaved()?multiAreaTotal():Math.round(areaSqFtTotal())):estimateArea()),price=currentJobPrice(),mode=el('pricingMode').value,disc=Number(el('discountPct').value||0),gst=Number(el('gst').value||0),pst=Number(el('pst').value||0),subtotal=(savedSurfaceHasAreas()?landscapingAreaSubtotal()+(linearMeasurementSaved&&linearPoints.length>1?linearFeetTotal()*surfaceLinearJobRate():0):currentBusinessType()==='commercial'&&(commercialHasAreas()||commercialHasLinear())?commercialAreas.reduce((sum,a)=>sum+(a.sqft||0)*(a.rate||0),0)+(commercialHasLinear()?linearFeetTotal()*commercialLinearRate():0):landscapingCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*landscapingAreaRate()+linearFeetTotal()*price:pressureCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*pressureAreaRate()+linearFeetTotal()*price:pavingCombined()?Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*pavingAreaRate()+linearFeetTotal()*price:area*price),extraDescription=(el('extraServiceDescription')?.value||'').trim(),extraAmount=Math.max(0,Number(el('extraServiceAmount')?.value||0)),discount=0,taxBase=subtotal+extraAmount,gstAmt=0,pstAmt=0,total=0;let charges=[];if(savedSurfaceHasAreas()||(currentBusinessType()==='commercial'&&(commercialHasAreas()||commercialHasLinear()))){charges=commercialAreas.filter(a=>a.sqft>0).map(a=>currencyAmount(Number(a.sqft)*Number(a.rate)));if(linearMeasurementSaved&&linearPoints.length>1)charges.push(currencyAmount(linearFeetTotal()*(currentBusinessType()==='commercial'?commercialLinearRate():surfaceLinearJobRate())))}else if(landscapingCombined()||pressureCombined()||pavingCombined()){const areaRate=landscapingCombined()?landscapingAreaRate():pressureCombined()?pressureAreaRate():pavingAreaRate();charges=[currencyAmount(Math.round(multiAreaSaved()?multiAreaTotal():areaSqFtTotal())*areaRate),currencyAmount(linearFeetTotal()*price)]}else charges=[currencyAmount(area*price)];subtotal=currencyAmount(charges.reduce((n,v)=>n+v,0));taxBase=currencyAmount(subtotal+extraAmount);if(mode==='discount'){discount=currencyAmount(subtotal*(disc/100));taxBase=currencyAmount(subtotal-discount+extraAmount);gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);total=currencyAmount(taxBase+gstAmt+pstAmt)}else if(mode==='included'){total=currencyAmount(subtotal+extraAmount);taxBase=currencyAmount(total/(1+(gst+pst)/100));gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);taxBase=currencyAmount(total-gstAmt-pstAmt)}else{taxBase=currencyAmount(subtotal+extraAmount);gstAmt=currencyAmount(taxBase*gst/100);pstAmt=currencyAmount(taxBase*pst/100);total=currencyAmount(taxBase+gstAmt+pstAmt)}if(multiAreaSaved())area=multiAreaTotal();return{estimatePeriod:estimatePeriodValue(),area,price,mode,disc,subtotal,extraDescription,extraAmount,discount,taxBase,gst,pst,gstAmt,pstAmt,total,measurementMode:linearActive?'linear':(areaActive?'area':'auto'),unit:(commercialHasAreas()||savedSurfaceHasAreas())?'ft²':(linearActive?'linear ft':'ft²')}}
 function roofQuoteNeedsReview(){return currentBusinessType()==='roofing'&&measurementViewMode==='auto'&&structures.some(st=>st.needs_remeasure||st.automatic_review_warning)}
 function confidence(){if(structures.some(st=>st.needs_remeasure))return ['An automatic roof is incomplete. Remeasure it before creating the estimate.'];return structures.some(st=>st.automatic_review_warning)?['Roof area and outline may cover different scopes. Remeasure the flagged roof before creating an estimate; confirming its location or editing its picture does not verify its area.']:[]}
 function pitchLabel(deg){const d=Number(deg||0);if(!d)return '—';const rise=12*Math.tan(d*Math.PI/180);const rounded=Math.round(rise*2)/2;return `${d.toFixed(1)}° (approx. ${Number.isInteger(rounded)?rounded.toFixed(0):rounded.toFixed(1)}/12)`}
@@ -1891,7 +1897,7 @@ function removeLastExtra(){
 
 function captureQuoteSnapshot(){
  const clone=x=>JSON.parse(JSON.stringify(x||[]));
- quoteSnapshot={warrantyBrand:accountWarrantyBrand,showWarrantyShield:!!el("showWarrantyShield")?.checked,structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),dealerCountry:el('dealerCountry')?.value||'US',commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
+ quoteSnapshot={warrantyBrand:accountWarrantyBrand,showWarrantyShield:!!el("showWarrantyShield")?.checked,structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',adjustedArea:Number(el('adjustedArea')?.value||0),measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),dealerCountry:el('dealerCountry')?.value||'US',commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
  return quoteSnapshot;
 }
 function clearReportOutlineTemp(){reportOutlineTemp.forEach(x=>{try{customerMap&&customerMap.removeLayer(x)}catch(e){}});reportOutlineTemp=[];const svg=el('reportDrawLayer');if(svg)svg.innerHTML=''}
@@ -2479,6 +2485,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  // Never leave another report's roof/area/line buttons above the saved image.
  if(historicalMode&&el('reportOutlineControls')){el('reportOutlineControls').style.display='none';el('reportOutlineTargetButtons')?.replaceChildren()}
  const estimateRoofs=historicalMode?(quoteSnapshot?.structures||[]):structures;
+ if(currentBusinessType()==='roofing'&&(historicalMode?(quoteSnapshot?.measurementMode||'auto'):measurementViewMode)==='auto')estimateRoofs.filter(st=>!st.manually_measured).forEach(st=>reviewAutomaticRoof(st));
  if((!historicalMode&&roofRemeasureTarget)||estimateRoofs.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('Finish remeasuring the incomplete roof or roof with mismatched area and outline before creating the customer estimate.','warn');return}
  if(!historicalMode&&linearCorrectionOriginal){status('Save or cancel the line edit before creating the estimate.','warn');return}
  if((!historicalMode&&!sessionToken)||((measurementViewMode!=='linear'&&measurementViewMode!=='area')&&!structures.length&&!manualPlanes.length)){status('Load and measure a property first.','error');return}if(!historicalMode&&measurementViewMode==='linear'&&(!linearMeasurementSaved||linearPoints.length<2)){status('Save the linear measurement before creating the estimate.','error');return}if(!historicalMode&&measurementViewMode==='area'&&(!areaMeasurementSaved||areaPoints.length<3)){status('Save the area measurement before creating the estimate.','error');return}
@@ -3597,7 +3604,7 @@ def head_office_dealer_edit(dealer_id):
     except Exception:return Response("Lookup and estimate limits must be whole numbers.",status=400)
     con=estimate_db()
     try:
-        duplicate=con.execute("SELECT id FROM dealers WHERE LOWER(email)=? AND id<>?",(email,dealer_id)).fetchone()
+        duplicate=con.execute("SELECT id FROM dealers WHERE LOWER(email)=? AND id<>? UNION ALL SELECT id FROM dealer_employees WHERE LOWER(email)=?",(email,dealer_id,email)).fetchone()
         if duplicate:return Response("Another dealer already uses that email.",status=400)
         con.execute("UPDATE dealers SET dealer_name=?,email=?,state=?,lookup_limit=?,estimate_limit=? WHERE id=?",
                     (name,email,state,lookup_limit,estimate_limit,dealer_id));con.commit()
@@ -4220,6 +4227,7 @@ def estimate_storage_status():
     )
 
 from measurement_integrity import snapshot_error
+from pricing_integrity import pricing_error
 
 def estimate_pricing_error(payload):
     if not isinstance(payload,dict):return "Estimate details must be an object."
@@ -4255,7 +4263,7 @@ def estimate_pricing_error(payload):
         if not isinstance(roofs,list) or any(not isinstance(roof,dict) for roof in roofs):return "Saved roofs must be a list."
         if any(roof.get("needs_remeasure") or roof.get("automatic_review_warning") for roof in roofs):
             return "Remeasure the flagged roof before saving an estimate."
-    return snapshot_error(payload)
+    return snapshot_error(payload) or pricing_error(payload)
 
 @app.route("/api/estimates", methods=["GET","POST"])
 def estimate_history_api():

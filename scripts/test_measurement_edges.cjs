@@ -25,10 +25,10 @@ id('linearEditBtn').click();w.eval('linearPoints[1]=L.latLng(linearPoints[0].lat
 if(industry!=='roofing'){
  const rate=w.eval("currentBusinessType()==='commercial'?commercialLinearRate():surfaceLinearJobRate()");
  id('toolAreaBtn').click();id('commercialAreaList').querySelector('button:last-child').click();
- assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('measurementViewMode'),'linear');assert.equal(w.eval('linearFeetTotal()'),feet);assert.equal(w.eval('priceCalc().unit'),'linear ft');assert(Math.abs(w.eval('priceCalc().subtotal')-feet*rate)<1e-8);
+ assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('measurementViewMode'),'linear');assert.equal(w.eval('linearFeetTotal()'),feet);assert.equal(w.eval('priceCalc().unit'),'linear ft');assert(Math.abs(w.eval('priceCalc().subtotal')-Math.round(feet*rate*100)/100)<1e-8);
  assert.equal(w.eval('captureQuoteSnapshot().linearFeet'),feet);assert.equal(w.eval('captureQuoteSnapshot().areaSqFt'),0);
  // Removing the last saved area uses its row action; Start Over is draft-only.
- id('toolAreaBtn').click();points(rectangle);id('areaStartBtn').click();id('commercialAreaList').querySelector('button:last-child').click();assert.equal(w.eval('measurementViewMode'),'linear');assert(Math.abs(w.eval('priceCalc().subtotal')-feet*rate)<1e-8);
+ id('toolAreaBtn').click();points(rectangle);id('areaStartBtn').click();id('commercialAreaList').querySelector('button:last-child').click();assert.equal(w.eval('measurementViewMode'),'linear');assert(Math.abs(w.eval('priceCalc().subtotal')-Math.round(feet*rate*100)/100)<1e-8);
 }
 if(industry==='roofing'){
  reset();w.eval("measurementViewMode='auto';fallbackMode=true;manualOverrideMode=true;toggleTrace()");points(crossing);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),0);assert(w.eval('traceMode'));assert(id('status').textContent.includes('crosses itself'));

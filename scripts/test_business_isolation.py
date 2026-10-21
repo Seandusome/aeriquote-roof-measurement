@@ -30,6 +30,8 @@ with tempfile.TemporaryDirectory() as tmp:
     from measurement_integrity import polygon_sqft
     payload['quote']['commercialAreas'][0]['sqft']=round(polygon_sqft(payload['quote']['commercialAreas'][0]['points']))
     payload['total_area']=payload['quote']['commercialAreas'][0]['sqft']
+    from qa_estimate_fixture import price_fixture
+    price_fixture(payload)
     eid = employee.post('/api/estimates', json=payload).get_json()['id']
     assert owner.get('/api/estimates/' + eid).get_json()['dealer_id'] == 'qa-owner-a'
     assert len(owner.get('/api/estimates').get_json()) == 1
@@ -44,14 +46,14 @@ with tempfile.TemporaryDirectory() as tmp:
         for suffix, body in writes.items():
             assert c.post('/api/estimates/' + eid + '/' + suffix, json=body).status_code == 404
     before = owner.get('/api/estimates/' + eid).get_json()['payload']
-    assert before['total_price'] == 10 and 'amount_paid' not in before
+    assert before['total_price'] == payload['total_price'] and 'amount_paid' not in before
     # Nonfinite paid amounts must not poison customer balances or saved JSON.
     for value in ('Infinity','NaN',-1,True):
         response=employee.post('/api/estimates/'+eid+'/amount-paid',json={'amount_paid':value})
         assert response.status_code==400,(value,response.get_json())
     assert owner.get('/api/estimates/'+eid).get_json()['payload']==before
     # Same address in another business creates a different record, never a shared revision.
-    foreign_id = other.post('/api/estimates', json={**payload,'total_price':999}).get_json()['id']
+    foreign_id = other.post('/api/estimates', json=payload).get_json()['id']
     assert foreign_id != eid
     assert owner.get('/api/estimates/' + eid + '/versions').get_json()['revisions'] == []
     # Employees may share job history, but cannot change the business profile or manage logins/admin.
@@ -89,4 +91,10 @@ with tempfile.TemporaryDirectory() as tmp:
     owner.post('/dealer-employees/qa-employee-a/status', data={'action':'disable'})
     assert employee.get('/api/estimates').status_code == 401
     assert employee.post('/api/estimates', json=payload).status_code == 401
+    # Editing an owner login must not collide with an employee login either.
+    con=a.estimate_db();con.execute("INSERT INTO account_admin_roles(dealer_id) VALUES('qa-owner-b')");con.commit();con.close()
+    before_email=owner.get('/api/account/profile').get_json()['email']
+    response=other.post('/head-office/dealers/qa-owner-a/edit',data={'dealer_name':'QA A','email':'QA-EMPLOYEE-B@EXAMPLE.INVALID','state':'SK','lookup_limit':'25','estimate_limit':'25'})
+    assert response.status_code==400,response.status_code
+    assert owner.get('/api/account/profile').get_json()['email']==before_email
 print('PASS: real Flask business isolation, same-address separation, foreign revisions/metadata/edit/image rejection, employee permissions, profile isolation and immediate disable')

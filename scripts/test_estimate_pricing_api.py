@@ -14,6 +14,8 @@ with tempfile.TemporaryDirectory() as tmp:
  quantity=round(polygon_sqft(points))
  original['quote']={'commercialAreas':[{'points':points,'sqft':quantity,'rate':.1}]}
  original['total_area']=quantity
+ from qa_estimate_fixture import price_fixture
+ price_fixture(original)
  eid=client.post('/api/estimates',json=original).get_json()['id']
  before=client.get('/api/estimates/'+eid).get_json()
  for key in ('total_price','total_area','extra_service_amount'):
@@ -38,5 +40,5 @@ with tempfile.TemporaryDirectory() as tmp:
   payload=copy.deepcopy(original);mutation(payload);assert client.post('/api/estimates',json=payload).status_code==400,payload
  assert client.get('/api/estimates/'+eid).get_json()==before
  con=a.estimate_db();assert con.execute('SELECT COUNT(*) AS n FROM estimate_revisions').fetchone()['n']==0;con.close()
- payload=copy.deepcopy(original);payload.update(address='QA TEST Free Service',total_price=0);payload['pricing'].update(subtotal=0,taxBase=0,gstAmt=0,pstAmt=0,total=0);assert client.post('/api/estimates',json=payload).status_code==200
+ payload=copy.deepcopy(original);payload.update(address='QA TEST Free Service',total_price=0);payload['quote']['commercialAreas'][0]['rate']=0;price_fixture(payload);assert client.post('/api/estimates',json=payload).status_code==200
 print('PASS: invalid amounts/taxes/discounts rejected without changing saved estimate/history; explicit free quote allowed')

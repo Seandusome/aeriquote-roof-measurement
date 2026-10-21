@@ -121,6 +121,27 @@ def snapshot_error(payload):
             source=quote.get('measureSource','google')
             roofs=quote.get('structures',[])
             if any(not isinstance(r.get('total_roof_sqft'),(float,int)) or isinstance(r.get('total_roof_sqft'),bool) or not math.isfinite(r['total_roof_sqft']) or r['total_roof_sqft']<=0 for r in roofs):return 'Every included roof needs a valid measured area.'
+            seen=set()
+            for roof in roofs:
+                if roof.get('manually_measured'):continue
+                if roof.get('building_id') and roof['building_id'] in seen:return 'The same automatic building is included more than once.'
+                if roof.get('building_id'):seen.add(roof['building_id'])
+                points=roof.get('outline')
+                if not polygon_valid(points):return 'Automatic roof outline is missing or incomplete. Remeasure before quoting.'
+                ground=float(roof.get('roof_ground_sqft') or 0);building=float(roof.get('building_ground_sqft') or 0);coverage=roof.get('roof_coverage_ratio')
+                if not math.isfinite(ground) or ground<=0:return 'Automatic roof footprint is incomplete. Remeasure before quoting.'
+                if coverage is not None and (not math.isfinite(float(coverage)) or float(coverage)<.95):return 'Automatic roof data covers only part of the building. Remeasure before quoting.'
+                if not math.isfinite(building) or building<=0 or ground/building<.95:return 'Automatic roof data is missing building sections. Remeasure before quoting.'
+                footprint=polygon_sqft(points)
+                if not .75<=footprint/ground<=1.25 or roof['total_roof_sqft']<ground*.98:return 'Automatic roof area and outline cover different scopes. Remeasure before quoting.'
+                segments=roof.get('segments')
+                if not isinstance(segments,list) or not segments:return 'Automatic roof sections are missing. Remeasure before quoting.'
+                for seg in segments:
+                    pitch=seg.get('pitch_degrees');qty=seg.get('area_sqft')
+                    if any(isinstance(v,bool) or not isinstance(v,(float,int)) or not math.isfinite(v) for v in (pitch,qty)) or not 0<=pitch<80 or qty<=0:return 'Automatic roof section area or pitch is invalid.'
+                section_area=sum(seg['area_sqft'] for seg in segments)
+                section_ground=sum(seg['area_sqft']*math.cos(math.radians(seg['pitch_degrees'])) for seg in segments)
+                if abs(section_area-roof['total_roof_sqft'])>max(1,roof['total_roof_sqft']*.01) or not .75<=section_ground/ground<=1.25:return 'Automatic roof sections do not match the complete roof area and pitch.'
             google=sum(r['total_roof_sqft'] for r in roofs);manual=sum(r['surface_sqft'] for r in planes)
             expected=google+manual if source=='hybrid' else (manual or google) if source=='manual' else google
             if source!='adjusted':

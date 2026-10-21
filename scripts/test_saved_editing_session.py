@@ -16,6 +16,8 @@ with tempfile.TemporaryDirectory() as tmp:
  from measurement_integrity import polygon_sqft
  p['quote']['commercialAreas'][0]['sqft']=round(polygon_sqft(p['quote']['commercialAreas'][0]['points']))
  p['total_area']=p['quote']['commercialAreas'][0]['sqft']
+ from qa_estimate_fixture import price_fixture
+ price_fixture(p)
  eid=client.post('/api/estimates',json=p).get_json()['id']
  before=client.get('/api/estimates/'+eid).get_json()['payload']
  # No Google request is permitted for restoring a saved job's coordinates.
@@ -33,7 +35,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert other.get('/fallback-meta/'+d['token']).status_code==404
  assert a.app.test_client().post('/api/estimates/'+eid+'/editing-session',json={}).status_code==401
  assert client.post('/api/estimates/'+eid+'/editing-session',json={'version_index':99}).status_code==400
- p['total_price']=22.2;client.post('/api/estimates',json=p)
+ p['quote']['commercialAreas'][0]['rate']=.2;price_fixture(p);client.post('/api/estimates',json=p)
  assert client.post('/api/estimates/'+eid+'/editing-session',json={'version_index':0}).status_code==200
  con=a.estimate_db();assert con.execute('SELECT COUNT(*) AS n FROM dealer_usage').fetchone()['n']==0;con.close()
 print('PASS: saved editing preserves payload/revisions, recovers owned imagery token, rejects other owners/versions, and consumes no property lookup')

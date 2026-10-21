@@ -62,3 +62,7 @@ jobs:
       - run: node scripts/test_landscaping_engine.cjs snow
       - run: python scripts/test_geometry_integrity.py
       - run: node scripts/test_geometry_client.cjs
+      - run: python scripts/test_server_pricing.py
+      - run: python scripts/test_automatic_roof_api.py
+      - run: node scripts/test_roof_integrity.cjs
+      - run: python scripts/test_qa_auth_flow.py

@@ -53,6 +53,8 @@ with tempfile.TemporaryDirectory() as tmp:
  quantity=round(polygon_sqft(points))
  payload['quote']={'commercialAreas':[{'points':points,'sqft':quantity,'rate':.1}]}
  payload['total_area']=quantity
+ from qa_estimate_fixture import price_fixture
+ price_fixture(payload)
  assert owner.post('/api/estimates',json=payload).status_code==200
  for i in range(25):
   assert employee.post('/api/estimates',json={**payload,'address':f'QA TEST extra {i}'}).status_code==200
