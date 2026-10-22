@@ -1,0 +1,44 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {JSDOM}=require('jsdom'),v=require('../qa_vector_pdf.js');
+const R=6378137,rad=Math.PI/180,ft=1/.3048;
+const rectangle=(lat=52,lon=-106)=>[[lat,lon],[lat,lon+.0002],[lat+.0001,lon+.0002],[lat+.0001,lon]];
+// Independent analytical spherical rectangle, not the exporter's polygon summation.
+const qty=(lat=52)=>R*R*.0002*rad*(Math.sin((lat+.0001)*rad)-Math.sin(lat*rad))*ft*ft;
+const p=rectangle(),garage=rectangle(52.0005,-105.9995),length=6371000*.0001*rad*ft;
+assert(Math.abs(v.area(p)-qty())/qty()<1e-8);assert(Math.abs(v.distance(p[0],p[3])-length)<1e-6);
+const base={structures:[],manualPlanes:[],commercialAreas:[],areaPoints:[],areaSqFt:0,linearPoints:[],linearFeet:0};
+function snap(industry){return {...base,measurementMode:'area',businessType:industry,commercialAreas:[{points:p,sqft:qty(),name:'Main service area'},{points:garage,sqft:qty(52.0005),name:'Detached service area'}],areaSqFt:qty()+qty(52.0005),linearPoints:p.slice(0,2),linearFeet:v.distance(...p.slice(0,2))};}
+const roof={...base,businessType:'roofing',measureSource:'manual',measurementMode:'auto',manualRoofWorkflow:true,roofScopeConfirmed:true,manualPlanes:[{label:'Main roof',points:p,pitch_degrees:Math.atan(.5)/rad,pitch_confirmed:true,surface_sqft:qty()*Math.sqrt(1.25)},{label:'Detached garage',points:garage,pitch_degrees:45,pitch_confirmed:true,surface_sqft:qty(52.0005)*Math.SQRT2}]};
+function report(){const dom=new JSDOM('<div id="report"><b id="rEstimateTitle">QA Service Estimate</b><p id="rEstimateSubtitle">AeriQuote Demo</p><p id="rAddress">QA property - DO NOT SEND</p><p id="rCustomerName">QA Customer</p><p id="rDate">2026-10-22</p><div id="rProperty"><div>Saved measurements and confirmed pitches</div></div><div id="rPricing"><div>Subtotal <b>CAD 1,025.50</b></div><div>Promotion discount <b>CAD 102.55</b></div><div>GST 5% <b>CAD 46.15</b></div><div>PST 6% <b>CAD 55.38</b></div><div>Total per season <b>CAD 1,024.48</b></div></div><p id="rDealerCompany">AeriQuote Demo</p><p id="rDealerEmail">qa@example.invalid</p><div class="reportFoot">Final site conditions must be confirmed.</div></div>');return {dom,report:dom.window.document.getElementById('report')};}
+class PDF{constructor(){this.texts=[];this.pages=1;this.images=[]}setFontSize(){}setTextColor(){}setDrawColor(){}setLineWidth(){}splitTextToSize(s){return s.split('\n')}text(t){this.texts.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}addImage(img){this.images.push(img)}}
+(async()=>{
+ for(const q of ['roofing','commercial','snow','pressure','paving','landscaping'].map(snap).concat([roof])){
+  const before=JSON.stringify(q),{dom,report:r}=report(),a=await v.build(PDF,q,r);assert.equal(JSON.stringify(q),before);assert(a.svg.includes('<polygon'));assert(a.svg.includes('<polyline')||q.businessType==='roofing');assert(!/<image|foreignObject|script/.test(a.svg));assert(a.svg.includes('V1-V2:'));assert(a.svg.includes('horizontal dimensions'));assert(a.pdf.texts.some(t=>t.includes('CAD 1,024.48')));assert(a.pdf.texts.some(t=>t.includes('QA Customer')));assert.equal(a.pdf.images.length,0);
+  const reopened=await v.build(PDF,JSON.parse(before),r);assert.equal(a.svg,reopened.svg);assert.deepEqual(a.pdf.texts,reopened.pdf.texts);dom.window.close();
+ }
+ for(const mutate of [q=>q.commercialAreas[0].points=[],q=>q.commercialAreas[0].sqft=1,q=>q.linearFeet=9999,q=>q.linearPoints=[],q=>q.commercialAreas[0].points[0]=[null,-106],q=>q.commercialAreas[0].points[0]=[Infinity,-106]]){const q=JSON.parse(JSON.stringify(snap('snow')));mutate(q);assert.throws(()=>v.shapes(q));}
+ for(const industry of ['roofing','commercial','snow','pressure','paving','landscaping']){const q={...base,businessType:industry,measurementMode:'linear',linearPoints:p.slice(0,2),linearFeet:v.distance(...p.slice(0,2))};assert.equal(v.shapes(q).length,1);assert.equal(v.shapes(q)[0].closed,false);}
+ const active=JSON.parse(JSON.stringify(roof));active.areaPoints=p;active.areaSqFt=qty();active.linearPoints=p.slice(0,2);active.linearFeet=v.distance(...p.slice(0,2));assert.equal(v.shapes(active).length,2,'Unpriced tool geometry must not be drawn as quoted scope');
+ const long=report();long.report.querySelector('#rEstimateTitle').textContent='Long name '.repeat(200);long.report.querySelector('#rAddress').textContent='Long address '.repeat(200);const longPdf=await v.build(PDF,roof,long.report);assert(longPdf.pdf.pages>3);long.dom.window.close();
+ const bad=JSON.parse(JSON.stringify(roof));bad.manualPlanes[0].pitch_confirmed=false;assert.throws(()=>v.shapes(bad));
+ const inj=snap('snow');inj.commercialAreas[0].name='<script>alert(1)</script>';assert(!v.svg(v.model(v.shapes(inj))).includes('<script>'));
+ const auto={...base,measurementMode:'auto',measureSource:'google',businessType:'roofing',structures:[{label:'Saved building envelope',total_roof_sqft:2000,outline:p,segments:[{area_sqft:1000,pitch_degrees:20},{area_sqft:1000,pitch_degrees:30}]}]};assert.equal(v.shapes(auto).length,1,'Never invent outlines from numerical roof segments');
+ const m=v.model(v.shapes(roof)),a=m.items[0].xy;assert(a[0][1]>a[3][1],'North is up');assert(Math.abs((a[1][0]-a[0][0])/(a[0][1]-a[3][1])-2*Math.cos(52.00025*rad))<.0001,'Aspect ratio uses latitude, not raw degrees');
+ // Independent sample arithmetic: extra included in 1025.50, 10% promotion, additive GST/PST.
+ const cents=n=>Math.round(n*100)/100,taxable=1025.5-cents(1025.5*.1);assert.equal(cents(taxable+cents(taxable*.05)+cents(taxable*.06)),1024.48);
+ if(process.argv.includes('--examples')){
+  globalThis.AQVectorPDFFont=fs.readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');
+  const out=process.env.VECTOR_QA_OUTPUT;if(!out)throw Error('Set VECTOR_QA_OUTPUT');fs.mkdirSync(out,{recursive:true});
+  const dom=new JSDOM('',{runScripts:'dangerously'});dom.window.HTMLCanvasElement.prototype.getContext=()=>({});dom.window.eval(fs.readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));
+  const complex=JSON.parse(JSON.stringify(roof));complex.manualPlanes[0].points=[[52,-106],[52,-105.9998],[52.00005,-105.9998],[52.00005,-105.9999],[52.0001,-105.9999],[52.0001,-106]];complex.manualPlanes[0].surface_sqft=v.area(complex.manualPlanes[0].points)*Math.sqrt(1.25);
+  for(const [name,q] of [['simple-roof',roof],['complex-roof-garage',complex],['multi-area-linear',snap('landscaping')]]){const {dom:page,report:r}=report();q.commercialAreas.forEach((a,i)=>a.rate=i?.7:.25);q.landscapingLinearRate=.7;q.commercialLinearRate=.7;q.pressureLinearRate=.7;q.pavingLinearRate=.7;q.measurementMode=q===roof||name.includes('roof')?'auto':'area';q.measureSource='manual';
+   const payload={quote:q,pricing:{price:.85,mode:'discount',gst:5,pst:6,disc:10,extraAmount:25.5,estimatePeriod:q.businessType==='landscaping'?'season':'one_time'}};
+   const priced=JSON.parse(require('child_process').execFileSync('node',['scripts/price_fixtures.cjs'],{input:JSON.stringify([payload])}))[0];const price=priced.pricing;
+   r.ownerDocument.getElementById('rProperty').textContent=q.businessType+' | Saved area '+price.area.toFixed(2)+' ft² | Roof price CAD 0.85/ft²; service areas CAD 0.25 and 0.70/ft²; linear CAD 0.70/ft';
+   r.ownerDocument.getElementById('rPricing').innerHTML=[['Subtotal',price.subtotal],['Additional service',25.5],['Promotion discount',price.discount],['Taxable subtotal',price.taxBase],['GST 5%',price.gstAmt],['PST 6%',price.pstAmt],['Total '+price.estimatePeriod,price.total]].map(([label,value])=>'<div>'+label+' <b>CAD '+value.toFixed(2)+'</b></div>').join('');
+   if(name==='complex-roof-garage'){const b=fs.readFileSync('site/assets/aeriquote-logo.png'),logo=r.ownerDocument.createElement('img');logo.id='rDealerLogo';logo.src='data:image/png;base64,'+b.toString('base64');Object.defineProperties(logo,{complete:{value:true},naturalWidth:{value:b.readUInt32BE(16)},naturalHeight:{value:b.readUInt32BE(20)}});r.appendChild(logo);}
+   fs.writeFileSync(out+'/'+name+'-source.json',JSON.stringify(priced,null,2));
+   const result=await v.build(dom.window.jspdf.jsPDF,q,r);fs.writeFileSync(out+'/'+name+'.pdf',Buffer.from(result.pdf.output('arraybuffer')));fs.writeFileSync(out+'/'+name+'.svg',result.svg);page.window.close();}dom.window.close();
+ }
+ console.log('PASS vector six industries; saved/reopen invariance; independent spherical geometry, aspect and pitch checks; prices/customer branding text unchanged; missing/mismatched geometry rejection; SVG escaping; no inferred roof facets; no property imagery');
+})().catch(e=>{console.error(e);process.exit(1)});

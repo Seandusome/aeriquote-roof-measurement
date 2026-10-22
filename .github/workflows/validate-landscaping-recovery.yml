@@ -79,6 +79,10 @@ jobs:
       - run: python scripts/test_profile_integrity.py
       - run: python scripts/test_manual_roofing.py
       - run: node scripts/test_manual_roofing.cjs
+      - run: python scripts/test_vector_pdf.py
+      - run: node scripts/test_vector_pdf.cjs
+      - run: node scripts/test_vector_download.cjs
+      - run: node scripts/test_vector_full_report.cjs
       - run: python scripts/test_api_cost_routing.py
       - run: node scripts/test_logo_cache.cjs
 

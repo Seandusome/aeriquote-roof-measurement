@@ -471,7 +471,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
    <div class="cta"><strong id="rCtaHeading">YOUR ESTIMATE</strong><div id="rCtaText" style="margin-top:5px;color:#f59d0a;font-weight:800"></div><div style="margin-top:9px"><b id="rDealerCompany"></b></div><div id="rDealerName" style="margin-top:2px"></div><div class="dealerContactCompact"><span id="rPhoneWrap">Call or Text: <b id="rPhone"></b></span><span id="rDealerEmailWrap"><span class="contactSep">•</span><span id="rDealerEmail"></span></span><br><span id="rDealerWebsite"></span><span id="rDealerAddressWrap"><span class="contactSep">•</span><span id="rDealerAddress"></span></span></div></div>
  </div></div>
  <div class="reportFoot">Remote aerial measurements are used for estimating. Final property conditions and measurements should be confirmed before work begins.</div>
- <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option></select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="window.print()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
+ <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="window.print()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
 </div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2896,6 +2896,29 @@ async function captureSinglePageEstimate(report){
  }finally{copy.remove()}
 }
 
+async function downloadVectorDiagramPDF(report){
+ if('{{ VECTOR_PDF_QA_FLAG }}'!=='1'){status('Vector Diagram is available only to approved QA accounts.','error');return}
+ if(!quoteSnapshot){status('Reopen a saved estimate before vector export.','error');return}
+ if(!window.jspdf){status('PDF tools did not load. Reopen this estimate.','error');return}
+ const btn=el('downloadPdfBtn'),oldText=btn?.textContent;pdfInProgress=true;if(btn){btn.disabled=true;btn.textContent='CREATING PDF…'}
+ try{
+  const snapshot=JSON.parse(JSON.stringify(quoteSnapshot));
+  const frozenReport=report.cloneNode(true);
+  frozenReport.querySelectorAll('svg,canvas,iframe,video,script').forEach(n=>n.remove());
+  frozenReport.querySelectorAll('img').forEach(copy=>{
+   if(!['rDealerLogo','rWarrantyShield'].includes(copy.id)){copy.remove();return}
+   const original=report.querySelector('#'+copy.id);if(copy.style.display==='none'||copy.classList.contains('noDealerLogo')||!copy.getAttribute('src')){copy.remove();return}
+   if(!original.complete||!original.naturalWidth)throw Error('Branding image is not ready. Wait and retry the vector download.');
+   const canvas=document.createElement('canvas');canvas.width=original.naturalWidth;canvas.height=original.naturalHeight;canvas.getContext('2d').drawImage(original,0,0);copy.src=canvas.toDataURL('image/png');
+  });
+  const validation=await fetch('/qa-vector-diagram/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quote:snapshot})});
+  const checked=await validation.json();if(!validation.ok)throw Error(checked.error||'Sign in and reopen this estimate before vector export.');
+  if(!window.AQVectorPDF)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/qa-vector-diagram.js';script.onload=resolve;script.onerror=()=>{script.remove();reject(Error('QA vector tools could not load. Retry the download.'))};document.head.appendChild(script)});
+  const result=await window.AQVectorPDF.build(window.jspdf.jsPDF,snapshot,frozenReport);
+  result.pdf.save('AeriQuote_Vector_Diagram_QA.pdf');status('Vector Diagram PDF downloaded.','ok');
+ }catch(e){status(e.message||'Vector Diagram PDF could not be created.','error')}
+ finally{pdfInProgress=false;if(btn){btn.disabled=false;btn.textContent=oldText}}
+}
 async function downloadEstimatePDF(){
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
@@ -2903,6 +2926,7 @@ async function downloadEstimatePDF(){
  if(reportOutlineEditMode){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Save the outline before downloading the PDF.';return}
  if(estimateOpenInProgress){status('Wait for the current estimate aerial to finish loading before downloading.','warn');return}
  if(pdfInProgress)return;
+ if(el('estimatePdfLayout')?.value==='vector')return await downloadVectorDiagramPDF(report);
  if(typeof html2canvas==='undefined'||!window.jspdf){status('PDF tools did not load. Check the internet connection, then reopen the estimate.','error');return}
  pdfInProgress=true;
  const src=(el('measureSource')&&el('measureSource').value)||'google';
@@ -3899,6 +3923,31 @@ def logout():
     session.clear()
     return redirect("/")
 
+def vector_pdf_qa_enabled():
+    allowed={v.strip() for v in os.environ.get("AERIQUOTE_VECTOR_PDF_QA_IDS", "").split(",") if v.strip()}
+    return os.environ.get("AERIQUOTE_VECTOR_PDF_QA", "")=="1" and str(session.get("dealer_id") or "") in allowed
+
+@app.post("/qa-vector-diagram/validate")
+def vector_pdf_qa_validate():
+    if not vector_pdf_qa_enabled():return jsonify(error="Not found"),404
+    from measurement_integrity import snapshot_error
+    data=request.get_json(silent=True)
+    if not isinstance(data,dict):return jsonify(error="A saved measurement snapshot is required."),400
+    error=snapshot_error({"quote":data.get("quote")})
+    if error:return jsonify(error=error),400
+    return jsonify(ok=True)
+
+@app.get("/qa-vector-diagram.js")
+def vector_pdf_qa_script():
+    if not vector_pdf_qa_enabled():return "Not found",404
+    from pathlib import Path
+    import base64
+    font=base64.b64encode((Path(__file__).parent/"qa_assets"/"DejaVuSans.ttf").read_bytes()).decode("ascii")
+    notice=(Path(__file__).parent/"qa_assets"/"DejaVu-LICENSE.txt").read_text().replace("*/", "* /")
+    response=app.response_class("/* "+notice+" */\nwindow.AQVectorPDFFont="+json.dumps(font)+";\n"+Path(__file__).with_name("qa_vector_pdf.js").read_text(),mimetype="application/javascript")
+    response.headers["Cache-Control"]="private, no-store"
+    return response
+
 def manual_roof_qa_enabled():
     # Deliberate double opt-in. Never enabled for an entire plan or business type.
     allowed={v.strip() for v in os.environ.get("AERIQUOTE_MANUAL_ROOF_QA_IDS","").split(",") if v.strip()}
@@ -3908,7 +3957,7 @@ def manual_roof_session(sess):
     return bool(sess and sess.get("mode")=="manual_roof_static")
 
 @app.route("/")
-def home():return render_template_string(HTML, MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
+def home():return render_template_string(HTML, VECTOR_PDF_QA_FLAG="1" if vector_pdf_qa_enabled() else "0", MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
 @app.get("/mapbox-test")
 def mapbox_test():
     address = request.args.get("address", "").strip()

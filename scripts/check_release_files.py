@@ -14,6 +14,7 @@ REQUIRED = (
     'storage_checks.py', 'support_center.py', 'support_inbound.py',
     'site/index.html', 'site/pricing.html', 'site/styles.css',
     'site/assets/aeriquote-logo.png',
+    'qa_vector_pdf.js', 'qa_assets/DejaVuSans.ttf', 'qa_assets/DejaVu-LICENSE.txt',
 )
 
 def errors(root):

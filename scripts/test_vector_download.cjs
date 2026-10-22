@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom'),v=require('../qa_vector_pdf.js');
+const source=fs.readFileSync('app.py','utf8'),functions=source.slice(source.indexOf('async function downloadVectorDiagramPDF('),source.indexOf('let reportCloseArmedAt=')).replace("'{{ VECTOR_PDF_QA_FLAG }}'","'1'");
+const html='<div id="reportOverlay"><div class="report"><div id="rEstimateTitle">QA Estimate</div><div id="rEstimateSubtitle">Demo</div><div id="rAddress">QA address</div><div id="rCustomerName">Original customer</div><div id="rPricing"><div>Original total CAD 100.00</div></div><div id="rProperty">Original measurement</div><img id="rStreet" src="https://imagery.invalid/forbidden"><div id="customerMap"><canvas></canvas></div><div class="reportFoot">QA ONLY</div></div></div><select id="estimatePdfLayout"><option value="vector">Vector</option></select><button id="downloadPdfBtn">Download</button>';
+class PDF{constructor(){this.texts=[];this.pages=1}setFontSize(){}setTextColor(){}setDrawColor(){}setLineWidth(){}splitTextToSize(s){return s.split('\n')}text(t){this.texts.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}save(){saves.push(this.texts)}}
+const saves=[];
+(async()=>{
+ const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://qa.invalid'}),w=dom.window,messages=[],requests=[];
+ w.el=id=>w.document.getElementById(id);Object.defineProperty(w,'status',{value:(...a)=>messages.push(a),configurable:true});w.console=console;
+ w.jspdf={jsPDF:PDF};w.AQVectorPDF={build:async(...args)=>{assert(!args[2].querySelector('#rStreet'));assert(!args[2].querySelector('canvas'));return v.build(...args)}};
+ const p=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]],snap={measurementMode:'area',businessType:'landscaping',commercialAreas:[{name:'Area',points:p,sqft:v.area(p)}],linearPoints:[],structures:[],manualPlanes:[]};
+ w.eval('var quoteSnapshot='+JSON.stringify(snap)+';var reportOutlineEditMode=false,estimateOpenInProgress=false,pdfInProgress=false;');w.eval(functions);
+ let release;w.fetch=async(url,options)=>{requests.push(url);assert.equal(url,'/qa-vector-diagram/validate');const q=JSON.parse(options.body).quote;assert.equal(q.commercialAreas.length,1);await new Promise(r=>release=r);return {ok:true,json:async()=>({ok:true})}};
+ const first=w.downloadEstimatePDF();assert(w.eval('pdfInProgress'));await w.downloadEstimatePDF();assert.equal(requests.length,1,'Rapid repeat export is single flight');
+ w.el('rPricing').textContent='WRONG NEW TOTAL';w.el('rCustomerName').textContent='WRONG NEW CUSTOMER';w.eval('quoteSnapshot={businessType:"snow"}');release();await first;
+ assert.equal(saves.length,1);const output=saves[0].join('\n');assert(output.includes('Original total CAD 100.00'));assert(output.includes('Original customer'));assert(!output.includes('WRONG'));
+ assert.equal(w.eval('pdfInProgress'),false);assert.equal(w.el('downloadPdfBtn').disabled,false);
+ w.eval('quoteSnapshot='+JSON.stringify(snap));w.fetch=async()=>({ok:false,json:async()=>({error:'Session expired - sign in again'})});await w.downloadEstimatePDF();assert.equal(saves.length,1);assert(messages.at(-1)[0].includes('Session expired'));
+ w.eval('reportOutlineEditMode=true');await w.downloadEstimatePDF();assert.equal(saves.length,1,'Unsaved outline cannot export');
+ assert.equal(requests.length,1);dom.window.close();console.log('PASS actual vector download entry point in emulated DOM; rapid clicks, frozen customer/pricing/geometry, no aerial dependency, expired-session and unsaved-outline blocking');
+})().catch(e=>{console.error(e);process.exit(1)});
