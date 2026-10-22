@@ -76,6 +76,8 @@ jobs:
       - run: node scripts/test_property_loading.cjs
       - run: python scripts/test_property_acceptance.py
       - run: python scripts/test_subscription_periods.py
+      - run: python scripts/test_profile_integrity.py
+      - run: node scripts/test_logo_cache.cjs
 
   postgres_integrity:
     if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'

@@ -4,12 +4,13 @@ const app=fs.readFileSync('app.py','utf8');
 const code=app.slice(app.indexOf('let dealerProfileSaveInProgress=false;'),app.indexOf('\nfunction applyOnboardingMarketing'));
 const fields=new Map(),storage=new Map([['sxDealerDefaults','old authoritative cache']]);
 function el(id){if(!fields.has(id))fields.set(id,{value:'',checked:false,textContent:'',innerHTML:'',disabled:false});return fields.get(id)}
-el('price').value='0.80';el('jobPrice').value='1.25';el('dealerCompany').value='QA TEST Company';el('showWarrantyShield').checked=false;el('saveDealerProfileBtn').textContent='SAVE DEALER PROFILE & BRANDING';
+el('dealerEmail').value='qa@example.invalid';el('price').value='0.80';el('jobPrice').value='1.25';el('dealerCompany').value='QA TEST Company';el('showWarrantyShield').checked=false;el('saveDealerProfileBtn').textContent='SAVE DEALER PROFILE & BRANDING';
 let requests=0,posted,release,cacheBlocked=false,reply=()=>Promise.resolve({ok:false,json:async()=>({error:'Login required'})});
 const ctx=vm.createContext({el,fetch:async(url,options)=>{requests++;posted=JSON.parse(options.body);return reply()},localStorage:{setItem(k,v){if(cacheBlocked)throw Error('quota');storage.set(k,v)}},dealerLogoSrc:()=>'/static/dealer-assets/shinglextra-logo.jpg',document:{querySelector:()=>({open:false})},applyBusinessTerminology(){},renderSummary(){},money:n=>'$'+Number(n).toFixed(2)});
 vm.runInContext(code,ctx);
 async function save(){return await vm.runInContext('saveDealerDefaults()',ctx)}
 (async()=>{
+ el('dealerEmail').value='invalid';const count=requests;assert.equal(await save(),false);assert.equal(requests,count);assert.equal(storage.get('sxDealerDefaults'),'old authoritative cache');assert.match(el('savedMsg').textContent,/valid dealer email/);el('dealerEmail').value='qa@example.invalid';
  assert.equal(await save(),false);assert.match(el('savedMsg').textContent,/Profile not saved/);assert.equal(storage.get('sxDealerDefaults'),'old authoritative cache');assert.equal(el('jobPrice').value,'1.25');assert.equal(el('dealerCompany').value,'QA TEST Company');assert(!el('saveDealerProfileBtn').disabled);
  reply=()=>Promise.reject(Error('network down'));assert.equal(await save(),false);assert.equal(storage.get('sxDealerDefaults'),'old authoritative cache');
  reply=()=>Promise.resolve({ok:true,json:async()=>({})});assert.equal(await save(),false,'HTML/invalid success cannot claim a confirmed save');
