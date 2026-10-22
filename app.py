@@ -1870,6 +1870,8 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
  try{
   status('Loading property…');showLoad(true);
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
+  clearTimeout(addressPreviewTimer);addressPreviewSeq++;
+  payload.business_type=currentBusinessType();
   const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
@@ -4127,6 +4129,9 @@ def accept_property():
 def perform_property_lookup(d):
     key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
     if not key or not address:return jsonify(error="API key and address are required."),400
+    industry=d.get("business_type","roofing")
+    if not isinstance(industry,str) or industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}:
+        return jsonify(error="Unknown measurement industry."),400
     try:
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
@@ -4143,6 +4148,13 @@ def perform_property_lookup(d):
             if address_mismatch(expected_city,expected_province,parts,expected_street_number):
                 return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
             loc=g["geometry"]["location"];lat=float(loc["lat"]);lng=float(loc["lng"]);formatted=g.get("formatted_address") or address
+        if industry!="roofing":
+            # Service-area/linear geometry is measured locally over the same Static
+            # Maps imagery. Solar roof data is unused in these five workflows.
+            street_url,street_date=street_view_info(key,formatted,lat,lng,lat,lng)
+            token=create_session(key,lat,lng,street_url=street_url,mode="surface_static",anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
+            if direct:SESSIONS[token].update({"exact_pin":True,"display_lat":lat,"display_lng":lng,"display_zoom":19})
+            return jsonify(token=token,fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,exact_pin_display=bool(direct))
         try:
             main=building(key,lat,lng)
         except SolarBuildingNotFound:
@@ -4730,6 +4742,19 @@ def rgb(token):
     if not s:return Response("Session expired",status=404)
     try:
         if s["rgb_cache"] is None:
+            if not s.get("rgb") and s.get("mode")=="surface_static":
+                # Retain the pre-existing customer-report RGB fallback, but pay for
+                # Solar only when that fallback is actually requested. Never use
+                # these roof quantities to price a surface measurement.
+                try:
+                    main=building(s["key"],s["lat"],s["lng"])
+                    lat,lng,radius=roof_imagery_request(main)
+                    layers=solar_layers(s["key"],lat,lng,radius)
+                    s.update(lat=main["latitude"],lng=main["longitude"])
+                except SolarBuildingNotFound:
+                    layers=solar_layers(s["key"],s["lat"],s["lng"])
+                s.update(rgb=layers.get("rgbUrl"),mask=layers.get("maskUrl"),mode="solar")
+                SESSIONS.persist(token)
             if not s.get("rgb"): return Response("Solar aerial unavailable",status=404)
             url=s["rgb"];sep="&" if "?" in url else "?"
             try:
