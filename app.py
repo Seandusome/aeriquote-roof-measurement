@@ -891,16 +891,16 @@ async function refreshAerialDetail(){
  }catch(e){console.warn('Detailed aerial unavailable',e)}
 }
 function scheduleAerialDetail(){clearTimeout(aerialDetailTimer);aerialDetailTimer=setTimeout(refreshAerialDetail,300)}
-async function loadStandardWideAerial(){
- if(!sessionToken)throw new Error('Load the property first.');
+async function loadStandardWideAerial(token=sessionToken,targetMap=map,staging=false,center=null){
+ if(!token)throw new Error('Load the property first.');
  // A 3x3 continuous satellite mosaic restores panning beyond the old 640px square.
  // The measurement geometry and pricing code are untouched.
- const c=(propertyMarker&&propertyMarker.getLatLng)?propertyMarker.getLatLng():map.getCenter();
+ const c=center||((propertyMarker&&propertyMarker.getLatLng)?propertyMarker.getLatLng():map.getCenter());
  const z=18,scale=256*Math.pow(2,z),tileSize=640;
  const latToY=lat=>{const sin=Math.sin(lat*Math.PI/180);return (.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*scale};
  const x=(c.lng+180)/360*scale,y=latToY(c.lat);
  const toLatLng=(px,py)=>L.latLng(mercatorLat(py/scale),px/scale*360-180);
- const group=L.layerGroup().addTo(map),bounds=L.latLngBounds([]);
+ const group=L.layerGroup().addTo(targetMap),bounds=L.latLngBounds([]);
  const jobs=[];
  for(let row=-1;row<=1;row++)for(let col=-1;col<=1;col++){
    const cx=x+col*tileSize,cy=y+row*tileSize;
@@ -909,20 +909,22 @@ async function loadStandardWideAerial(){
    bounds.extend(b);
    const q=new URLSearchParams({lat:String(centre.lat),lng:String(centre.lng),zoom:String(z)});
    jobs.push((async()=>{
-     const r=await fetch('/wide-aerial/'+sessionToken+'?'+q.toString());
+     const r=await fetch('/wide-aerial/'+token+'?'+q.toString());
      if(!r.ok)throw new Error('Wide satellite image request failed: '+r.status);
      const blob=await r.blob(),url=URL.createObjectURL(blob);
      const layer=L.imageOverlay(url,b,{opacity:1,interactive:false});
      layer.once('remove',()=>URL.revokeObjectURL(url));
      await new Promise((resolve,reject)=>{
-       layer.once('load',resolve);
-       layer.once('error',()=>reject(new Error('Satellite tile failed to decode')));
+       const timeout=setTimeout(()=>reject(new Error('Satellite tile timed out')),20000);
+       layer.once('load',()=>{clearTimeout(timeout);resolve()});
+       layer.once('error',()=>{clearTimeout(timeout);reject(new Error('Satellite tile failed to decode'))});
        layer.addTo(group);
      });
    })());
  }
- try{await Promise.all(jobs)}catch(e){await Promise.allSettled(jobs);group.eachLayer(l=>{if(l._url&&l._url.startsWith('blob:'))URL.revokeObjectURL(l._url)});map.removeLayer(group);throw e}
+ try{await Promise.all(jobs)}catch(e){await Promise.allSettled(jobs);group.eachLayer(l=>{if(l._url&&l._url.startsWith('blob:'))URL.revokeObjectURL(l._url)});targetMap.removeLayer(group);throw e}
  group._sgAerial=true;group._sgAerialType='wide-3x3-mosaic';
+ if(staging)return{layer:group,bounds};
  removeStaleAerialLayers(group);
  fallbackLayer=group;fallbackBounds=bounds;rgbLayer=null;mainBounds=bounds;
  map.setMinZoom(14);map.setMaxBounds(null);map.options.maxBoundsViscosity=0;
@@ -1729,15 +1731,17 @@ function resetMeasurementForNewProperty(){
 
 function parseDealerCoordinates(raw){
  const s=String(raw||'').trim().toUpperCase();
- if(!s)return null;
- const nums=s.match(/[-+]?\d+(?:\.\d+)?/g);
- if(!nums||nums.length<2)return null;
- let lat=Number(nums[0]),lng=Number(nums[1]);
- if(!Number.isFinite(lat)||!Number.isFinite(lng))return null;
- const idx=s.indexOf(nums[1]),a=s.slice(0,idx),b=s.slice(idx);
- if(/\bS\b/.test(a))lat=-Math.abs(lat); else if(/\bN\b/.test(a))lat=Math.abs(lat);
- if(/\bW\b/.test(b))lng=-Math.abs(lng); else if(/\bE\b/.test(b))lng=Math.abs(lng);
- if(Math.abs(lat)>90||Math.abs(lng)>180)return null;
+ // Accept exactly two decimal degrees, optionally with explicit hemisphere labels.
+ // Never extract the first two numbers from DMS, URLs, exponents or arbitrary text.
+ const m=s.match(/^([+-]?\d+(?:\.\d+)?)\s*(?:°\s*)?([NS])?\s*(?:,\s*|\s+)([+-]?\d+(?:\.\d+)?)\s*(?:°\s*)?([EW])?$/);
+ if(!m||!!m[2]!==!!m[4])return null;
+ let lat=Number(m[1]),lng=Number(m[3]);
+ if(m[2]){
+  if(/^[+-]/.test(m[1])||/^[+-]/.test(m[3]))return null;
+  lat*=m[2]==='S'?-1:1;lng*=m[4]==='W'?-1:1;
+ }
+ // The aerial's Web Mercator projection cannot display the poles.
+ if(!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>85.05112878||Math.abs(lng)>180)return null;
  return {lat,lng};
 }
 async function loadExactCoordinates(){
@@ -1754,7 +1758,6 @@ async function loadExactCoordinates(){
  if(el('cityTown'))el('cityTown').value='';
  if(el('propertyProvince'))el('propertyProvince').value='';
  if(el('postalCode'))el('postalCode').value='';
- if(el('address'))el('address').value=normalized;
  status('Loading the exact dropped-pin location…','warn');
  await loadProperty();
 }
@@ -1787,6 +1790,43 @@ async function loadExactPinAerial(token,targetMap=map){
 }
 
 function showTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.add('open')}function closeTrialLimit(){const x=el('trialLimitOverlay');if(x)x.classList.remove('open')}
+async function preparePropertyImagery(d){
+ const host=document.createElement('div');host.style.cssText='position:fixed;left:-20000px;top:0;width:900px;height:650px;';document.body.appendChild(host);
+ const staging=L.map(host,{zoomControl:false,attributionControl:false,zoomAnimation:false});
+ const center=d.center||d.anchor||d.main;
+ staging.setView([center.latitude,center.longitude],18);
+ let ready;
+ try{
+  const surface=['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType());
+  if(surface){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
+  else if(d.fallback)ready=await loadFallbackAerial(d.token,staging);
+  else{
+   ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadRaster('/rgb/'+d.token,staging);
+   ready.mask=await loadRoofMask('/mask/'+d.token,true);
+   if(!d.exact_pin_display){const wide=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude));staging.removeLayer(ready.layer);ready={...wide,mask:ready.mask}}
+  }
+  // ImageOverlay fallbacks return before their image has decoded. Wait here too.
+  const layers=ready.layer.getLayers?ready.layer.getLayers():[ready.layer];
+  await Promise.all((ready.layer.getLayers?[]:layers).map(layer=>new Promise((resolve,reject)=>{
+   const img=layer.getElement?.();if(!img||img.tagName!=='IMG')return resolve();
+   if(img.complete)return img.naturalWidth?resolve():reject(new Error('Satellite image could not decode.'));
+   const timer=setTimeout(()=>reject(new Error('Satellite image timed out.')),20000);
+   const done=fn=>{clearTimeout(timer);fn()};layer.once('load',()=>done(resolve));layer.once('error',()=>done(()=>reject(new Error('Satellite image could not decode.'))));
+  })));
+  const objectLayers=layers.filter(layer=>String(layer._url||'').startsWith('blob:'));
+  objectLayers.forEach(layer=>layer.off('remove'));
+  staging.removeLayer(ready.layer);
+  objectLayers.forEach(layer=>layer.once('remove',()=>URL.revokeObjectURL(layer._url)));
+  return ready;
+ }finally{staging.remove();host.remove()}
+}
+function installPropertyImagery(ready){
+ ready.layer.addTo(map);removeStaleAerialLayers(ready.layer);fallbackLayer=ready.layer;fallbackBounds=ready.bounds;rgbLayer=null;mainBounds=ready.bounds;
+ map.setMinZoom(14);map.setMaxBounds(null);map.options.maxBoundsViscosity=0;
+ if(ready.layer._sgAerialType==='wide-3x3-mosaic')map.setView(ready.bounds.getCenter(),18,{animate:false});else frameAerial(map,ready.bounds,0);
+ map.off('moveend',scheduleAerialDetail);if(ready.layer._sgAerialType==='wide-3x3-mosaic')map.on('moveend',scheduleAerialDetail);
+ aerialDetailSequence++;aerialDetailKey='';aerialDetailLayer=null;
+}
 async function loadProperty(){
  if(loadProperty.inFlight)return loadProperty.inFlight;
  loadProperty.inFlight=performLoadProperty();
@@ -1800,7 +1840,8 @@ async function performLoadProperty(){
  }
  const requestedMeasurementMode=pendingMeasurementMode||measurementViewMode||'auto';
  const enteredStreet=(el('streetAddress')?.value||'').trim(),enteredCity=(el('cityTown')?.value||'').trim(),enteredProvince=propertyLookupProvince(),enteredNumber=enteredStreetNumber();
- const cc=coordinatesEntered();
+ const cc=coordinatesEntered(),enteredKey=propertyInputAddressKey(),workspaceKey=workspaceSaveFingerprint();
+ if(cc&&!window.confirm('Use latitude '+cc.lat.toFixed(6)+' and longitude '+cc.lng.toFixed(6)+'?\n\nLatitude must be first. Confirm these are the intended property coordinates.'))return;
  if(!cc&&(!enteredStreet||!enteredCity||!enteredProvince)){status('Enter the street address, City and State/Province. ZIP/postal code is not required.','error');return}
  // Freeze exactly what the dealer entered BEFORE any report/measurement reset can change UI state.
  const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,propertyCountryFromProvince(enteredProvince)].join(', ');
@@ -1811,12 +1852,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   status('Loading property…');showLoad(true);
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
   const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
-  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify(payload)}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
-  loadProperty.pending=null;
- if((el('address')?.value||'')!==authoritativeAddress)['customerName','customerPhone','customerEmail','customerNotes'].forEach(id=>{if(el(id))el(id).value=''});
- resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
-  resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
-  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
+  let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
     if(cc){if(verifyEl){verifyEl.style.display='block';verifyEl.style.color='#176b43';verifyEl.textContent='✓ Using exact dropped-pin coordinates — address matching bypassed.'}}
@@ -1830,8 +1866,8 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
       skipAddressConflictOnce=true;
       if(!useMatched){
         if(el('streetAddress'))el('streetAddress').value=alt.address;
-        if(el('cityTown'))el('cityTown').value='';if(el('propertyProvince'))el('propertyProvince').value='';if(el('postalCode'))el('postalCode').value='';if(el('address'))el('address').value='';
-        status('Loading the confirmed nearby property…','warn');return loadProperty();
+        if(el('cityTown'))el('cityTown').value='';if(el('propertyProvince'))el('propertyProvince').value='';if(el('postalCode'))el('postalCode').value='';
+        status('Review the alternative address, enter its City and State/Province, then load it. Your existing work is unchanged.','warn');return;
       }
       verifyEl.style.color='#176b43';verifyEl.textContent='✓ Dealer confirmed Google matched property: '+matched;
     }
@@ -1839,8 +1875,20 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
     }
   }catch(e){if(verifyEl&&!cc)verifyEl.style.display='none'}
   skipAddressConflictOnce=false;
+  const prepared=await preparePropertyImagery(d);
+  if(workspaceSaveFingerprint()!==workspaceKey)throw new Error('Your measurements or pricing changed while loading. Save your work before replacing the property.');
+  if(propertyInputAddressKey()!==enteredKey)throw new Error('The address changed while imagery was loading. Review it and retry.');
+  const accepted=await fetch('/property/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation_id:loadProperty.pending.id,token:d.token})});
+  const acceptance=await accepted.json();
+  if(!accepted.ok){if(accepted.status===410)loadProperty.pending=null;throw new Error(acceptance.error||'Property could not be accepted. Keep this page open and retry.');}
+  loadProperty.pending=null;
+ if((el('address')?.value||'')!==authoritativeAddress)['customerName','customerPhone','customerEmail','customerNotes'].forEach(id=>{if(el(id))el(id).value=''});
+ resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
+  resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
+  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
   let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))el('propertyProvince').value=prov;syncPropertyProvince()}
   el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
+  installPropertyImagery(prepared);
   // Commercial surface measurements must never run the roof AutoMeasure path.
   // Use the property satellite image, then activate the selected surface tool.
   if(['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType())){
@@ -1849,13 +1897,6 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
     if(el('measureSource'))el('measureSource').value='manual';
     // Prefer the existing wider commercial satellite framing used before the
     // roof-routing correction. Fall back to the previous image only if needed.
-    let aerial;
-    try{aerial=await loadStandardWideAerial()}
-    catch(wideError){
-      aerial=exactPinDisplay?await loadExactPinAerial(sessionToken):await loadFallbackAerial(sessionToken);
-      fallbackLayer=aerial.layer;fallbackBounds=aerial.bounds;
-      removeStaleAerialLayers(aerial.layer);frameAerial(map,aerial.bounds,0);
-    }
     pendingMeasurementMode=((pendingMeasurementMode||requestedMeasurementMode)==='linear'?'linear':'area');
     measurementViewMode=pendingMeasurementMode;
     selectMeasurementTool(pendingMeasurementMode);
@@ -1866,17 +1907,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   }
   if(d.fallback){
     structures=[];setManualCorrectionLayout(true);setManualUi(true);if(el('measureSource'))el('measureSource').value='manual';
-    let aerialLoaded=false;
-    try{
-      // Manual mode always uses one stable Static Maps satellite image. This avoids
-      // the rectangular Solar GeoRaster/no-data box that could appear after zooming.
-      let fb=await loadFallbackAerial(sessionToken);fallbackLayer=fb.layer;fallbackBounds=fb.bounds;removeStaleAerialLayers(fallbackLayer);frameAerial(map,fb.bounds,0);aerialLoaded=true
-    }catch(aerialErr){
-      const reason=(aerialErr&&aerialErr.message)?aerialErr.message:'Google satellite fallback could not load.';
-      showSolarFallback(true,'Google automatic measurement is unavailable and the manual aerial could not load. '+reason);
-      if(el('garageGuide'))el('garageGuide').innerHTML='<b>Automatic measurement unavailable.</b> Manual aerial could not load. The message above shows the Google response so this can be corrected without guessing.';
-      renderSummary();status('Manual aerial could not load: '+reason,'error');return;
-    }
+    const aerialLoaded=true;
     showSolarFallback(true,'Google does not have an automatic roof measurement for this property. Manual measurement is required. Trace the shingled roof below and confirm its pitch.');
     renderSummary();
     if(el('garageGuide'))el('garageGuide').innerHTML='<b>Manual measurement required.</b> Trace the shingled roof area shown below and confirm the pitch. If imagery appears older, verify the current roof layout before sending the estimate.';
@@ -1885,8 +1916,8 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
     if(aerialLoaded){setTimeout(()=>{if(!traceMode)toggleTrace()},80)}
     status('Automatic measurement unavailable — manual roof tracing is ready. Confirm the pitch before saving.','warn');return;
   }
-  structures=[{...d.main,label:'Main House'}];setManualCorrectionLayout(false);setManualUi(false);if(el('measureSource'))el('measureSource').value='google';let rgb=exactPinDisplay?await loadExactPinAerial(sessionToken):await loadRaster('/rgb/'+sessionToken);rgbLayer=rgb.layer;mainBounds=rgb.bounds;frameAerial(map,rgb.bounds,0);roofMask=await loadRoofMask('/mask/'+sessionToken);d.main.outline=outlineFromMask(roofMask,d.main.latitude,d.main.longitude);structures[0].outline=d.main.outline;reviewAutomaticRoof(structures[0]);if(!exactPinDisplay){await loadStandardWideAerial()}redrawRoofData();if(exactPinDisplay)frameAerial(map,rgb.bounds,0);renderSummary();if(el('garageGuide'))el('garageGuide').innerHTML=roofQuoteNeedsReview()?'<b>Main roof requires review.</b> Use FIX ROOF in the Property Summary.': '<b>Main house measured.</b> If there is another roof to include, click <b>+ ADD GARAGE / OTHER ROOF</b>, then click once on that roof. It will measure automatically.';if(el('measureClicked'))el('measureClicked').disabled=false;if(el('measureClickedTop'))el('measureClickedTop').disabled=false;status((structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'Main roof coverage needs review. Use FIX ROOF in the Property Summary.':'Main house measured. Use + Add Garage / Other Roof if needed.',(structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'warn':'ok');pendingMeasurementMode=requestedMeasurementMode;if(requestedMeasurementMode==='area'||requestedMeasurementMode==='linear'){selectMeasurementTool(requestedMeasurementMode)}else{measurementViewMode='auto';updatePropertyActionButton();updateMeasurementInterface()}
- }catch(e){status(e.message,'error')}finally{showLoad(false)}
+  structures=[{...d.main,label:'Main House'}];setManualCorrectionLayout(false);setManualUi(false);if(el('measureSource'))el('measureSource').value='google';roofMask=prepared.mask;d.main.outline=outlineFromMask(roofMask,d.main.latitude,d.main.longitude);structures[0].outline=d.main.outline;reviewAutomaticRoof(structures[0]);let rgb=prepared;redrawRoofData();if(exactPinDisplay)frameAerial(map,rgb.bounds,0);renderSummary();if(el('garageGuide'))el('garageGuide').innerHTML=roofQuoteNeedsReview()?'<b>Main roof requires review.</b> Use FIX ROOF in the Property Summary.': '<b>Main house measured.</b> If there is another roof to include, click <b>+ ADD GARAGE / OTHER ROOF</b>, then click once on that roof. It will measure automatically.';if(el('measureClicked'))el('measureClicked').disabled=false;if(el('measureClickedTop'))el('measureClickedTop').disabled=false;status((structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'Main roof coverage needs review. Use FIX ROOF in the Property Summary.':'Main house measured. Use + Add Garage / Other Roof if needed.',(structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'warn':'ok');pendingMeasurementMode=requestedMeasurementMode;if(requestedMeasurementMode==='area'||requestedMeasurementMode==='linear'){selectMeasurementTool(requestedMeasurementMode)}else{measurementViewMode='auto';updatePropertyActionButton();updateMeasurementInterface()}
+ }catch(e){status(e.message+' Your existing saved or unsaved work is unchanged. Retry Load Property when ready.','error')}finally{showLoad(false)}
 }
 function startGarageMode(){if(measureClicked.pending){extraRoofStatus('The selected roof is still being measured. Please wait for its result.','warn');return}if(!sessionToken){status('Load the property first.','error');return}if(!structures.length){if(manualPlanes.length){garageMode=false;setManualCorrectionLayout(false);setManualUi(false);const details=el('manualRoofDetails');if(details)details.open=true;if(!traceMode)toggleTrace();status('Add Garage / Other Roof — trace the next shingled building, confirm its pitch, then save it.','warn');return}status('Finish the main-house manual measurement first.','warn');return}garageMode=true;clicked=null;if(el('garageSavedConfirm'))el('garageSavedConfirm').style.display='none';if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}if(el('garageGuide'))el('garageGuide').innerHTML='<b>Add Garage / Other Roof is ON.</b> Click once near the centre of the garage, shed or shop roof. It will measure automatically.';status('Click once near the centre of the extra roof to measure it automatically.','warn')}
 function extraRoofStatus(message,kind=''){
@@ -3001,19 +3032,8 @@ function startExistingManualTrace(){
 }
 function coordinatesEntered(){
  const raw=(el('streetAddress')?.value||'').trim();
- if(!raw)return null;
- let m=raw.match(/^\s*(-?\d{1,2}(?:\.\d+)?)\s*[, ]\s*(-?\d{1,3}(?:\.\d+)?)\s*$/);
- if(!m){
-   try{
-     const u=new URL(raw);
-     const c=u.searchParams.get('coordinate');
-     if(c)m=c.match(/^\s*(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/);
-   }catch(e){}
- }
- if(!m)return null;
- const lat=Number(m[1]),lng=Number(m[2]);
- if(!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180)return null;
- return {lat,lng};
+ try{const u=new URL(raw);return parseDealerCoordinates(u.searchParams.get('coordinate')||'')}catch(e){}
+ return parseDealerCoordinates(raw);
 }
 
 
@@ -4013,6 +4033,27 @@ def property_data():
     con=estimate_db()
     try:
         lock_account(con,dealer_id)
+        if d.get('prepare_only'):
+            if not operation:return jsonify(error="Lookup identifier required."),400
+            old=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"prepared:"+operation)).fetchone()
+            if old:
+                if old["payload_hash"]!=digest:return jsonify(error="This lookup identifier was used for a different property."),409
+                prepared=json.loads(old["response_json"])
+                if not SESSIONS.get(prepared.get("token")):return jsonify(error="Property preparation expired. Retry Load Property."),410
+                return jsonify(prepared)
+            # Check current allowance without spending it while images are pending.
+            con.execute("SAVEPOINT image_allowance")
+            allowed,used,limit=consume_property_lookup(dealer_id,con)
+            con.execute("ROLLBACK TO SAVEPOINT image_allowance");con.execute("RELEASE SAVEPOINT image_allowance")
+            if not allowed:
+                row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+                if row and str(row["plan_code"] or "").lower()=="trial":return jsonify(error="Free trial complete.",code="trial_limit_reached"),403
+                return jsonify(error="Property lookup allowance reached."),403
+            response=app.make_response(perform_property_lookup(d))
+            if response.status_code==200:
+                con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"prepared:"+operation,digest,json.dumps(response.get_json())))
+                con.commit()
+            return response
         if operation:
             old=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"lookup:"+operation)).fetchone()
             if old:
@@ -4030,6 +4071,27 @@ def property_data():
         return response
     finally:con.close()
 
+@app.post("/property/accept")
+def accept_property():
+    dealer_id=str(session.get("dealer_id") or "");d=request.get_json(silent=True) or {}
+    if not isinstance(d,dict):return jsonify(error="Invalid property confirmation."),400
+    operation=str(d.get("operation_id") or "");token=str(d.get("token") or "")
+    con=estimate_db()
+    try:
+        lock_account(con,dealer_id)
+        pending=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"prepared:"+operation)).fetchone()
+        if not pending:return jsonify(error="Property preparation not found. Retry Load Property."),404
+        result=json.loads(pending["response_json"])
+        if result.get("token")!=token:return jsonify(error="Property confirmation does not match."),409
+        receipt=con.execute("SELECT response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"lookup:"+operation)).fetchone()
+        if receipt:return jsonify(ok=True)
+        if not SESSIONS.get(token):return jsonify(error="Property preparation expired. Retry Load Property."),410
+        allowed,used,limit=consume_property_lookup(dealer_id,con)
+        if not allowed:return jsonify(error="Property lookup allowance reached. Existing work is unchanged."),403
+        con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"lookup:"+operation,pending["payload_hash"],pending["response_json"]))
+        con.commit();return jsonify(ok=True)
+    finally:con.close()
+
 def perform_property_lookup(d):
     key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
     if not key or not address:return jsonify(error="API key and address are required."),400
@@ -4037,7 +4099,7 @@ def perform_property_lookup(d):
         direct=bool(d.get("direct_coordinates"));g={}
         if direct:
             lat=float(d.get("latitude"));lng=float(d.get("longitude"))
-            if not math.isfinite(lat) or not math.isfinite(lng) or abs(lat)>90 or abs(lng)>180: return jsonify(error="Invalid coordinates.",user_error="Enter valid latitude and longitude coordinates."),400
+            if not math.isfinite(lat) or not math.isfinite(lng) or abs(lat)>85.05112878 or abs(lng)>180: return jsonify(error="Invalid coordinates.",user_error="Enter valid latitude and longitude coordinates."),400
             formatted=f"{lat:.6f}, {lng:.6f}"
         else:
             expected_city=str(d.get("expected_city") or "").strip();expected_province=str(d.get("expected_province") or "").strip();expected_street_number=str(d.get("expected_street_number") or "").strip()
