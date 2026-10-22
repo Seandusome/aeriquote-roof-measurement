@@ -38,3 +38,7 @@ Final full regression results are recorded below after completion. PostgreSQL co
 ## Final local regression result
 
 63/63 recovery regression/check commands PASS on the final application tree, including both new manual tests, independent geometry, full pricing matrix, all six industries, imagery loading transaction tests, session recovery, saved editing, Single/Expanded exporter tests, monthly subscription boundaries, account isolation and interrupted/concurrent SQLite saves. `git diff --check` also passes. Dependencies were already installed; local venv has no pip, so installation is not counted as a regression test. No local PostgreSQL executable is available; PostgreSQL verification is delegated to the existing isolated CI job, not claimed as a local pass.
+
+## GitHub checkpoint verification and wording follow-up
+
+Initial manual workflow checkpoint eed1881b4704952425aec45f1bd5317acddd78f5 has successful GitHub runs 39852372243 (application validation) and 39852372402 (full recovery plus real isolated PostgreSQL concurrency/acceptance/period checks). A final QA-only terminology fix keeps the four-step manual instructions, Trace Roof label and hidden automatic controls correct when the existing industry wording updater runs. Outside manual Roofing the previously approved wording remains unchanged; targeted manual/industry-wording regressions cover this distinction.

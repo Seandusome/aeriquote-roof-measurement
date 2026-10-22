@@ -5,7 +5,7 @@ const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs'),assert=requ
 
 
 w.eval("resetMeasurementForNewProperty();el('businessType').value='roofing';businessTypeChanged();sessionToken='manual-qa';fallbackMode=true;manualOverrideMode=true;structures=[];measurementViewMode='auto';el('jobPrice').value='.2';el('gst').value='5';el('pst').value='6';renderSummary()");
-assert(w.eval('manualRoofQa()'));assert.equal(btn('toolAutoBtn').style.display,'none');
+w.eval('applyBusinessTerminology()');assert(w.document.querySelector('.measure-intro span').textContent.includes('Confirm pitch'));assert.equal(btn('toolAreaBtn').querySelector('b').textContent,'TRACE ROOF');assert(w.eval('manualRoofQa()'));assert.equal(btn('toolAutoBtn').style.display,'none');
 function trace(points,pitch='22.62'){
  w.eval('beginManualRoofSection()');for(const [lat,lng] of points)w.eval(`addTracePoint(L.latLng(${lat},${lng}))`);
  w.eval('finishTrace()'); // Blank pitch must block saving.

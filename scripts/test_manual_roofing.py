@@ -38,6 +38,21 @@ with tempfile.TemporaryDirectory() as tmp:
    # Static failures and retries never fall through to Solar.
    with patch.object(a.urllib.request,'urlopen',side_effect=OSError('QA network failure')):
     for _ in range(2):assert c.get('/fallback-map/'+token).status_code>=400
+   # Real report-image routes use Static Maps only, including fallback and zoom imagery.
+   class ImageReply:
+    headers={'Content-Type':'image/png'}
+    def __enter__(self):return self
+    def __exit__(self,*args):pass
+    def read(self):return b'qa-static-pixels'
+   image_calls=[]
+   def static_image(req,**kwargs):
+    image_calls.append(req.full_url);assert 'maps.googleapis.com/maps/api/staticmap?' in req.full_url
+    return ImageReply()
+   with patch.object(a.urllib.request,'urlopen',side_effect=static_image):
+    outline=[{'lat':52,'lng':-106},{'lat':52,'lng':-105.9999},{'lat':52.0001,'lng':-105.9999}]
+    image=c.post('/manual-report-map/'+token,json={'planes':[outline]});assert image.status_code==200 and image.data==b'qa-static-pixels'
+    assert c.get('/wide-aerial/'+token+'?lat=52&lng=-106&zoom=20').status_code==200
+   assert len(image_calls)==2
    assert c.post('/property/accept',json={'operation_id':'manual-'+str(direct),'token':token}).status_code==200
    a.SESSIONS.pop(token,None)
    assert c.get('/rgb/'+token).status_code==409,'Mode survives worker/reload recovery'

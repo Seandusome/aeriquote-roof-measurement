@@ -655,10 +655,10 @@ function applyBusinessTerminology(root=document.body){
   for(const [attr,base] of Object.entries(original))node.setAttribute(attr,mode==='snow'?(attr==='data-tip'&&/pitch/i.test(base)?'Measure the snow-clearing service area or linear route, then save the measurement.':translateSnowText(base)):base);
  });
  if(mode==='roofing'&&roofRemeasureTarget){if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Roof pitch — defaults to 5/12; change if needed ';if(el('manualRoofSummary'))el('manualRoofSummary').textContent='Replace measurement — '+roofRemeasureTarget.label;if(el('manualRoofWarning'))el('manualRoofWarning').textContent='Editing '+roofRemeasureTarget.label+' only. Its saved measurement stays unchanged until the replacement is saved.';if(el('clearManualBtn'))el('clearManualBtn').textContent='CLEAR THIS ROOF DRAWING'}
- const intro=document.querySelector('.measure-intro span');if(intro)intro.textContent=mode==='roofing'?"Use AutoMeasure for pitched roofs, Area for roof footprints, or Linear for roof lengths. The selected tool sets this estimate's measurement.":'Use one tool or combine multiple measurements on the same property.';
+ const intro=document.querySelector('.measure-intro span');if(intro)intro.textContent=mode==='roofing'?(manualRoofQa()?"Load property → Trace roof → Confirm pitch → Review estimate. Trace different pitches as separate sections.":"Use AutoMeasure for pitched roofs, Area for roof footprints, or Linear for roof lengths. The selected tool sets this estimate's measurement."):'Use one tool or combine multiple measurements on the same property.';
  const copy=AERI_TOOL_COPY[mode]||AERI_TOOL_COPY.roofing;
  const areaToolButton=el('toolAreaBtn'),linearToolButton=el('toolLinearBtn');
- if(areaToolButton){areaToolButton.querySelector('b').textContent='+ ADD AREA';areaToolButton.querySelector('small').textContent=copy.area;}
+ if(areaToolButton){areaToolButton.querySelector('b').textContent=manualRoofQa()?'TRACE ROOF':'+ ADD AREA';areaToolButton.querySelector('small').textContent=manualRoofQa()?'Roof sections • confirmed pitch':copy.area;}
  if(linearToolButton){linearToolButton.querySelector('b').textContent=mode==='snow'?'LINEAR':'+ LINEAR';linearToolButton.querySelector('small').textContent=copy.linear;}
  const linearDescription=document.querySelector('#linearTool .linear-head .small');if(linearDescription)linearDescription.textContent=copy.distance;
  const snow=mode==='snow';
@@ -750,7 +750,7 @@ function applyBusinessTerminology(root=document.body){
    const autoBtn=el('toolAutoBtn');if(autoBtn)autoBtn.style.display='';
    document.querySelectorAll('[data-aeri-display]').forEach(x=>{x.style.display=x.dataset.aeriDisplay;delete x.dataset.aeriDisplay});
  }
- syncRoofWorkspace();
+ syncRoofWorkspace();if(manualRoofQa())syncManualRoofQa();
 }
 
 function pressureMarketingDefaults(){return {heading:'WHY CHOOSE US',warranty:'',cta:'Schedule Your Pressure Washing Service',message:'Contact us to schedule professional pressure washing for your property.',benefits:[{icon:'✓',title:'Professional Cleaning',text:'Pressure washing tailored to your exterior surfaces.'},{icon:'✓',title:'Improve Curb Appeal',text:'Help remove built-up dirt and grime from driveways, patios and walkways.'},{icon:'$',title:'Clear Upfront Pricing',text:'Your estimate shows the measured cleaning area and pricing before work begins.'},{icon:'◆',title:'Property-Specific Service',text:'Cleaning areas and pricing are prepared for your individual property.'},{icon:'✓',title:'Reliable Service',text:'Professional pressure washing for your property.'}]}}
