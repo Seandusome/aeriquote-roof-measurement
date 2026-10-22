@@ -32,6 +32,12 @@ with tempfile.TemporaryDirectory() as tmp:
    eid=saved.json['id'];data=c.get('/api/estimates/'+str(eid)).json['payload'];before=json.dumps(data,sort_keys=True)
    assert c.post('/qa-vector-diagram/validate',json={'quote':data['quote']}).status_code==200
    again=c.get('/api/estimates/'+str(eid)).json['payload'];assert json.dumps(again,sort_keys=True)==before,'Export validation never edits an estimate'
+   # Actual Alberta-priced estimate in isolated storage: user-selected GST5/PST0.
+   ab=json.loads(json.dumps(payload));ab['address']='QA Alberta tax test - Edmonton, AB, Canada';ab['quote']['dealerCountry']='CA';ab['pricing']['gst']=5;ab['pricing']['pst']=0
+   ab=json.loads(subprocess.check_output(['node','scripts/price_fixtures.cjs'],input=json.dumps([ab]).encode()))[0]
+   ab_saved=c.post('/api/estimates',json=ab);assert ab_saved.status_code==200,ab_saved.json
+   ab_data=c.get('/api/estimates/'+str(ab_saved.json['id'])).json['payload'];assert ab_data['pricing']['gst']==5 and ab_data['pricing']['pst']==0 and ab_data['pricing']['pstAmt']==0
+   assert json.dumps(c.get('/api/estimates/'+str(eid)).json['payload'],sort_keys=True)==before,'New regional settings do not rewrite an earlier saved estimate'
    bad=json.loads(before);bad['quote']['manualPlanes'][0].update(surface_sqft=1) if industry=='roofing' else bad['quote']['commercialAreas'][0].update(sqft=1);assert c.post('/qa-vector-diagram/validate',json={'quote':bad['quote']}).status_code==400
   login('not-qa');assert c.post('/qa-vector-diagram/validate',json={'quote':q}).status_code==404
  print('PASS vector default off/double opt-in/account isolation; actual six-industry save/reopen, independent server geometry validation, mismatch rejection, immutable saved estimates and zero provider calls')

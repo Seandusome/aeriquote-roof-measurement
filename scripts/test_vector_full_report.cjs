@@ -11,6 +11,9 @@ btn('estimatePdfLayout').value='vector';await w.eval('downloadEstimatePDF()');
 assert.equal(vectorSaved,1,w.document.getElementById('status').textContent);assert(vectorText.join(' ').includes(w.eval('money(priceCalc().total)')),'Actual generated customer total preserved');assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),frozen);assert.deepEqual(providerPaths,['/qa-vector-diagram/validate']);
 if(process.env.VECTOR_QA_JSPDF&&process.env.VECTOR_QA_OUTPUT){
  w.eval(require('node:fs').readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));w.AQVectorPDFFont=require('node:fs').readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');
+ w.eval("el('dealerCountry').value='CA';countryChanged();el('province').value='AB';el('gst').value='5';el('pst').value='0';el('address').value='QA Alberta tax check, Edmonton, AB, Canada';el('customerName').value='QA Alberta Customer';renderSummary()");
+ await w.eval('showCustomerEstimate()');w.eval('clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false');
+ assert.equal(w.eval('priceCalc().pstAmt'),0);assert.equal(w.eval('priceCalc().gst'),5);
  const doc=await w.AQVectorPDF.build(w.jspdf.jsPDF,w.eval('JSON.parse(JSON.stringify(quoteSnapshot))'),w.document.querySelector('#reportOverlay .report'));
  require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof.pdf',Buffer.from(doc.pdf.output('arraybuffer')));
  const price=w.eval('priceCalc()'),quote=w.eval('JSON.parse(JSON.stringify(quoteSnapshot))');require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof-source.json',JSON.stringify({quote,pricing:price,total_area:price.area,total_price:price.total,extra_service_amount:price.extraAmount||0,extra_service_description:price.extraDescription||''},null,2));require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof.svg',doc.svg);
