@@ -77,6 +77,8 @@ jobs:
       - run: python scripts/test_property_acceptance.py
       - run: python scripts/test_subscription_periods.py
       - run: python scripts/test_profile_integrity.py
+      - run: python scripts/test_manual_roofing.py
+      - run: node scripts/test_manual_roofing.cjs
       - run: python scripts/test_api_cost_routing.py
       - run: node scripts/test_logo_cache.cjs
 

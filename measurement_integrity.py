@@ -117,6 +117,12 @@ def snapshot_error(payload):
             if not polygon_valid(points):return 'Manual roof outline is incomplete or invalid.'
             actual=polygon_sqft(points)/math.cos(math.radians(pitch))
             if isinstance(quantity,bool) or not isinstance(quantity,(int,float)) or not math.isfinite(quantity) or abs(actual-quantity)>max(1,actual*.001):return 'Manual roof quantity does not match its outline and pitch.'
+        if quote.get('businessType')=='roofing' and (quote.get('manualRoofWorkflow') or (quote.get('measurementMode')=='auto' and any(p.get('manual_roof_qa') for p in planes))):
+            if quote.get('measurementMode')!='auto' or quote.get('structures') or quote.get('measureSource')!='manual':return 'Manual roofing sections must be priced as roof surface measurements.'
+            if not planes or quote.get('roofScopeConfirmed') is not True:return 'Confirm all intended roof sections and buildings before quoting.'
+            for i,roof in enumerate(planes):
+                if roof.get('pitch_confirmed') is not True:return 'Confirm the pitch of every roof section.'
+                if any(polygons_overlap(roof['points'],other['points']) for other in planes[:i]):return 'Manual roof sections overlap. Correct them before quoting.'
         if quote.get('businessType')=='roofing' and quote.get('measurementMode')=='auto':
             source=quote.get('measureSource','google')
             roofs=quote.get('structures',[])

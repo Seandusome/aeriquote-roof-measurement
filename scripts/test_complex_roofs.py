@@ -1,10 +1,10 @@
 """Isolated route tests: each added building owns a cached mask; no paid API calls."""
-import ast,uuid,time
+import ast,uuid,time,os
 from pathlib import Path
 from flask import Flask,request,session,jsonify,Response
 import urllib.parse
 source=ast.parse(Path('app.py').read_text())
-names={'building','structure','structure_mask'}
+names={'building','structure','structure_mask','manual_roof_session','manual_roof_qa_enabled'}
 functions=[n for n in source.body if isinstance(n,ast.FunctionDef) and n.name in names]
 for n in functions:n.decorator_list=[]
 app=Flask(__name__);app.secret_key='test-only';sessions={};calls=[]
@@ -12,7 +12,7 @@ def req_json(url):
  return 200,{'name':'buildings/stable-id','center':{'latitude':52,'longitude':-106},'boundingBox':{'sw':{'latitude':51.9999,'longitude':-106.0001},'ne':{'latitude':52.0001,'longitude':-105.9999}},'solarPotential':{'wholeRoofStats':{'areaMeters2':100,'groundAreaMeters2':80},'buildingStats':{'groundAreaMeters2':100},'roofSegmentStats':[]}}
 def layers(key,lat,lng,radius):
  calls.append((lat,lng,radius));return {'maskUrl':'https://example.invalid/own-mask'}
-ns=dict(request=request,session=session,jsonify=jsonify,Response=Response,uuid=uuid,urllib=urllib,SESSIONS=sessions,req_json=req_json,SolarBuildingNotFound=type('SolarBuildingNotFound',(Exception,),{}),date_text=lambda x:'2023-10-16',roof_imagery_request=lambda roof:(roof['latitude'],roof['longitude'],100),solar_layers=layers,req_bytes=lambda url:('image/tiff',b'own-roof-mask'))
+ns=dict(os=os,request=request,session=session,jsonify=jsonify,Response=Response,uuid=uuid,urllib=urllib,SESSIONS=sessions,req_json=req_json,SolarBuildingNotFound=type('SolarBuildingNotFound',(Exception,),{}),date_text=lambda x:'2023-10-16',roof_imagery_request=lambda roof:(roof['latitude'],roof['longitude'],100),solar_layers=layers,req_bytes=lambda url:('image/tiff',b'own-roof-mask'))
 exec(compile(ast.Module(body=functions,type_ignores=[]),'app.py','exec'),ns)
 sessions['property']={'key':'test-key','dealer_id':'owner','lat':50,'lng':-105,'mask':'original-main-mask'}
 with app.test_request_context('/structure',method='POST',json={'token':'property','latitude':52,'longitude':-106}):

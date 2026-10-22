@@ -481,6 +481,9 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- AERIQUOTE V11.6.70 LINEAR MODE ISOLATION + V1 CANADA + USA: dealer polish built directly from VERIFIED V11.6.56. Only dealer-facing version cleanup and the read-only job summary strip were added. Measurement, address, map, outline, dealer branding and PDF capture mechanics are unchanged. -->
 <script>
+const MANUAL_ROOF_QA='{{ MANUAL_ROOF_QA_FLAG }}'==='1';
+let manualRoofEditIndex=null;
+function manualRoofQa(){return typeof MANUAL_ROOF_QA!=='undefined'&&MANUAL_ROOF_QA&&currentBusinessType()==='roofing'}
 let map=L.map('map',{maxZoom:22,zoomControl:true,zoomSnap:.25,zoomDelta:.5}).setView([52.1522,-106.6595],19);
 let skipAddressConflictOnce=false;
 L.control.scale({imperial:true,metric:true}).addTo(map);
@@ -1339,6 +1342,7 @@ function syncRoofWorkspace(){
  }
 }
 function updateMeasurementInterface(){
+ if(!manualRoofQa()&&el('manualRoofSections')){el('manualRoofSections').remove();for(const id of ['toolAreaBtn','toolLinearBtn'])if(el(id))el(id).disabled=false;}
  const industry=currentBusinessType(),surfaceOnly=['commercial','paving','pressure','landscaping','snow'].includes(industry);
  const roofLegend=document.querySelector('.roof-legend');if(roofLegend)roofLegend.style.display=surfaceOnly?'none':'';
  const autoButton=el('toolAutoBtn');if(autoButton)autoButton.style.display=surfaceOnly?'none':'';
@@ -1348,12 +1352,12 @@ function updateMeasurementInterface(){
  const priceTitle=el('jobPriceTitle');if(priceTitle)priceTitle.textContent=mode==='linear'?'LINEAR MEASUREMENT & PRICE':mode==='area'?'AREA MEASUREMENT & PRICE':'Price for this job';
  ['auto','area','linear'].forEach(m=>{const b=el('tool'+m.charAt(0).toUpperCase()+m.slice(1)+'Btn');if(b)b.classList.toggle('active',mode===m)});
  const rows=[];const roofSq=Math.round((structures||[]).reduce((a,x)=>a+Number(x.total_roof_sqft||0),0)+(manualPlanes||[]).reduce((a,x)=>a+Number(x.surface_sqft||0),0));
- if(roofSq>0&&currentBusinessType()==='roofing')rows.push(`<div class="jm-row"><span class="jm-kind">Roof — ${structures.some(st=>st.manually_measured)?'Measured with corrections':'AutoMeasure'}</span><span class="jm-value">${fmt(roofSq)} ft²</span><span class="jm-status">${structures.some(st=>st.needs_remeasure||st.automatic_review_warning)?'REVIEW REQUIRED':'SAVED'}</span></div>`);
+ if(roofSq>0&&currentBusinessType()==='roofing')rows.push(`<div class="jm-row"><span class="jm-kind">Roof — ${manualRoofQa()&&manualPlanes.length&&!structures.length?'Manual roof sections':structures.some(st=>st.manually_measured)?'Measured with corrections':'AutoMeasure'}</span><span class="jm-value">${fmt(roofSq)} ft²</span><span class="jm-status">${structures.some(st=>st.needs_remeasure||st.automatic_review_warning)?'REVIEW REQUIRED':'SAVED'}</span></div>`);
  if(multiAreaSaved())commercialAreas.forEach((a,i)=>{if(a.sqft>0)rows.push(`<div class="jm-row"><span class="jm-kind">${escapeHistory(a.name||'Service Area '+(i+1))}</span><span class="jm-value">${fmt(a.sqft)} ft²</span><span class="jm-status">SAVED</span></div>`)});
  else if(areaMeasurementSaved&&areaPoints.length>=3)rows.push(`<div class="jm-row"><span class="jm-kind">Service Area — Area</span><span class="jm-value">${fmt(areaSqFtTotal())} ft²</span><span class="jm-status">SAVED</span></div>`);
  if(linearMeasurementSaved&&linearPoints.length>=2)rows.push(`<div class="jm-row"><span class="jm-kind">Service Length — Linear</span><span class="jm-value">${linearFeetTotal().toFixed(1)} ft</span><span class="jm-status">SAVED</span></div>`);
  if(el('jobMeasurementsList'))el('jobMeasurementsList').innerHTML=rows.length?rows.join(''):'<div class="jm-empty">Load a property, then choose a measurement tool.</div>';
- syncRoofWorkspace();updateRoofSaveGuidance();syncSurfaceMeasurementControls();
+ syncRoofWorkspace();updateRoofSaveGuidance();syncSurfaceMeasurementControls();if(manualRoofQa())syncManualRoofQa();
 }
 function updatePropertyActionButton(){
  const b=el('propertyActionBtn');if(!b)return;
@@ -1370,6 +1374,10 @@ function startServiceAreaTool(){
  selectMeasurementTool('area');
 }
 function selectMeasurementTool(mode){
+ if(manualRoofQa()){
+  if(traceMode){status('Save or cancel the roof section before switching tools.','warn');return}
+  if(mode==='area'){beginManualRoofSection();return}
+ }
  if(areaMode&&areaPoints.length&&mode!=='area'){status('Finish and save or clear the current area before switching measurement tools.','warn');return}
  if(linearMode&&linearPoints.length&&mode!=='linear'&&!linearCorrectionOriginal){status('Finish and save or clear the current line before switching measurement tools.','warn');return}
  if(linearCorrectionOriginal&&mode!=='linear')cancelLinearCorrection();
@@ -1564,19 +1572,72 @@ function finishRoofRemeasure(points,pitch,surface){
  if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}clicked=null;
  status(original.label+' remeasured — '+fmt(surface)+' ft² replaces the previous area. Roof count is unchanged.','ok');
 }
-function toggleTrace(forReplacement=false){if(!traceMode&&!forReplacement&&structures.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('To correct a flagged roof, use FIX ROOF in its Property Summary row. This keeps the replacement linked to that roof instead of adding another measurement.','warn');return}if(traceMode){cancelCurrentTrace();status('Manual trace cancelled.','ok');return}if(linearMode)stopLinearMode(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;setManualUi(mainManual);traceMode=true;tracePoints=[];clearTempTrace();setTraceControls(true);if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=mainManual?'Trace the MAIN HOUSE only.':'Trace only the garage or other roof you want to add. The main house stays unchanged.';if(!window.sgPitchReminderShown&&el('pitchReminder')){el('pitchReminder').style.display='block';window.sgPitchReminderShown=true;setTimeout(()=>{if(el('pitchReminder'))el('pitchReminder').style.display='none'},7000)}el('traceBtn').textContent='CANCEL TRACE';el('traceBtn').className='danger';el('traceBanner').style.display='block';el('finishTrace').disabled=true;status(mainManual?'Manual measurement ON — click the outside corners of the MAIN HOUSE.':'Added-roof trace ON — click the outside corners of the garage or other roof.','warn');syncRoofWorkspace()}
+function manualRoofInvalidateScope(){if(el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=false}
+function manualRoofGeometryError(planes){
+ const areas=planes.map(p=>{const points=(p.points||[]).map(v=>[Number(v.lat??v[0]),Number(v.lng??v[1])]);return{points,sqft:localPolygonAreaM2(points.map(v=>({lat:v[0],lng:v[1]})))*10.76391041671}});
+ // Check incomplete candidates as well, before the shared validator filters zero areas.
+ if(areas.some(a=>measuredPolygonError(a.points.map(v=>({lat:v[0],lng:v[1]})))))return 'Roof section outline is incomplete or invalid.';
+ return savedAreaGeometryError(areas).replaceAll('service area','roof section');
+}
+function beginManualRoofSection(){
+ if(!sessionToken){status('Load the property first.','warn');return}
+ if(traceMode){status('Save or cancel the current roof section first.','warn');return}
+ if(linearMode||linearCorrectionOriginal){status('Save or cancel the line first.','warn');return}
+ measurementViewMode='auto';pendingMeasurementMode='auto';clearLinearLayers();redrawManualDisplayLayers();
+ manualRoofEditIndex=null;toggleTrace();renderSummary();
+}
+function editManualRoofSection(index){
+ if(!manualRoofQa()||traceMode||!manualPlanes[index])return;
+ beginManualRoofSection();manualRoofEditIndex=index;
+ const points=manualPlanes[index].points.map(p=>L.latLng(p.lat??p[0],p.lng??p[1]));
+ points.forEach(addTracePoint);clearTempTrace();
+ tracePoints.forEach((p,i)=>{const marker=L.marker(p,{draggable:true}).addTo(map);marker.on('dragend',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine();manualRoofInvalidateScope()});tempTraceLayers.push(marker)});
+ redrawTraceLine();el('finishTrace').textContent='SAVE SECTION CHANGES';
+ status('Drag corners or start over to correct this section. Confirm its pitch before saving. Cancel preserves the saved section.','ok');
+}
+function deleteManualRoofSection(index){
+ if(!manualRoofQa()||traceMode||!manualPlanes[index])return;
+ manualPlanes.splice(index,1);manualRoofInvalidateScope();redrawManualDisplayLayers();renderSummary();
+}
+function syncManualRoofQa(){
+ if(el('pitchSel')&&!el('pitchSel').querySelector('option[value="0"]')){const o=document.createElement('option');o.value='0';o.textContent='0/12 — Flat';el('pitchSel').append(o)}
+ if(el('pitchReminder'))el('pitchReminder').textContent='Confirm the actual pitch of this section before saving. Different pitches require separate sections.';
+ for(const id of ['toolAutoBtn','areaAutoBtn','linearAutoBtn','roofCheckCard','advancedOptions'])if(el(id))el(id).style.display='none';
+ if(el('toolAreaBtn')){if(el('toolAreaBtn').querySelector('b'))el('toolAreaBtn').querySelector('b').textContent='TRACE ROOF';el('toolAreaBtn').disabled=traceMode}
+ if(el('toolLinearBtn'))el('toolLinearBtn').disabled=traceMode;
+ if(el('propertyActionBtn'))el('propertyActionBtn').textContent='LOAD PROPERTY';
+ const details=el('manualRoofDetails');if(details){const anchor=details._roofWorkspaceAnchor;if(anchor&&details.parentNode!==anchor.parentNode)anchor.parentNode.insertBefore(details,anchor.nextSibling);details.open=true}
+ if(el('manualRoofSummary'))el('manualRoofSummary').textContent='Trace roof sections → Confirm pitch → Review estimate';
+ if(el('manualRoofHelp')&&traceMode)el('manualRoofHelp').textContent='Trace one roof section with a single pitch. Confirm its pitch before saving. Add other slopes and garages separately.';
+ if(el('traceBtn'))el('traceBtn').textContent=traceMode?'CANCEL SECTION':'ADD ROOF SECTION / GARAGE';
+ let panel=el('manualRoofSections');if(!panel){panel=document.createElement('div');panel.id='manualRoofSections';details.after(panel)}
+ const confirmed=!!el('manualRoofScopeConfirmed')?.checked;
+ panel.replaceChildren();
+ manualPlanes.forEach((p,i)=>{const row=document.createElement('div');row.className='structure';const text=document.createElement('span');text.textContent='Roof section '+(i+1)+' · '+fmt(p.surface_sqft)+' ft² · '+Number(p.pitch_degrees).toFixed(1)+'° ';row.append(text);for(const [label,fn] of [['EDIT',editManualRoofSection],['DELETE',deleteManualRoofSection]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=traceMode;b.onclick=()=>fn(i);row.append(b)}panel.append(row)});
+ const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.id='manualRoofScopeConfirmed';check.checked=confirmed;check.disabled=traceMode;check.style.width='auto';check.onchange=()=>renderSummary();label.append(check,document.createTextNode(' I confirmed the pitch of every section and included all intended roof sections and buildings.'));panel.append(label);
+}
+function toggleTrace(forReplacement=false){if(manualRoofQa()&&!traceMode){el('pitchSel').value='';el('pitchDeg').value='';manualRoofInvalidateScope()}if(!traceMode&&!forReplacement&&structures.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('To correct a flagged roof, use FIX ROOF in its Property Summary row. This keeps the replacement linked to that roof instead of adding another measurement.','warn');return}if(traceMode){cancelCurrentTrace();status('Manual trace cancelled.','ok');return}if(linearMode)stopLinearMode(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;setManualUi(mainManual);traceMode=true;tracePoints=[];clearTempTrace();setTraceControls(true);if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=mainManual?'Trace the MAIN HOUSE only.':'Trace only the garage or other roof you want to add. The main house stays unchanged.';if(!window.sgPitchReminderShown&&el('pitchReminder')){el('pitchReminder').style.display='block';window.sgPitchReminderShown=true;setTimeout(()=>{if(el('pitchReminder'))el('pitchReminder').style.display='none'},7000)}el('traceBtn').textContent='CANCEL TRACE';el('traceBtn').className='danger';el('traceBanner').style.display='block';el('finishTrace').disabled=true;status(mainManual?'Manual measurement ON — click the outside corners of the MAIN HOUSE.':'Added-roof trace ON — click the outside corners of the garage or other roof.','warn');syncRoofWorkspace()}
 function addTracePoint(ll){if(roofOutlineReviewMode){status('Drag the numbered corners to correct this outline. Cancel and use Remeasure This Roof to draw a different boundary.','warn');return}tracePoints.push(ll);let n=tracePoints.length,pt=L.marker(ll,{interactive:false,icon:L.divIcon({className:'',html:`<div class="point-label">${n}</div>`,iconAnchor:[12,12]})}).addTo(map);tempTraceLayers.push(pt);redrawTraceLine();const ready=tracePoints.length>=3;el('finishTrace').disabled=!ready;if(ready){const action=roofRemeasureTarget?'SAVE REPLACEMENT ROOF':((manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0)?'FINISH MEASUREMENT':'SAVE & ADD ROOF';if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=`<b>✓ Roof traced.</b> Confirm the pitch, then click <b>${action}</b>.`;status('Roof traced — confirm pitch, then save.','ok')}updateManualReplacementUi()}
 function redrawTraceLine(){tempTraceLayers.filter(x=>x._traceLine).forEach(x=>map.removeLayer(x));tempTraceLayers=tempTraceLayers.filter(x=>!x._traceLine);if(tracePoints.length>=2){let c=[...tracePoints];if(tracePoints.length>=3)c.push(tracePoints[0]);let l=L.polyline(c,{color:'#d97706',weight:4,dashArray:'6,5'}).addTo(map);l._traceLine=true;tempTraceLayers.push(l)}}
 function clearTempTrace(){tempTraceLayers.forEach(x=>{try{map.removeLayer(x)}catch(e){}});tempTraceLayers=[];if(traceSavePopup){try{map.closePopup(traceSavePopup)}catch(e){}traceSavePopup=null}}
-function cancelCurrentTrace(){el('traceBtn')?.closest('.manualrow')?.classList.remove('roof-replacement-row');if(el('manualRoofSaveFeedback'))el('manualRoofSaveFeedback').remove();const restoreRoofDisplay=!!roofRemeasureTarget;if(restoreRoofDisplay){el('pitchSel').value='22.62';el('pitchDeg').value='22.62';el('pitchDeg').type='hidden'}roofOutlineReviewMode=false;roofReviewBoundarySource='detected';roofReviewManualIndices=[];roofRemeasureTarget=null;if(el('roofRemeasurePitch'))el('roofRemeasurePitch').style.display='none';traceMode=false;tracePoints=[];clearTempTrace();setTraceControls(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;el('traceBtn').textContent=mainManual?'START MAIN HOUSE MEASUREMENT':'ADD / REMEASURE GARAGE OR OTHER ROOF';el('traceBtn').className='orange';el('traceBanner').style.display='none';el('finishTrace').textContent=mainManual?'FINISH MEASUREMENT':'SAVE & ADD ROOF';el('finishTrace').disabled=true;if(restoreRoofDisplay){redrawRoofData();redrawManualDisplayLayers();renderSummary()}syncRoofWorkspace()}
+function cancelCurrentTrace(){if(manualRoofQa())manualRoofEditIndex=null;el('traceBtn')?.closest('.manualrow')?.classList.remove('roof-replacement-row');if(el('manualRoofSaveFeedback'))el('manualRoofSaveFeedback').remove();const restoreRoofDisplay=!!roofRemeasureTarget;if(restoreRoofDisplay){el('pitchSel').value='22.62';el('pitchDeg').value='22.62';el('pitchDeg').type='hidden'}roofOutlineReviewMode=false;roofReviewBoundarySource='detected';roofReviewManualIndices=[];roofRemeasureTarget=null;if(el('roofRemeasurePitch'))el('roofRemeasurePitch').style.display='none';traceMode=false;tracePoints=[];clearTempTrace();setTraceControls(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;el('traceBtn').textContent=mainManual?'START MAIN HOUSE MEASUREMENT':'ADD / REMEASURE GARAGE OR OTHER ROOF';el('traceBtn').className='orange';el('traceBanner').style.display='none';el('finishTrace').textContent=mainManual?'FINISH MEASUREMENT':'SAVE & ADD ROOF';el('finishTrace').disabled=true;if(restoreRoofDisplay){redrawRoofData();redrawManualDisplayLayers();renderSummary()}syncRoofWorkspace()}
 function undoPoint(){if(!traceMode||!tracePoints.length)return;let keep=tracePoints.slice(0,-1);tracePoints=[];clearTempTrace();keep.forEach(addTracePoint)}
 function finishTrace(){
+ if(manualRoofQa()){
+  if(!replacementPitchIsChosen()){status('Select and confirm the pitch for this section before saving.','warn');return}
+  const candidates=manualPlanes.filter((_,i)=>i!==manualRoofEditIndex).concat([{points:tracePoints}]);
+  const issue=manualRoofGeometryError(candidates);if(issue){status(issue,'error');return}
+ }
  const problem=measuredPolygonError(tracePoints);if(problem){updateManualReplacementUi(problem);status(problem,'error');return}
  let pitch=roofOutlineReviewMode?reviewedRoofPitch():roofRemeasureTarget&&!replacementPitchIsChosen()?NaN:Number(el('pitchDeg').value||0);
  if(!Number.isFinite(pitch)||pitch<0||pitch>=80){updateManualReplacementUi('Select the roof pitch above before saving.');status('Select a roof pitch from 0 to less than 80 degrees before saving.','warn');return}
  let flat=localPolygonAreaM2(tracePoints),surface=flat/Math.cos(pitch*Math.PI/180)*10.76391041671;
  if(roofRemeasureTarget){finishRoofRemeasure(tracePoints,pitch,surface);return}
  let plane={points:tracePoints.map(p=>({lat:p.lat,lng:p.lng})),pitch_degrees:pitch,surface_sqft:surface};
+ if(manualRoofQa()){
+  plane.pitch_confirmed=true;plane.manual_roof_qa=true;
+  if(manualRoofEditIndex!==null){manualPlanes[manualRoofEditIndex]=plane;manualRoofEditIndex=null;cancelCurrentTrace();redrawManualDisplayLayers();renderSummary();status('Roof section changes saved.','ok');return}
+ }
  manualPlanes.push(plane);
  let poly=L.polygon(plane.points,{color:'#d97706',weight:5,fillColor:'#f59e0b',fillOpacity:.12,lineJoin:'round'}).addTo(map),
      c=poly.getBounds().getCenter(),
@@ -1626,8 +1687,8 @@ function updateEstimatePeriodUi(){
   const total=el('jsTotal');if(total&&total.textContent.startsWith('$'))total.textContent=total.textContent.replace(/ per (visit|snowfall|month|season|year)$/,'')+suffix;
  }
 }
-function savedAreaGeometryError(){
- const areas=commercialAreas.filter(a=>Number(a.sqft)>0);
+function savedAreaGeometryError(inputAreas=commercialAreas){
+ const areas=inputAreas.filter(a=>Number(a.sqft)>0);
  const inside=(p,poly)=>{let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[j],b=poly[i],cross=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);if(Math.abs(cross)<1e-16&&p[0]>=Math.min(a[0],b[0])-1e-12&&p[0]<=Math.max(a[0],b[0])+1e-12&&p[1]>=Math.min(a[1],b[1])-1e-12&&p[1]<=Math.max(a[1],b[1])+1e-12)return false;if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])hit=!hit}return hit};
  const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
  for(let i=0;i<areas.length;i++){
@@ -1645,6 +1706,10 @@ function savedAreaGeometryError(){
  return '';
 }
 function quotePricingError(calc=null){
+ if(typeof manualRoofQa==='function'&&manualRoofQa()&&measurementViewMode==='auto'){
+  if(traceMode)return 'Save or cancel the roof section before creating the estimate.';
+  if(manualPlanes.length&&manualPlanes.some(p=>p.manual_roof_qa)&&!el('manualRoofScopeConfirmed')?.checked)return 'Confirm that all roof sections and intended buildings are included.';
+ }
  if(typeof propertyAddressNeedsReload==='function'&&propertyAddressNeedsReload())return 'The address has changed. Your previous measurements are retained. Load the new property before creating an estimate.';
  const valid=(value,max=Infinity)=>value!==null&&value!==undefined&&String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>=0&&Number(value)<=max;
  for(const id of ['gst','pst'])if(!valid(el(id)?.value,100))return 'Enter a tax percentage from 0 to 100. Enter 0 when no tax is charged.';
@@ -1728,7 +1793,7 @@ function resetReportForNewProperty(){
  customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;reportOutlines={};reportOutlineTarget=null;reportOutlineEditMode=false;reportOutlinePoints=[];reportOutlineTemp=[];reportCloseArmedAt=0;estimateOpenInProgress=false;pdfInProgress=false;if(customerMapBuildTimer){clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null}if(el('createEstimateBtn'))el('createEstimateBtn').disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false;
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
-function resetMeasurementForNewProperty(){
+function resetMeasurementForNewProperty(){manualRoofEditIndex=null;manualRoofInvalidateScope();
  saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;loadProperty.loadedAddressKey=null;
  savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;if(el('estimatePeriod'))el('estimatePeriod').value='one_time';
  surfaceLineDraftOriginal=null;
@@ -1817,7 +1882,7 @@ async function preparePropertyImagery(d){
  let ready;
  try{
   const surface=['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType());
-  if(surface){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
+  if(surface||d.manual_roof_only){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
   else if(d.fallback)ready=await loadFallbackAerial(d.token,staging);
   else{
    ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadRaster('/rgb/'+d.token,staging);
@@ -1926,6 +1991,12 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
     status('Property aerial loaded — ready for '+(pendingMeasurementMode==='linear'?'Linear':'Area')+' measurement.','ok');
     return;
   }
+  if(d.manual_roof_only){
+    structures=[];manualPlanes=[];roofMask=null;measurementViewMode='auto';pendingMeasurementMode='auto';
+    fallbackMode=true;manualOverrideMode=true;el('measureSource')&&(el('measureSource').value='manual');
+    setManualCorrectionLayout(true);setManualUi(true);showSolarFallback(false);fallbackMode=true;
+    toggleTrace();renderSummary();status('Trace each roof section, confirm its pitch, then review the estimate.','ok');return;
+  }
   if(d.fallback){
     structures=[];setManualCorrectionLayout(true);setManualUi(true);if(el('measureSource'))el('measureSource').value='manual';
     const aerialLoaded=true;
@@ -1940,7 +2011,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   structures=[{...d.main,label:'Main House'}];setManualCorrectionLayout(false);setManualUi(false);if(el('measureSource'))el('measureSource').value='google';roofMask=prepared.mask;d.main.outline=outlineFromMask(roofMask,d.main.latitude,d.main.longitude);structures[0].outline=d.main.outline;reviewAutomaticRoof(structures[0]);let rgb=prepared;redrawRoofData();if(exactPinDisplay)frameAerial(map,rgb.bounds,0);renderSummary();if(el('garageGuide'))el('garageGuide').innerHTML=roofQuoteNeedsReview()?'<b>Main roof requires review.</b> Use FIX ROOF in the Property Summary.': '<b>Main house measured.</b> If there is another roof to include, click <b>+ ADD GARAGE / OTHER ROOF</b>, then click once on that roof. It will measure automatically.';if(el('measureClicked'))el('measureClicked').disabled=false;if(el('measureClickedTop'))el('measureClickedTop').disabled=false;status((structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'Main roof coverage needs review. Use FIX ROOF in the Property Summary.':'Main house measured. Use + Add Garage / Other Roof if needed.',(structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'warn':'ok');pendingMeasurementMode=requestedMeasurementMode;if(requestedMeasurementMode==='area'||requestedMeasurementMode==='linear'){selectMeasurementTool(requestedMeasurementMode)}else{measurementViewMode='auto';updatePropertyActionButton();updateMeasurementInterface()}
  }catch(e){status(e.message+' Your existing saved or unsaved work is unchanged. Retry Load Property when ready.','error')}finally{showLoad(false)}
 }
-function startGarageMode(){if(measureClicked.pending){extraRoofStatus('The selected roof is still being measured. Please wait for its result.','warn');return}if(!sessionToken){status('Load the property first.','error');return}if(!structures.length){if(manualPlanes.length){garageMode=false;setManualCorrectionLayout(false);setManualUi(false);const details=el('manualRoofDetails');if(details)details.open=true;if(!traceMode)toggleTrace();status('Add Garage / Other Roof — trace the next shingled building, confirm its pitch, then save it.','warn');return}status('Finish the main-house manual measurement first.','warn');return}garageMode=true;clicked=null;if(el('garageSavedConfirm'))el('garageSavedConfirm').style.display='none';if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}if(el('garageGuide'))el('garageGuide').innerHTML='<b>Add Garage / Other Roof is ON.</b> Click once near the centre of the garage, shed or shop roof. It will measure automatically.';status('Click once near the centre of the extra roof to measure it automatically.','warn')}
+function startGarageMode(){if(manualRoofQa()){beginManualRoofSection();return}if(measureClicked.pending){extraRoofStatus('The selected roof is still being measured. Please wait for its result.','warn');return}if(!sessionToken){status('Load the property first.','error');return}if(!structures.length){if(manualPlanes.length){garageMode=false;setManualCorrectionLayout(false);setManualUi(false);const details=el('manualRoofDetails');if(details)details.open=true;if(!traceMode)toggleTrace();status('Add Garage / Other Roof — trace the next shingled building, confirm its pitch, then save it.','warn');return}status('Finish the main-house manual measurement first.','warn');return}garageMode=true;clicked=null;if(el('garageSavedConfirm'))el('garageSavedConfirm').style.display='none';if(clickMarker){try{map.removeLayer(clickMarker)}catch(e){}clickMarker=null}if(el('garageGuide'))el('garageGuide').innerHTML='<b>Add Garage / Other Roof is ON.</b> Click once near the centre of the garage, shed or shop roof. It will measure automatically.';status('Click once near the centre of the extra roof to measure it automatically.','warn')}
 function extraRoofStatus(message,kind=''){
  status(message,kind);
  const guide=el('garageGuide');if(guide)guide.textContent=message;
@@ -1964,7 +2035,7 @@ function removeLastExtra(){
 
 function captureQuoteSnapshot(){
  const clone=x=>JSON.parse(JSON.stringify(x||[]));
- quoteSnapshot={warrantyBrand:accountWarrantyBrand,showWarrantyShield:!!el("showWarrantyShield")?.checked,structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',adjustedArea:Number(el('adjustedArea')?.value||0),measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),dealerCountry:el('dealerCountry')?.value||'US',commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
+ quoteSnapshot={manualRoofWorkflow:typeof manualRoofQa==='function'&&manualRoofQa()&&measurementViewMode==='auto'&&manualPlanes.some(p=>p.manual_roof_qa),roofScopeConfirmed:!!el('manualRoofScopeConfirmed')?.checked,warrantyBrand:accountWarrantyBrand,showWarrantyShield:!!el("showWarrantyShield")?.checked,structures:clone(structures),manualPlanes:clone(manualPlanes),measureSource:(el('measureSource')&&el('measureSource').value)||'google',adjustedArea:Number(el('adjustedArea')?.value||0),measurementMode:measurementViewMode,linearPoints:linearPoints.map(p=>[p.lat,p.lng]),linearFeet:linearFeetTotal(),areaPoints:areaPoints.map(p=>[p.lat,p.lng]),areaSqFt:multiAreaSaved()?multiAreaTotal():areaSqFtTotal(),commercialAreas:clone(commercialAreas),businessType:currentBusinessType(),dealerCountry:el('dealerCountry')?.value||'US',commercialLinearRate:commercialHasLinear()?commercialLinearRate():0,commercialLinearSaved:commercialHasLinear(),landscapingCombined:landscapingCombined(),landscapingAreaRate:landscapingCombined()?landscapingAreaRate():0,landscapingLinearRate:surfaceLinearJobRate(),pressureCombined:pressureCombined(),pressureAreaRate:pressureCombined()?pressureAreaRate():0,pressureLinearRate:surfaceLinearJobRate(),pavingCombined:pavingCombined(),pavingAreaRate:pavingCombined()?pavingAreaRate():0,pavingLinearRate:surfaceLinearJobRate()};
  return quoteSnapshot;
 }
 function clearReportOutlineTemp(){reportOutlineTemp.forEach(x=>{try{customerMap&&customerMap.removeLayer(x)}catch(e){}});reportOutlineTemp=[];const svg=el('reportDrawLayer');if(svg)svg.innerHTML=''}
@@ -2569,6 +2640,7 @@ async function viewEstimateVersions(id){
 }
 
 async function showCustomerEstimate(historicalMode=false,historicalDate=''){
+ if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
  if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
  // Historical aerials are frozen canvases, not interactive outline editors.
@@ -3827,8 +3899,16 @@ def logout():
     session.clear()
     return redirect("/")
 
-@app.get("/")
-def home():return render_template_string(HTML, ACCOUNT_ID=str(session.get("dealer_id") or ""), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
+def manual_roof_qa_enabled():
+    # Deliberate double opt-in. Never enabled for an entire plan or business type.
+    allowed={v.strip() for v in os.environ.get("AERIQUOTE_MANUAL_ROOF_QA_IDS","").split(",") if v.strip()}
+    return os.environ.get("AERIQUOTE_MANUAL_ROOF_QA","")=="1" and str(session.get("dealer_id") or "") in allowed
+
+def manual_roof_session(sess):
+    return bool(sess and sess.get("mode")=="manual_roof_static")
+
+@app.route("/")
+def home():return render_template_string(HTML, MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
 @app.get("/mapbox-test")
 def mapbox_test():
     address = request.args.get("address", "").strip()
@@ -4148,13 +4228,13 @@ def perform_property_lookup(d):
             if address_mismatch(expected_city,expected_province,parts,expected_street_number):
                 return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
             loc=g["geometry"]["location"];lat=float(loc["lat"]);lng=float(loc["lng"]);formatted=g.get("formatted_address") or address
-        if industry!="roofing":
+        if industry!="roofing" or manual_roof_qa_enabled():
             # Service-area/linear geometry is measured locally over the same Static
             # Maps imagery. Solar roof data is unused in these five workflows.
             street_url,street_date=street_view_info(key,formatted,lat,lng,lat,lng)
-            token=create_session(key,lat,lng,street_url=street_url,mode="surface_static",anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
+            token=create_session(key,lat,lng,street_url=street_url,mode="manual_roof_static" if industry=="roofing" else "surface_static",anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
             if direct:SESSIONS[token].update({"exact_pin":True,"display_lat":lat,"display_lng":lng,"display_zoom":19})
-            return jsonify(token=token,fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,exact_pin_display=bool(direct))
+            return jsonify(token=token,manual_roof_only=industry=="roofing",fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,exact_pin_display=bool(direct))
         try:
             main=building(key,lat,lng)
         except SolarBuildingNotFound:
@@ -4185,6 +4265,7 @@ def perform_property_lookup(d):
 def structure():
     d=request.get_json(silent=True) or {};sess=SESSIONS.get(str(d.get("token") or ""))
     if not sess or sess.get("dealer_id")!=str(session.get("dealer_id") or ""):return jsonify(error="Property session expired. Reload the property.",user_error="Property session expired. Reload the property."),400
+    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in manual-only QA mode."),409
     try:
         roof=building(sess["key"],float(d["latitude"]),float(d["longitude"]))
         # Fetch imagery only when the client has accepted this distinct building.
@@ -4200,6 +4281,7 @@ def structure_mask(token,mask_id):
     sess=SESSIONS.get(token)
     if not sess or sess.get("dealer_id")!=str(session.get("dealer_id") or ""):
         return jsonify(code="AQ-MASK-SESSION"),404
+    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(code="AQ-MANUAL-ONLY"),409
     item=(sess.get("structure_masks") or {}).get(mask_id)
     if not item:return jsonify(code="AQ-MASK-REFERENCE"),404
     stage="LAYERS"
@@ -4223,6 +4305,7 @@ def structure_mask(token,mask_id):
 def locate_building():
     d=request.get_json(silent=True) or {};sess=SESSIONS.get(str(d.get("token") or ""))
     if not sess:return jsonify(error="Property session expired.",user_error="Property session expired. Reload the property."),400
+    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in manual-only QA mode."),409
     try:
         lat=float(d["latitude"]);lng=float(d["longitude"]);main=building(sess["key"],lat,lng);img_lat,img_lng,img_radius=roof_imagery_request(main);layers=solar_layers(sess["key"],img_lat,img_lng,img_radius)
         street_url,street_date=street_view_info(sess["key"],sess.get("formatted_address") or "",sess.get("anchor_lat"),sess.get("anchor_lng"),sess.get("anchor_lat"),sess.get("anchor_lng"))
@@ -4654,7 +4737,7 @@ def saved_estimate_editing_session(estimate_id):
     if not GOOGLE_MAPS_API_KEY:return jsonify(error="Google Maps API key is not configured"),503
     lat=(bounds[0][0]+bounds[1][0])/2;lng=(bounds[0][1]+bounds[1][1])/2
     token=uuid.uuid4().hex
-    SESSIONS[token]={"key":GOOGLE_MAPS_API_KEY,"dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
+    SESSIONS[token]={"key":GOOGLE_MAPS_API_KEY,"dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"manual_roof_static" if manual_roof_qa_enabled() or (payload.get("quote") or {}).get("manualRoofWorkflow") else "fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
     SESSIONS.persist(token)
     return jsonify(token=token,version=estimate_version(data["current"]["payload"]),center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
 
@@ -4740,6 +4823,7 @@ def fallback_map(token):
 def rgb(token):
     s=SESSIONS.get(token)
     if not s:return Response("Session expired",status=404)
+    if manual_roof_session(s):return Response("Manual roofing imagery unavailable. Retry the aerial image; Solar recovery is disabled.",status=409)
     try:
         if s["rgb_cache"] is None:
             if not s.get("rgb") and s.get("mode")=="surface_static":
@@ -4782,6 +4866,7 @@ def rgb(token):
 def mask(token):
     s=SESSIONS.get(token)
     if not s or not s.get("mask"):return Response("Roof mask unavailable",status=404)
+    if manual_roof_session(s):return Response("Manual roofing imagery unavailable. Retry the aerial image; Solar recovery is disabled.",status=409)
     try:
         if s["mask_cache"] is None:
             url=s["mask"];sep="&" if "?" in url else "?"
