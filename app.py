@@ -10,7 +10,7 @@ import urllib.request, urllib.parse, urllib.error
 import json, webbrowser, threading, uuid, math, time, os, sqlite3, hmac, hashlib, secrets
 from datetime import datetime
 from activation_metrics import account_metrics, account_plan_report
-from account_credits import init_credit_db, settings as credit_settings, lock_account, consume as consume_credit, register_credits
+from account_credits import init_credit_db, settings as credit_settings, lock_account, consume as consume_credit, register_credits, paid_usage, SUBSCRIPTION_LIMITS
 from property_sessions import PropertySessions
 from property_address import unit_address, building_address
 from account_recovery import init_recovery_db, auth_version, register_recovery, limited
@@ -3206,7 +3206,7 @@ def _account_profile(dealer_id):
         if pr:
             try: profile=json.loads(pr["profile_json"] or "{}")
             except Exception: profile={}
-        out=dict(d);out["profile"]=profile;out["allowance"]=credit_settings(con,dealer_id)
+        out=dict(d);out["profile"]=profile;out["allowance"]=credit_settings(con,dealer_id);out["subscription_usage"]=None if out["allowance"]["complimentary"] else paid_usage(con,dealer_id)
         return out
     finally:con.close()
 
@@ -3739,7 +3739,7 @@ def consume_property_lookup(dealer_id, connection=None):
         cfg=credit_settings(con,dealer_id)
         u=con.execute("SELECT property_lookups FROM dealer_usage WHERE dealer_id=?",(dealer_id,)).fetchone()
         used=int(u["property_lookups"] if u else 0);limit=int(d["lookup_limit"] or 0)
-        if is_head_office() or ((is_recovery_test_service() or not DATABASE_URL) and not cfg["complimentary"]):
+        if is_head_office() or ((is_recovery_test_service() or not DATABASE_URL) and not cfg["complimentary"] and d["plan_code"] not in SUBSCRIPTION_LIMITS):
             return True,used,limit
         allowed,used,limit=consume_credit(con,dealer_id,"lookups",used,limit)
         if allowed:
@@ -4447,8 +4447,9 @@ def estimate_history_api():
                     return finish_save(dict(id=existing["id"],created_at=existing["created_at"],updated=False))
             if not existing:
                 cfg=credit_settings(con,dealer_id)
-                if not is_head_office() and (cfg["complimentary"] or not is_recovery_test_service()):
-                    dealer_row=con.execute("SELECT estimate_limit FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+                dealer_row=con.execute("SELECT estimate_limit,plan_code FROM dealers WHERE id=?",(dealer_id,)).fetchone()
+                paid_plan=bool(dealer_row and dealer_row["plan_code"] in SUBSCRIPTION_LIMITS)
+                if not is_head_office() and (paid_plan or cfg["complimentary"] or not is_recovery_test_service()):
                     estimate_limit=int(dealer_row["estimate_limit"] or 0) if dealer_row else 0
                     estimate_used=int(con.execute("SELECT COUNT(*) AS estimate_count FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["estimate_count"])
                     allowed,_,_=consume_credit(con,dealer_id,"estimates",estimate_used,estimate_limit)

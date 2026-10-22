@@ -75,6 +75,7 @@ jobs:
       - run: node scripts/test_failure_recovery.cjs
       - run: node scripts/test_property_loading.cjs
       - run: python scripts/test_property_acceptance.py
+      - run: python scripts/test_subscription_periods.py
 
   postgres_integrity:
     if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
@@ -102,3 +103,5 @@ jobs:
         run: python scripts/test_failure_recovery.py --postgres
       - name: Property imagery acceptance and exactly-once credits
         run: python scripts/test_property_acceptance.py --postgres
+      - name: Paid subscription anniversary concurrency
+        run: python scripts/test_subscription_periods.py --postgres

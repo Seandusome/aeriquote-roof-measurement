@@ -1,7 +1,7 @@
 """Head Office allowances, audited grants and complimentary monthly dealer usage."""
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-import uuid, secrets, hmac
+import uuid, secrets, hmac, calendar
 from flask import request, session, Response, redirect, render_template_string
 
 BRANDS = {'': 'No dealer brand', 'shingle_guard': 'Shingle Guard', 'shinglextra': 'ShingleXtra'}
@@ -9,7 +9,53 @@ BRANDS = {'': 'No dealer brand', 'shingle_guard': 'Shingle Guard', 'shinglextra'
 def month_key(now=None):
     return (now or datetime.now(timezone.utc)).astimezone(ZoneInfo('America/Edmonton')).strftime('%Y-%m')
 
+SUBSCRIPTION_LIMITS = {'basic':25,'pro':75,'business':200}
+
+def subscription_period(anchor, now=None):
+    """UTC monthly anniversary; clamp short months without drifting the original day."""
+    anchor=datetime.fromisoformat(str(anchor).replace('Z','+00:00'))
+    if anchor.tzinfo is None:anchor=anchor.replace(tzinfo=timezone.utc)
+    anchor=anchor.astimezone(timezone.utc)
+    now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    if now<anchor:raise ValueError('Subscription billing anchor is in the future.')
+    def boundary(index):
+        year,month=divmod(anchor.year*12+anchor.month-1+index,12);month+=1
+        return anchor.replace(year=year,month=month,day=min(anchor.day,calendar.monthrange(year,month)[1]))
+    index=(now.year-anchor.year)*12+now.month-anchor.month
+    if boundary(index)>now:index-=1
+    return boundary(index).isoformat(),boundary(index+1).isoformat()
+
+def paid_usage(con,did,now=None,initialize=False):
+    dealer=con.execute('SELECT plan_code,created_at FROM dealers WHERE id=?',(did,)).fetchone()
+    if not dealer or dealer['plan_code'] not in SUBSCRIPTION_LIMITS:return None
+    cfg=con.execute('SELECT * FROM account_billing_periods WHERE dealer_id=?',(did,)).fetchone()
+    start,end=subscription_period(cfg['anchor_at'] if cfg else dealer['created_at'],now)
+    migration=con.execute("SELECT started_at FROM account_billing_migration WHERE id='monthly-v1'").fetchone()
+    anchor=str(cfg['anchor_at'] if cfg else dealer['created_at'])
+    anchor_dt=datetime.fromisoformat(anchor.replace('Z','+00:00'));anchor_dt=anchor_dt.replace(tzinfo=anchor_dt.tzinfo or timezone.utc)
+    migrated=datetime.fromisoformat(migration['started_at'])
+    seed_period=cfg['seed_period'] if cfg else subscription_period(anchor,max(anchor_dt,migrated))[0]
+    # Existing lifetime records are retained and conservatively seed the first period.
+    # Later periods use independent counters. Owner lock serializes initialization.
+    if initialize and not cfg:
+        con.execute("INSERT INTO account_billing_periods(dealer_id,anchor_at,seed_period,basis) VALUES(?,?,?,'account_anniversary_provisional')",(did,dealer['created_at'],seed_period))
+        cfg=con.execute('SELECT * FROM account_billing_periods WHERE dealer_id=?',(did,)).fetchone()
+    row=con.execute('SELECT lookups,estimates FROM account_subscription_usage WHERE dealer_id=? AND period_start=?',(did,start)).fetchone()
+    if not row:
+        seed=seed_period==start
+        lifetime=con.execute('SELECT property_lookups FROM dealer_usage WHERE dealer_id=?',(did,)).fetchone()
+        lookups=int(lifetime['property_lookups']) if seed and lifetime else 0
+        estimates=int(con.execute('SELECT COUNT(*) AS n FROM estimates WHERE dealer_id=?',(did,)).fetchone()['n']) if seed else 0
+        if initialize:
+            con.execute('INSERT INTO account_subscription_usage(dealer_id,period_start,lookups,estimates) VALUES(?,?,?,?) ON CONFLICT(dealer_id,period_start) DO NOTHING',(did,start,lookups,estimates))
+        row={'lookups':lookups,'estimates':estimates}
+    return dict(start=start,end=end,lookups=int(row['lookups']),estimates=int(row['estimates']),limit=SUBSCRIPTION_LIMITS[dealer['plan_code']],basis=cfg['basis'] if cfg else 'account_anniversary_provisional')
+
 def init_credit_db(con):
+    con.execute("CREATE TABLE IF NOT EXISTS account_billing_migration (id TEXT PRIMARY KEY, started_at TEXT NOT NULL)")
+    con.execute("INSERT INTO account_billing_migration(id,started_at) VALUES('monthly-v1',?) ON CONFLICT(id) DO NOTHING",(datetime.now(timezone.utc).isoformat(),))
+    con.execute("CREATE TABLE IF NOT EXISTS account_billing_periods (dealer_id TEXT PRIMARY KEY, anchor_at TEXT NOT NULL, seed_period TEXT NOT NULL, basis TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS account_subscription_usage (dealer_id TEXT NOT NULL, period_start TEXT NOT NULL, lookups INTEGER NOT NULL DEFAULT 0, estimates INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(dealer_id,period_start))")
     con.execute("CREATE TABLE IF NOT EXISTS account_admin_roles (dealer_id TEXT PRIMARY KEY)")
     con.execute("CREATE TABLE IF NOT EXISTS account_credit_migrations (id TEXT PRIMARY KEY)")
     if not con.execute("SELECT id FROM account_credit_migrations WHERE id='head-office-role-v1'").fetchone():
@@ -51,12 +97,15 @@ def consume(con, did, kind, normal_used, normal_limit, now=None):
         con.execute('INSERT INTO account_month_usage(dealer_id,period) VALUES(?,?) ON CONFLICT(dealer_id,period) DO NOTHING', (did, period))
         row = con.execute('SELECT lookups,estimates FROM account_month_usage WHERE dealer_id=? AND period=?', (did, period)).fetchone()
         used, limit = int(row[kind]), 200
-    if limit > 0 and used >= limit:
+    paid=None if cfg['complimentary'] else paid_usage(con,did,now=now,initialize=True)
+    if paid:used,limit=paid[kind],min(normal_limit,paid['limit']) if normal_limit>0 else paid['limit']
+    if (paid is not None or limit > 0) and used >= limit:
         if int(cfg[bonus_col]) <= 0:
             return False, used, limit
         con.execute(f'UPDATE account_allowances SET {bonus_col}={bonus_col}-1 WHERE dealer_id=?', (did,))
     if cfg['complimentary']:
         con.execute(f'UPDATE account_month_usage SET {kind}={kind}+1 WHERE dealer_id=? AND period=?', (did, month_key(now)))
+    if paid:con.execute(f'UPDATE account_subscription_usage SET {kind}={kind}+1 WHERE dealer_id=? AND period_start=?',(did,paid['start']))
     return True, used + 1, limit
 
 def register_credits(app, db, is_head_office):
