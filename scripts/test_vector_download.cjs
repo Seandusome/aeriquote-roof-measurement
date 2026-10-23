@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom'),v=require('../qa_vector_pdf.js');
 const source=fs.readFileSync('app.py','utf8'),functions=source.slice(source.indexOf('async function downloadVectorDiagramPDF('),source.indexOf('let reportCloseArmedAt=')).replace("'{{ VECTOR_PDF_QA_FLAG }}'","'1'");
 const html='<div id="reportOverlay"><div class="report"><div id="rEstimateTitle">QA Estimate</div><div id="rEstimateSubtitle">Demo</div><div id="rAddress">QA address</div><div id="rCustomerName">Original customer</div><div id="rPricing"><div>Original total CAD 100.00</div></div><div id="rProperty">Original measurement</div><img id="rStreet" src="https://imagery.invalid/forbidden"><div id="customerMap"><canvas></canvas></div><div class="reportFoot">QA ONLY</div></div></div><select id="estimatePdfLayout"><option value="vector">Vector</option></select><button id="downloadPdfBtn">Download</button>';
-class PDF{constructor(){this.texts=[];this.pages=1}setFontSize(){}setTextColor(){}setDrawColor(){}setLineWidth(){}splitTextToSize(s){return s.split('\n')}text(t){this.texts.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}save(){saves.push(this.texts)}}
+class PDF{constructor(){this.texts=[];this.pages=1}setFontSize(){}setTextColor(){}setDrawColor(){}setFillColor(){}rect(){}lines(){}setLineWidth(){}splitTextToSize(s){return s.split('\n').flatMap(line=>line.match(/.{1,65}/g)||[''])}text(t){this.texts.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}save(){saves.push(this.texts)}}
 const saves=[];
 (async()=>{
  const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://qa.invalid'}),w=dom.window,messages=[],requests=[];

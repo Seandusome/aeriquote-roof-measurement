@@ -69,62 +69,129 @@ function svg(m){
  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${m.width} ${y+15}" role="img" aria-label="Saved measurement diagram with horizontal dimensions"><rect width="100%" height="100%" fill="white"/><g font-family="DejaVu Sans,Arial,sans-serif" fill="#112d38">`+m.items.map(s=>`<${s.closed?'polygon':'polyline'} points="${s.xy.map(p=>p.join(',')).join(' ')}" fill="${s.closed?'#edf5f4':'none'}" stroke="#165b60" stroke-width="2"/>`+(m.items.length===1?s.xy:[s.xy[0]]).map((p,i)=>`<text x="${p[0]+3}" y="${p[1]+13}" font-size="11">${m.items.length===1?'V'+(i+1):s.id}</text>`).join('')).join('')+'<text x="12" y="20" font-size="12">N</text><path d="M18 44 V25 M14 30 L18 25 L22 30" fill="none" stroke="#165b60"/>'+notes.join('')+'</g></svg>';
 }
 function textBlocks(report,ids){
- return ids.flatMap(id=>{const n=report.querySelector('#'+id);if(!n||n.classList.contains('marketingHidden')||n.style.display==='none')return[];
+ return ids.flatMap(id=>{const n=report.querySelector('#'+id);if(!n||n.closest('.marketingHidden')||n.style.display==='none')return[];
  return (id==='rMarketingBenefits'?[...n.children]:[n]).map(node=>{
- const copy=node.cloneNode(true);copy.querySelectorAll('img,svg,canvas,script,style,button,input,select,.marketingHidden').forEach(x=>x.remove());
+ const copy=node.cloneNode(true);copy.querySelectorAll('img,svg,canvas,script,style,button,input,select,.marketingHidden,.benefitIcon').forEach(x=>x.remove());
  copy.querySelectorAll('span,b,strong').forEach(x=>{x.prepend(copy.ownerDocument.createTextNode(' '));x.appendChild(copy.ownerDocument.createTextNode(' '));});
  copy.querySelectorAll('div,p,br,h1,h2,h3,h4,li,tr').forEach(x=>{x.prepend(copy.ownerDocument.createTextNode('\n'));x.appendChild(copy.ownerDocument.createTextNode('\n'));});
  return {title:id==='rProperty'?'MEASUREMENTS':id==='rPricing'?'ESTIMATE SUMMARY':'',text:copy.textContent.split('\n').map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean).join('\n')};});});
 }
 async function build(jsPDF,snapshot,report){
- const items=shapes(snapshot); // Fail before making any document or reading branding images.
- const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'letter',compress:true});let y=0,page=0;
+ const items=shapes(snapshot); // Validate before creating a document or reading branding.
+ const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'letter',compress:true});
  if(typeof pdf.addFont==='function'&&!root.AQVectorPDFFont)throw Error('QA diagram font did not load. Retry the vector download.');
  if(root.AQVectorPDFFont){pdf.addFileToVFS('DejaVuSans.ttf',root.AQVectorPDFFont);pdf.addFont('DejaVuSans.ttf','AQVector','normal');pdf.setFont('AQVector','normal');}
  const text=id=>report.querySelector('#'+id)?.textContent?.trim()||'';
  const clean=s=>{if(/[^\x09\x0a\x0d\x20-\xff\u2022\u2010-\u2015\u2713\u25c6\u2605\u25cf]/.test(String(s)))throw Error('Vector QA export cannot safely render a character in the estimate. Use the existing aerial PDF.');return String(s).replace(/\u2022/g,' | ').replace(/[\u2010-\u2015]/g,'-').replace(/\u2713/g,'');};
- let details=false,column=0,detailsTop=45;
- const write=(str,size=10)=>{if(!String(str).trim())return;pdf.setFontSize(size);const lines=pdf.splitTextToSize(clean(str),details?116:245);if(details&&lines.length<=6&&y+lines.length*size*.48>190){if(column===0){column=1;y=detailsTop;}else newPage('ESTIMATE DETAILS - CONTINUED');pdf.setFontSize(size);}for(const line of lines){if(y>190){if(details&&column===0){column=1;y=detailsTop;}else newPage('ESTIMATE DETAILS - CONTINUED');pdf.setFontSize(size);}pdf.text(line,15+(details?column*129:0),y);y+=size*.48;}y+=2;};
- const fullHeaderIds=new Set();
- const newPage=title=>{column=0;if(page++)pdf.addPage();pdf.setTextColor(17,45,56);y=15;
-  const head=(value,size)=>{pdf.setFontSize(size);const lines=pdf.splitTextToSize(clean(value),245);lines.slice(0,2).forEach((line,i)=>{pdf.text(line+(i===1&&lines.length>2?'...':''),15,y);y+=size*.48;});y+=2;};
-  head(text('rEstimateTitle')||'AeriQuote Estimate',16);head(text('rEstimateSubtitle'),10);head([text('rAddress'),text('rCustomerName'),text('rDate')].filter(Boolean).join(' | '),9);head(title,12);
-  for(const id of ['rEstimateTitle','rEstimateSubtitle','rAddress','rCustomerName','rDate'])if(pdf.splitTextToSize(clean(text(id)),245).length>2)fullHeaderIds.add(id);
- };
- newPage('VECTOR DIAGRAM - QA ONLY');
- write('Saved geometry. North up. Dimensions are horizontal plan lengths; roof surface areas retain saved pitch adjustments. Not a survey or roof pitch measurement.',9);
- const draw=(m,top,h,labels)=>{
-  const k=Math.min(245/m.width,h/m.height),left=15+(245-m.width*k)/2;
-  pdf.setDrawColor(22,91,96);pdf.setLineWidth(.45);
-  for(const s of m.items){const xy=s.xy.map(p=>[left+p[0]*k,top+p[1]*k]);
-   for(let i=1;i<xy.length;i++)pdf.line(...xy[i-1],...xy[i]);if(s.closed)pdf.line(...xy.at(-1),...xy[0]);
-   pdf.setFontSize(8);pdf.text(String(s.id),xy[0][0],xy[0][1]-2);
-   if(labels||(!s.closed&&s.points.length===2)){xy.forEach((p,i)=>pdf.text('V'+(i+1),p[0]+1,p[1]+3));}
-  }
-  pdf.setFontSize(9);pdf.text('N',17,top+5);pdf.line(18,top+12,18,top+7);
- };
- draw(model(items),y,105,false);y+=110;write('SECTION KEY',10);
- for(const s of items)write(`${s.id}. ${s.label} - ${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${!s.closed&&s.points.length===2?' (V1-V2)':''}${s.pitch!=null?' | pitch '+s.pitch.toFixed(2)+' degrees':''}${s.closed&&s.pitch==null&&snapshot.businessType==='roofing'?' | saved outer outline; no inferred roof facets':''}`,9);
- for(const s of items){if(!s.closed&&s.points.length===2)continue;newPage(`${s.id}. ${s.label}`);draw(model([s]),y,100,true);y+=105;
-  write(`Saved ${s.closed?'area':'length'}: ${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${!s.closed&&s.points.length===2?' (V1-V2)':''}${s.pitch!=null?' | pitch '+s.pitch.toFixed(2)+' degrees':''}`,10);
-  for(const [i,seg] of (s.segments||[]).entries())write(`Saved roof segment ${i+1}: ${Number(seg.area_sqft).toFixed(2)} ft² | pitch ${Number(seg.pitch_degrees).toFixed(2)} degrees (no inferred facet outline)`,9);
-  write('HORIZONTAL DIMENSIONS (feet)',10);
-  const edges=s.closed?s.points.length:s.points.length-1;
-  for(let i=0;i<edges;i+=3){if(y>188)newPage('HORIZONTAL DIMENSIONS - CONTINUED');pdf.setFontSize(9);for(let j=i;j<Math.min(i+3,edges);j++)pdf.text(`V${j+1} to V${(j+1)%s.points.length+1}: ${dimension(distance(s.points[j],s.points[(j+1)%s.points.length]))} ft`,15+(j-i)*82,y);y+=7;}
+ const navy=[24,48,76],blue=[39,99,151],muted=[89,105,119],pale=[235,243,250],border=[208,221,232];
+ const left=15,right=200.9,width=right-left,bottom=261,overflow=[];let page=0,y=0;
+ const wrap=(s,w,size)=>{pdf.setFontSize(size);return pdf.splitTextToSize(clean(s),w);};
+ const ink=(s,x,top,size=9,color=navy)=>{pdf.setFontSize(size);pdf.setTextColor(...color);pdf.text(clean(s),x,top);};
+ const box=(x,top,w,h,color)=>{pdf.setFillColor(...color);pdf.rect(x,top,w,h,'F');};
+ const rule=top=>{pdf.setDrawColor(...border);pdf.setLineWidth(.3);pdf.line(left,top,right,top);};
+ // Branding is already loaded/frozen by the download wrapper. No provider images are read.
+ const assets={};for(const id of ['rDealerLogo','rWarrantyShield']){
+  const img=report.querySelector('#'+id);if(!img||img.classList.contains('noDealerLogo')||img.style.display==='none'||!img.getAttribute('src'))continue;
+  if(!img.complete&&img.decode)await img.decode();
+  if(!img.complete||!img.naturalWidth||!img.naturalHeight)throw Error('Branding image is not ready. Wait and retry the vector download.');
+  assets[id]={source:img.getAttribute('src').startsWith('data:image/')?img.getAttribute('src'):img,ratio:img.naturalWidth/img.naturalHeight};
  }
- newPage('ESTIMATE DETAILS');details=true;detailsTop=y;
- for(const b of textBlocks(report,[...fullHeaderIds,'rCustomerPhone','rCustomerEmail','rEstimateDealerSub','rProperty','rPricing','rMarketingHeading','rMarketingBenefits','rMarketingWarranty','rCtaHeading','rCtaText','rDealerCompany','rDealerName','rPhone','rDealerEmail','rDealerWebsite','rDealerAddress'])){if(b.title)write(b.title,12);write(b.text,10);}
- // Preserve only already-loaded dealer branding assets. Never fetch or embed property imagery.
- for(const id of ['rDealerLogo','rWarrantyShield']){
- const logo=report.querySelector('#'+id);
- if(logo&&!logo.classList.contains('noDealerLogo')&&logo.style.display!=='none'&&logo.getAttribute('src')){
-  if(!logo.complete&&logo.decode)await logo.decode();
-  if(!logo.complete||!logo.naturalWidth||!logo.naturalHeight)throw Error('Branding image is not ready. Wait and retry the vector download.');
-  if(y>165){if(details&&column===0){column=1;y=detailsTop;}else newPage('BRANDING');}const h=Math.min(20,45/(logo.naturalWidth/logo.naturalHeight));pdf.addImage(logo.getAttribute('src')?.startsWith('data:image/')?logo.getAttribute('src'):logo,15+column*129,y,h*logo.naturalWidth/logo.naturalHeight,h);y+=h+3;
- }}
- const foot=report.querySelector('.reportFoot')?.textContent?.trim();if(foot)write(foot,8);
- for(let i=1;i<=pdf.getNumberOfPages();i++){pdf.setPage(i);pdf.setFontSize(8);pdf.text(`Vector Diagram QA | ${i} / ${pdf.getNumberOfPages()} | No property imagery`,15,207);}
- return {pdf,svg:svg(model(items)),items};
+ const image=(id,x,top,w,h)=>{const a=assets[id];if(!a)return;const iw=Math.min(w,h*a.ratio),ih=iw/a.ratio;pdf.addImage(a.source,x+(w-iw)/2,top+(h-ih)/2,iw,ih);};
+ const bounded=(value,x,top,w,size,max)=>{const lines=wrap(value,w,size);lines.slice(0,max).forEach((s,i)=>ink(s,x,top+i*size*.42,size));if(lines.length>max)overflow.push(value);};
+ const company=text('rDealerCompany')||text('rEstimateSubtitle')||'AeriQuote';
+ const newPage=()=>{if(page++)pdf.addPage();image('rDealerLogo',left,12,28,15);
+  bounded(company,assets.rDealerLogo?48:left,19,assets.rDealerLogo?85:115,14,2);
+  [text('rPhone'),text('rDealerEmail'),text('rDealerWebsite')].filter(Boolean).forEach((s,i)=>bounded(s,143,15+i*4,58,7.5,1));
+  rule(33);y=43;
+ };
+ const heading=(s,size=12)=>{for(const line of wrap(s,width,size)){if(y+12>bottom)newPage();ink(line,left,y,size);y+=size*.48;}y+=2;};
+ const write=(str,size=8.5)=>{if(!String(str).trim())return;for(const line of wrap(str,width,size)){if(y+size*.45>bottom)newPage();ink(line,left,y,size);y+=size*.45;}y+=3;};
+ // Fit the projected geometry to the entire panel, using ONE uniform scale. Never move buildings.
+ const draw=(subset,x,top,w,h,vertices=false)=>{
+  const m=model(subset,1000,1000*h/w),k=w/1000;
+  box(x,top,w,h,[247,250,253]);pdf.setDrawColor(...blue);pdf.setLineWidth(.65);
+  for(const s of m.items){const xy=s.xy.map(p=>[x+p[0]*k,top+p[1]*k]);
+   pdf.setDrawColor(...blue);pdf.setFillColor(...pale);
+   pdf.lines(xy.slice(1).map((p,i)=>[p[0]-xy[i][0],p[1]-xy[i][1]]),xy[0][0],xy[0][1],[1,1],s.closed?'FD':'S',s.closed);
+   if(vertices){xy.forEach((p,i)=>ink('V'+(i+1),p[0]+1,p[1]+3,6.5));}
+   else {const cx=xy.reduce((n,p)=>n+p[0],0)/xy.length,cy=xy.reduce((n,p)=>n+p[1],0)/xy.length;const badge=h<35?2.5:6;box(cx-badge/2,cy-badge/2,badge,badge,navy);ink(String(s.id),cx-badge*.18,cy+badge*.18,h<35?4:8,[255,255,255]);}
+  }
+  if(!vertices&&subset.length>1){ink('N',x+5,top+8,8);pdf.setDrawColor(...navy);pdf.line(x+6,top+17,x+6,top+10);pdf.line(x+6,top+10,x+4,top+13);pdf.line(x+6,top+10,x+8,top+13);}
+ };
+ newPage();heading(text('rEstimateTitle')||'Property Measurement & Estimate',17);
+ const meta=(label,values,x,w)=>{ink(label,x,y,7.5,muted);let yy=y+5;for(const value of values.filter(Boolean)){const ls=wrap(value,w,9);ls.slice(0,3).forEach(s=>{ink(s,x,yy,9);yy+=4;});if(ls.length>3)overflow.push(value);}return yy;};
+ y=Math.max(meta('PREPARED FOR',[text('rCustomerName'),text('rCustomerPhone'),text('rCustomerEmail')],left,85),meta('PROPERTY / DATE',[text('rAddress'),text('rDate')],113,88))+7;
+ const marketingHead=textBlocks(report,['rMarketingHeading']),benefits=textBlocks(report,['rMarketingBenefits']).map(b=>b.text.split('\n').filter(line=>!/^\s*[◆★●|]?\s*$/.test(line)).join('\n')),marketingTail=textBlocks(report,['rMarketingWarranty','rCtaHeading','rCtaText']);
+ const benefitW=(width-8)/3,benefitRows=[];
+ for(let i=0;i<benefits.length;i+=3){const row=benefits.slice(i,i+3).map(b=>wrap(b,benefitW-6,7));benefitRows.push({row,height:Math.max(...row.map(x=>x.length))*3.2+6});}
+ const marketingHeight=[...marketingHead,...marketingTail].reduce((n,b)=>n+wrap(b.text,width,7.5).length*3.3+3,0)+benefitRows.reduce((n,r)=>n+r.height+3,0);
+ if(y+110>bottom)newPage();heading('Property overview');const overviewTop=y,overviewHeight=Math.max(70,Math.min(123,bottom-y-marketingHeight-items.length*7-19));
+ const overview=model(items),occupied=Math.max(...overview.items.map(s=>{const xs=s.xy.map(p=>p[0]),ys=s.xy.map(p=>p[1]);return (Math.max(...xs)-Math.min(...xs))*(Math.max(...ys)-Math.min(...ys));}))/(overview.width*overview.height);
+ const enlarged=items.length>1&&items.length<=3&&occupied<.12;
+ if(enlarged){
+  // Widely spaced buildings remain on the location diagram; explicit insets are individually scaled.
+  const mainW=117,otherX=left+125,otherW=width-125;
+  bounded(items[0].id+'. '+items[0].label,left,y,mainW,8,1);draw([items[0]],left,y+4,mainW,overviewHeight-12);
+  const otherH=(overviewHeight-46)/(items.length-1);
+  items.slice(1).forEach((s,i)=>{const top=y+i*otherH;bounded(s.id+'. '+s.label,otherX,top,otherW,8,1);draw([s],otherX,top+4,otherW,otherH-7);});
+  ink('LOCATION / SHARED SCALE',otherX,y+overviewHeight-39,6,muted);draw(items,otherX,y+overviewHeight-36,otherW,28);
+  ink('North up. Enlarged views are individually scaled; location diagram preserves spacing.',left,y+overviewHeight-2,7,muted);
+ }else draw(items,left,y,width,overviewHeight);
+ y+=overviewHeight+7;
+ ink('SAVED MEASUREMENT SCOPE',left,y,8,muted);y+=5;
+ for(const s of items){const value=`${s.id}. ${s.label}   |   ${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${s.pitch!=null?'   |   Pitch '+s.pitch.toFixed(2)+' degrees':''}`;write(value,8);}
+ for(const b of marketingHead)write(b.text,7.5);
+ for(const group of benefitRows){if(group.height>bottom-43){for(const lines of group.row)write(lines.join('\n'),7);continue;}if(y+group.height>bottom)newPage();group.row.forEach((lines,j)=>{const x=left+j*(benefitW+4);box(x,y-3,benefitW,group.height,pale);lines.forEach((line,i)=>ink(line,x+3,y+i*3.2,7));});y+=group.height+3;}
+ for(const b of marketingTail)write(b.text,7.5);
+ // Individual section views and all pricing share page two for ordinary two-section jobs.
+ newPage();heading('Detailed measurements');
+ const detailed=items.filter(s=>s.closed||s.points.length>2);
+ for(let i=0;i<detailed.length;i+=2){const pair=detailed.slice(i,i+2),cardW=(width-8)/2;
+  const heights=pair.map(s=>{const edges=s.closed?s.points.length:s.points.length-1;return 74+Math.ceil(Math.min(edges,12)/2)*4+Math.min(3,wrap(s.label,cardW-8,10).length)*4;});
+  const h=Math.max(...heights);if(y+h>bottom){newPage();heading('Detailed measurements - continued');}
+  const top=y;
+  pair.forEach((s,j)=>{const x=left+j*(cardW+8);let yy=top;
+   const labels=wrap(s.id+'. '+s.label,cardW-8,10);if(labels.length>3)overflow.push(s.id+'. '+s.label);labels.slice(0,3).forEach(line=>{ink(line,x,yy,10);yy+=4;});
+   draw([s],x,yy+2,cardW,48,true);yy+=55;
+   ink(`${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${s.pitch!=null?' | Pitch '+s.pitch.toFixed(2)+' degrees':''}`,x,yy,8);yy+=5;
+   ink('HORIZONTAL DIMENSIONS',x,yy,6.5,muted);yy+=4;
+   const edges=s.closed?s.points.length:s.points.length-1;
+   for(let e=0;e<Math.min(edges,12);e++){ink(`V${e+1}-V${(e+1)%s.points.length+1}: ${dimension(distance(s.points[e],s.points[(e+1)%s.points.length]))} ft`,x+(e%2)*(cardW/2),yy+Math.floor(e/2)*4,7);}
+  });y+=h;
+  for(const s of pair){const edges=s.closed?s.points.length:s.points.length-1;for(let e=12;e<edges;e++)write(`${s.label} - V${e+1}-V${(e+1)%s.points.length+1}: ${dimension(distance(s.points[e],s.points[(e+1)%s.points.length]))} ft`,8);}
+  // Numerical historical roof segments are preserved as text, never fabricated as facets.
+  for(const s of pair)for(const [i,seg] of (s.segments||[]).entries())write(`${s.label} - Saved roof segment ${i+1}: ${Number(seg.area_sqft).toFixed(2)} ft² | pitch ${Number(seg.pitch_degrees).toFixed(2)} degrees (no inferred facet outline)`,8);
+ }
+ for(const s of items.filter(s=>!s.closed&&s.points.length===2)){
+  if(y+25>bottom){newPage();heading('Detailed measurements - continued');}
+  bounded(s.id+'. '+s.label,left,y,width,9,1);draw([s],left,y+3,75,12,true);
+  ink(`${dimension(s.quantity)} ft | V1-V2: ${dimension(distance(s.points[0],s.points[1]))} ft`,98,y+10,8);y+=25;
+ }
+ const pricing=report.querySelector('#rPricing');const rows=pricing?[...pricing.children]:[];
+ if(y+22>bottom)newPage();heading('Estimate summary');if(!rows.length)for(const b of textBlocks(report,['rPricing']))write(b.text,9);
+ // Copy labels and formatted values verbatim from the frozen customer report. No price arithmetic.
+ for(const row of rows){const kids=[...row.children],amountNode=kids.length?kids.at(-1):null;
+  const amount=amountNode?.textContent.trim()||'',copy=row.cloneNode(true);if(amountNode)copy.lastElementChild.remove();
+  const label=copy.textContent.trim(),grand=row.classList.contains('grand')||/^total\b/i.test(label);
+  const a=wrap(amount,57,9),b=wrap(label,116,9),count=Math.max(a.length,b.length);
+  for(let start=0;start<count;){
+   if(y+9.4>bottom){newPage();heading('Estimate summary - continued');}
+   const length=Math.min(count-start,Math.floor((bottom-y-5)/4.4)),h=length*4.4+5;
+   if(grand)box(left,y-4,width,h,navy);else rule(y+h-5);
+   const color=grand?[255,255,255]:navy;
+   b.slice(start,start+length).forEach((s,i)=>ink(s,left+3,y+i*4.4,9,color));a.slice(start,start+length).forEach((s,i)=>ink(s,141,y+i*4.4,9,color));y+=h;start+=length;
+  }
+ }
+ y+=3;
+ for(const b of textBlocks(report,['rProperty']))write(b.text,7.5);
+ write('Dimensions show horizontal plan lengths. Roof surface areas retain saved pitch adjustments. Not a survey or roof pitch measurement.',7);
+ for(const b of textBlocks(report,['rEstimateDealerSub','rDealerName','rDealerAddress']))write(b.text,7.5);
+ if(assets.rWarrantyShield){if(y+18>bottom)newPage();image('rWarrantyShield',left,y,30,15);y+=18;}
+ const foot=report.querySelector('.reportFoot')?.textContent.trim();if(foot)write(foot,7);
+ for(const value of [...new Set(overflow)])write(value,8);
+ for(let i=1;i<=pdf.getNumberOfPages();i++){pdf.setPage(i);rule(267);ink(company.slice(0,70),left,273,7,muted);ink(`QA preview | ${i} / ${pdf.getNumberOfPages()}`,155,273,7,muted);}
+ return {pdf,svg:svg(model(items)),items,layout:{orientation:'portrait',overview:{top:overviewTop,width,height:overviewHeight,enlarged}}};
 }
+
 const api={points,area,distance,shapes,model,svg,build};if(typeof module!=='undefined')module.exports=api;else root.AQVectorPDF=api;
 })(typeof window!=='undefined'?window:globalThis);

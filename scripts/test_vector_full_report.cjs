@@ -4,17 +4,19 @@ test=test.replace('const html=raw.replace(',"const html=raw.replaceAll('{{ VECTO
 const injection=`
 w.eval(require('node:fs').readFileSync('qa_vector_pdf.js','utf8'));
 let vectorSaved=0,vectorText=[];
-class VectorSink{constructor(){this.pages=1}setFontSize(){}setTextColor(){}setDrawColor(){}setLineWidth(){}splitTextToSize(s){return String(s).split('\\n')}text(t){vectorText.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}save(){vectorSaved++}}
+class VectorSink{constructor(){this.pages=1}setFontSize(){}setTextColor(){}setDrawColor(){}setFillColor(){}rect(){}lines(){}setLineWidth(){}splitTextToSize(s){return String(s).split('\\n')}text(t){vectorText.push(t)}line(){}addPage(){this.pages++}getNumberOfPages(){return this.pages}setPage(){}save(){vectorSaved++}}
 w.jspdf={jsPDF:VectorSink};
 const providerPaths=[];w.fetch=async(url,options)=>{providerPaths.push(url);assert.equal(url,'/qa-vector-diagram/validate');return{ok:true,json:async()=>({ok:true})}};
 btn('estimatePdfLayout').value='vector';await w.eval('downloadEstimatePDF()');
 assert.equal(vectorSaved,1,w.document.getElementById('status').textContent);assert(vectorText.join(' ').includes(w.eval('money(priceCalc().total)')),'Actual generated customer total preserved');assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),frozen);assert.deepEqual(providerPaths,['/qa-vector-diagram/validate']);
 if(process.env.VECTOR_QA_JSPDF&&process.env.VECTOR_QA_OUTPUT){
  w.eval(require('node:fs').readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));w.AQVectorPDFFont=require('node:fs').readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');
- w.eval("el('dealerCountry').value='CA';countryChanged();el('province').value='AB';el('gst').value='5';el('pst').value='0';el('address').value='QA Alberta tax check, Edmonton, AB, Canada';el('customerName').value='QA Alberta Customer';renderSummary()");
+ w.eval("el('dealerCountry').value='CA';countryChanged();el('province').value='AB';el('gst').value='5';el('pst').value='0';el('dealerCompany').value='AeriQuote Demo';el('dealerEmail').value='qa@example.invalid';el('address').value='QA Alberta property, Edmonton, AB, Canada';el('customerName').value='QA Alberta Customer';renderSummary()");
  await w.eval('showCustomerEstimate()');w.eval('clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false');
  assert.equal(w.eval('priceCalc().pstAmt'),0);assert.equal(w.eval('priceCalc().gst'),5);
+ const logo=w.document.getElementById('rDealerLogo'),logoBytes=require('node:fs').readFileSync('site/assets/aeriquote-logo.png');logo.src='data:image/png;base64,'+logoBytes.toString('base64');logo.classList.remove('noDealerLogo');Object.defineProperties(logo,{complete:{value:true},naturalWidth:{value:logoBytes.readUInt32BE(16)},naturalHeight:{value:logoBytes.readUInt32BE(20)}});
  const doc=await w.AQVectorPDF.build(w.jspdf.jsPDF,w.eval('JSON.parse(JSON.stringify(quoteSnapshot))'),w.document.querySelector('#reportOverlay .report'));
+ assert.equal(doc.pdf.getNumberOfPages(),2,'Actual report with six marketing benefits fits two pages');
  require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof.pdf',Buffer.from(doc.pdf.output('arraybuffer')));
  const price=w.eval('priceCalc()'),quote=w.eval('JSON.parse(JSON.stringify(quoteSnapshot))');require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof-source.json',JSON.stringify({quote,pricing:price,total_area:price.area,total_price:price.total,extra_service_amount:price.extraAmount||0,extra_service_description:price.extraDescription||''},null,2));require('node:fs').writeFileSync(process.env.VECTOR_QA_OUTPUT+'/simple-roof.svg',doc.svg);
 }
