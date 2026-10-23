@@ -1,0 +1,28 @@
+{
+  "fictional": true,
+  "units": "feet",
+  "description": "Explicit fictional QA geometry. Local coordinates only; no real property.",
+  "rate_cad": "0.85",
+  "gst_percent": "5",
+  "pst_percent": "6",
+  "buildings": [
+    {
+      "id": "A", "name": "Main house", "origin": [0, 0], "length": 40, "width": 30,
+      "outline": [[0,0,0],[40,0,0],[40,30,0],[0,30,0]],
+      "ridge": {"id":"R1","points":[[0,15,7.5],[40,15,7.5]],"type":"ridge","confirmed":true},
+      "planes": [
+        {"id":"A1","pitch_rise":6,"pitch_run":12,"confirmed":true,"vertices":[[0,0,0],[40,0,0],[40,15,7.5],[0,15,7.5]]},
+        {"id":"A2","pitch_rise":6,"pitch_run":12,"confirmed":true,"vertices":[[0,15,7.5],[40,15,7.5],[40,30,0],[0,30,0]]}
+      ]
+    },
+    {
+      "id": "B", "name": "Detached garage", "origin": [55, 8], "length": 24, "width": 20,
+      "outline": [[0,0,0],[24,0,0],[24,20,0],[0,20,0]],
+      "ridge": {"id":"R2","points":[[0,10,3.3333333333333335],[24,10,3.3333333333333335]],"type":"ridge","confirmed":true},
+      "planes": [
+        {"id":"B1","pitch_rise":4,"pitch_run":12,"confirmed":true,"vertices":[[0,0,0],[24,0,0],[24,10,3.3333333333333335],[0,10,3.3333333333333335]]},
+        {"id":"B2","pitch_rise":4,"pitch_run":12,"confirmed":true,"vertices":[[0,10,3.3333333333333335],[24,10,3.3333333333333335],[24,20,0],[0,20,0]]}
+      ]
+    }
+  ]
+}
