@@ -1,0 +1,100 @@
+{
+  "quote": {
+    "structures": [],
+    "manualPlanes": [
+      {
+        "label": "Main roof",
+        "points": [
+          [
+            52,
+            -106
+          ],
+          [
+            52,
+            -105.9998
+          ],
+          [
+            52.00005,
+            -105.9998
+          ],
+          [
+            52.00005,
+            -105.9999
+          ],
+          [
+            52.0001,
+            -105.9999
+          ],
+          [
+            52.0001,
+            -106
+          ]
+        ],
+        "pitch_degrees": 26.56505117707799,
+        "pitch_confirmed": true,
+        "surface_sqft": 1377.210537098633
+      },
+      {
+        "label": "Detached garage",
+        "points": [
+          [
+            52.0005,
+            -105.9995
+          ],
+          [
+            52.0005,
+            -105.99929999999999
+          ],
+          [
+            52.000600000000006,
+            -105.99929999999999
+          ],
+          [
+            52.000600000000006,
+            -105.9995
+          ]
+        ],
+        "pitch_degrees": 45,
+        "pitch_confirmed": true,
+        "surface_sqft": 2322.7054182516117
+      }
+    ],
+    "commercialAreas": [],
+    "areaPoints": [],
+    "areaSqFt": 0,
+    "linearPoints": [],
+    "linearFeet": 0,
+    "businessType": "roofing",
+    "measureSource": "manual",
+    "measurementMode": "auto",
+    "manualRoofWorkflow": true,
+    "roofScopeConfirmed": true,
+    "landscapingLinearRate": 0.7,
+    "commercialLinearRate": 0.7,
+    "pressureLinearRate": 0.7,
+    "pavingLinearRate": 0.7
+  },
+  "pricing": {
+    "estimatePeriod": "one_time",
+    "area": 3699.915955350245,
+    "price": 0.85,
+    "mode": "discount",
+    "disc": 10,
+    "subtotal": 3144.93,
+    "extraDescription": "",
+    "extraAmount": 25.5,
+    "discount": 314.49,
+    "taxBase": 2855.94,
+    "gst": 5,
+    "pst": 6,
+    "gstAmt": 142.8,
+    "pstAmt": 171.36,
+    "total": 3170.1,
+    "measurementMode": "auto",
+    "unit": "ft²"
+  },
+  "total_area": 3699.915955350245,
+  "total_price": 3170.1,
+  "extra_service_amount": 25.5,
+  "extra_service_description": ""
+}

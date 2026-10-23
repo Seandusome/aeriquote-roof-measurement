@@ -3943,8 +3943,9 @@ def vector_pdf_qa_script():
     from pathlib import Path
     import base64
     font=base64.b64encode((Path(__file__).parent/"qa_assets"/"DejaVuSans.ttf").read_bytes()).decode("ascii")
+    bold_font=base64.b64encode((Path(__file__).parent/"qa_assets"/"DejaVuSans-Bold.ttf").read_bytes()).decode("ascii")
     notice=(Path(__file__).parent/"qa_assets"/"DejaVu-LICENSE.txt").read_text().replace("*/", "* /")
-    response=app.response_class("/* "+notice+" */\nwindow.AQVectorPDFFont="+json.dumps(font)+";\n"+Path(__file__).with_name("qa_vector_pdf.js").read_text(),mimetype="application/javascript")
+    response=app.response_class("/* "+notice+" */\nwindow.AQVectorPDFFont="+json.dumps(font)+";\nwindow.AQVectorPDFBoldFont="+json.dumps(bold_font)+";\n"+Path(__file__).with_name("qa_vector_pdf.js").read_text(),mimetype="application/javascript")
     response.headers["Cache-Control"]="private, no-store"
     return response
 

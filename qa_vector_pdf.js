@@ -81,12 +81,13 @@ async function build(jsPDF,snapshot,report){
  const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'letter',compress:true});
  if(typeof pdf.addFont==='function'&&!root.AQVectorPDFFont)throw Error('QA diagram font did not load. Retry the vector download.');
  if(root.AQVectorPDFFont){pdf.addFileToVFS('DejaVuSans.ttf',root.AQVectorPDFFont);pdf.addFont('DejaVuSans.ttf','AQVector','normal');pdf.setFont('AQVector','normal');}
+ if(root.AQVectorPDFBoldFont){pdf.addFileToVFS('DejaVuSans-Bold.ttf',root.AQVectorPDFBoldFont);pdf.addFont('DejaVuSans-Bold.ttf','AQVector','bold');}
  const text=id=>report.querySelector('#'+id)?.textContent?.trim()||'';
  const clean=s=>{if(/[^\x09\x0a\x0d\x20-\xff\u2022\u2010-\u2015\u2713\u25c6\u2605\u25cf]/.test(String(s)))throw Error('Vector QA export cannot safely render a character in the estimate. Use the existing aerial PDF.');return String(s).replace(/\u2022/g,' | ').replace(/[\u2010-\u2015]/g,'-').replace(/\u2713/g,'');};
  const navy=[24,48,76],blue=[39,99,151],muted=[89,105,119],pale=[235,243,250],border=[208,221,232];
  const left=15,right=200.9,width=right-left,bottom=261,overflow=[];let page=0,y=0;
  const wrap=(s,w,size)=>{pdf.setFontSize(size);return pdf.splitTextToSize(clean(s),w);};
- const ink=(s,x,top,size=9,color=navy)=>{pdf.setFontSize(size);pdf.setTextColor(...color);pdf.text(clean(s),x,top);};
+ const ink=(s,x,top,size=9,color=navy,bold=false)=>{if(pdf.setFont)pdf.setFont(root.AQVectorPDFFont?'AQVector':'helvetica',bold&&root.AQVectorPDFBoldFont?'bold':'normal');pdf.setFontSize(size);pdf.setTextColor(...color);pdf.text(clean(s),x,top);};
  const box=(x,top,w,h,color)=>{pdf.setFillColor(...color);pdf.rect(x,top,w,h,'F');};
  const rule=top=>{pdf.setDrawColor(...border);pdf.setLineWidth(.3);pdf.line(left,top,right,top);};
  // Branding is already loaded/frozen by the download wrapper. No provider images are read.
@@ -100,21 +101,37 @@ async function build(jsPDF,snapshot,report){
  const bounded=(value,x,top,w,size,max)=>{const lines=wrap(value,w,size);lines.slice(0,max).forEach((s,i)=>ink(s,x,top+i*size*.42,size));if(lines.length>max)overflow.push(value);};
  const company=text('rDealerCompany')||text('rEstimateSubtitle')||'AeriQuote';
  const newPage=()=>{if(page++)pdf.addPage();image('rDealerLogo',left,12,28,15);
-  bounded(company,assets.rDealerLogo?48:left,19,assets.rDealerLogo?85:115,14,2);
+  bounded(company,assets.rDealerLogo?48:left,19,assets.rDealerLogo?85:115,14,2);ink('PROPERTY MEASUREMENTS & ESTIMATES',assets.rDealerLogo?48:left,29,7,blue);
   [text('rPhone'),text('rDealerEmail'),text('rDealerWebsite')].filter(Boolean).forEach((s,i)=>bounded(s,143,15+i*4,58,7.5,1));
   rule(33);y=43;
  };
- const heading=(s,size=12)=>{for(const line of wrap(s,width,size)){if(y+12>bottom)newPage();ink(line,left,y,size);y+=size*.48;}y+=2;};
+ const heading=(s,size=12)=>{for(const line of wrap(s,width,size)){if(y+12>bottom)newPage();ink(line,left,y,size,navy,true);y+=size*.48;}y+=2;};
  const write=(str,size=8.5)=>{if(!String(str).trim())return;for(const line of wrap(str,width,size)){if(y+size*.45>bottom)newPage();ink(line,left,y,size);y+=size*.45;}y+=3;};
  // Fit the projected geometry to the entire panel, using ONE uniform scale. Never move buildings.
  const draw=(subset,x,top,w,h,vertices=false)=>{
-  const m=model(subset,1000,1000*h/w),k=w/1000;
+  const inset=vertices?7:0,innerW=w-2*inset,innerH=h-2*inset,m=model(subset,1000,1000*innerH/innerW),k=innerW/1000;
   box(x,top,w,h,[247,250,253]);pdf.setDrawColor(...blue);pdf.setLineWidth(.65);
-  for(const s of m.items){const xy=s.xy.map(p=>[x+p[0]*k,top+p[1]*k]);
-   pdf.setDrawColor(...blue);pdf.setFillColor(...pale);
+  for(const s of m.items){const xy=s.xy.map(p=>[x+inset+p[0]*k,top+inset+p[1]*k]);
+   if(s.closed&&h>35){pdf.setFillColor(220,227,234);pdf.lines(xy.slice(1).map((p,i)=>[p[0]-xy[i][0],p[1]-xy[i][1]]),xy[0][0]+1.1,xy[0][1]+1.1,[1,1],'F',true);}
+   pdf.setDrawColor(...navy);pdf.setFillColor(216,232,245);pdf.setLineWidth(.45);
    pdf.lines(xy.slice(1).map((p,i)=>[p[0]-xy[i][0],p[1]-xy[i][1]]),xy[0][0],xy[0][1],[1,1],s.closed?'FD':'S',s.closed);
-   if(vertices){xy.forEach((p,i)=>ink('V'+(i+1),p[0]+1,p[1]+3,6.5));}
-   else {const cx=xy.reduce((n,p)=>n+p[0],0)/xy.length,cy=xy.reduce((n,p)=>n+p[1],0)/xy.length;const badge=h<35?2.5:6;box(cx-badge/2,cy-badge/2,badge,badge,navy);ink(String(s.id),cx-badge*.18,cy+badge*.18,h<35?4:8,[255,255,255]);}
+   if(vertices){
+    const signed=xy.reduce((n,p,i)=>n+p[0]*xy[(i+1)%xy.length][1]-xy[(i+1)%xy.length][0]*p[1],0),edges=s.closed?xy.length:xy.length-1;
+    xy.forEach((p,i)=>ink('V'+(i+1),p[0]+.8,p[1]+2.8,6,muted));
+    // Offset dimension arrows follow saved perimeter edges only. They are not roof features.
+    for(let i=0;i<edges;i++){
+     const a=xy[i],b=xy[(i+1)%xy.length],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);if(length<10)continue;
+     const side=s.closed?(signed>=0?1:-1):1,nx=side*dy/length,ny=-side*dx/length,offset=4.5;
+     const aa=[a[0]+nx*offset,a[1]+ny*offset],bb=[b[0]+nx*offset,b[1]+ny*offset];pdf.setDrawColor(110,135,156);pdf.setLineWidth(.18);
+     pdf.line(...a,...aa);pdf.line(...b,...bb);pdf.line(...aa,...bb);
+     const arrow=(p,sign)=>{const ux=dx/length*sign,uy=dy/length*sign;pdf.line(...p,p[0]+ux*1.5+nx*.65,p[1]+uy*1.5+ny*.65);pdf.line(...p,p[0]+ux*1.5-nx*.65,p[1]+uy*1.5-ny*.65);};arrow(aa,1);arrow(bb,-1);
+     const label=dimension(distance(s.points[i],s.points[(i+1)%s.points.length]))+' ft',mx=(aa[0]+bb[0])/2,my=(aa[1]+bb[1])/2;
+     const tw=label.length*1.13;box(mx-tw/2,my-1.8,tw,3.7,[247,250,253]);ink(label,mx-tw/2+.3,my+.9,7.5,navy);
+    }
+   }
+   else {let cx=xy.reduce((n,p)=>n+p[0],0)/xy.length,cy=xy.reduce((n,p)=>n+p[1],0)/xy.length;
+    if(s.closed){let a=0,sx=0,sy=0;xy.forEach((p,i)=>{const q=xy[(i+1)%xy.length],cross=p[0]*q[1]-q[0]*p[1];a+=cross;sx+=(p[0]+q[0])*cross;sy+=(p[1]+q[1])*cross;});if(Math.abs(a)>1e-9){cx=sx/(3*a);cy=sy/(3*a);}}
+    const badge=h<35?2.5:6;box(cx-badge/2,cy-badge/2,badge,badge,navy);ink(String(s.id),cx-badge*.18,cy+badge*.18,h<35?4:8,[255,255,255]);}
   }
   if(!vertices&&subset.length>1){ink('N',x+5,top+8,8);pdf.setDrawColor(...navy);pdf.line(x+6,top+17,x+6,top+10);pdf.line(x+6,top+10,x+4,top+13);pdf.line(x+6,top+10,x+8,top+13);}
  };
@@ -125,7 +142,7 @@ async function build(jsPDF,snapshot,report){
  const benefitW=(width-8)/3,benefitRows=[];
  for(let i=0;i<benefits.length;i+=3){const row=benefits.slice(i,i+3).map(b=>wrap(b,benefitW-6,7));benefitRows.push({row,height:Math.max(...row.map(x=>x.length))*3.2+6});}
  const marketingHeight=[...marketingHead,...marketingTail].reduce((n,b)=>n+wrap(b.text,width,7.5).length*3.3+3,0)+benefitRows.reduce((n,r)=>n+r.height+3,0);
- if(y+110>bottom)newPage();heading('Property overview');const overviewTop=y,overviewHeight=Math.max(70,Math.min(123,bottom-y-marketingHeight-items.length*7-19));
+ if(y+110>bottom)newPage();heading('Property overview');const overviewTop=y,overviewHeight=Math.max(70,Math.min(123,bottom-y-marketingHeight-items.length*8-31));
  const overview=model(items),occupied=Math.max(...overview.items.map(s=>{const xs=s.xy.map(p=>p[0]),ys=s.xy.map(p=>p[1]);return (Math.max(...xs)-Math.min(...xs))*(Math.max(...ys)-Math.min(...ys));}))/(overview.width*overview.height);
  const enlarged=items.length>1&&items.length<=3&&occupied<.12;
  if(enlarged){
@@ -138,25 +155,29 @@ async function build(jsPDF,snapshot,report){
   ink('North up. Enlarged views are individually scaled; location diagram preserves spacing.',left,y+overviewHeight-2,7,muted);
  }else draw(items,left,y,width,overviewHeight);
  y+=overviewHeight+7;
- ink('SAVED MEASUREMENT SCOPE',left,y,8,muted);y+=5;
- for(const s of items){const value=`${s.id}. ${s.label}   |   ${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${s.pitch!=null?'   |   Pitch '+s.pitch.toFixed(2)+' degrees':''}`;write(value,8);}
+ if(y+12>bottom)newPage();
+ box(left,y-3,width,8,pale);ink('MEASURED SECTION',left+3,y+2,8,navy,true);ink('SURFACE AREA / LENGTH',113,y+2,7,navy,true);ink(snapshot.manualRoofWorkflow&&snapshot.roofScopeConfirmed?'CONFIRMED PITCH':'SAVED PITCH',167,y+2,7,navy,true);y+=11;
+ for(const s of items){
+  const names=wrap(s.id+'. '+s.label,92,9),h=Math.max(8,names.length*4);if(y+h>bottom)newPage();
+  names.forEach((line,i)=>ink(line,left+3,y+i*4,9));ink(`${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}`,113,y,9);ink(s.pitch!=null?s.pitch.toFixed(2)+' degrees':'Not applicable',167,y,8);rule(y+h-4);y+=h;
+ }
  for(const b of marketingHead)write(b.text,7.5);
  for(const group of benefitRows){if(group.height>bottom-43){for(const lines of group.row)write(lines.join('\n'),7);continue;}if(y+group.height>bottom)newPage();group.row.forEach((lines,j)=>{const x=left+j*(benefitW+4);box(x,y-3,benefitW,group.height,pale);lines.forEach((line,i)=>ink(line,x+3,y+i*3.2,7));});y+=group.height+3;}
  for(const b of marketingTail)write(b.text,7.5);
  // Individual section views and all pricing share page two for ordinary two-section jobs.
- newPage();heading('Detailed measurements');
+ newPage();heading('Measurements & Customer Estimate');write([text('rCustomerName'),text('rAddress')].filter(Boolean).join(' | '),7.5);
  const detailed=items.filter(s=>s.closed||s.points.length>2);
  for(let i=0;i<detailed.length;i+=2){const pair=detailed.slice(i,i+2),cardW=(width-8)/2;
-  const heights=pair.map(s=>{const edges=s.closed?s.points.length:s.points.length-1;return 74+Math.ceil(Math.min(edges,12)/2)*4+Math.min(3,wrap(s.label,cardW-8,10).length)*4;});
+  const heights=pair.map(s=>{const edges=s.closed?s.points.length:s.points.length-1;return 82+Math.ceil(Math.min(edges,12)/2)*4+Math.min(3,wrap(s.label,cardW-8,10).length)*4;});
   const h=Math.max(...heights);if(y+h>bottom){newPage();heading('Detailed measurements - continued');}
   const top=y;
   pair.forEach((s,j)=>{const x=left+j*(cardW+8);let yy=top;
    const labels=wrap(s.id+'. '+s.label,cardW-8,10);if(labels.length>3)overflow.push(s.id+'. '+s.label);labels.slice(0,3).forEach(line=>{ink(line,x,yy,10);yy+=4;});
-   draw([s],x,yy+2,cardW,48,true);yy+=55;
+   draw([s],x,yy+2,cardW,60,true);yy+=67;
    ink(`${s.closed?s.quantity.toFixed(2):dimension(s.quantity)} ${s.closed?'ft²':'ft'}${s.pitch!=null?' | Pitch '+s.pitch.toFixed(2)+' degrees':''}`,x,yy,8);yy+=5;
    ink('HORIZONTAL DIMENSIONS',x,yy,6.5,muted);yy+=4;
    const edges=s.closed?s.points.length:s.points.length-1;
-   for(let e=0;e<Math.min(edges,12);e++){ink(`V${e+1}-V${(e+1)%s.points.length+1}: ${dimension(distance(s.points[e],s.points[(e+1)%s.points.length]))} ft`,x+(e%2)*(cardW/2),yy+Math.floor(e/2)*4,7);}
+   for(let e=0;e<Math.min(edges,12);e++){ink(`V${e+1}-V${(e+1)%s.points.length+1}: ${dimension(distance(s.points[e],s.points[(e+1)%s.points.length]))} ft`,x+(e%2)*(cardW/2),yy+Math.floor(e/2)*4,7.5);}
   });y+=h;
   for(const s of pair){const edges=s.closed?s.points.length:s.points.length-1;for(let e=12;e<edges;e++)write(`${s.label} - V${e+1}-V${(e+1)%s.points.length+1}: ${dimension(distance(s.points[e],s.points[(e+1)%s.points.length]))} ft`,8);}
   // Numerical historical roof segments are preserved as text, never fabricated as facets.
@@ -175,11 +196,11 @@ async function build(jsPDF,snapshot,report){
   const label=copy.textContent.trim(),grand=row.classList.contains('grand')||/^total\b/i.test(label);
   const a=wrap(amount,57,9),b=wrap(label,116,9),count=Math.max(a.length,b.length);
   for(let start=0;start<count;){
-   if(y+9.4>bottom){newPage();heading('Estimate summary - continued');}
-   const length=Math.min(count-start,Math.floor((bottom-y-5)/4.4)),h=length*4.4+5;
+   if(y+7>bottom){newPage();heading('Estimate summary - continued');}
+   const length=Math.min(count-start,Math.floor((bottom-y-3)/3.8)),h=length*3.8+3;
    if(grand)box(left,y-4,width,h,navy);else rule(y+h-5);
    const color=grand?[255,255,255]:navy;
-   b.slice(start,start+length).forEach((s,i)=>ink(s,left+3,y+i*4.4,9,color));a.slice(start,start+length).forEach((s,i)=>ink(s,141,y+i*4.4,9,color));y+=h;start+=length;
+   b.slice(start,start+length).forEach((s,i)=>ink(s,left+3,y+i*3.8,9,color,grand));a.slice(start,start+length).forEach((s,i)=>ink(s,141,y+i*3.8,9,color,grand));y+=h;start+=length;
   }
  }
  y+=3;

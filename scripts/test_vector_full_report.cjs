@@ -10,7 +10,7 @@ const providerPaths=[];w.fetch=async(url,options)=>{providerPaths.push(url);asse
 btn('estimatePdfLayout').value='vector';await w.eval('downloadEstimatePDF()');
 assert.equal(vectorSaved,1,w.document.getElementById('status').textContent);assert(vectorText.join(' ').includes(w.eval('money(priceCalc().total)')),'Actual generated customer total preserved');assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),frozen);assert.deepEqual(providerPaths,['/qa-vector-diagram/validate']);
 if(process.env.VECTOR_QA_JSPDF&&process.env.VECTOR_QA_OUTPUT){
- w.eval(require('node:fs').readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));w.AQVectorPDFFont=require('node:fs').readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');
+ w.eval(require('node:fs').readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));w.AQVectorPDFFont=require('node:fs').readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');w.AQVectorPDFBoldFont=require('node:fs').readFileSync('qa_assets/DejaVuSans-Bold.ttf').toString('base64');
  w.eval("el('dealerCountry').value='CA';countryChanged();el('province').value='AB';el('gst').value='5';el('pst').value='0';el('dealerCompany').value='AeriQuote Demo';el('dealerEmail').value='qa@example.invalid';el('address').value='QA Alberta property, Edmonton, AB, Canada';el('customerName').value='QA Alberta Customer';renderSummary()");
  await w.eval('showCustomerEstimate()');w.eval('clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null;estimateOpenInProgress=false');
  assert.equal(w.eval('priceCalc().pstAmt'),0);assert.equal(w.eval('priceCalc().gst'),5);

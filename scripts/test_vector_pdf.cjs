@@ -35,7 +35,7 @@ class PDF{constructor(options){this.options=options;this.texts=[];this.positions
  // Independent sample arithmetic: extra included in 1025.50, 10% promotion, additive GST/PST.
  const cents=n=>Math.round(n*100)/100,taxable=1025.5-cents(1025.5*.1);assert.equal(cents(taxable+cents(taxable*.05)+cents(taxable*.06)),1024.48);
  if(process.argv.includes('--examples')){
-  globalThis.AQVectorPDFFont=fs.readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');
+  globalThis.AQVectorPDFFont=fs.readFileSync('qa_assets/DejaVuSans.ttf').toString('base64');globalThis.AQVectorPDFBoldFont=require('node:fs').readFileSync('qa_assets/DejaVuSans-Bold.ttf').toString('base64');
   const out=process.env.VECTOR_QA_OUTPUT;if(!out)throw Error('Set VECTOR_QA_OUTPUT');fs.mkdirSync(out,{recursive:true});
   const dom=new JSDOM('',{runScripts:'dangerously'});dom.window.HTMLCanvasElement.prototype.getContext=()=>({});dom.window.eval(fs.readFileSync(process.env.VECTOR_QA_JSPDF,'utf8'));
   const complex=JSON.parse(JSON.stringify(roof));complex.manualPlanes[0].points=[[52,-106],[52,-105.9998],[52.00005,-105.9998],[52.00005,-105.9999],[52.0001,-105.9999],[52.0001,-106]];complex.manualPlanes[0].surface_sqft=v.area(complex.manualPlanes[0].points)*Math.sqrt(1.25);

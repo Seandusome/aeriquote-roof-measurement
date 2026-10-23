@@ -18,7 +18,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert c.get('/qa-vector-diagram.js').status_code==404
  with patch.dict(os.environ,{'AERIQUOTE_VECTOR_PDF_QA':'1','AERIQUOTE_VECTOR_PDF_QA_IDS':'vector-qa'}),patch.object(a,'req_json',side_effect=AssertionError('Vector must not call providers')):
   assert 'value="vector"' in c.get('/').text
-  script=c.get('/qa-vector-diagram.js');assert script.status_code==200 and 'no-store' in script.headers['Cache-Control']
+  script=c.get('/qa-vector-diagram.js');assert script.status_code==200 and 'no-store' in script.headers['Cache-Control'];assert 'window.AQVectorPDFFont=' in script.text and 'window.AQVectorPDFBoldFont=' in script.text
   login('not-qa');assert 'value="vector"' not in c.get('/').text;assert c.get('/qa-vector-diagram.js').status_code==404;assert c.post('/qa-vector-diagram/validate',json={}).status_code==404
   login('vector-qa');assert c.post('/qa-vector-diagram/validate',json={}).status_code==400
   base=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]
