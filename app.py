@@ -1379,6 +1379,7 @@ function selectMeasurementTool(mode){
   if(mode==='area'){beginManualRoofSection();return}
  }
  if(areaMode&&areaPoints.length&&mode!=='area'){status('Finish and save or clear the current area before switching measurement tools.','warn');return}
+ if(surfaceIndustry()&&areaMode&&!areaPoints.length&&mode!=='area')cancelSurfaceAreaDrawing();
  if(linearMode&&linearPoints.length&&mode!=='linear'&&!linearCorrectionOriginal){status('Finish and save or clear the current line before switching measurement tools.','warn');return}
  if(linearCorrectionOriginal&&mode!=='linear')cancelLinearCorrection();
  if(measurementViewMode==='linear'&&mode!=='linear')savedLinearJobRate=currentJobPrice();
@@ -1715,6 +1716,7 @@ function quotePricingError(calc=null){
  for(const id of ['gst','pst'])if(!valid(el(id)?.value,100))return 'Enter a tax percentage from 0 to 100. Enter 0 when no tax is charged.';
  if(el('pricingMode')?.value==='discount'&&!valid(el('discountPct')?.value,100))return 'Enter a promotion discount from 0 to 100%.';
  const extra=el('extraServiceAmount')?.value;if(String(extra??'').trim()!==''&&!valid(extra))return 'Enter an additional-services amount of 0 or more.';
+ if(['commercial','paving','pressure','landscaping','snow'].includes(currentBusinessType())&&commercialAreas.some(a=>!Number.isFinite(Number(a.sqft))||Number(a.sqft)<=0))return 'Finish saving or cancel the unfinished service area before creating an estimate.';
  const savedAreas=savedSurfaceHasAreas()||(currentBusinessType()==='commercial'&&commercialHasAreas());
  if(savedAreas&&commercialAreas.some(a=>a.sqft>0&&!valid(a.rate)))return 'Enter a rate of 0 or more for every saved service area.';
  if(currentBusinessType()==='commercial'){
@@ -2495,7 +2497,7 @@ async function performEstimateHistorySave(){
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
   let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
   lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;return true;
- }catch(e){console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
+ }catch(e){console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
 function closeEstimateHistory(){el('historyModal').classList.remove('open')}
@@ -4569,6 +4571,7 @@ def estimate_pricing_error(payload):
         for area in areas:
             if not isinstance(area,dict) or not valid(area.get("sqft")) or not valid(area.get("rate")):
                 return "Every saved service area needs a valid quantity and rate."
+            if float(area["sqft"])<=0:return "Finish saving or cancel the unfinished service area before creating an estimate."
         roofs=quote.get("structures",[])
         if not isinstance(roofs,list) or any(not isinstance(roof,dict) for roof in roofs):return "Saved roofs must be a list."
         if any(roof.get("needs_remeasure") or roof.get("automatic_review_warning") for roof in roofs):

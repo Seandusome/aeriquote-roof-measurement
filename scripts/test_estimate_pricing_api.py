@@ -38,6 +38,8 @@ with tempfile.TemporaryDirectory() as tmp:
   lambda p:p.update(pricing=False),
  ]:
   payload=copy.deepcopy(original);mutation(payload);assert client.post('/api/estimates',json=payload).status_code==400,payload
+ payload=copy.deepcopy(original);payload['quote']['commercialAreas'].append({'name':'Unfinished QA area','sqft':0,'points':[],'rate':.2})
+ rejected=client.post('/api/estimates',json=payload);assert rejected.status_code==400;assert 'unfinished service area' in rejected.get_json()['error']
  assert client.get('/api/estimates/'+eid).get_json()==before
  con=a.estimate_db();assert con.execute('SELECT COUNT(*) AS n FROM estimate_revisions').fetchone()['n']==0;con.close()
  payload=copy.deepcopy(original);payload.update(address='QA TEST Free Service',total_price=0);payload['quote']['commercialAreas'][0]['rate']=0;price_fixture(payload);assert client.post('/api/estimates',json=payload).status_code==200

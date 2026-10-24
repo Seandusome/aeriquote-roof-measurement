@@ -31,5 +31,9 @@ const c={AbortController,setTimeout,clearTimeout,quotePricingError:()=>'',el:id=
  c.savedPropertyEditActive=true;fields.estimatePeriod={value:'one_time'};c.priceCalc=()=>({area:100,total:110,mode:'added',estimatePeriod:fields.estimatePeriod.value});
  const periodSaves=[];c.fetch=async(url,options)=>{periodSaves.push(JSON.parse(options.body));return{ok:true}};
  await c.saveEstimateHistory();fields.estimatePeriod.value='month';await c.saveEstimateHistory();assert.equal(periodSaves.length,2,'Period-only change must save despite unchanged money');assert.equal(periodSaves[1].pricing.estimatePeriod,'month');assert.equal(periodSaves[0].total_price,periodSaves[1].total_price);
+ const originalSnapshot=JSON.stringify(c.quoteSnapshot),lastSaved=c.lastHistorySaveKey;
+ fields.customerName.value='QA validation rejection';c.fetch=async()=>({ok:false,status:400,json:async()=>({error:'Finish saving or cancel the unfinished service area before creating an estimate.'})});
+ assert.equal(await c.saveEstimateHistory(),false);assert(messages.at(-1)[0].includes('unfinished service area'));assert(!messages.at(-1)[0].includes('Check your connection'));assert.equal(JSON.stringify(c.quoteSnapshot),originalSnapshot);assert.equal(c.lastHistorySaveKey,lastSaved);
+ const retryId=c.saveEstimateHistory.pending.id;c.fetch=async()=>({ok:true,json:async()=>({version:'retry-success'})});assert.equal(await c.saveEstimateHistory(),true);assert.equal(c.saveEstimateHistory.pending,null);
  console.log('PASS: unchanged-total edits persist, duplicate skips, job metadata preserved, failed save visible and retryable');
 })().catch(e=>{console.error(e);process.exit(1)});

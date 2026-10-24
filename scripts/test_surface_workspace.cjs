@@ -32,6 +32,16 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  assert.equal(w.eval('JSON.stringify(linearPoints)'),line);assert.equal(w.eval('JSON.stringify(commercialAreas)'),geometry);assert(Math.abs(w.eval('priceCalc().subtotal')-expected)<1e-7);assert(!btn('createEstimateBtn').disabled);
  // Drag-edit Cancel and Save remain the established controls, with no competing Continue button.
  btn('linearEditBtn').click();assert(w.eval('linearCorrectionOriginal'));assert(btn('createEstimateBtn').disabled);assert.equal(btn('linearStartBtn').style.display,'none');btn('linearCancelEditBtn').click();assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
+ const savedBeforeEmptySwitch=w.eval('JSON.stringify(commercialAreas)'),lineBeforeEmptySwitch=w.eval('JSON.stringify(linearPoints)');
+ btn('toolAreaBtn').click();assert(w.eval('areaMode'));assert.equal(w.eval('areaPoints.length'),0);
+ btn('toolLinearBtn').click();
+ assert.equal(w.eval('JSON.stringify(commercialAreas)'),savedBeforeEmptySwitch,'Switching away from an empty Add Area draft must use Cancel and remove only the empty draft');
+ assert.equal(w.eval('JSON.stringify(linearPoints)'),lineBeforeEmptySwitch);assert(!w.eval('quotePricingError()'));assert(!btn('createEstimateBtn').disabled);
+ const completeAreas=w.eval('JSON.stringify(commercialAreas)'),completeLine=w.eval('JSON.stringify(linearPoints)');
+ w.eval("commercialAreas.push({name:'Unfinished QA area',rate:.2,points:[],sqft:0});renderSummary()");
+ assert(w.eval('quotePricingError()').includes('unfinished service area'));assert(btn('createEstimateBtn').disabled,'Incomplete draft must block quote in combined Linear view');
+ assert.equal(w.eval('JSON.stringify(commercialAreas.slice(0,-1))'),completeAreas);assert.equal(w.eval('JSON.stringify(linearPoints)'),completeLine);
+ w.eval('commercialAreas.pop();renderSummary()');assert(!w.eval('quotePricingError()'));assert(!btn('createEstimateBtn').disabled);
  console.log('PASS '+industry+': one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals');
 }
 // Leaving surfaces restores Roofing's existing controls and does not duplicate nodes.
