@@ -42,6 +42,16 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  assert(w.eval('quotePricingError()').includes('unfinished service area'));assert(btn('createEstimateBtn').disabled,'Incomplete draft must block quote in combined Linear view');
  assert.equal(w.eval('JSON.stringify(commercialAreas.slice(0,-1))'),completeAreas);assert.equal(w.eval('JSON.stringify(linearPoints)'),completeLine);
  w.eval('commercialAreas.pop();renderSummary()');assert(!w.eval('quotePricingError()'));assert(!btn('createEstimateBtn').disabled);
+ const savedForPreparation=w.eval('JSON.stringify({commercialAreas,linearPoints})');
+ const marketingBefore=w.eval('applyDealerMarketing');w.applyDealerMarketing=()=>{throw Error('QA simulated report preparation failure')};
+ let escapedPreparationError=false;try{await w.eval('showCustomerEstimate()')}catch(e){escapedPreparationError=true}
+ assert.equal(escapedPreparationError,false,'Report preparation errors must be caught and shown');assert.equal(w.eval('estimateOpenInProgress'),false);assert(!btn('createEstimateBtn').disabled,'Preparation failure must release Create Estimate');assert.equal(w.eval('JSON.stringify({commercialAreas,linearPoints})'),savedForPreparation);assert(btn('status').textContent.includes('could not be prepared'));assert(btn('estimateActionStatus').textContent.includes('could not be prepared'));assert(!btn('estimateActionStatus').hidden);
+ w.applyDealerMarketing=marketingBefore;
+ const savedFetch=w.fetch;let retryPosts=0;w.fetch=async(url,options)=>{if(url==='/api/estimates'&&options?.method==='POST')retryPosts++;return{ok:true,json:async()=>({id:'qa-preparation-retry',version:'qa-version'})}};
+ btn('streetViewChoice').value='none';await w.eval('showCustomerEstimate()');
+ assert.equal(retryPosts,1,'Retry after preparation error must reach save once');assert(w.document.body.classList.contains('report-open'));assert(!btn('estimateActionStatus').textContent);assert(!btn('createEstimateBtn').disabled);
+ assert.equal(w.eval('JSON.stringify({commercialAreas,linearPoints})'),savedForPreparation);w.fetch=savedFetch;w.document.body.classList.remove('report-open');btn('reportOverlay').style.display='none';
+
  console.log('PASS '+industry+': one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals');
 }
 // Leaving surfaces restores Roofing's existing controls and does not duplicate nodes.

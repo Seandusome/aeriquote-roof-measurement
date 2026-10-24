@@ -2641,6 +2641,11 @@ async function viewEstimateVersions(id){
  }catch(e){box.innerHTML='<div class="error" style="padding:14px 0">Could not load estimate history.</div>'}
 }
 
+function estimateActionMessage(message){
+ const button=el('createEstimateBtn');if(!button)return;
+ let box=el('estimateActionStatus');if(!box){box=document.createElement('div');box.id='estimateActionStatus';box.className='status error';box.setAttribute('role','status');box.setAttribute('aria-live','polite');(button.closest('.simple-actions')||button).after(box)}
+ box.textContent=message;box.hidden=!message;
+}
 async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
@@ -2656,6 +2661,9 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if(estimateOpenInProgress||document.body.classList.contains('report-open'))return;
  estimateOpenInProgress=true;
  const createBtn=el('createEstimateBtn');if(createBtn)createBtn.disabled=true;
+ let reportReady=false;
+ try{
+ estimateActionMessage('Preparing your estimate…');
  const estimatePricing=historicalMode&&quoteSnapshot.savedPricing?quoteSnapshot.savedPricing:priceCalc();
  if(!historicalMode)quoteSnapshot=captureQuoteSnapshot();
  if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null}customerRgbLayer=null;customerOverlays=[];el('customerMap')?.replaceChildren();
@@ -2724,10 +2732,10 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  }
  price+=`<div class="line grand"><span>TOTAL (${currencyCode()})</span><span>${money(calc.total)}${escapeHistory(estimatePeriodSuffix(calc.estimatePeriod))}</span></div>`;
  el('rPricing').innerHTML=price;
- if(!historicalMode&&(await saveEstimateHistory())===false){estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;return}
+ if(!historicalMode&&(await saveEstimateHistory())===false){estimateActionMessage(el('status')?.textContent||'Estimate was not saved. Your measurements are still here.');return}
  reportOpenedAt=Date.now();
  document.body.classList.add('report-open');
- el('reportOverlay').style.display='block';
+ el('reportOverlay').style.display='block';reportReady=true;estimateActionMessage('');
  if(!historicalMode){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
  try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
@@ -2737,6 +2745,15 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
    document.querySelectorAll('#reportCard .line span, #customerEstimate .line span, .report .line span').forEach(x=>{
      if((x.textContent||'').trim()==='Service — Main House')x.textContent='Roofing Service — Main House';
    });
+ }
+ }catch(e){
+  console.error('Customer estimate preparation failed',e);
+  if(!reportReady){document.body.classList.remove('report-open');if(el('reportOverlay'))el('reportOverlay').style.display='none'}
+  const message='Estimate could not be prepared. Your measurements are still here. Please try again.';
+  estimateActionMessage(message);status(message,'error');
+ }finally{
+  estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;
+  if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=!reportReady;
  }
 }
 
