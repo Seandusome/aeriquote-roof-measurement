@@ -1,0 +1,260 @@
+{
+  "scope": "Fictional local Chromium; synthetic imagery; mouse/viewport emulation; not live provider or physical devices",
+  "full_regression_commands": 67,
+  "full_regression_failures": 0,
+  "browser": [
+    {
+      "industry": "snow",
+      "width": 1440,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "snow-1440-single.pdf",
+          "sha256": "84b3870915e88d52104402d4c7703a4a5d713c140599e5785286231ee0d8e567"
+        },
+        {
+          "name": "snow-1440-expanded.pdf",
+          "sha256": "90d7462ffa92d612dabac44baa2149baa16240bacfde7a8eaf246e98cf294f4a"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "pressure",
+      "width": 1440,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "pressure-1440-single.pdf",
+          "sha256": "9a49eb904dec1492e7f9838c107873a77548f4beab0eac29245200e96465bbce"
+        },
+        {
+          "name": "pressure-1440-expanded.pdf",
+          "sha256": "e586c56385bbb96e821e755d8fdcbed944fa52a65ce1faf793dc15cf23823421"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "paving",
+      "width": 1440,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "paving-1440-single.pdf",
+          "sha256": "08e645aedb0bc123ddeb24db4296f4cedb0dbd130dfc9cbdae6cde9faaaeb2b2"
+        },
+        {
+          "name": "paving-1440-expanded.pdf",
+          "sha256": "e20ee2616f8ee0b311dd12b4a43565581039e46b44982657784c00333371b383"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "landscaping",
+      "width": 1440,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "landscaping-1440-single.pdf",
+          "sha256": "cc465283961effcfc6c6e3d8fd0cff22992176323c47508507d1b7d2bf7f2bd1"
+        },
+        {
+          "name": "landscaping-1440-expanded.pdf",
+          "sha256": "d44e1196f1254f14083fa51e34d505e8f5c2cd0a56ef681ed88a6f0af72d076a"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "commercial",
+      "width": 1440,
+      "total": 163.52,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "commercial-1440-single.pdf",
+          "sha256": "f1933780367c882f922dc81bf6842b5c03fb82e3cbd559ddcae0d5175511e770"
+        },
+        {
+          "name": "commercial-1440-expanded.pdf",
+          "sha256": "8d62bae99fadaff311b39e3a998e31f3b9157d300a057fb665256fcc82faf94c"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "roofing",
+      "width": 1440,
+      "total": 79.3,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "roofing-1440-single.pdf",
+          "sha256": "bc768cf32ff6d04ac52f6b1972c8249cf6496d71861f8c3e59b9d736c6d9b034"
+        },
+        {
+          "name": "roofing-1440-expanded.pdf",
+          "sha256": "d1d1d05bac25d002309491c452642816f177d8ced591f76b2984ac64f7ad4c71"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "snow",
+      "width": 390,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "snow-390-single.pdf",
+          "sha256": "be7322fbc7ac8afec9096c7c46632070a1cdc90d9fdd0190a90220bf14f92617"
+        },
+        {
+          "name": "snow-390-expanded.pdf",
+          "sha256": "fdb0aa1884177823e5b2aecb3429c223ace3b8fc0ae8088ce81bef21d654c550"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "pressure",
+      "width": 390,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "paving",
+      "width": 390,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "landscaping",
+      "width": 390,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "commercial",
+      "width": 390,
+      "total": 163.52,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "roofing",
+      "width": 390,
+      "total": 79.3,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "snow",
+      "width": 768,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [
+        {
+          "name": "snow-768-single.pdf",
+          "sha256": "fabfe71088bd67c680f13e3b931e1f5459cbb8f77ebd93ecdc21ce09149b0b73"
+        },
+        {
+          "name": "snow-768-expanded.pdf",
+          "sha256": "44b28d1a6d53a405ab6c1f38b5ee5f7933fa585c48e111452e971347c89a6bfd"
+        }
+      ],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "pressure",
+      "width": 768,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "paving",
+      "width": 768,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "landscaping",
+      "width": 768,
+      "total": 153.18,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "commercial",
+      "width": 768,
+      "total": 163.52,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    },
+    {
+      "industry": "roofing",
+      "width": 768,
+      "total": 79.3,
+      "overflow": false,
+      "errors": [],
+      "pdfs": [],
+      "saved": true,
+      "reopened": true
+    }
+  ],
+  "known_visual_failure": "390px Expanded aerial horizontally stretched; existing aerial renderer unchanged"
+}
