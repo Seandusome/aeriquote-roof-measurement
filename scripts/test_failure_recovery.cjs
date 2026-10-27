@@ -33,12 +33,14 @@ vm.createContext(c);vm.runInContext(save,c);
  vm.createContext(l);vm.runInContext(load,l);
  const a=l.loadProperty(),b=l.loadProperty();finish();await Promise.all([a,b]);assert.equal(requests,1);assert.equal(resets,0);assert.equal(l.sessionToken,old.sessionToken);assert.equal(dom.address.value,'old saved address');assert(notices.some(n=>n[0].includes('login expired')));
  // Browser refresh guard: unsaved geometry/price changes warn; saved work can reload.
- const listeners={},f={...c,window:{addEventListener:(name,fn)=>listeners[name]=fn},historicalMode:false,areaPoints:[[52,-106]],linearPoints:[],structures:[],manualPlanes:[]};
+ const listeners={},f={...c,window:{addEventListener:(name,fn)=>listeners[name]=fn},areaPoints:[[52,-106]],linearPoints:[],structures:[],manualPlanes:[]};
  vm.createContext(f);vm.runInContext(save,f);
  vm.runInContext(source.slice(source.indexOf('function workspaceSaveFingerprint(){'),source.indexOf('async function saveEstimateHistory(){')),f);
  let prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
  f.saveEstimateHistory.cleanWorkspace=f.workspaceSaveFingerprint();prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false);
  fields.customerName.value='QA TEST unsaved after successful save';listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
+ f.sessionToken=null;prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false,'No loaded property needs no warning');
+ f.sessionToken='qa';f.areaPoints=[];prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false,'An empty workspace needs no warning');
  // Real address input handlers retain old geometry/customer/address and block mismatched quotes.
  const addressSource=source.slice(source.indexOf('function propertyInputAddressKey(){'),source.indexOf('function propertyProvinceChanged(){'));
  const addressFields={streetAddress:{value:'Old street'},cityTown:{value:'Saskatoon'},propertyProvince:{value:'SK'},address:{value:'Old stored property'},customerName:{value:'QA TEST existing customer'}};

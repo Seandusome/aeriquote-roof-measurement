@@ -2457,7 +2457,7 @@ function workspaceSaveFingerprint(){
  try{return JSON.stringify({quote:captureQuoteSnapshot(),pricing:priceCalc(),fields:['address','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice'].map(id=>el(id)?.value||'')})}catch(e){return null}finally{quoteSnapshot=previous}
 }
 window.addEventListener('beforeunload',event=>{
- if(historicalMode||!sessionToken||(!areaPoints.length&&!linearPoints.length&&!structures.length&&!manualPlanes.length))return;
+ if(!sessionToken||(!areaPoints.length&&!linearPoints.length&&!structures.length&&!manualPlanes.length))return;
  if(saveEstimateHistory.cleanWorkspace&&saveEstimateHistory.cleanWorkspace===workspaceSaveFingerprint())return;
  event.preventDefault();event.returnValue='';
 });
