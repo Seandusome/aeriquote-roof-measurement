@@ -162,6 +162,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta id="aqAccountId" data-account-id="{{ACCOUNT_ID}}">
 <title>AeriQuote Roof Measurement & Estimate</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -866,15 +867,15 @@ async function saveDealerDefaults(){
  const sb=el('saveDealerProfileBtn'),buttonText=sb?.textContent||'SAVE DEALER PROFILE & BRANDING';
  if(sb){sb.disabled=true;sb.textContent='SAVING…'}
  try{
-  const response=await fetch('/api/account/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+  const response=await fetch('/api/account/profile',{method:'POST',headers:{'Content-Type':'application/json','X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''},body:JSON.stringify(d)});
   const result=await response.json().catch(()=>null);
-  if(!response.ok||result?.ok!==true)throw new Error('Profile save was not confirmed.');
+  if(!response.ok||result?.ok!==true){const error=new Error(result?.error||'Profile save was not confirmed.');error.status=response.status;throw error}
   dealerLogoDirty=false;
   try{localStorage.setItem('sxDealerDefaults',JSON.stringify(d))}catch(e){}
   const savedPrice=parseFloat(d.price);if(Number.isFinite(savedPrice)&&savedPrice>=0&&el('jobPrice'))el('jobPrice').value=savedPrice.toFixed(2);const ds=document.querySelector('details.dealer-settings');if(ds)ds.open=true;const ms=el('marketingSettings');if(ms)ms.open=false;applyBusinessTerminology();renderSummary();el('savedMsg').innerHTML=`<div class="savedmsg"><b>✓ Dealer profile & branding saved.</b> Current quote updated to <b>${money(savedPrice)} / sq. ft.</b>. Your company information and marketing choices will appear on customer estimates.</div>`;
   return true;
  }catch(e){
-  el('savedMsg').textContent='Profile not saved. Your entries are still here. Check your connection or sign-in, then click SAVE DEALER PROFILE & BRANDING to retry.';
+  el('savedMsg').textContent=e.status===409?'Profile not saved. '+e.message:'Profile not saved. Your entries are still here. Check your connection or sign-in, then click SAVE DEALER PROFILE & BRANDING to retry.';
   return false;
  }finally{
   dealerProfileSaveInProgress=false;
@@ -2491,7 +2492,7 @@ async function performEstimateHistorySave(){
   if(!operation.payload)operation.payload=payload;
   const frozen=operation.payload,saveKey=JSON.stringify(frozen);
   if(saveKey===lastHistorySaveKey)return true;
-  const headers={'Content-Type':'application/json','Idempotency-Key':operation.id};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
+  const headers={'Content-Type':'application/json','Idempotency-Key':operation.id,'X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
   try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
@@ -3958,6 +3959,12 @@ def require_dealer_login():
         session.clear()
         if request.path.startswith("/api/") or request.is_json:return jsonify(error="Account access disabled. Please log in again."),401
         return redirect("/dealer-login")
+
+
+    # An old browser tab must not save its draft into a different business after re-login.
+    expected_account=request.headers.get("X-AeriQuote-Account", "")
+    if expected_account and expected_account!=str(session.get("dealer_id") or ""):
+        return jsonify(error="This page belongs to another business. Keep it open, sign in to the original business in another tab, then retry. Your unsaved entries are still here."),409
 
 
 @app.get("/logout")

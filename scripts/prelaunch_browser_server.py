@@ -9,7 +9,10 @@ from account_credits import month_key
 a.GOOGLE_MAPS_API_KEY='qa-placeholder';a.is_recovery_test_service=lambda:False
 con=a.estimate_db();con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,state,status,lookup_limit,estimate_limit,created_at,industry) VALUES(?,?,?,?,?,'active',1000,1000,'2026-10-27','snow')",('qa-browser','QA Browser','qa-browser@example.invalid',a.password_hash('fictional-qa-password'),'SK'))
 profile=dict(name='QA Browser',company='FICTIONAL QA COMPANY',email='qa-browser@example.invalid',country='CA',province='SK',businessType='snow',price=.1,gst=5,pst=6,pricingMode='regular')
-con.execute('INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)',('qa-browser',json.dumps(profile),'2026-10-27'));con.execute('INSERT INTO account_allowances(dealer_id,complimentary) VALUES(?,1)',('qa-browser',));con.commit();con.close()
+con.execute('INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)',('qa-browser',json.dumps(profile),'2026-10-27'));con.execute('INSERT INTO account_allowances(dealer_id,complimentary) VALUES(?,1)',('qa-browser',));con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,status,lookup_limit,estimate_limit,created_at) VALUES(?,?,?,?,'active',1000,1000,'2026-10-27')",('qa-browser-other','QA Other','qa-other@example.invalid',a.password_hash('fictional-qa-password')))
+con.execute('INSERT INTO account_allowances(dealer_id,complimentary) VALUES(?,1)',('qa-browser-other',))
+con.execute('INSERT INTO dealer_profiles(dealer_id,profile_json,updated_at) VALUES(?,?,?)',('qa-browser-other',json.dumps({**profile,'company':'OTHER FICTIONAL BUSINESS','email':'qa-other@example.invalid'}),'2026-10-27'))
+con.commit();con.close()
 def fixture(d):
  roof=d.get('business_type')=='roofing';token=a.create_session('qa-placeholder',52,-106,mode='manual_roof_static' if roof else 'manual_static',formatted_address='1 Fictional QA Street, Saskatoon, SK, Canada')
  return a.jsonify(token=token,fallback=True,manual_roof_only=roof,center={'latitude':52,'longitude':-106},formatted_address='1 Fictional QA Street, Saskatoon, SK, Canada',parts={})

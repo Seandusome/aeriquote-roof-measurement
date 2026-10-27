@@ -26,6 +26,7 @@ jobs:
       - run: python scripts/test_activation_metrics.py
       - run: python scripts/test_account_access.py
       - run: python scripts/test_business_isolation.py
+      - run: python scripts/test_workspace_account_binding.py
       - run: python scripts/test_account_credits.py
       - run: python scripts/test_password_recovery.py
       - run: python scripts/test_public_routes.py

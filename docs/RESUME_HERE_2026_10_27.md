@@ -1,5 +1,11 @@
 # AeriQuote — resume here, October 27, 2026
 
+## Latest recovery/security follow-up
+
+This current recovery commit follows3b0d1a15e1007b8ab24c02e4596fb4c57e311912. Read docs/QA_RECOVERY_SECURITY_2026_10_27.md first. Fixed missing workspace business metadata for cached branding and accidental cross-business writes from a stale tab after re-login. Modern estimate/profile POSTs bind to rendered business; mismatches409 before any record or usage write. No autosave/schema/credit-policy/PDF/provider changes.68/68 local regressions; real Chromium cancel-navigation/session/account-switch/forced-discard tests and six-industry synthetic save/reopen/PDF matrix passed. Unsaved forced discard still loses data; old already-loaded scripts do not gain the new header until a safe fresh load.
+
+Live browser Head Office login was recognized and not used for estimates. User selected existing isolated QA accountsean@shinglextra.com; live-provider tests await that secure sign-in. Continue actual live work only after verifying QA identity, then record fresh evidence. Never ask for passwords in chat. Earlier sections below are historical checkpoints; do not repeat repaired PDF distortion or missing account-meta fixes. New report contains autosave risk analysis; no autosave approved/implemented.
+
 ## Latest follow-up — approved Mobile Expanded PDF correction
 
 The CURRENT commit containing this updated resume follows7afa2328c396497c67395a20671ccc70353c76a3 and fixes the previously documented390px Expanded PDF distortion. Read docs/QA_MOBILE_EXPANDED_PDF_2026_10_27.md and its RESULTS.json before treating the historical remaining-issue list below as current. Explicit proportional aerial sizing preserves pixels/marker circles; numbered-marker leader strokes avoid existing label boxes. Only Expanded presentation changed. Single, vector, imagery/API/Solar, measurements/pricing/accounts are unchanged.67/67 final regressions;18 Chromium workflows;36 actual PDFs/54 rendered pages reviewed; independent WGS84/Decimal checks passed. No physical-device/live-provider licensing claim.
