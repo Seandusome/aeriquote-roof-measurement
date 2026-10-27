@@ -750,6 +750,48 @@
           "border_ratio": 0.5565
         }
       ]
+    },
+    {
+      "case": "aq-expanded-content-320",
+      "results": [
+        {
+          "industry": "snow",
+          "width": 320,
+          "total": 153.18,
+          "overflow": false,
+          "errors": [],
+          "pdfs": [
+            "/tmp/aq-expanded-content-320/snow-320-single.pdf",
+            "/tmp/aq-expanded-content-320/snow-320-expanded.pdf"
+          ],
+          "captureChecks": [
+            {
+              "sourceWidth": 556,
+              "sourceHeight": 930,
+              "drawWidth": 333,
+              "drawHeight": 557
+            },
+            {
+              "street": true,
+              "sourceWidth": 640,
+              "sourceHeight": 360,
+              "drawWidth": 227.547,
+              "drawHeight": 128
+            }
+          ],
+          "saved": true,
+          "reopened": true
+        }
+      ],
+      "raster": [
+        {
+          "pdf": "snow-320-expanded.pdf",
+          "page": "snow-320-expanded-2.png",
+          "circle_ratio": 1.0,
+          "source_ratio": 1.7778,
+          "border_ratio": 1.7913
+        }
+      ]
     }
   ],
   "pdfs": [
@@ -1004,7 +1046,75 @@
       "filename": "snow-1440-expanded.pdf",
       "pages": 2,
       "sha256": "a8e087c32771b01408f7943da39315c573344aed6f643dc7ed1a3e5f32349826"
+    },
+    {
+      "case": "aq-expanded-content-320",
+      "filename": "snow-320-single.pdf",
+      "pages": 1,
+      "sha256": "dd9dead81d82a321cf75fd317c393c726be327bab0c128c6e348112f9eae9c80"
+    },
+    {
+      "case": "aq-expanded-content-320",
+      "filename": "snow-320-expanded.pdf",
+      "pages": 2,
+      "sha256": "6b96ee9c9cdd153b98ea122013383eaf4983800415b521fc0fb870d066880b7b"
     }
   ],
-  "single_vector_functions_unchanged": true
+  "single_vector_functions_unchanged": true,
+  "deployed_live_exports": [
+    {
+      "industry": "pressure",
+      "bytes": 1702896,
+      "company": "Shingle Guard",
+      "customer": "QA TEST pressure Recovery Oct27 DO NOT SEND",
+      "email": "qa-customer@example.invalid",
+      "pricing": "Service Area 1 \u2014 1,733 ft\u00b2 \u00d7 $0.80/ft\u00b2$1,386.40Pressure Washing Linear \u2014 72.0 ft \u00d7 $0.10/ft$7.20Subtotal Before Tax$1,393.60Sales Tax (5%)$69.68Additional Tax (6%)$83.62TOTAL (CAD)$1,546.90",
+      "quantities": "Total Service Area1,733 ft\u00b2Service Area 11,733 ft\u00b2Pressure Washing Linear \u2014 72.0 ft",
+      "street": {
+        "height": 360,
+        "width": 640
+      },
+      "file": "AeriQuote_Expanded_Pressure_Live_QA.pdf",
+      "pages": 2,
+      "sha256": "7be4be3454b76b685d8f366224b9276da2fd944be4bdef5f2a5597ecc6446340"
+    },
+    {
+      "industry": "paving",
+      "bytes": 1720360,
+      "company": "Shingle Guard",
+      "customer": "QA TEST paving Recovery Oct27 DO NOT SEND",
+      "email": "qa-customer@example.invalid",
+      "pricing": "Service Area 1 \u2014 1,733 ft\u00b2 \u00d7 $0.80/ft\u00b2$1,386.40Paving & Sealcoating Linear \u2014 72.0 ft \u00d7 $0.10/ft$7.20Subtotal Before Tax$1,393.60Sales Tax (5%)$69.68Additional Tax (6%)$83.62TOTAL (CAD)$1,546.90",
+      "quantities": "Total Service Area1,733 ft\u00b2Service Area 11,733 ft\u00b2Paving & Sealcoating Linear \u2014 72.0 ft",
+      "street": {
+        "height": 360,
+        "width": 640
+      },
+      "file": "AeriQuote_Expanded_Paving_Live_QA.pdf",
+      "pages": 2,
+      "sha256": "313f4a268b20827c4b20f54287280d1a25d8ceb3db752c1e74200dd4fab7ab03"
+    },
+    {
+      "industry": "landscaping",
+      "bytes": 1672903,
+      "company": "Shingle Guard",
+      "customer": "QA TEST landscaping Recovery Oct27 DO NOT SEND",
+      "email": "qa-customer@example.invalid",
+      "pricing": "Service Area 1 \u2014 1,733 ft\u00b2 \u00d7 $0.80/ft\u00b2$1,386.40Landscaping Linear \u2014 72.0 ft \u00d7 $0.10/ft$7.20Subtotal Before Tax$1,393.60Sales Tax (5%)$69.68Additional Tax (6%)$83.62TOTAL (CAD)$1,546.90",
+      "quantities": "Total Service Area1,733 ft\u00b2Service Area 11,733 ft\u00b2Landscaping Linear \u2014 72.0 ft",
+      "street": {
+        "height": 360,
+        "width": 640
+      },
+      "file": "AeriQuote_Expanded_Landscaping_Live_QA.pdf",
+      "pages": 2,
+      "sha256": "4e56793caf2e7ce60e13debebd2a408fec6be6b6db50452757f5e33ecc5ebc63"
+    }
+  ],
+  "code_checkpoint": "0d006dbba4d337903c6741e34789793ec39bcdb8",
+  "deployment": "dep-dbghqubbc2fs73fbm1s0",
+  "github_runs": [
+    40590551355,
+    40590551321
+  ]
 }

@@ -35,3 +35,12 @@ No confirmed clipping in ordinary recovered PDFs; earlier proof screenshot was i
 - All physical-device testing, real portrait provider examples, licensing permissions remain unverified. Baseline live Roofing mismatch guard remains intact; no live completed Roofing estimate was fabricated.
 - Recovery branch protected:false remains an owner/admin configuration task; expected-head non-force publishing is used operationally. Main remains c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a.
 - Postdeployment live corrected-export evidence and terminal CI/deployment state are reported in final handoff; this report records prepublication verification.
+
+
+## Completed deployment/live evidence checkpoint
+
+Code commit0d006dbba4d337903c6741e34789793ec39bcdb8 deployed LIVE as dep-dbghqubbc2fs73fbm1s0, finished2026-10-27T21:54:55Z. GitHub application40590551355 and recovery40590551321 both terminal SUCCESS, including disposable PostgreSQL checks. Fresh authenticated QA browser tab loaded deployed code; reopened the same Pressure/Paving/Landscaping versions and exported again. Actual nonempty browser/workspace files parsed/rendered/visually reviewed: each2pages, correct company/logo, customer email now visible on every Expanded page,1733ft² +72.0ft, unchanged1546.90CAD. Real640x360 Street View now proportionate/full-frame, visibly narrower than the previous stretched image. No new estimates/revisions or account/profile writes. Sizes: Pressure1,702,896; Paving1,720,360; Landscaping1,672,903bytes. Companion JSON has hashes and source values.
+
+Additional320px Snow long-contact/landscape test passed measure/save/reopen, both PDF downloads, account isolation, raster calibration and independent WGS84/Decimal verification. Cumulative controlled final matrix22workflows/44PDFs/78rendered pages. Additional baseline recovered3PDFs/6pages and deployed corrected3PDFs/6pages were visually inspected separately. Physical devices and real portrait provider imagery remain unverified. Existing Single portrait stretching remains explicitly outside this approved Expanded repair. No further application changes followed the full68-command regression run.
+
+This evidence-only checkpoint follows the tested code commit above; its exact final SHA is in the final handoff. Verify its CI and test deployment before resuming. Main remains unchanged; branch protection remains off.
