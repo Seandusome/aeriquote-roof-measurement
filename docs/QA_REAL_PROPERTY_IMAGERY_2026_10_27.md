@@ -20,9 +20,9 @@ New saved-canvas style regression reproduced red before repair, then passed. Ful
 
 Real Chromium:12 completed six-industry cases at390/1440px, save/reopen, intrinsic saved-canvas ratio, Single and Expanded downloads, no script errors. These controlled regression fixtures use explicitly labelled synthetic imagery; they are separate from the real-photo live test above. Independent GeographicLib WGS84/Decimal checks passed for every source snapshot (0.6% spherical/ellipsoidal tolerance, not survey accuracy). No physical-device test.
 
-## Deployment follow-up
+## Completed deployment follow-up
 
-After this commit deploys, reopen the exact existing saved QA version without changing records; verify canvas display/source ratio1.0, unchanged fields/totals, actual photo/overlay/number-marker alignment and Street View proportions. Re-export both actual PDFs, render all three pages and save final corrected screenshots. Record deployment, CI and final artifacts in the completion report; do not mistake initial distorted exports for final corrected examples.
+Verified code checkpoint:e6f319b. Render deployment dep-dbgil7avcj2c73ak3hrg LIVE at22:50:58UTC. GitHub application40597778543 and recovery40597778557 succeeded, including disposable PostgreSQL jobs. Fresh browser tab reopened the exact current saved version without another save/property lookup. Canvas1280x840 displayed708.5625x464.984375; relative aspect ratio1.000021 (pixel rounding only). Original company/customer/measurements/prices remained equal. Actual Single991582bytes(one page), Expanded1426404bytes(two pages), all three pages rendered and visually reviewed. Correct photo, purple area, teal reference line, edge labels, circular Expanded area marker, attribution, customer fields, GST/PST and1113.56CAD total. Actual landscape Street View640x360 retains its full proportions in both PDFs. One intermediate page-render PNG was truncated; rerendering the unchanged valid PDF succeeded. This was a local rendering artifact, not an application/PDF defect. Final corrected PDFs/screenshots saved separately from baseline distorted exports. No major redesign or extra application change.
 
 ## Limits
 
