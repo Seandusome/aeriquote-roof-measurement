@@ -1,0 +1,27 @@
+// Opt-in loopback-only exports with synthetic Street View aspect-ratio/branding fixtures.
+const fs=require('fs'),assert=require('assert/strict');
+process.env.QA_BROWSER_IMAGES='hide';process.env.QA_BROWSER_ALL_PDFS='1';
+let script=fs.readFileSync('scripts/test_prelaunch_browser.cjs','utf8');
+const street=`const portrait=process.env.QA_STREET_ORIENTATION==='portrait'||(!process.env.QA_STREET_ORIENTATION&&width===390),sw=portrait?360:640,sh=portrait?640:360;const street='<svg xmlns="http://www.w3.org/2000/svg" width="'+sw+'" height="'+sh+'"><rect width="100%" height="100%" fill="#dbeafe"/><rect x="4" y="4" width="'+(sw-8)+'" height="'+(sh-8)+'" fill="none" stroke="#d00000" stroke-width="8"/><circle cx="'+sw/2+'" cy="'+sh/2+'" r="70" fill="#0b193e"/><text x="20" y="30" font-size="20">FICTIONAL QA STREET</text><text x="20" y="'+(sh-25)+'" font-size="20">BOTTOM EDGE</text></svg>';`;
+script=script.replace("const context=await browser.newContext",street+"\n const context=await browser.newContext");
+script=script.replace("if(u.pathname.startsWith('/street/'))return r.fulfill({status:404,body:'QA street image intentionally unavailable'});","if(u.pathname.startsWith('/street/'))return r.fulfill({body:street,contentType:'image/svg+xml'});");
+script=script.replace("await page.goto('http://127.0.0.1:8765/?industry='+industry);await page.waitForFunction(()=>typeof map",`const logo='data:image/svg+xml;base64,'+Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="70"><rect width="240" height="70" fill="#0b193e"/><text x="12" y="45" fill="white" font-size="24">QA BUSINESS A</text></svg>').toString('base64');
+ await context.request.post('http://127.0.0.1:8765/api/account/profile',{data:{company:'FICTIONAL QA COMPANY',email:'qa-browser@example.invalid',logoData:logo}});
+ await page.goto('http://127.0.0.1:8765/?industry='+industry);await page.waitForFunction(()=>typeof map`);
+// Remove client branding injection; only the authenticated server profile may supply it.
+script=script.replace("el('dealerCompany').value='FICTIONAL QA COMPANY';", "if(el('dealerCompany').value!=='FICTIONAL QA COMPANY')throw Error('Wrong hydrated business profile');");
+script=script.replace("await page.fill('#customerEmail','fictional-customer@example.invalid');", "await page.fill('#customerEmail','fictional.customer.with.a.long.contact.address.for.qa@example.invalid');");
+script=script.replace("page.selectOption('#streetViewChoice',imageChoice)","page.selectOption('#streetViewChoice','auto')");
+script=script.replace("console.log('report opened');", "assert.equal(await page.locator('#rEstimateSubtitle').textContent(),'FICTIONAL QA COMPANY');assert.equal(await page.locator('#rDealerLogo').getAttribute('src'),logo);console.log('PASS saved business branding '+industry);console.log('report opened');");
+const anchor="const image=node.querySelector?.('[data-expanded-aerial]');";
+assert(script.includes(anchor));script=script.replace(anchor,`const streetImage=node.querySelector?.('[data-expanded-street-image]');
+  if(streetImage){const box=streetImage.getBoundingClientRect();const expected=streetImage.naturalWidth/streetImage.naturalHeight;const cs=getComputedStyle(streetImage),w=parseFloat(cs.width),h=parseFloat(cs.height);if(Math.abs(w/h/expected-1)>.001)throw Error('Expanded Street View stretches source image');await window.qaRecordPdfImage({street:true,sourceWidth:streetImage.naturalWidth,sourceHeight:streetImage.naturalHeight,drawWidth:w,drawHeight:h});}
+  if(node.classList?.contains('aq-expanded-page')){const meta=node.querySelector('[data-expanded-customer]');if(!meta||!meta.textContent.includes('555-0100')||!meta.textContent.includes('fictional.customer.with.a.long.contact.address.for.qa@example.invalid'))throw Error('Expanded customer contact details missing');for(const n of node.querySelectorAll('[data-expanded-customer],[data-expanded-address]')){const r=n.getBoundingClientRect(),p=node.getBoundingClientRect();if(r.left<p.left||r.right>p.right||n.scrollWidth>n.clientWidth+1)throw Error('Expanded customer details clipped');}if(!node.textContent.includes('FICTIONAL QA COMPANY'))throw Error('Wrong Expanded business branding');}
+  `+anchor);
+// After every successful matrix export, independently authenticated business B must not hydrate A's cache/logo.
+script=script.replace("await context.close();",`await context.request.get('http://127.0.0.1:8765/logout');await context.request.post('http://127.0.0.1:8765/dealer-login',{form:{email:'qa-other@example.invalid',password:'fictional-qa-password'}});const other=await context.newPage();await other.goto('http://127.0.0.1:8765/?industry='+industry);await other.waitForFunction(()=>el('dealerCompany').value==='OTHER FICTIONAL BUSINESS',null,{timeout:10000});assert.notEqual(await other.evaluate(()=>dealerLogoSrc()),logo);assert.equal((await(await context.request.get('http://127.0.0.1:8765/api/estimates')).json()).length,0);console.log('PASS separate-business profile/estimate isolation '+industry);await context.close();`);
+if(process.env.QA_LONG_CUSTOMER==='1'){
+ script=script.replaceAll('FICTIONAL QA ${industry} ${width}','FICTIONAL QA ${industry} ${width} FictionalFacilityOperationsAndPreventiveMaintenanceCoordinator');
+ script=script.replaceAll('fictional.customer.with.a.long.contact.address.for.qa@example.invalid','fictional.customer.with.a.long.contact.address.for.qa@fictional-property-management-and-maintenance-company.example.invalid');
+}
+new Function('require',script)(require);

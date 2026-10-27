@@ -20,7 +20,7 @@ assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:100,y:0},boxes).length,
 assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:0,y:0},boxes).length,0);
 
 function scenario(remaining,photo=true){
- const doc=new JSDOM('<div id="col"><div id="block"><img style="height:170px" data-expanded-street-image><p>Street View imagery: 2015-07</p></div></div>').window.document;
+ const doc=new JSDOM('<div id="col"><div id="block"><img style="width:302.2222222222px;height:170px" data-expanded-street-image><p>Street View imagery: 2015-07</p></div></div>').window.document;
  const col=doc.querySelector('#col'),block=doc.querySelector('#block'),image=block.querySelector('img');
  if(!photo)delete image.dataset.expandedStreetImage;
  Object.defineProperty(col,'scrollHeight',{get:()=>500-remaining+parseFloat(image.style.height)+20});
@@ -28,7 +28,7 @@ function scenario(remaining,photo=true){
  return {col,block,image};
 }
 const fitting=scenario(200);assert.equal(fitting.image.style.height,'170px');
-const orphan=scenario(180);assert(orphan.col.scrollHeight<=500,'photo and caption must both fit');assert.equal(orphan.block.children.length,2);assert(parseFloat(orphan.image.style.height)>=100);
+const orphan=scenario(180);assert(orphan.col.scrollHeight<=500,'photo and caption must both fit');assert.equal(orphan.block.children.length,2);assert(parseFloat(orphan.image.style.height)>=100);assert(Math.abs(parseFloat(orphan.image.style.width)/parseFloat(orphan.image.style.height)-640/360)<1e-8,'Street photo must resize proportionally, not stretch');
 const continuation=scenario(80);assert.equal(continuation.image.style.height,'170px','keep the whole readable photo with its caption for continuation');assert(continuation.col.scrollHeight>500);
 const ordinary=scenario(180,false);assert.equal(ordinary.image.style.height,'170px','unrelated content must not shrink');
 assert(source.includes('block.appendChild(image);block.appendChild(clone(el(\'rStreetMeta\')))'),'caption must travel in the same pagination block');

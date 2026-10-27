@@ -1,5 +1,9 @@
 # AeriQuote — resume here, October 27, 2026
 
+## Latest targeted Expanded PDF follow-up
+
+This commit follows verified811dfc9. Read docs/QA_EXPANDED_CONTENT_2026_10_27.md and companion RESULTS.json first. Three missing artifacts successfully re-exported/rendered from exact saved QA versions; original artifact lifecycle cause cannot be proven. Confirmed Expanded Street View stretching and omitted phone/email repaired only in Expanded renderer.68/68 regressions;21complete controlled browser workflows;42actual PDFs/75rendered pages; independent geometry/pricing and account/profile isolation pass. Single/Vector/provider/Solar/data/pricing paths untouched. Existing Single Street View stretching is confirmed but left for separately approved repair. No physical-device or real portrait-provider claim. Final GitHub head/CI/Render and postdeployment live evidence are in final handoff; verify before next edit. Prior recovery/autosave limitations below remain valid.
+
 ## Latest recovery/security follow-up
 
 This current recovery commit follows3b0d1a15e1007b8ab24c02e4596fb4c57e311912. Read docs/QA_RECOVERY_SECURITY_2026_10_27.md first. Fixed missing workspace business metadata for cached branding and accidental cross-business writes from a stale tab after re-login. Modern estimate/profile POSTs bind to rendered business; mismatches409 before any record or usage write. No autosave/schema/credit-policy/PDF/provider changes.68/68 local regressions; real Chromium cancel-navigation/session/account-switch/forced-discard tests and six-industry synthetic save/reopen/PDF matrix passed. Unsaved forced discard still loses data; old already-loaded scripts do not gain the new header until a safe fresh load.
