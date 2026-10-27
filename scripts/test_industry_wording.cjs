@@ -7,6 +7,8 @@ function visible(n){for(let p=n;p&&p.tagName;p=p.parentElement){const s=w.getCom
 {
  dom.reconfigure({url:'https://test.invalid/?industry='+industry});
  w.eval(`el('businessType').value='${industry}';sessionToken='audit';resetMeasurementForNewProperty();sessionToken='audit';businessTypeChanged();map.setView([52,-106],19)`);
+ id('status').textContent='Finish saving or cancel the unfinished service area before creating an estimate. Finished and polished measurements stay saved.';
+ w.eval('applyBusinessTerminology()');assert(id('status').textContent.includes('unfinished service area'),'Do not replace shed inside unfinished');assert(id('status').textContent.includes('Finished and polished'),'Do not corrupt ordinary completion words');
  id('toolAreaBtn').click();
  for(const p of [[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]])w.eval(`map.fire('click',{latlng:L.latLng(${p[0]},${p[1]})})`);
  id('areaStartBtn').click();w.eval('applyBusinessTerminology()');

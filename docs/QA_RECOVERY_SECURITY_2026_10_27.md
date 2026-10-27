@@ -53,3 +53,20 @@ No draft database/localStorage/IndexedDB autosave, backup control or recovery pr
 - Branch protection remains off; licensing remains unresolved. Normal API callers without a workspace header and already-open old scripts do not acquire the new accidental-switch guard automatically.
 
 Use scripts/test_browser_recovery.cjs against scripts/prelaunch_browser_server.py only on loopback. The two fictional accounts/passwords are disposable test fixtures, never real logins. Current checkpoint's final CI/deploy and any later live QA evidence belong in the final handoff/resume. Stop before testing a non-QA account.
+
+
+## Authenticated live-provider follow-up and wording repair
+
+Security batch GitHub checkpoint56f3045df213c0c74a530ba19704c7defacc97bc was LIVE on Render (dep-dbgh4hjncjis73c6v4k0); both GitHub workflows40583900875/40583900891 passed, including disposable PostgreSQL. User selected the existing isolated QA owner account; Head Office was not used to create estimates. No real customer records were changed.
+
+On the commercial test site, loaded public1715 Second Avenue North, Saskatoon with real Google aerial/Street View. Snow Removal: two manually clicked areas1404+1300ft² and144.1linearft; subtotal2177.61, GST108.88, PST130.66, total2417.15CAD. Pressure Washing, Paving, Landscaping and Commercial: each fresh property load,1733ft² plus72.0ft, subtotal1393.60, GST69.68, PST83.62, total1546.90CAD. Independent Decimal line-item/tax arithmetic agrees. Each fictional DO NOT SEND customer saved and reopened via history with exact customer/title/measurement/pricing text matching. Same-property saves create versions of the same QA property; no history deleted. Drawn QA service rectangles are not surveyed real boundaries.
+
+Roofing returned1097ft² automatic result, two segments, average30.7degrees; application reported automatic area/outline mismatched scopes and correctly blocked the estimate. No override or invented geometry. Complete live Roofing estimate/PDF remains blocked/unverified. Six-industry controlled-browser independent WGS84/Decimal regression remains passing; synthetic results do not establish actual roof ground truth.
+
+Ten download events returned paths. Only seven files synchronized for inspection: all five Single PDFs, Snow Expanded(3pages), Commercial Expanded(2pages). Rendered all ten available pages and visually inspected contact sheets: quantities/taxes/totals/customer branding match the saved reports. Pressure/Paving/Landscaping Expanded files did not synchronize and their visual verification is NOT claimed. Snow marketing content moved to a third page; no measurements/totals lost. Expanded Street View appears horizontally stretched; source dimensions/root cause remain unverified. Record for separately authorized PDF-layout review; no PDF design changed here.
+
+Confirmed Snow terminology defect: unbounded replacement of shed corrupted unfinished into unfiniadditional area, including validation instructions. Regression failed first; restrict only the existing Shed/shed/SHED substitutions to whole words. Existing whole-word terminology and approved copy remain unchanged. Targeted all-six-industry wording tests pass.
+
+No physical device available. Live employee sign-in/password recovery/reactivation and live monthly credit ledger were not independently exercised in this follow-up. Automated isolation/permissions/allowance/concurrency coverage remains authoritative only for its test fixtures. Session activity counters are not proof of monthly deductions. First-time legally binding signup was not submitted. No imagery/API/Solar/PDF design changes, autosave, new controls, subscription changes or customer rollout were made. Branch protection remains absent and requires repository-owner configuration.
+
+Final follow-up full regression:68/68 commands passed after the whole-word Snow repair. No failing command. Targeted wording test demonstrates failure before fix and all six pass after fix.

@@ -573,7 +573,7 @@ function translateSnowText(t){
   [/GARAGE \/ OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage \/ Other Roof/g,'Additional Area'],[/garage \/ other roof/g,'additional area'],
   [/GARAGE OR OTHER ROOF/g,'ADDITIONAL AREA'],[/Garage or Other Roof/g,'Additional Area'],[/garage or other roof/g,'additional area'],
   [/GARAGE/g,'ADDITIONAL AREA'],[/Garage/g,'Additional Area'],[/garage/g,'additional area'],
-  [/SHED/g,'ADDITIONAL AREA'],[/Shed/g,'Additional Area'],[/shed/g,'additional area'],
+  [/\bSHED\b/g,'ADDITIONAL AREA'],[/\bShed\b/g,'Additional Area'],[/\bshed\b/g,'additional area'],
   [/ADDED ROOF/g,'ADDED AREA'],[/Added Roof/g,'Added Area'],[/added roof/g,'added area'],
   [/EXTRA ROOF/g,'EXTRA AREA'],[/Extra Roof/g,'Extra Area'],[/extra roof/g,'extra area'],
   [/OTHER ROOF/g,'ADDITIONAL AREA'],[/Other Roof/g,'Additional Area'],[/other roof/g,'additional area'],
