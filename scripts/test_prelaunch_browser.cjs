@@ -27,13 +27,13 @@ for(const width of widths)for(const industry of industries){
  await page.waitForFunction(()=>!!sessionToken,{timeout:30000});await page.waitForTimeout(400);
  const draw=async pts=>{await page.locator('#map').scrollIntoViewIfNeeded();for(const p of pts){const xy=await page.evaluate(([lat,lng])=>{const p=map.latLngToContainerPoint([lat,lng]);const r=el('map').getBoundingClientRect();return{x:r.left+p.x,y:r.top+p.y};},p);const previous=await page.evaluate(()=>areaMode?areaPoints.length:traceMode?tracePoints.length:linearPoints.length);await page.mouse.click(xy.x,xy.y);assert.equal(await page.evaluate(()=>areaMode?areaPoints.length:traceMode?tracePoints.length:linearPoints.length),previous+1,'Every intended corner must be recorded, including clicks beneath the property pin');}};
  await page.evaluate(()=>map.setView([52,-106],19,{animate:false}));await page.waitForTimeout(100);
- console.log('loaded',await page.locator('#status').textContent());const pts=[[51.99995,-106.00012],[51.99995,-106.00002],[52.00003,-106.00002],[52.00003,-106.00012]];
+ console.log('loaded',await page.locator('#status').textContent());const pts=process.env.QA_COMPLEX_SHAPES==='1'?[[51.99995,-106.00012],[51.99995,-106.00002],[51.99998,-106.00002],[51.99998,-106.00007],[52.00003,-106.00007],[52.00003,-106.00012]]:[[51.99995,-106.00012],[51.99995,-106.00002],[52.00003,-106.00002],[52.00003,-106.00012]];
  if(industry==='roofing'){
   if(!await page.evaluate(()=>traceMode))await page.click('#toolAreaBtn');await draw(pts);await page.selectOption('#pitchSel','22.62');await page.evaluate(()=>pitchChanged());await page.evaluate(()=>finishTrace());
   await page.click('#manualRoofScopeConfirmed');
  }else{
   await draw(pts);await page.click('#areaStartBtn');await page.click('#toolAreaBtn');await draw(pts.map(([lat,lng])=>[lat+.00014,lng]));await page.click('#areaStartBtn');
-  await page.click('#toolAreaBtn');await page.click('#toolLinearBtn');await draw([[51.99995,-105.9999],[52.00012,-105.9999]]);await page.click('#linearStartBtn');
+  await page.click('#toolAreaBtn');await page.click('#toolLinearBtn');await draw(process.env.QA_COMPLEX_SHAPES==='1'?[[51.99995,-105.9999],[52.00002,-105.9999],[52.00002,-105.99986],[52.00012,-105.99986]]:[[51.99995,-105.9999],[52.00012,-105.9999]]);await page.click('#linearStartBtn');
  }
  console.log('drawn',await page.evaluate(()=>({areas:commercialAreas.length,points:areaPoints.length,line:linearPoints.length,manual:manualPlanes.length,status:el('status').textContent})));await page.click('#customerName');await page.fill('#customerName',`FICTIONAL QA ${industry} ${width}`);await page.click('#customerEmail');await page.fill('#customerEmail','fictional-customer@example.invalid');await page.click('#customerPhone');await page.fill('#customerPhone','555-0100');await page.selectOption('#streetViewChoice',imageChoice);
  const before=await page.evaluate(()=>({snapshot:captureQuoteSnapshot(),pricing:priceCalc(),overflow:document.documentElement.scrollWidth>innerWidth}));
