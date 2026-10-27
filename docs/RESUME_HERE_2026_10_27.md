@@ -1,3 +1,7 @@
+## STOP — final end-of-day handoff
+
+Read docs/RESUME_HERE_2026_10_27_END_OF_DAY.md first. Latest verified application fix42c5467 (duplicate automatic roof footprint protection), based on6bf039b.69 post-fix regression commands passed;18 new API cases;7 controlled browser workflows;14 downloaded PDFs/25 rendered pages reviewed. No more work today. Older entries below are historical context.
+
 ## Latest verified real-property follow-up
 
 Verified code checkpoint:e6f319b (child of2382c49), recovery branch only. Real aerial/Street View and Area+Linear on1715 2nd Ave N Saskatoon using approved isolated QA owner. Fixed confirmed reopened canvas20.15% horizontal distortion, preserving saved values/providers/layouts. Fresh deployed reopen and both downloaded PDFs visually pass; total1113.56CAD unchanged.68/68 full local regressions and12 six-industry390/1440 browser cases pass; controlled fixtures are distinct from the real-photo test. GitHub application/recovery/PostgreSQL checks pass; Render test deployment LIVE. See docs/QA_REAL_PROPERTY_IMAGERY_2026_10_27.md for exact evidence, limitations and continuation. Existing older entries below describe historical state; their unresolved PDF distortion was subsequently repaired. Main/production/customer accounts untouched. No further feature work authorized by completion.
