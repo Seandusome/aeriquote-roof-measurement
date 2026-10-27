@@ -19,6 +19,12 @@ assert.equal(context.expandedLeaderSegments({x:45,y:45},{x:55,y:55},boxes).lengt
 assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:100,y:0},boxes).length,1);
 assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:0,y:0},boxes).length,0);
 
+// A saved aerial fitted inside a wider box must project references using its own frame.
+const view={latitude:52,longitude:-106,zoom:20,width:640,height:420},frame={x:71,y:0,width:708.5714285714286,height:465};
+const center=context.savedAerialPoint([52,-106],view,frame);assert(Math.abs(center.x-(71+frame.width/2))<1e-9);assert.equal(center.y,232.5);
+const east=context.savedAerialPoint([52,-106+360/(256*2**20)*10],view,frame);assert(Math.abs(east.x-center.x-10*frame.width/640)<1e-7);assert.equal(east.y,center.y);
+const portraitFrame={x:0,y:120,width:335,height:335*420/640};const p=context.savedAerialPoint([52,-106],view,portraitFrame);assert.equal(p.x,167.5);assert.equal(p.y,120+portraitFrame.height/2);
+
 function scenario(remaining,photo=true){
  const doc=new JSDOM('<div id="col"><div id="block"><img style="width:302.2222222222px;height:170px" data-expanded-street-image><p>Street View imagery: 2015-07</p></div></div>').window.document;
  const col=doc.querySelector('#col'),block=doc.querySelector('#block'),image=block.querySelector('img');

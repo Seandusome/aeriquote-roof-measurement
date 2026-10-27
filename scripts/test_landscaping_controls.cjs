@@ -93,6 +93,7 @@ w.fetch=async(url,options)=>{assert.equal(url,'/saved-estimate-report-map');cons
 await w.eval('buildSavedHistoricalSnapshot()');
 assert.equal(imagesPainted,1);assert(Math.abs(painted[0].x-640)<1e-5);assert(Math.abs(painted[0].y-420)<1e-5);assert.equal(painted.filter(p=>p.t.endsWith(' ft')).length,areas.reduce((n,a)=>n+a.points.length,0)+line.length-1);assert.equal(painted.filter(p=>p.t.endsWith(' ft²')).length,areas.length);assert(painted.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)));assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),snapshot);
 assert.equal(btn('customerMap').querySelectorAll('canvas').length,1);
+assert.equal(btn('customerMap').querySelector('canvas').style.width,'auto','Saved aerial must not stretch to host width');assert.equal(btn('customerMap').querySelector('canvas').style.height,'auto');assert.equal(btn('customerMap').querySelector('canvas').style.maxWidth,'100%');assert.equal(btn('customerMap').querySelector('canvas').style.maxHeight,'100%');
 console.log('PASS: reopened aerial paints every area edge, area total and linear segment into PDF canvas without changing saved geometry or pricing');
 const numberedBadges=[],badgeContext={save(){},restore(){},setTransform(){},scale(){},beginPath(){},moveTo(){},lineTo(){},arc(){},fill(){},stroke(){},fillText(t){numberedBadges.push(t)}};
 w.html2canvas=async()=>({width:2880,height:1600,getContext:()=>badgeContext,toDataURL:()=> 'data:image/jpeg;base64,test'});

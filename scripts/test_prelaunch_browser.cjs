@@ -51,6 +51,7 @@ for(const width of widths)for(const industry of industries){
  await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.waitForFunction(()=>document.body.classList.contains('report-open'));
  assert.equal(await page.evaluate(()=>quoteSnapshot.savedPricing.total),before.pricing.total);
  assert.equal(await page.locator('#rCustomerName').textContent(),payload.customer_name);
+ const savedFrame=await page.locator('#customerMap canvas[data-map-view]').evaluate(n=>{const r=n.getBoundingClientRect();return{source:n.width/n.height,display:r.width/r.height}});assert(Math.abs(savedFrame.display/savedFrame.source-1)<.001,'Reopened saved aerial must retain intrinsic proportions');
  const captureChecks=[];const pdfState=await page.evaluate(()=>({quote:JSON.stringify(quoteSnapshot),price:el('rPricing').textContent,customer:el('rCustomerName').textContent,company:el('rEstimateSubtitle').textContent}));
  await page.exposeFunction('qaRecordPdfImage',check=>captureChecks.push(check));
  await page.evaluate(()=>{const capture=window.html2canvas;window.html2canvas=async(node,options)=>{
