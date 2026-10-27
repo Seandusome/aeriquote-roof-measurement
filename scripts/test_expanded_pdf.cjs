@@ -3,6 +3,22 @@ const {JSDOM}=require('jsdom');
 const source=fs.readFileSync('app.py','utf8');
 const context=vm.createContext({});
 vm.runInContext(source.slice(source.indexOf('function fitExpandedStreetBlock('),source.indexOf('async function buildExpandedEstimatePDF(')),context);
+// A portrait phone aerial and landscape tablet/desktop aerial must retain their pixel ratio.
+for(const [w,h,maxW,maxH] of [[670,930,1152,650],[1280,840,1152,650],[2000,500,1152,650],[640,640,1152,650]]){
+ const size=context.expandedAerialSize(w,h,maxW,maxH);
+ assert(Math.abs(size.width/size.height-w/h)<1e-10);
+ assert(size.width<=maxW&&size.height<=maxH);
+ assert(Math.abs(size.width-maxW)<1e-8||Math.abs(size.height-maxH)<1e-8,'Use the largest proportional fit');
+}
+assert.throws(()=>context.expandedAerialSize(0,5,10,10),/dimensions/);
+// Leader lines must not cross existing area/edge label rectangles; labels themselves stay intact.
+const boxes=[{x:40,y:40,w:20,h:20}];
+const parts=context.expandedLeaderSegments({x:0,y:50},{x:100,y:50},boxes);
+assert.equal(parts.length,2);assert(parts[0][1].x<40&&parts[1][0].x>60);
+assert.equal(context.expandedLeaderSegments({x:45,y:45},{x:55,y:55},boxes).length,0);
+assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:100,y:0},boxes).length,1);
+assert.equal(context.expandedLeaderSegments({x:0,y:0},{x:0,y:0},boxes).length,0);
+
 function scenario(remaining,photo=true){
  const doc=new JSDOM('<div id="col"><div id="block"><img style="height:170px" data-expanded-street-image><p>Street View imagery: 2015-07</p></div></div>').window.document;
  const col=doc.querySelector('#col'),block=doc.querySelector('#block'),image=block.querySelector('img');

@@ -2835,6 +2835,29 @@ function fitExpandedStreetBlock(block,column,maxHeight){
  if(reduced>=100)image.style.height=reduced+'px';
 }
 
+function expandedAerialSize(width,height,maxWidth,maxHeight){
+ if(![width,height,maxWidth,maxHeight].every(v=>Number.isFinite(v)&&v>0))throw new Error('Invalid expanded aerial dimensions. Reopen the estimate and retry.');
+ const scale=Math.min(maxWidth/width,maxHeight/height);
+ return{width:width*scale,height:height*scale};
+}
+function expandedLeaderSegments(start,end,boxes,gap=2){
+ const dx=end.x-start.x,dy=end.y-start.y;if(Math.hypot(dx,dy)<.01)return[];
+ const blocked=[];
+ for(const box of boxes){
+  let lo=0,hi=1,hit=true;
+  for(const [origin,delta,min,max] of [[start.x,dx,box.x-gap,box.x+box.w+gap],[start.y,dy,box.y-gap,box.y+box.h+gap]]){
+   if(Math.abs(delta)<1e-10){if(origin<min||origin>max){hit=false;break}}
+   else{const a=(min-origin)/delta,b=(max-origin)/delta;lo=Math.max(lo,Math.min(a,b));hi=Math.min(hi,Math.max(a,b));if(lo>hi){hit=false;break}}
+  }
+  if(hit&&hi>=0&&lo<=1)blocked.push([Math.max(0,lo),Math.min(1,hi)]);
+ }
+ blocked.sort((a,b)=>a[0]-b[0]);const segments=[];let cursor=0;
+ const point=t=>({x:start.x+dx*t,y:start.y+dy*t});
+ for(const [lo,hi] of blocked){if(lo>cursor)segments.push([point(cursor),point(lo)]);cursor=Math.max(cursor,hi)}
+ if(cursor<1)segments.push([point(cursor),point(1)]);
+ return segments;
+}
+
 async function buildExpandedEstimatePDF(report){
  // Reuse the approved map pixels. Never resize/refit Leaflet or alter quote data.
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
@@ -2844,7 +2867,7 @@ async function buildExpandedEstimatePDF(report){
  if(aerial&&areas.length){const host=el('customerMap'),savedView=host.querySelector('canvas')?.dataset.mapView,view=savedView?JSON.parse(savedView):null;
  const project=p=>{if(customerMap)return customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));if(!view)throw new Error('Reopen this estimate to restore aerial coordinates before expanded export.');const world=256*Math.pow(2,view.zoom),xy=(lat,lng)=>{const v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},q=xy(p[0],p[1]),c=xy(view.latitude,view.longitude);return{x:host.clientWidth/2+(q[0]-c[0])*host.clientWidth/view.width,y:host.clientHeight/2+(q[1]-c[1])*host.clientHeight/view.height}};
  const savedCanvas=host.querySelector('canvas'),occupied=customerMap?[...host.querySelectorAll('.aeri-edge-label,.linear-seg-label,.area-label,.edge-label,.seg-label,.manual-label')].map(n=>{const r=n.getBoundingClientRect(),h=host.getBoundingClientRect();return{x:r.left-h.left,y:r.top-h.top,w:r.width,h:r.height}}):JSON.parse(savedCanvas?.dataset.labelBoxes||'[]').map(b=>({x:b.x*host.clientWidth/savedCanvas.width,y:b.y*host.clientHeight/savedCanvas.height,w:b.w*host.clientWidth/savedCanvas.width,h:b.h*host.clientHeight/savedCanvas.height}));
- const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,(Math.min(...pts.map(p=>p.x))+Math.max(...pts.map(p=>p.x)))/2)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,(Math.min(...pts.map(p=>p.y))+Math.max(...pts.map(p=>p.y)))/2));const box=measurementLabelPosition(x,y,26,26,occupied,host.clientWidth,host.clientHeight,5),bx=box.x+13,by=box.y+13;if(Math.hypot(bx-x,by-y)>5){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(bx,by);ctx.strokeStyle='#0b193e';ctx.lineWidth=1.5;ctx.stroke()}ctx.beginPath();ctx.arc(bx,by,11,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),bx,by)});ctx.restore()}
+ const ctx=aerial.getContext('2d'),scale=aerial.width/host.clientWidth;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.scale(scale,scale);areas.forEach((a,i)=>{const pts=a.points.map(project),x=Math.max(17,Math.min(el('customerMap').clientWidth-17,(Math.min(...pts.map(p=>p.x))+Math.max(...pts.map(p=>p.x)))/2)),y=Math.max(17,Math.min(el('customerMap').clientHeight-17,(Math.min(...pts.map(p=>p.y))+Math.max(...pts.map(p=>p.y)))/2));const box=measurementLabelPosition(x,y,26,26,occupied,host.clientWidth,host.clientHeight,5),bx=box.x+13,by=box.y+13;if(Math.hypot(bx-x,by-y)>5){ctx.beginPath();for(const [from,to] of expandedLeaderSegments({x,y},{x:bx,y:by},occupied)){ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y)}ctx.strokeStyle='#0b193e';ctx.lineWidth=1.5;ctx.stroke()}ctx.beginPath();ctx.arc(bx,by,11,0,Math.PI*2);ctx.fillStyle='#0b193e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),bx,by)});ctx.restore()}
 
  const root=document.createElement('div');root.className='expandedPdfExport';
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
@@ -2859,7 +2882,7 @@ async function buildExpandedEstimatePDF(report){
  const foot=document.createElement('div');Object.assign(foot.style,{position:'absolute',left:'24px',right:'24px',bottom:'14px',fontSize:'12px',display:'flex',justifyContent:'space-between'});const note=document.createElement('span');note.textContent=report.querySelector('.reportFoot')?.textContent||'';const number=document.createElement('span');number.dataset.pageNumber='true';foot.append(note,number);box.appendChild(foot);pages.push(box);bodies.push(body);return body}
  try{
   const mapBody=page('PROPERTY AERIAL - MEASURED SERVICE AREAS');
-  if(aerial){const legend=document.createElement('div');Object.assign(legend.style,{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px 14px',fontSize:'14px',paddingTop:'8px'});areas.forEach((a,i)=>{const item=document.createElement('div');item.textContent=(i+1)+'. '+(a.name||'Service Area')+' - '+fmt(a.sqft)+' ft²';legend.appendChild(item)});mapBody.appendChild(legend);const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);Object.assign(img.style,{display:'block',width:'100%',height:(mapBody.clientHeight-legend.offsetHeight-10)+'px',objectFit:'contain'});mapBody.insertBefore(img,legend);await img.decode()}
+  if(aerial){const legend=document.createElement('div');Object.assign(legend.style,{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px 14px',fontSize:'14px',paddingTop:'8px'});areas.forEach((a,i)=>{const item=document.createElement('div');item.textContent=(i+1)+'. '+(a.name||'Service Area')+' - '+fmt(a.sqft)+' ft²';legend.appendChild(item)});mapBody.appendChild(legend);const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);const fitted=expandedAerialSize(aerial.width,aerial.height,mapBody.clientWidth,mapBody.clientHeight-legend.offsetHeight-10);img.dataset.expandedAerial='true';Object.assign(img.style,{display:'block',width:fitted.width+'px',height:fitted.height+'px',margin:'0 auto'});mapBody.insertBefore(img,legend);await img.decode()}
   else{const note=document.createElement('p');note.textContent='Property imagery omitted from this estimate.';mapBody.appendChild(note)}
   const left=[],right=[];
   const title=text=>{const n=document.createElement('div');n.className='reportTitle';n.textContent=text;return n};

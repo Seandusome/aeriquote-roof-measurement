@@ -1,5 +1,11 @@
 # AeriQuote — resume here, October 27, 2026
 
+## Latest follow-up — approved Mobile Expanded PDF correction
+
+The CURRENT commit containing this updated resume follows7afa2328c396497c67395a20671ccc70353c76a3 and fixes the previously documented390px Expanded PDF distortion. Read docs/QA_MOBILE_EXPANDED_PDF_2026_10_27.md and its RESULTS.json before treating the historical remaining-issue list below as current. Explicit proportional aerial sizing preserves pixels/marker circles; numbered-marker leader strokes avoid existing label boxes. Only Expanded presentation changed. Single, vector, imagery/API/Solar, measurements/pricing/accounts are unchanged.67/67 final regressions;18 Chromium workflows;36 actual PDFs/54 rendered pages reviewed; independent WGS84/Decimal checks passed. No physical-device/live-provider licensing claim.
+
+The old phone-distortion/leader-overlap entries below are historical findings now corrected in the tested fixture matrix, not reasons to repeat or revert this work. Extremely dense labels, authenticated deployed provider workflows, physical devices, licensing, provisional billing anchors and missing branch protection remain limited/unverified as documented. Final remote SHA/CI/deployment are verified in the conversation handoff after this commit is published. The remainder records the preceding7afa232 QA checkpoint for continuity.
+
 ## Current scope and stop state
 
 Continue ONLY on landscaping-multi-area-recovery-oct11 in Seandusome/aeriquote-roof-measurement. Do not touch main, production or real customer/demo accounts. Keep AI Trace removed, AutoMeasure intact, manual Roofing and Vector Diagram PDF QA-only. Google/Nearmap licensing discussions are pending. No imagery provider, Leaflet imagery layer, Solar function, aerial PDF renderer, pricing engine, saved estimate schema or allowance policy changed in this batch. Do not connect Stripe, build CRM or develop architectural roof plans.

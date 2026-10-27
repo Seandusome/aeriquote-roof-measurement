@@ -51,9 +51,16 @@ for(const width of widths)for(const industry of industries){
  await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.waitForFunction(()=>document.body.classList.contains('report-open'));
  assert.equal(await page.evaluate(()=>quoteSnapshot.savedPricing.total),before.pricing.total);
  assert.equal(await page.locator('#rCustomerName').textContent(),payload.customer_name);
+ const captureChecks=[];const pdfState=await page.evaluate(()=>({quote:JSON.stringify(quoteSnapshot),price:el('rPricing').textContent,customer:el('rCustomerName').textContent,company:el('rEstimateSubtitle').textContent}));
+ await page.exposeFunction('qaRecordPdfImage',check=>captureChecks.push(check));
+ await page.evaluate(()=>{const capture=window.html2canvas;window.html2canvas=async(node,options)=>{
+  const image=node.querySelector?.('[data-expanded-aerial]');
+  if(image){const box=image.getBoundingClientRect(),ratio=image.naturalWidth/image.naturalHeight;if(Math.abs(box.width/box.height/ratio-1)>.001)throw Error('Expanded aerial CSS dimensions distort source pixels');await window.qaRecordPdfImage({sourceWidth:image.naturalWidth,sourceHeight:image.naturalHeight,drawWidth:box.width,drawHeight:box.height});}
+  return capture(node,options);
+ };});
  const pdfs=[];
- if(width===1440||industry==='snow'){for(const layout of ['single','expanded']){await page.selectOption('#estimatePdfLayout',layout);const wait=page.waitForEvent('download',{timeout:45000});await page.click('#downloadPdfBtn');const dl=await wait;const destination=`${output}/${industry}-${width}-${layout}.pdf`;await dl.saveAs(destination);pdfs.push(destination);}}
+ if(process.env.QA_BROWSER_ALL_PDFS==='1'||width===1440||industry==='snow'){for(const layout of ['single','expanded']){await page.selectOption('#estimatePdfLayout',layout);const wait=page.waitForEvent('download',{timeout:45000});await page.click('#downloadPdfBtn');const dl=await wait;const destination=`${output}/${industry}-${width}-${layout}.pdf`;await dl.saveAs(destination);pdfs.push(destination);assert.deepEqual(await page.evaluate(()=>({quote:JSON.stringify(quoteSnapshot),price:el('rPricing').textContent,customer:el('rCustomerName').textContent,company:el('rEstimateSubtitle').textContent})),pdfState,'PDF export preserves stored geometry, pricing, customer and branding');}}
  await page.screenshot({path:`${output}/${industry}-${width}.png`,fullPage:true});
- assert.deepEqual(errors,[],'No browser script errors');assert.equal(before.overflow,false,'Workspace must not overflow');results.push({industry,width,total:before.pricing.total,overflow:before.overflow,errors,pdfs,saved:true,reopened:true});fs.writeFileSync(output+'/results.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results.at(-1)));await context.close();
+ assert.deepEqual(errors,[],'No browser script errors');assert.equal(before.overflow,false,'Workspace must not overflow');results.push({industry,width,total:before.pricing.total,overflow:before.overflow,errors,pdfs,captureChecks,saved:true,reopened:true});fs.writeFileSync(output+'/results.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results.at(-1)));await context.close();
 }
 await browser.close();})().catch(e=>{console.error(e);process.exit(1)});

@@ -80,7 +80,7 @@ await w.eval(`buildExpandedEstimatePDF(document.querySelector('#reportOverlay .r
 assert.equal(expandedCaptures[0].id,'customerMap');assert.equal(expandedCaptures.length,3);assert.equal(expandedCalls.filter(x=>x==='page').length,1);
 for(let i=1;i<=7;i++)assert(expandedCaptures[2].text.includes('Parking Lot '+i));assert(expandedCaptures[2].text.includes('TOTAL $721.00'));assert(expandedCaptures[2].text.includes('Page 2 of 2'));
 assert.equal(w.document.querySelector('.expandedPdfExport'),null);assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),expandedBefore);
-let expandedCaptureCount=0;w.html2canvas=async()=>{if(++expandedCaptureCount===2)throw Error('capture failure');return{toDataURL:()=> 'data:image/jpeg;base64,test'}};
+let expandedCaptureCount=0;w.html2canvas=async()=>{if(++expandedCaptureCount===2)throw Error('capture failure');return{width:1200,height:900,toDataURL:()=> 'data:image/jpeg;base64,test'}};
 await assert.rejects(w.eval(`buildExpandedEstimatePDF(document.querySelector('#reportOverlay .report'))`),/capture failure/);assert.equal(w.document.querySelector('.expandedPdfExport'),null);
 console.log('PASS: expanded aerial then seven measurement/pricing rows, page numbers, unchanged snapshot and cleanup on failure');
 await new Promise(r=>setTimeout(r,1000));w.eval('clearTimeout(customerMapBuildTimer)');
