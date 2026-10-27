@@ -2916,7 +2916,15 @@ async function buildExpandedEstimatePDF(report){
 }
 
 async function captureSinglePageEstimate(report){
- const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
+ const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,onclone:(doc,copy)=>{
+  // html2canvas ignores object-fit. Fit the original pixels inside the same photo box,
+  // only in its export clone: no live layout, map, source URL or quote data changes.
+  const source=report.querySelector('#rStreet'),image=copy.querySelector('.reportStreet');
+  if(!image||!source?.complete||!source.naturalWidth||!source.naturalHeight||!image.clientWidth||!image.clientHeight)return;
+  const frame=doc.createElement('canvas');frame.width=image.clientWidth*2;frame.height=image.clientHeight*2;frame.className=image.className;frame.id=image.id;frame.style.cssText=image.style.cssText;
+  const scale=Math.min(frame.width/source.naturalWidth,frame.height/source.naturalHeight),width=source.naturalWidth*scale,height=source.naturalHeight*scale,ctx=frame.getContext('2d');
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,frame.width,frame.height);ctx.drawImage(source,(frame.width-width)/2,(frame.height-height)/2,width,height);image.replaceWith(frame);
+ }};
  if(report.getBoundingClientRect().width>=900)return html2canvas(report,options);
  // Phone presentation must not become a tiny, tall strip on landscape paper.
  // Freeze the approved map pixels before cloning; never resize/refit live Leaflet.

@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw
 from scipy import ndimage
-root=Path(sys.argv[1]);results=json.loads((root/'results.json').read_text());evidence=[]
+all_layouts='--all-layouts' in sys.argv;root=Path(sys.argv[1]);results=json.loads((root/'results.json').read_text());evidence=[]
 for job in results:
  images=[];found=0
  for pdf in job['pdfs']:
@@ -12,7 +12,7 @@ for job in results:
   pages=sorted(root.glob(pre.name+'-*.png'))
   for p in pages:
    im=Image.open(p).convert('RGB');images.append((p.name,im.copy()))
-   if 'expanded' not in p.name:continue
+   if not all_layouts and 'expanded' not in p.name:continue
    a=np.asarray(im).astype(int);blue=(abs(a[:,:,0]-219)<12)&(abs(a[:,:,1]-234)<12)&(abs(a[:,:,2]-254)<12)
    labeled,n=ndimage.label(blue);sizes=np.bincount(labeled.ravel());sizes[0]=0
    if n==0 or max(sizes)<300:continue
@@ -33,5 +33,5 @@ for job in results:
    contact=Image.new('RGB',(sum(i.width for i in thumbs),max(i.height for i in thumbs)+28),'#ccc');draw=ImageDraw.Draw(contact);draw.text((8,6),pdf.name,fill='black');x=0
    for im in thumbs:contact.paste(im,(x,28));x+=im.width
    contact.save(root/(pre.name+'-review.png'))
- assert found==1,(job['industry'],job['width'],'must show full Street View exactly once')
-(root/'raster-checks.json').write_text(json.dumps(evidence,indent=2));print('PASS',len(results),'actual Expanded PDFs: calibration circles proportional, all four source borders retained')
+ assert found==(2 if all_layouts else 1),(job['industry'],job['width'],'must show full Street View once per tested layout')
+(root/'raster-checks.json').write_text(json.dumps(evidence,indent=2));print('PASS',len(results),'Single/Expanded PDF pairs' if all_layouts else 'Expanded PDFs','calibration circles proportional, all four source borders retained')
