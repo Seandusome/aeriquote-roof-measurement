@@ -1,3 +1,19 @@
+## Follow-up: live account and alias verification — October 28
+
+Resumed from 3b6b6ed2dd3db42437d500e77c577e337052b161. GitHub branch HEAD matched; Render test deployment dep-dbh567ss728c739sg100 reported LIVE for this exact commit. No application changes in this follow-up.
+
+The full 72-command regression suite was rerun: 72 passed, zero failed. This includes disposable account access, workspace/account binding, credits, password recovery, employee lifecycle, login identity concurrency, property acceptance and monthly subscription periods. Existing checkpoint GitHub recovery and postgres_integrity jobs were re-read and both reported success (run 40758602049). These are controlled local/CI checks, not newly completed deployed employee or email workflows.
+
+Live signup handoff failed twice with the user seeing “tab no longer available.” The user subsequently signed into an EXISTING account using the original mailbox in their own browser; this did not create a new QA account or transfer a session. Do not reset or modify that existing account. No live employee, password, allowance or customer mutation was performed. Signup had only fictional QA name/company/email fields prepared, with no password or submission by the agent.
+
+User authorized checking an unused plus-address alias, only if unregistered and deliverable. Alias registration remains UNKNOWN: no read-only registration availability endpoint is present, and the ordinary owner session cannot list all business identities. Do not probe with forgot-password, attempt existing-account login, use malformed signup as an availability check, or query an unidentified/shared customer database. The separate Render batch4 QA PostgreSQL instance is documented as unused and is not evidence of the deployed application's identity registry.
+
+Alias inbox-delivery evidence could not be obtained: the connected Gmail search returned failedPrecondition / mail_service_not_enabled. No email was sent. Provider/domain capability alone would not prove delivery to this particular mailbox or Resend delivery. Per the user's explicit fallback, SKIP actual live password-reset email testing rather than improvise. Do not treat the alias as verified, register it, or reset any existing identity.
+
+Remaining unverified: alias availability/delivery, actual Resend delivery, deployed new-owner/employee lifecycle, two-business browser isolation, live Basic/Pro/Business entitlement assignment and concurrent deployed deductions. Existing controlled tests cover these security/accounting paths, including token expiry/single use and 25/75/200 boundaries, but are not live-provider verification. Provisional account-created anchors, complimentary grants and usage histories remain unchanged. No system-clock or billing-record modifications. No newly confirmed application defect; no fix required. Main/production/real customer accounts untouched. Preserve imagery, all PDFs, measurements, pricing, AutoMeasure and QA-only options; AI Trace remains removed.
+
+This follow-up is stopped for review. Resume only after a safely isolated live account and accessible verified mailbox are available, or choose further explicitly approved disposable-environment testing. Do not repeat the completed 72-check run merely to fill time.
+
 # AeriQuote — final account security and allowance QA, October28,2026
 
 ## Resume state and boundaries
