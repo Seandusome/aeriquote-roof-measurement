@@ -3296,17 +3296,18 @@ def dealer_login():
             ip_blocked=limited(con,"login-ip:"+str(request.remote_addr),100)
             email_blocked=limited(con,"login-email:"+email,20)
             if ip_blocked or email_blocked:return render_template_string(LOGIN_HTML,error="Too many login attempts. Please try again in 15 minutes."),429
-            row=con.execute("SELECT * FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
+            # Read credentials and their revocation version in one DB snapshot.
+            row=con.execute("SELECT d.*,COALESCE(v.version,0) AS login_version FROM dealers d LEFT JOIN account_auth_versions v ON v.account_type='owner' AND v.account_id=d.id WHERE LOWER(d.email)=?",(email,)).fetchone()
         finally: con.close()
         if row and str(row["status"]).lower()=="active" and password_ok(password,row["password_hash"]):
-            session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner";session["auth_version"]=login_auth_version("owner",row["id"])
+            session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner";session["auth_version"]=int(row["login_version"] or 0)
             return redirect("/")
         con=estimate_db()
         try:
-            emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id WHERE LOWER(e.email)=?",(email,)).fetchone()
+            emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status,COALESCE(v.version,0) AS login_version FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id LEFT JOIN account_auth_versions v ON v.account_type='employee' AND v.account_id=e.id WHERE LOWER(e.email)=?",(email,)).fetchone()
         finally: con.close()
         if emp and str(emp["status"]).lower()=="active" and str(emp["dealer_status"]).lower()=="active" and password_ok(password,emp["password_hash"]):
-            session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee";session["auth_version"]=login_auth_version("employee",emp["id"])
+            session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee";session["auth_version"]=int(emp["login_version"] or 0)
             return redirect("/")
         return render_template_string(LOGIN_HTML,error="Email or password is incorrect.")
     return render_template_string(LOGIN_HTML,error=None)
