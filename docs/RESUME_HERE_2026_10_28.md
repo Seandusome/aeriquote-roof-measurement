@@ -1,3 +1,26 @@
+# End-of-day checkpoint — October 28, 2026
+
+STOPPED FOR TODAY. No further implementation authorized tonight.
+
+All verified fixes through application checkpoint0e63ef48f4eb327e25e65b5296804a01c78e5e8c are committed on landscaping-multi-area-recovery-oct11. Recovery HEAD matched that checkpoint at end-of-day verification. Both GitHub runs40778997564 and40778997631 succeeded,including PostgreSQL integrity checks. Render test deployment dep-dbh79jfb9u1s73amtmfg is LIVE for that exact commit. Tracked working tree was clean before this documentation update. The end-of-day documentation-only commit becomes the final branch checkpoint;no application changes accompany it.
+
+## Next priorities — planning only until work resumes
+
+1. Verify the Area correction fix on Sean's physical iPhone,especially first edit/save followed by second edit of both Area1 and Area2. Check missed taps cannot append vertices,valid Save works,invalid Save stays blocked,and Cancel restores the exact originals. Browser touch emulation passed;physical confirmation remains pending.
+2. Evaluate Remeasure Area as the PRIMARY correction option. Preserve the original saved geometry,quantity,rate and estimate until a complete valid replacement is explicitly confirmed. Plan safe Cancel/failure handling and multiple-area isolation before implementing. Do not delete the original when replacement starts;do not bypass validation or silently alter measurements. No new workflow is implemented tonight.
+3. Simplify Country/Province/State selection:Canadian users should see Canadian provinces/territories without scrolling through U.S. states. Inspect existing country controls first. Preserve saved property regions,tax settings and historical estimates;do not silently change regional taxes when filtering options. No implementation tonight.
+4. Preserve all existing Linear edit/Save/Cancel/native-touch locks and manual Roofing pitch,geometry,scope and incomplete-measurement safeguards. Keep AutoMeasure code and QA-only restrictions intact;keep AI Trace removed.
+
+## Resume safely
+
+Verify current recovery HEAD,checks and Render before editing;do not overwrite newer work. Read docs/QA_AREA_VALIDATION_2026_10_28.md,docs/QA_POLYGON_TOUCH_2026_10_28.md and docs/QA_LINEAR_TOUCH_2026_10_28.md for the phone fixes and precise evidence. Account handoff remains docs/RESUME_HERE_2026_10_28_ACCOUNT_SECURITY.md. Full regression72/72 and targeted touch validation at320/390/768px passed. No agent physical-device pass claimed.
+
+For an existing invalid phone draft,Cancel restores the prior in-job area. “Saved in this job” may not mean server-persisted:save the completed estimate before refreshing unfinished work. Existing invalid drafts are NOT automatically repaired. Crossed-edge-specific highlighting and exact ordered coordinates of Sean's screenshot remain unverified/unimplemented. Live reset-email verification still awaits a separate verified QA mailbox;never reset the existing account's credentials.
+
+No imagery integration,measurement formula,pricing,tax,PDF,account allowance,schema,Stripe or CRM changes in this end-of-day save. Main baseline c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a,production and real customer accounts remain untouched. Previous checkpoints and all approved features preserved. Stop after confirming the saved documentation checkpoint;do not begin another batch.
+
+---
+
 Latest authorized fix:Area self-intersection interaction investigation from9bf10b0. Read docs/QA_AREA_VALIDATION_2026_10_28.md first. Confirmed accidental background taps appended vertices during Area and QA manual-roof corrections;guarded without weakening validation or repairing existing geometry. Actual iPhone screenshots reviewed;exact draft coordinate order unavailable. Preserve unfinished phone work before any refresh. Verify recovery HEAD/checks/Render before resuming.
 
 Latest authorized fix:repeated Area/Roofing touch correction from2e94561. Read docs/QA_POLYGON_TOUCH_2026_10_28.md first. Area and roof correction have independent confirmed failures and now share explicit drag/native-touch locking,with reviewed-roof auto-pan disabled. Exact physical-phone retest remains pending. Verify recovery HEAD,checks and Render before resuming.
