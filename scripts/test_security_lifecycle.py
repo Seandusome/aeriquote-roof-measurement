@@ -72,6 +72,8 @@ for kind,account_email,old_password in [('owner',email,'fictional-old-password')
     assert recovery.post('/dealer-login',data={'email':account_email,'password':new_password}).status_code==302
     assert recovery.get('/api/account/profile').status_code==200
     assert recovery.get(reset).status_code==400,'Reset token remains single-use'
+    assert recovery.get('/dealer-logout' if kind=='owner' else '/logout').status_code==302
+    assert recovery.get('/api/account/profile').status_code==401,'Owner and employee logout must clear authentication'
     print('PASS reset/new-password/single-use checks',kind)
 assert not failures,'\n'.join(failures)
 print('PASS explicit employee actions, login-email validation, disable/reactivation, employee permissions and owner/employee concurrent reset/login revocation; '+('PostgreSQL' if url else 'SQLite'))

@@ -1,3 +1,7 @@
+## Latest — final account security and subscription reliability batch
+
+Read docs/RESUME_HERE_2026_10_28_ACCOUNT_SECURITY.md first. Application checkpointea73ac6 contains five confirmed security fixes across four small commits.72 regressions and disposable PostgreSQL tests passed; real controlled browser CSRF and account-switch recovery passed. No allowance history/anchor or imagery/measurement/PDF changes. Final documentation commit is recovery HEAD; stop after completion. Earlier content below is historical context.
+
 # AeriQuote — October 28, 2026 handoff (America/Edmonton)
 
 ## Current recovery state

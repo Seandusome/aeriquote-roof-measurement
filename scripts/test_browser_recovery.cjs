@@ -27,7 +27,7 @@ const injection=`
  await context.request.post('http://127.0.0.1:8765/dealer-login',{form:{email:'qa-other@example.invalid',password:'fictional-qa-password'}});
  const otherPage=await context.newPage();await otherPage.route('**/api/account/profile',route=>route.abort());await otherPage.goto('http://127.0.0.1:8765/?industry=snow');await otherPage.waitForFunction(()=>typeof prepareAccountBrandingCache==='function');
  assert.equal(await otherPage.locator('#aqAccountId').getAttribute('data-account-id'),'qa-browser-other');
- assert.notEqual(await otherPage.locator('#dealerCompany').inputValue(),'FICTIONAL QA COMPANY','Failed profile load cannot show the previous business cache');await otherPage.close();
+ assert.notEqual(await otherPage.locator('#dealerCompany').inputValue(),'FICTIONAL QA COMPANY','Failed profile load cannot show the previous business cache');assert.equal(await otherPage.locator('#customerName').inputValue(),'','New business tab must not inherit the old customer');assert.equal(await otherPage.locator('#customerEmail').inputValue(),'');await otherPage.close();
  console.log('PASS real workspace clears previous-business branding before profile hydration');
 
  await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress,{},{timeout:35000}).catch(async e=>{console.log('RECOVERY DEBUG',await page.evaluate(()=>({image:el('streetViewChoice').value,inProgress:estimateOpenInProgress,saving:!!saveEstimateHistory.inFlight,pending:!!saveEstimateHistory.pending,status:el('status').textContent})));throw e});
