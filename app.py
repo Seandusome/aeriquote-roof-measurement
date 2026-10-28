@@ -3329,6 +3329,9 @@ SETUP_DEALER_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>Cr
 <button type="submit">CREATE DEALER ACCOUNT</button></form></div></body></html>"""
 
 def login_email_in_use(con,email):
+    # Share the employee-creation identity lock until the caller commits/closes.
+    if con.postgres:con.execute("SELECT pg_advisory_xact_lock(?)",(614728194,))
+    else:con.execute("BEGIN IMMEDIATE")
     return bool(con.execute("SELECT id FROM dealers WHERE LOWER(email)=? UNION ALL SELECT id FROM dealer_employees WHERE LOWER(email)=?",(email,email)).fetchone())
 
 @app.route("/setup-dealer",methods=["GET","POST"],strict_slashes=False)

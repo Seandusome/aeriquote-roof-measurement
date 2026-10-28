@@ -29,6 +29,8 @@ jobs:
       - run: python scripts/test_workspace_account_binding.py
       - run: python scripts/test_account_credits.py
       - run: python scripts/test_password_recovery.py
+      - run: python scripts/test_security_lifecycle.py
+      - run: python scripts/test_login_identity_race.py
       - run: python scripts/test_public_routes.py
       - run: python scripts/test_support_storage.py
       - run: python scripts/test_support_workflow.py
@@ -117,3 +119,7 @@ jobs:
         run: python scripts/test_property_acceptance.py --postgres
       - name: Paid subscription anniversary concurrency
         run: python scripts/test_subscription_periods.py --postgres
+      - name: Password-reset login race and employee access lifecycle
+        run: python scripts/test_security_lifecycle.py --postgres
+      - name: Cross-role signup identity concurrency
+        run: python scripts/test_login_identity_race.py --postgres
