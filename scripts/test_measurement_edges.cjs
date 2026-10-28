@@ -15,6 +15,7 @@ const pending=w.eval('JSON.stringify(areaPoints)');id('toolLinearBtn').click();a
 id('areaClearBtn').click();points([[52,-106],[52,-105.9999],[52,-105.9998]]);id('areaStartBtn').click();assert(!w.eval('areaMeasurementSaved'),'Collinear area must not save');
 id('areaClearBtn').click();points(rectangle);id('areaStartBtn').click();assert(w.eval('areaMeasurementSaved'));const sqft=w.eval('areaSqFtTotal()');
 const expected=6378137**2*(Math.PI/180)**2*.0001*.0001*Math.cos(52.00005*Math.PI/180)*10.76391041671;assert(Math.abs(sqft-expected)/expected<.0001,'Known rectangle area independent calculation: '+sqft+' vs '+expected);
+for(let cycle=0;cycle<2;cycle++){w.eval('correctAreaOutline()');assert.equal(w.eval('map.dragging.enabled()'),false);assert(id('map').classList.contains('polygon-correcting'));if(cycle)w.eval('toggleAreaMeasure()');else w.eval('cancelAreaCorrection()');assert(w.eval('map.dragging.enabled()'));assert(!id('map').classList.contains('polygon-correcting'));}
 assert.equal(w.eval('measuredPolygonError(areaPoints.slice().reverse())'),'');assert.equal(w.eval('measuredPolygonError([...areaPoints,areaPoints[0]])'),'');
 assert.equal(w.eval(`measuredPolygonError([[52,-106],[52,-105.9997],[52.0001,-105.9997],[52.0001,-105.9999],[52.0003,-105.9999],[52.0003,-106]].map(p=>L.latLng(...p)))`),'','Concave L-shaped boundary remains valid');
 id('toolLinearBtn').click();points([[52,-106],[52,-106]]);const lineUses=w.eval('usage.linear');id('linearStartBtn').click();assert(!w.eval('linearMeasurementSaved'));assert(w.eval('linearMode'));assert.equal(w.eval('usage.linear'),lineUses);
@@ -37,6 +38,7 @@ if(industry==='roofing'){
  w.eval('clearManual()');points(rectangle);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),1);assert(w.eval('manualPlanes[0].surface_sqft>areaSqFtTotal()'));
 }
 w.eval("areaMode=false;linearMode=false;linearPoints=[[52,-106],[52,-105.999]].map(p=>L.latLng(p));linearMeasurementSaved=true;measurementViewMode='linear';redrawLinearMeasure();editLinearMeasure();resetMeasurementForNewProperty()");assert(w.eval('map.dragging.enabled()'),'Property reset releases linear edit lock');assert(!id('map').classList.contains('linear-correcting'));
+w.eval("areaPoints=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]].map(p=>L.latLng(p));areaMeasurementSaved=true;correctAreaOutline();resetMeasurementForNewProperty()");assert.equal(w.eval('areaCorrectionOriginal'),null);assert(w.eval('map.dragging.enabled()'));assert(!id('map').classList.contains('polygon-correcting'));
 // A slow account fetch may hydrate company details, but must not undo an explicit industry choice.
  reset();w.eval("sessionToken='';areaMode=false;linearMode=false");let finishProfile;
  w.fetch=()=>new Promise(resolve=>finishProfile=resolve);w.eval('loadDealerDefaults()');

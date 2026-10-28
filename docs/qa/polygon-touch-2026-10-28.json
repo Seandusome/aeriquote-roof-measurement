@@ -1,0 +1,99 @@
+{
+  "base": "2e94561140f1cc843c74582ad852f50eaa35e361",
+  "environment": "Chromium 141 mobile/touch emulation; fictional imagery; disposable SQLite; not physical hardware",
+  "before_fix": {
+    "area_second_edit": {
+      "dragging": true,
+      "before": [
+        52,
+        -106
+      ],
+      "after": [
+        51.99995936072346,
+        -106.00009292364122
+      ]
+    },
+    "roof_second_edit": {
+      "dragging": true,
+      "before": [
+        51.99998743339703,
+        -106.0000003874302
+      ],
+      "after": [
+        51.99998743339703,
+        -106.00038528442384
+      ]
+    }
+  },
+  "results": [
+    {
+      "width": 320,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 93.53388568183986,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true,
+      "repeatedSaveCycles": 5,
+      "reopenedSaveCycles": 2,
+      "touchControls": true,
+      "nativeScrollLocked": true,
+      "areaSecondEdit": true,
+      "roofSecondEdit": true,
+      "manualRoofRepeatedEdit": true,
+      "polygonEstimateReopening": true
+    },
+    {
+      "width": 390,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 133.00742711769806,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true,
+      "repeatedSaveCycles": 5,
+      "reopenedSaveCycles": 2,
+      "touchControls": true,
+      "nativeScrollLocked": true,
+      "areaSecondEdit": true,
+      "roofSecondEdit": true,
+      "manualRoofRepeatedEdit": true,
+      "polygonEstimateReopening": true
+    },
+    {
+      "width": 768,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 340.2235247810162,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true,
+      "repeatedSaveCycles": 5,
+      "reopenedSaveCycles": 2,
+      "touchControls": true,
+      "nativeScrollLocked": true,
+      "areaSecondEdit": true,
+      "roofSecondEdit": true,
+      "manualRoofRepeatedEdit": true,
+      "polygonEstimateReopening": true
+    }
+  ]
+}
