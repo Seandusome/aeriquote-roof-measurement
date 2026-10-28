@@ -3889,6 +3889,7 @@ def dealer_employees():
     if request.method=="POST":
         name=str(request.form.get("employee_name") or "").strip();email=str(request.form.get("email") or "").strip().lower();password=str(request.form.get("password") or "")
         if not name or not email or len(password)<8:error="Employee name, email and a temporary password of at least 8 characters are required."
+        elif not valid_dealer_profile_email(email):error="Enter a valid employee login email address, such as name@company.com."
         else:
             con=estimate_db()
             try:
@@ -3909,7 +3910,9 @@ def dealer_employees():
 @app.post("/dealer-employees/<employee_id>/status")
 def dealer_employee_status(employee_id):
     if not is_dealer_owner(): return Response("Dealer Owner permission required.",status=403)
-    did=str(session["dealer_id"]);new_status="disabled" if str(request.form.get("action") or "").lower()=="disable" else "active"
+    action=str(request.form.get("action") or "").lower()
+    if action not in {"activate","disable"}:return Response("Choose activate or disable for this employee.",status=400)
+    did=str(session["dealer_id"]);new_status="disabled" if action=="disable" else "active"
     con=estimate_db()
     try:
         lock_account(con,did)
