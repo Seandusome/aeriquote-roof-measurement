@@ -101,19 +101,25 @@ with tempfile.TemporaryDirectory() as tmp:
         try:return [tuple(row) for row in con.execute('SELECT dealer_id,period,lookups,estimates FROM account_month_usage ORDER BY dealer_id,period').fetchall()]
         finally:con.close()
     used=usage()
-    for index,points in enumerate([triangle,triangle[1:]+triangle[:1],list(reversed(triangle)),triangle+[triangle[0]],[triangle[0]]+triangle]):
+    midpoint=[(triangle[0][0]+triangle[1][0])/2,(triangle[0][1]+triangle[1][1])/2]
+    resampled=[triangle[0],midpoint]+triangle[1:]
+    partial=[[lat,lng+.00004] for lat,lng in triangle]
+    for index,points in enumerate([triangle,triangle[1:]+triangle[:1],list(reversed(triangle)),triangle+[triangle[0]],[triangle[0]]+triangle,resampled,partial]):
         duplicate=copy.deepcopy(auto);roof=copy.deepcopy(original_roof);roof.update(building_id='different-provider-id',outline=points)
         duplicate['quote']['structures'].append(roof);price_fixture(duplicate)
         rejected=save(duplicate,'automatic-duplicate-'+str(index))
         assert rejected.status_code==400,(rejected.status_code,rejected.json)
-        assert 'same' in rejected.json['error'].lower() or 'duplicate' in rejected.json['error'].lower()
+        assert any(word in rejected.json['error'].lower() for word in ['same','duplicate','overlap'])
         assert c.get('/api/estimates/'+receipt.json['id']).json==before
         assert usage()==used,'Rejected duplicate must not consume either business allowance'
     distinct=copy.deepcopy(auto)
     distinct['address']='FICTIONAL distinct automatic garage'
     distinct['quote']['structures'].append(automatic_roof([[lat+.001,lng] for lat,lng in triangle],building_id='qa-real-distinct-garage'))
     price_fixture(distinct);assert save(distinct,'automatic-distinct').status_code==200
-    print('PASS identical automatic footprint rejected across distinct IDs, cyclic/reversed/closed vertices; saved record retained')
+    adjacent=copy.deepcopy(auto);adjacent['address']='FICTIONAL shared automatic boundary'
+    adjacent['quote']['structures'].append(automatic_roof([[2*triangle[0][0]-lat,lng] for lat,lng in triangle],building_id='qa-adjacent-roof'))
+    price_fixture(adjacent);assert save(adjacent,'automatic-adjacent').status_code==200
+    print('PASS duplicate/resampled/partially overlapping automatic footprints rejected; shared boundaries and detached garages retained')
     assert other.get('/api/estimates').json==[]
     assert c.post('/api/account/profile',json={'company':'employee forbidden'}).status_code==403
     print('PASS 18 six-industry pricing/scope cases; zero foreign records; no provider calls or production database')

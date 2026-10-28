@@ -127,7 +127,7 @@ def snapshot_error(payload):
             source=quote.get('measureSource','google')
             roofs=quote.get('structures',[])
             if any(not isinstance(r.get('total_roof_sqft'),(float,int)) or isinstance(r.get('total_roof_sqft'),bool) or not math.isfinite(r['total_roof_sqft']) or r['total_roof_sqft']<=0 for r in roofs):return 'Every included roof needs a valid measured area.'
-            seen=set();seen_outlines=set()
+            seen=set();seen_outlines=set();automatic_outlines=[]
             for roof in roofs:
                 if roof.get('manually_measured'):continue
                 if roof.get('building_id') and roof['building_id'] in seen:return 'The same automatic building is included more than once.'
@@ -139,6 +139,8 @@ def snapshot_error(payload):
                 outline_key=frozenset(coordinates(points,3))
                 if outline_key in seen_outlines:return 'The same automatic roof outline is included more than once. Remove the duplicate before quoting.'
                 seen_outlines.add(outline_key)
+                if any(polygons_overlap(points,other) for other in automatic_outlines):return 'Automatic roof outlines overlap. Correct the roof measurements before quoting to avoid counting coverage twice.'
+                automatic_outlines.append(points)
                 ground=float(roof.get('roof_ground_sqft') or 0);building=float(roof.get('building_ground_sqft') or 0);coverage=roof.get('roof_coverage_ratio')
                 if not math.isfinite(ground) or ground<=0:return 'Automatic roof footprint is incomplete. Remeasure before quoting.'
                 if coverage is not None and (not math.isfinite(float(coverage)) or float(coverage)<.95):return 'Automatic roof data covers only part of the building. Remeasure before quoting.'
