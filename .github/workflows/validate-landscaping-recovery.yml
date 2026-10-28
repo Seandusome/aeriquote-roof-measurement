@@ -55,6 +55,7 @@ jobs:
       - run: python scripts/test_estimate_pricing_api.py
       - run: python scripts/test_saved_editing_session.py
       - run: node scripts/test_price_rounding.cjs
+      - run: node scripts/test_saved_money_guard.cjs
       - run: node scripts/test_measurement_edges.cjs
       - run: node scripts/test_public_ui.cjs
       - run: node scripts/test_help_center.cjs

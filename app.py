@@ -2737,6 +2737,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  reportOpenedAt=Date.now();
  document.body.classList.add('report-open');
  el('reportOverlay').style.display='block';reportReady=true;estimateActionMessage('');
+ if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
  if(!historicalMode){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
  try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
@@ -2975,7 +2976,15 @@ async function downloadVectorDiagramPDF(report){
  }catch(e){status(e.message||'Vector Diagram PDF could not be created.','error')}
  finally{pdfInProgress=false;if(btn){btn.disabled=false;btn.textContent=oldText}}
 }
+function savedEstimateMoneyIssue(pricing){
+ if(!pricing)return '';
+ const values=['taxBase','gstAmt','pstAmt','total'].map(key=>pricing[key]);
+ if(values.some(value=>value===null||value===undefined||!Number.isFinite(Number(value))))return 'Saved estimate pricing is incomplete. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
+ const cents=value=>Math.round((Number(value)+Number.EPSILON)*100);
+ return cents(values[0])+cents(values[1])+cents(values[2])===cents(values[3])?'':'Saved estimate totals do not reconcile. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
+}
 async function downloadEstimatePDF(){
+ const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){status(moneyIssue,'warn');return}
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
  if(!report){status('Create the customer estimate first.','error');return}

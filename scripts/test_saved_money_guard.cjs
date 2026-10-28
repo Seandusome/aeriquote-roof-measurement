@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync('app.py','utf8');
+assert(source.includes('function savedEstimateMoneyIssue('),'Saved customer estimates need a money reconciliation guard');
+const helper=source.slice(source.indexOf('function savedEstimateMoneyIssue('),source.indexOf('async function downloadEstimatePDF('));
+const messages=[],c={quoteSnapshot:null,status:(...x)=>messages.push(x)};vm.createContext(c);vm.runInContext(helper,c);
+const legacy={taxBase:1896.925,gstAmt:94.84625,pstAmt:113.8155,total:2105.58675};
+const original=JSON.stringify(legacy);assert(c.savedEstimateMoneyIssue(legacy).includes('do not reconcile'));
+assert.equal(JSON.stringify(legacy),original,'Historical amounts must never be rewritten');
+assert.equal(c.savedEstimateMoneyIssue({taxBase:1896.93,gstAmt:94.85,pstAmt:113.82,total:2105.60}),'');
+assert.equal(c.savedEstimateMoneyIssue({taxBase:2080.19,gstAmt:104.01,pstAmt:124.81,total:2309.01}),'');
+assert.equal(c.savedEstimateMoneyIssue(null),'');
+for(const mode of ['regular','discount','included'])assert.equal(c.savedEstimateMoneyIssue({mode,taxBase:.34,gstAmt:.33,pstAmt:.33,total:1}),'','Included-tax residual remains valid');
+const download=source.slice(source.indexOf('async function downloadEstimatePDF('),source.indexOf('async function downloadEstimatePDF(')+800);
+assert(download.includes('savedEstimateMoneyIssue(quoteSnapshot?.savedPricing)'),'Every PDF layout must reject inconsistent saved money before capture/provider calls');
+assert(source.includes("moneyWarning.setAttribute('role','alert')"),'Read-only historical report must visibly warn, including native print');
+c.quoteSnapshot={savedPricing:legacy};vm.runInContext(download.slice(0,download.indexOf(" const btn="))+'}',c);
+(async()=>{await c.downloadEstimatePDF();assert(messages.at(-1)[0].includes('do not reconcile'));assert.equal(JSON.stringify(legacy),original);console.log('PASS legacy one-cent mismatch blocks PDF before imagery/capture; clear report warning, no stored-data mutation; valid regular/discount/included amounts preserved');})().catch(e=>{console.error(e);process.exit(1)});
