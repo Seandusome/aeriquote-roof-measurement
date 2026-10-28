@@ -1,0 +1,40 @@
+{
+  "base": "9bf10b0fdf06ce432381251d3dfc67da072034b4",
+  "environment": "Chromium 141 mobile/touch emulation; fictional imagery; disposable accounts; not physical iPhone",
+  "before_fix": {
+    "area_vertices_before_tap": 4,
+    "area_vertices_after_tap": 5,
+    "warning": "This outline crosses itself. Follow the outside boundary in order, then save again.",
+    "manual_roof_vertices_before_tap": 4,
+    "manual_roof_vertices_after_tap": 5
+  },
+  "results": [
+    {
+      "width": 320,
+      "backgroundTapPreservesVertices": true,
+      "crossingSaveBlocked": true,
+      "cancelExact": true,
+      "twoAreasRepeated": true,
+      "manualRoofTapPreservesVertices": true,
+      "reviewedRoofValidationAndCancel": true
+    },
+    {
+      "width": 390,
+      "backgroundTapPreservesVertices": true,
+      "crossingSaveBlocked": true,
+      "cancelExact": true,
+      "twoAreasRepeated": true,
+      "manualRoofTapPreservesVertices": true,
+      "reviewedRoofValidationAndCancel": true
+    },
+    {
+      "width": 768,
+      "backgroundTapPreservesVertices": true,
+      "crossingSaveBlocked": true,
+      "cancelExact": true,
+      "twoAreasRepeated": true,
+      "manualRoofTapPreservesVertices": true,
+      "reviewedRoofValidationAndCancel": true
+    }
+  ]
+}
