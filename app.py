@@ -3990,6 +3990,13 @@ def require_dealer_login():
         return redirect("/dealer-login")
 
 
+    # Browsers must not grant or change employee access from a foreign page.
+    if request.method=="POST" and (path=="/dealer-employees" or (path.startswith("/dealer-employees/") and path.endswith("/status"))):
+        origin=request.headers.get("Origin","").strip().lower()
+        host=request.host.lower()
+        if request.headers.get("Sec-Fetch-Site","").lower()=="cross-site" or (origin and origin not in {"https://"+host,"http://"+host}):
+            return Response("Employee access changes must come from this AeriQuote site. Reload Manage Employees and try again.",status=403)
+
     # An old browser tab must not save its draft into a different business after re-login.
     expected_account=request.headers.get("X-AeriQuote-Account", "")
     if expected_account and expected_account!=str(session.get("dealer_id") or ""):

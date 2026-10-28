@@ -37,6 +37,12 @@ assert owner.post('/dealer-employees/security-employee/status',data={'action':'d
 assert employee.get('/api/account/profile').status_code==401
 assert owner.post('/dealer-employees/security-employee/status',data={'action':'activate'}).status_code==302
 assert employee.get('/api/account/profile').status_code==401,'Reactivation must not revive an old session'
+for headers in [{'Origin':'https://foreign.example.invalid'},{'Origin':'null'},{'Origin':'http://localhost','Sec-Fetch-Site':'cross-site'}]:
+    assert owner.post('/dealer-employees',data={'employee_name':'QA CSRF','email':'csrf-lifecycle@example.invalid','password':'fictional-password'},headers=headers).status_code==403
+    assert owner.post('/dealer-employees/security-employee/status',data={'action':'disable'},headers=headers).status_code==403
+assert sql("SELECT status FROM dealer_employees WHERE id='security-employee'",fetch=True)['status']=='active'
+assert sql("SELECT COUNT(*) AS n FROM dealer_employees WHERE email='csrf-lifecycle@example.invalid'",fetch=True)['n']==0
+assert owner.post('/dealer-employees/security-employee/status',data={'action':'activate'},headers={'Origin':'https://localhost','Sec-Fetch-Site':'same-origin'}).status_code==302,'HTTPS proxy termination must retain normal same-host actions'
 if '--employee-only' in sys.argv:
     assert not failures,'\n'.join(failures)
     print('PASS explicit employee actions, malformed-email rejection, disable/reactivation and permissions')
