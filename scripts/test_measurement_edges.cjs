@@ -21,7 +21,9 @@ id('toolLinearBtn').click();points([[52,-106],[52,-106]]);const lineUses=w.eval(
 const lineDraft=w.eval('JSON.stringify(linearPoints)');id('toolAreaBtn').click();assert.equal(w.eval('measurementViewMode'),'linear');assert.equal(w.eval('JSON.stringify(linearPoints)'),lineDraft);
 id('linearClearBtn').click();points([[52,-106],[52,-105.999]]);w.eval(`el('jobPrice').value='2';jobPriceChanged()`);id('linearStartBtn').click();const feet=w.eval('linearFeetTotal()');
 // A collapsed correction cannot replace a good saved line; Cancel restores it.
-id('linearEditBtn').click();w.eval('linearPoints[1]=L.latLng(linearPoints[0].lat,linearPoints[0].lng);redrawLinearMeasure()');id('linearSaveEditBtn').click();assert(w.eval('!!linearCorrectionOriginal'));id('linearCancelEditBtn').click();assert.equal(w.eval('linearFeetTotal()'),feet);
+id('linearEditBtn').click();assert.equal(w.eval('map.dragging.enabled()'),false);assert(w.eval('linearLayers.filter(x=>x instanceof L.Marker&&x.options.draggable).every(x=>x.options.autoPan===false)'));w.eval('linearPoints[1]=L.latLng(linearPoints[0].lat,linearPoints[0].lng);redrawLinearMeasure()');id('linearSaveEditBtn').click();assert(w.eval('!!linearCorrectionOriginal'));assert.equal(w.eval('map.dragging.enabled()'),false,'Invalid Save keeps edit lock');id('linearCancelEditBtn').click();assert.equal(w.eval('linearFeetTotal()'),feet);assert(w.eval('map.dragging.enabled()'));
+id('linearEditBtn').click();id('linearSaveEditBtn').click();assert(w.eval('map.dragging.enabled()'),'Successful Save restores map pan');
+w.eval('map.dragging.disable()');id('linearEditBtn').click();id('linearCancelEditBtn').click();assert.equal(w.eval('map.dragging.enabled()'),false,'Preserve a previously disabled drag handler');w.eval('map.dragging.enable()');
 if(industry!=='roofing'){
  const rate=w.eval("currentBusinessType()==='commercial'?commercialLinearRate():surfaceLinearJobRate()");
  id('toolAreaBtn').click();id('commercialAreaList').querySelector('button:last-child').click();
@@ -34,6 +36,7 @@ if(industry==='roofing'){
  reset();w.eval("measurementViewMode='auto';fallbackMode=true;manualOverrideMode=true;toggleTrace()");points(crossing);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),0);assert(w.eval('traceMode'));assert(id('status').textContent.includes('crosses itself'));
  w.eval('clearManual()');points(rectangle);id('finishTrace').click();assert.equal(w.eval('manualPlanes.length'),1);assert(w.eval('manualPlanes[0].surface_sqft>areaSqFtTotal()'));
 }
+w.eval("areaMode=false;linearMode=false;linearPoints=[[52,-106],[52,-105.999]].map(p=>L.latLng(p));linearMeasurementSaved=true;measurementViewMode='linear';redrawLinearMeasure();editLinearMeasure();resetMeasurementForNewProperty()");assert(w.eval('map.dragging.enabled()'),'Property reset releases linear edit lock');
 // A slow account fetch may hydrate company details, but must not undo an explicit industry choice.
  reset();w.eval("sessionToken='';areaMode=false;linearMode=false");let finishProfile;
  w.fetch=()=>new Promise(resolve=>finishProfile=resolve);w.eval('loadDealerDefaults()');

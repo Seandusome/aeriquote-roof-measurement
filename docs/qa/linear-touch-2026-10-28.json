@@ -1,0 +1,61 @@
+{
+  "environment": "Chromium 141; mobile/touch emulation; disposable SQLite; fictional imagery; not physical devices",
+  "before_fix_320": {
+    "map_dragging_enabled": true,
+    "center_before": [
+      52,
+      -106
+    ],
+    "center_after": [
+      52.00000064406087,
+      -105.99893152713777
+    ]
+  },
+  "results": [
+    {
+      "width": 320,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 134.15904065065203,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true
+    },
+    {
+      "width": 390,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 174.9263450177292,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true
+    },
+    {
+      "width": 768,
+      "touchEvents": {
+        "touch": 1,
+        "pointer": 1
+      },
+      "savedFeet": 383.3417585254802,
+      "mapStationary": true,
+      "pinch": true,
+      "saveCancel": true,
+      "reopened": true,
+      "savedEditing": true,
+      "areaTouch": true,
+      "roofTouchCancel": true
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+Latest authorized batch:Linear endpoint touch correction from7bf0208. Read docs/QA_LINEAR_TOUCH_2026_10_28.md before older resume entries. Fix is limited to temporary map-pan locking during Linear correction and disabling its marker auto-pan;touch checks320/390/768 plus existing full regression evidence are documented there. Physical-phone recheck remains pending. Final checkpoint is recovery branch HEAD;verify GitHub/Render before resuming. Main/production untouched.
+
 ## Latest — final account security and subscription reliability batch
 
 Read docs/RESUME_HERE_2026_10_28_ACCOUNT_SECURITY.md first. Application checkpointea73ac6 contains five confirmed security fixes across four small commits.72 regressions and disposable PostgreSQL tests passed; real controlled browser CSRF and account-switch recovery passed. No allowance history/anchor or imagery/measurement/PDF changes. Final documentation commit is recovery HEAD; stop after completion. Earlier content below is historical context.
