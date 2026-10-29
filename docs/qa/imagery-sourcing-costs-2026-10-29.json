@@ -1,0 +1,250 @@
+{
+  "currency": "USD",
+  "status": "hypothetical assumptions except separately cited cloud tariffs; not supplier quotes",
+  "scope": "one bounded regional 500GB combined source/processed/archive package, not national coverage",
+  "models": [
+    {
+      "name": "Open regional data — first year",
+      "fixed": 8110,
+      "variable_per_measurement": 0.01,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 8120,
+          "per_measurement": 8.12
+        },
+        {
+          "measurements": 10000,
+          "total": 8210,
+          "per_measurement": 0.821
+        },
+        {
+          "measurements": 50000,
+          "total": 8610,
+          "per_measurement": 0.1722
+        }
+      ]
+    },
+    {
+      "name": "Open regional data — ongoing/year",
+      "fixed": 910,
+      "variable_per_measurement": 0.01,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 920,
+          "per_measurement": 0.92
+        },
+        {
+          "measurements": 10000,
+          "total": 1010,
+          "per_measurement": 0.101
+        },
+        {
+          "measurements": 50000,
+          "total": 1410,
+          "per_measurement": 0.0282
+        }
+      ]
+    },
+    {
+      "name": "Fixed regional licence $3,000/year — first year",
+      "fixed": 11110,
+      "variable_per_measurement": 0.01,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 11120,
+          "per_measurement": 11.12
+        },
+        {
+          "measurements": 10000,
+          "total": 11210,
+          "per_measurement": 1.121
+        },
+        {
+          "measurements": 50000,
+          "total": 11610,
+          "per_measurement": 0.2322
+        }
+      ]
+    },
+    {
+      "name": "Fixed regional licence $3,000/year — ongoing/year",
+      "fixed": 3910,
+      "variable_per_measurement": 0.01,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 3920,
+          "per_measurement": 3.92
+        },
+        {
+          "measurements": 10000,
+          "total": 4010,
+          "per_measurement": 0.401
+        },
+        {
+          "measurements": 50000,
+          "total": 4410,
+          "per_measurement": 0.0882
+        }
+      ]
+    },
+    {
+      "name": "Transaction $0.10, 1.5 calls/job — first year",
+      "fixed": 7560,
+      "variable_per_measurement": 0.15,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 7710,
+          "per_measurement": 7.71
+        },
+        {
+          "measurements": 10000,
+          "total": 9060,
+          "per_measurement": 0.906
+        },
+        {
+          "measurements": 50000,
+          "total": 15060,
+          "per_measurement": 0.3012
+        }
+      ]
+    },
+    {
+      "name": "Transaction $0.10, 1.5 calls/job — ongoing/year",
+      "fixed": 360,
+      "variable_per_measurement": 0.15,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 510,
+          "per_measurement": 0.51
+        },
+        {
+          "measurements": 10000,
+          "total": 1860,
+          "per_measurement": 0.186
+        },
+        {
+          "measurements": 50000,
+          "total": 7860,
+          "per_measurement": 0.1572
+        }
+      ]
+    },
+    {
+      "name": "Transaction $0.25, 1.5 calls/job — first year",
+      "fixed": 7560,
+      "variable_per_measurement": 0.375,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 7935,
+          "per_measurement": 7.935
+        },
+        {
+          "measurements": 10000,
+          "total": 11310,
+          "per_measurement": 1.131
+        },
+        {
+          "measurements": 50000,
+          "total": 26310,
+          "per_measurement": 0.5262
+        }
+      ]
+    },
+    {
+      "name": "Transaction $0.25, 1.5 calls/job — ongoing/year",
+      "fixed": 360,
+      "variable_per_measurement": 0.375,
+      "volumes": [
+        {
+          "measurements": 1000,
+          "total": 735,
+          "per_measurement": 0.735
+        },
+        {
+          "measurements": 10000,
+          "total": 4110,
+          "per_measurement": 0.411
+        },
+        {
+          "measurements": 50000,
+          "total": 19110,
+          "per_measurement": 0.3822
+        }
+      ]
+    }
+  ],
+  "break_even": [
+    {
+      "transaction_price": 0.05,
+      "upstream_multiplier": 1.5,
+      "open_break_even": 8462,
+      "fixed_3000_break_even": 54616
+    },
+    {
+      "transaction_price": 0.1,
+      "upstream_multiplier": 1.5,
+      "open_break_even": 3929,
+      "fixed_3000_break_even": 25358
+    },
+    {
+      "transaction_price": 0.25,
+      "upstream_multiplier": 1.5,
+      "open_break_even": 1507,
+      "fixed_3000_break_even": 9727
+    },
+    {
+      "transaction_price": 0.5,
+      "upstream_multiplier": 1.5,
+      "open_break_even": 744,
+      "fixed_3000_break_even": 4798
+    }
+  ],
+  "gaps": [
+    {
+      "n": 1000,
+      "total_first_year": 8193,
+      "total_recurring": 993
+    },
+    {
+      "n": 10000,
+      "total_first_year": 8940,
+      "total_recurring": 1740
+    },
+    {
+      "n": 50000,
+      "total_first_year": 12260,
+      "total_recurring": 5060
+    }
+  ],
+  "assumptions": {
+    "regional_storage_total_GB": 500,
+    "storage_USD_GB_month": 0.015,
+    "annual_storage": 90,
+    "annual_worker_reserve": 60,
+    "annual_monitoring_backup_ops": 60,
+    "annual_update_labour": 600,
+    "annual_processing_compute": 100,
+    "annual_open_fixed_ops": 910,
+    "initial_regional_ingestion_QA": 1200,
+    "initial_common_integration_acceptance_reserve": 6000,
+    "annual_commercial_API_ops": 360,
+    "hypothetical_fixed_licence": 3000,
+    "commercial_transaction_multiplier": 1.5,
+    "variable_open_workflow": 0.01,
+    "all_non_tariff_costs": "Hypothetical USD reserves, not quotes or measured traffic",
+    "source": "https://developers.cloudflare.com/r2/pricing/"
+  },
+  "limitations": [
+    "Not national coverage; equal usable resolution and rights needed to compare models",
+    "Original imagery rights must be confirmed per asset",
+    "Excludes general SaaS costs and separate geocoding/Street View",
+    "First-year models include all stated one-time reserves; ongoing excludes initial reserves"
+  ]
+}

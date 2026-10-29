@@ -1,3 +1,28 @@
+# October29,2026 — low-cost imagery supply research COMPLETE
+
+STOP for review; no implementation, outreach or purchases authorized/performed.
+
+Read [LOW_COST_IMAGERY_SUPPLY_2026_10_29.md](LOW_COST_IMAGERY_SUPPLY_2026_10_29.md) and the machine-readable assumptions/results at qa/imagery-sourcing-costs-2026-10-29.json. Prior Nearmap report remains intact.
+
+Starting HEAD13e0fb60adfe3f89f750d5052c86c7bb76964299; GitHub40915455129/40915455410 success; Render test dep-dbhnigk9v7es73bk12i0 LIVE. Research commit changes documentation only. No application, database, customer account or production changes. Main untouched.
+
+Key findings:
+- Named Ontario OGL collections, Edmonton City OGL, Vancouver OGL, Québec CC-BY open collections and original USDA public-domain NAIP are legally distinct from merely viewable services. Broad commercial copy/adapt/distribute grants support tracing, retained geometry and PDFs subject to attribution/exemptions; named-source provenance matters.
+- Edmonton's actual current portal-embedded OGL was recovered and read; perpetual commercial adaptation/distribution verified.2025 City orthophotos7.5cm, Sept–Oct2025. Dataset API licenseId absent; confirm any tile exceptions; exclude out-of-city Esri images.
+- Ontario DRAPE2024:16cm,45cm stated accuracy,March–May2024,35,993km². Named release expressly OGL. Recommend bounded released urban/rural tiles, not mixed provincial basemap.
+- SGIC public ImageServer explicitly prohibits further commercial redistribution. ISC60cm/3m product cannot be assumed roof-grade or SaaS-licensed from low retail prices. Negotiation required.
+- NAIP2025 is30/60cm by state, leaf-on; genuinely public domain original assets but not universal roof-quality imagery.
+- Tarin regional VIEWS and First Base Solutions bulk/MapCast are preferred wholesale inquiries. No applicable OEM price/rights verified. FBS actual EULA is internal-only/no distribution/no Internet without written agreement; ordinary subscription insufficient.
+- Recommended pilots:Edmonton2025 and Eastern Ontario DRAPE2024, proposals only. Actual property-pixel/field accuracy testing NOT performed in this research.
+- Hypothetical USD all-in model includes$6,000 shared initial integration+$1,200 regional ingestion,$910/year open-data operations,500GB total corpus and$0.01/job reserve. First-year open totals at1k/10k/50k jobs:$8,120/$8,210/$8,610; ongoing:$920/$1,010/$1,410. Not nationwide costs, measured usage or vendor quote. Fixed$3k and metered scenarios/break-even/gap costs in report.20% gaps can raise50k ongoing cost from2.82c to10.12c/job.
+- Five ranked contacts:Geospatial Ontario,City Edmonton,Tarin,First Base Solutions,USDA/USGS. Contact details/questions in report. No vendor contacted.
+
+Preserve existing Google/Mapbox/Leaflet/Solar integrations,AutoMeasure code,manual Roofing/Vector QA gates,measurements,prices,taxes,allowances,aerial PDFs and all checkpoints. AI Trace remains removed. Prior MapsPeople restriction remains launch blocker for current Google workflow; open imagery does not retroactively licence historical Google-derived content.
+
+Next:Sean reviews scope/costs,then separately authorizes source samples/rights clarification or supplier outreach. No implementation started. October28 physical-iPhone Area retest,Remeasure Area evaluation,Canadian region filtering and Linear/manual-roof safeguards remain pending below.
+
+---
+
 # October 29, 2026 — imagery licensing research checkpoint
 
 Research COMPLETE; STOP for review. No application implementation authorized by this batch.
