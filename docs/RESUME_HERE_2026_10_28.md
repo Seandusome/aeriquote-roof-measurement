@@ -1,3 +1,17 @@
+# October29,2026 — FINAL Mapbox quality research; STOP FOR TODAY
+
+Read [MAPBOX_QUALITY_COMPARISON_2026_10_29.md](MAPBOX_QUALITY_COMPARISON_2026_10_29.md). Research only; no further development tonight.
+
+Starting HEAD3cecc95c3e08366d4bb2637d78bfb6c11bcd09d9. GitHub40962376994/40962377015 SUCCESS; Render dep-dbhs3om0tbcc73afnqjg LIVE exactHEAD.
+
+Requested exact properties in Saskatoon(1715 2ndAveN and2301AveCN),Calgary(1340SouthdaleCresSW),Edmonton,Warman,ruralSK and individualUSresidence remain UNVERIFIED. Official public interactive preview blank (L undefined, mainpage WebGLfailure), one reload unsuccessful; second official link invalidtoken. No bypass, newkeys or secretaccess. Actual Mapbox2024 Reno residential neighborhood example visually inspected on official article, but broad screenshot too small for individualroof/garage/curb assessment; capture/nativeGSD/accuracy unknown. Subsequent directCDNimage browseraccess rejected by site-safety policy; stopped without workaround. Saved screenshots as context/access evidence only, not commercialPDFassets.
+
+No comparable same-propertyGoogle image available, no measurementaccuracy claim, no imagery substituted. Prior Mapboxlicensing/cost audit unchanged. Recommendation: seek writtenrights/completequote and authorized propertysamples before integration. Report contains exact coverage/licensing questions. No vendor contact.
+
+All changes docs/evidence only. Main/production/customers/application source untouched; AutoMeasure preserved; AITrace removed; QAmanualroof/vector unchanged. No manualdeployment. No new applicationregressionrun for documentation-only work. Stop for review.
+
+---
+
 # October29,2026 — Mapbox imagery audit COMPLETE; STOP for review
 
 Read [MAPBOX_IMAGERY_AUDIT_2026_10_29.md](MAPBOX_IMAGERY_AUDIT_2026_10_29.md). Documentation only; no new imagery integration/application changes/vendor contact/API keys/purchases.
