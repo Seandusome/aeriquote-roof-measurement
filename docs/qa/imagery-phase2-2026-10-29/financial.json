@@ -1,0 +1,220 @@
+{
+  "currency": "USD assumed for subscriptions and costs; no vendor quote",
+  "scope": "same bounded 500GB regional corpus as prior report",
+  "plans": [
+    {
+      "name": "Basic",
+      "revenue": 29,
+      "allowance": 25
+    },
+    {
+      "name": "Pro",
+      "revenue": 59,
+      "allowance": 75
+    },
+    {
+      "name": "Business",
+      "revenue": 99,
+      "allowance": 200
+    }
+  ],
+  "models": [
+    {
+      "name": "Open: ongoing at 10,000 regional jobs",
+      "c": 0.101,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "2.53",
+          "revenue_pct": "8.71"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "7.58",
+          "revenue_pct": "12.84"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "20.20",
+          "revenue_pct": "20.40"
+        }
+      ]
+    },
+    {
+      "name": "Open: ongoing at 50,000",
+      "c": 0.0282,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "0.71",
+          "revenue_pct": "2.43"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "2.12",
+          "revenue_pct": "3.58"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "5.64",
+          "revenue_pct": "5.70"
+        }
+      ]
+    },
+    {
+      "name": "Fixed $3,000 licence: ongoing at 50,000",
+      "c": 0.0882,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "2.21",
+          "revenue_pct": "7.60"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "6.62",
+          "revenue_pct": "11.21"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "17.64",
+          "revenue_pct": "17.82"
+        }
+      ]
+    },
+    {
+      "name": "20% fallback at $0.25, 1.5 transactions: ongoing at 50,000",
+      "c": 0.1012,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "2.53",
+          "revenue_pct": "8.72"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "7.59",
+          "revenue_pct": "12.86"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "20.24",
+          "revenue_pct": "20.44"
+        }
+      ]
+    },
+    {
+      "name": "$0.10 transaction, 1.5 transactions: ongoing at 50,000",
+      "c": 0.1572,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "3.93",
+          "revenue_pct": "13.55"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "11.79",
+          "revenue_pct": "19.98"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "31.44",
+          "revenue_pct": "31.76"
+        }
+      ]
+    },
+    {
+      "name": "Open: first year at 50,000 incl integration reserve",
+      "c": 0.1722,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "4.31",
+          "revenue_pct": "14.84"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "12.92",
+          "revenue_pct": "21.89"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "34.44",
+          "revenue_pct": "34.79"
+        }
+      ]
+    },
+    {
+      "name": "Open: 3-year annualized startup at 50,000",
+      "c": 0.0762,
+      "full_monthly": [
+        {
+          "plan": "Basic",
+          "full_monthly": "1.91",
+          "revenue_pct": "6.57"
+        },
+        {
+          "plan": "Pro",
+          "full_monthly": "5.72",
+          "revenue_pct": "9.69"
+        },
+        {
+          "plan": "Business",
+          "full_monthly": "15.24",
+          "revenue_pct": "15.39"
+        }
+      ]
+    }
+  ],
+  "max_annual_fixed_licence_at_20pct_budget": [
+    {
+      "regional_annual_jobs": 10000,
+      "plans": [
+        {
+          "plan": "Basic",
+          "raw_allowable_licence": 1310
+        },
+        {
+          "plan": "Pro",
+          "raw_allowable_licence": 563.33
+        },
+        {
+          "plan": "Business",
+          "raw_allowable_licence": -20
+        }
+      ]
+    },
+    {
+      "regional_annual_jobs": 50000,
+      "plans": [
+        {
+          "plan": "Basic",
+          "raw_allowable_licence": 10190
+        },
+        {
+          "plan": "Pro",
+          "raw_allowable_licence": 6456.67
+        },
+        {
+          "plan": "Business",
+          "raw_allowable_licence": 3540
+        }
+      ]
+    }
+  ],
+  "hypothetical_variable_breakdown": {
+    "tile_delivery_proxy_CPU": 0.004,
+    "customer_PDF_aerial_render": 0.003,
+    "read_reopen_retry_ops_reserve": 0.003,
+    "total": 0.01
+  },
+  "initial_reserves": {
+    "common_adapter_engineering": 6000,
+    "regional_ingestion_QA": 1200
+  },
+  "annual_fixed_open_operations": 910,
+  "quality_gap_fraction": 0.2,
+  "fallback_vendor_rate": 0.25,
+  "fallback_transaction_multiplier": 1.5
+}

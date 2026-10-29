@@ -1,3 +1,26 @@
+# October29,2026 — imagery feasibility Phase2 COMPLETE
+
+STOP for review. Read [IMAGERY_PHASE2_2026_10_29.md](IMAGERY_PHASE2_2026_10_29.md). Research/evidence only; no new imagery integration or application changes.
+
+Started from verified a7f8591077b106af4529b514c3ef0a934045b53a. Both GitHub40946469548/40946469551 success; Render test dep-dbhqfri9lscs73a65dng LIVE. Current research commit changes docs/evidence only, preserves all previous checkpoints.
+
+Actual visual evidence:
+- Downloaded City's genuine2025 Edmonton GeoTIFF28683E593532N.tif,300080484 bytes. Read10k×10k RGB,0.075m pixel tags,EPSG3776. Visually inspected native residential/garage,large-building/parking and service-field crops. Leafy trees/deep shadows occlude boundaries; no ground-truth measurement accuracy claimed. Preview JPEGs/source hashes/crop bounds committed under docs/qa/imagery-phase2-2026-10-29.
+- Official Ontario service actual DRAPE2024 raster102474/102773 at Carleton Place samples:16cm catalog values. Houses/garages,driveways,commercial roof/parking/field visible; shadows/branches hide some boundaries. A single-tile lock's black edge disappeared with DRAPE2024-only mosaic; no app defect. Exact flight day not in catalog.
+- Actual public SGIC2021/30cm Geodesy imagery inspected at Saskatoon residential/industrial and Warman residential/park/vacant-expansion samples. Corrects any assumption all SGIC is60cm. Exact date/accuracy null. No SGIC pixels committed because public redistribution rights insufficient.
+- NEW licensing lead:official FlySask announcements describe2025 Saskatoon8cm Pictometry,plus corrected2024 Estevan/Weyburn/Yorkton set. Pixels/type/top-down suitability and OEM rights UNVERIFIED; do not claim member access permits SaaS/PDFs.
+- Preferred open pilots remain Edmonton2025 and Eastern Ontario DRAPE2024; no pilot implemented.
+
+Saskatchewan path:contact SRC/SGIC licensing authority and ISC only after Sean approves outreach. Published project contact Ian.Radchenko@src.sk.ca/306-385-4232 on older portal support page; confirm through SRC1-877-772-7227 after transition to FlySask3. ISC1-866-275-4721. Public ImageServer bars redistribution; older SRC portal terms need written consent for commercial exploitation; Saskatoon City mapping terms restrict storage/publication without consent. Prepared unsent inquiry is in report. No supplier contacted.
+
+Financial stress test uses full25/75/200 monthly allowances. Hypothetical open regional500GB model:ongoing cost/job0.101 at10k/year and0.0282 at50k; full-use monthly Business imagery20.20/5.64USD. A20% quality/coverage fallback at hypothetical0.25/transaction×1.5 raises50k Business to20.24/month. A3k regional licence at50k gives17.64/month ongoing. First-year integration/ingestion reserve included separately; no quote/profitability guarantee. Decimal rounding checked, no pricing/allowance modifications.
+
+Best commercial inquiries:Tarin regional pooled WMS/files and First Base Solutions written OEM exception; McElhanney/Geodesy separately licensable stock secondary. Standard FBS internal/no-distribution/no-Internet EULA remains unsuitable without agreement. No actual OEM rate obtained.
+
+Next:review report,approve licensing inquiries/source accuracy checks,then separately authorize isolated technical pilot. Keep original app/PDFs untouched meanwhile. Preserve AutoMeasure code,QA-only manual Roofing/Vector,all touch locks,measurement/pricing/security/allowances and removed AI Trace. Main/production/customer records untouched. Existing Google workflow remains uncleared; no silent historic-data migration. Prior pending iPhone Area/Remeasure Area/Canadian selector items remain below.
+
+---
+
 # October29,2026 — low-cost imagery supply research COMPLETE
 
 STOP for review; no implementation, outreach or purchases authorized/performed.

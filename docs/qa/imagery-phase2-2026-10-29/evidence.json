@@ -1,0 +1,492 @@
+{
+  "kind": "research_only_actual_source_visual_inspection",
+  "date": "2026-10-29",
+  "claims_excluded": [
+    "ground truth accuracy",
+    "pitch inference",
+    "production integration",
+    "customer PDFs",
+    "physical device testing"
+  ],
+  "edmonton": {
+    "file": "28683E593532N.tif",
+    "source_sha256": "d032a8989bddc859c6d88a9e3a094cbaf409201e87a6077b8b11934e60e8e5b7",
+    "dimensions": [
+      10000,
+      10000
+    ],
+    "crs": "EPSG:3776",
+    "source_pixel_size_metres": [
+      0.075,
+      0.075,
+      1
+    ],
+    "tiepoint": [
+      0,
+      0,
+      0,
+      28683,
+      5936079,
+      0
+    ],
+    "views": {
+      "edmonton-2025-residential": {
+        "pixel_box": [
+          2200,
+          4300,
+          4200,
+          6300
+        ],
+        "metres_per_pixel": 0.075,
+        "projected_bounds_epsg3776": [
+          28848,
+          5935606.5,
+          28998,
+          5935756.5
+        ]
+      },
+      "edmonton-2025-commercial": {
+        "pixel_box": [
+          0,
+          4600,
+          2000,
+          6600
+        ],
+        "metres_per_pixel": 0.075,
+        "projected_bounds_epsg3776": [
+          28683,
+          5935584,
+          28833,
+          5935734
+        ]
+      },
+      "edmonton-2025-service-area": {
+        "pixel_box": [
+          5200,
+          1200,
+          9000,
+          3300
+        ],
+        "metres_per_pixel": 0.075,
+        "projected_bounds_epsg3776": [
+          29073,
+          5935831.5,
+          29358,
+          5935989
+        ]
+      }
+    }
+  },
+  "edmonton_official_index": [
+    {
+      "tile_label": "28683E593532N",
+      "tile_area": "0.5625",
+      "file_name": "28683E593532N.tif",
+      "file_url": {
+        "url": "https://drive.google.com/file/d/1urMnlCQWnYJqEbc1bbszCFuAvn9lA-6H/view?usp=drivesdk"
+      },
+      "file_id": "1urMnlCQWnYJqEbc1bbszCFuAvn9lA-6H",
+      "file_size": "286.18",
+      "latitude": "53.55004292350076",
+      "longitude": "-113.56720632984131",
+      "geometry_multipolygon": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -113.56720632984131,
+                53.55004292350076
+              ],
+              [
+                -113.56713755690868,
+                53.55678215161576
+              ],
+              [
+                -113.55581948519645,
+                53.55674065782796
+              ],
+              [
+                -113.55589005619551,
+                53.550001439861965
+              ],
+              [
+                -113.56720632984131,
+                53.55004292350076
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "source_catalog_rows": {
+    "carleton-place-residential": [
+      {
+        "OBJECTID": 102474,
+        "Name": "1km18409049980DRAPE2024",
+        "MinPS": 0,
+        "MaxPS": 1.6,
+        "LowPS": 0.16,
+        "HighPS": 0.16,
+        "Category": 1,
+        "Tag": "Dataset",
+        "GroupName": "",
+        "ProductName": "",
+        "CenterX": -8477084.554239474,
+        "CenterY": 5642670.814302209,
+        "ZOrder": null,
+        "Project": "DRAPE2024",
+        "Shape.STArea()": 2010575.304765795,
+        "Shape.STLength()": 5671.798234439943
+      }
+    ],
+    "carleton-place-commercial": [
+      {
+        "OBJECTID": 102773,
+        "Name": "1km18411049970DRAPE2024",
+        "MinPS": 0,
+        "MaxPS": 1.6,
+        "LowPS": 0.16,
+        "HighPS": 0.16,
+        "Category": 1,
+        "Tag": "Dataset",
+        "GroupName": "",
+        "ProductName": "",
+        "CenterX": -8474233.965843773,
+        "CenterY": 5641290.725284877,
+        "ZOrder": null,
+        "Project": "DRAPE2024",
+        "Shape.STArea()": 2009980.69578,
+        "Shape.STLength()": 5670.959486257189
+      }
+    ],
+    "saskatoon": [
+      {
+        "OBJECTID": 54914,
+        "Name": "37_05_3_RGB",
+        "Category": 1,
+        "Source": "SGIC-Mapcon",
+        "Year_of_Data": 2008,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.625,
+        "Project_Area_Name": "Block002"
+      },
+      {
+        "OBJECTID": 62278,
+        "Name": "37_05_3_RGBN_2014",
+        "Category": 1,
+        "Source": "SGIC-Sanborn",
+        "Year_of_Data": 2014,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.5,
+        "Project_Area_Name": "Block011"
+      },
+      {
+        "OBJECTID": 77683,
+        "Name": "37_05_3_RGBN_2021",
+        "Category": 1,
+        "Source": "SGIC-Geodesy",
+        "Year_of_Data": 2021,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.300000012,
+        "Project_Area_Name": "Block21_103"
+      }
+    ],
+    "warman": [
+      {
+        "OBJECTID": 54937,
+        "Name": "39_04_3_RGB",
+        "Category": 1,
+        "Source": "SGIC-Mapcon",
+        "Year_of_Data": 2008,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.625,
+        "Project_Area_Name": "Block002"
+      },
+      {
+        "OBJECTID": 62287,
+        "Name": "39_04_3_RGBN_2014",
+        "Category": 1,
+        "Source": "SGIC-Sanborn",
+        "Year_of_Data": 2014,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.5,
+        "Project_Area_Name": "Block011"
+      },
+      {
+        "OBJECTID": 77706,
+        "Name": "39_04_3_RGBN_2021",
+        "Category": 1,
+        "Source": "SGIC-Geodesy",
+        "Year_of_Data": 2021,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.300000012,
+        "Project_Area_Name": "Block21_103"
+      }
+    ],
+    "saskatoon-industrial": [
+      {
+        "OBJECTID": 77683,
+        "Name": "37_05_3_RGBN_2021",
+        "Category": 1,
+        "Source": "SGIC-Geodesy",
+        "Year_of_Data": 2021,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.300000012,
+        "Project_Area_Name": "Block21_103"
+      },
+      {
+        "OBJECTID": 62278,
+        "Name": "37_05_3_RGBN_2014",
+        "Category": 1,
+        "Source": "SGIC-Sanborn",
+        "Year_of_Data": 2014,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.5,
+        "Project_Area_Name": "Block011"
+      },
+      {
+        "OBJECTID": 54914,
+        "Name": "37_05_3_RGB",
+        "Category": 1,
+        "Source": "SGIC-Mapcon",
+        "Year_of_Data": 2008,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.625,
+        "Project_Area_Name": "Block002"
+      }
+    ],
+    "warman-commercial": [
+      {
+        "OBJECTID": 77695,
+        "Name": "38_05_3_RGBN_2021",
+        "Category": 1,
+        "Source": "SGIC-Geodesy",
+        "Year_of_Data": 2021,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.300000012,
+        "Project_Area_Name": "Block21_103"
+      },
+      {
+        "OBJECTID": 62283,
+        "Name": "38_05_3_RGBN_2014",
+        "Category": 1,
+        "Source": "SGIC-Sanborn",
+        "Year_of_Data": 2014,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.5,
+        "Project_Area_Name": "Block011"
+      },
+      {
+        "OBJECTID": 54926,
+        "Name": "38_05_3_RGB",
+        "Category": 1,
+        "Source": "SGIC-Mapcon",
+        "Year_of_Data": 2008,
+        "Date_of_Data": null,
+        "Accuracy": null,
+        "Resolution": 0.625,
+        "Project_Area_Name": "Block002"
+      }
+    ]
+  },
+  "views": {
+    "carleton-place-residential-full": {
+      "service": "https://ws.geoservices.lrc.gov.on.ca/arcgis5/rest/services/AerialImagery/GEO_Imagery_Data_Service_2023to2027/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-8476536.033045335,5642843.967015886,-8476309.219862295,5643070.780198925",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "1024,1024",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicAttribute\", \"where\": \"Project='DRAPE2024'\"}",
+        "bandIds": "0,1,2"
+      },
+      "returned_extent": {
+        "xmin": -8476536.033045335,
+        "ymin": 5642843.967015886,
+        "xmax": -8476309.219862295,
+        "ymax": 5643070.780198925,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "1279c47b06138bd99532f4c8a343a05df26c8cc2d54fba0a420dc5229b2d392f"
+    },
+    "carleton-place-commercial": {
+      "service": "https://ws.geoservices.lrc.gov.on.ca/arcgis5/rest/services/AerialImagery/GEO_Imagery_Data_Service_2023to2027/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-8474671.935951473,5641711.068705394,-8474388.454269188,5641994.550387678",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "1200,1200",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicLockRaster\", \"lockRasterIds\": [102773]}",
+        "bandIds": "0,1,2"
+      },
+      "ground_width_approx_m": 200,
+      "input_point": [
+        -76.128,
+        45.129
+      ],
+      "returned_extent": {
+        "xmin": -8474671.935951473,
+        "ymin": 5641711.068705393,
+        "xmax": -8474388.454269188,
+        "ymax": 5641994.550387679,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "f2e95fb3eaea83db86f4d4336324d0fa89c1ca1fbbf5cf7ecbd99ea91152dd2d"
+    },
+    "saskatoon-2021": {
+      "service": "https://gis.saskatchewan.ca/imagery/rest/services/SGIC_Public_Orthophotos/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-11874645.642438726,6826734.558116145,-11874254.52339826,6827125.677156612",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "800,800",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicLockRaster\", \"lockRasterIds\": [77683]}",
+        "bandIds": "0,1,2"
+      },
+      "ground_width_approx_m": 240,
+      "input_point": [
+        -106.67,
+        52.148
+      ],
+      "returned_extent": {
+        "xmin": -11874645.642438726,
+        "ymin": 6826734.558116145,
+        "xmax": -11874254.52339826,
+        "ymax": 6827125.677156612,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "252c2fd3708208837737e212e6064b543b09af59c637fe82704ef4d5d7b00434"
+    },
+    "warman-2021": {
+      "service": "https://gis.saskatchewan.ca/imagery/rest/services/SGIC_Public_Orthophotos/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-11863514.45259619,6857997.341864766,-11863121.815082138,6858389.979378817",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "800,800",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicLockRaster\", \"lockRasterIds\": [77706]}",
+        "bandIds": "0,1,2"
+      },
+      "ground_width_approx_m": 240,
+      "input_point": [
+        -106.57,
+        52.32
+      ],
+      "returned_extent": {
+        "xmin": -11863514.45259619,
+        "ymin": 6857997.341864766,
+        "xmax": -11863121.815082138,
+        "ymax": 6858389.979378817,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "ebfd09605d1bc9c2fca79bbcc6ebf4e1b1fcac877ab8c904e62ad9087ef8dc52"
+    },
+    "saskatoon-industrial": {
+      "service": "https://gis.saskatchewan.ca/imagery/rest/services/SGIC_Public_Orthophotos/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-11874694.631190363,6829951.667560478,-11874205.534646623,6830440.764104218",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "1000,1000",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicLockRaster\", \"lockRasterIds\": [77683]}",
+        "bandIds": "0,1,2"
+      },
+      "ground_width_approx_m": 300,
+      "input_point": [
+        -106.67,
+        52.166
+      ],
+      "returned_extent": {
+        "xmin": -11874694.631190363,
+        "ymin": 6829951.667560478,
+        "xmax": -11874205.534646623,
+        "ymax": 6830440.764104218,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "d0da26569f0d13d6eb8d5bedc00617ce5cd6d679aca5564f64796edf945f9470"
+    },
+    "warman-commercial": {
+      "service": "https://gis.saskatchewan.ca/imagery/rest/services/SGIC_Public_Orthophotos/ImageServer",
+      "request": {
+        "f": "json",
+        "bbox": "-11865344.588698722,6856127.348012523,-11864853.90268499,6856618.034026255",
+        "bboxSR": 3857,
+        "imageSR": 3857,
+        "size": "1000,1000",
+        "format": "png",
+        "interpolation": "RSP_NearestNeighbor",
+        "mosaicRule": "{\"mosaicMethod\": \"esriMosaicLockRaster\", \"lockRasterIds\": [77695]}",
+        "bandIds": "0,1,2"
+      },
+      "ground_width_approx_m": 300,
+      "input_point": [
+        -106.586,
+        52.31
+      ],
+      "returned_extent": {
+        "xmin": -11865344.588698722,
+        "ymin": 6856127.348012523,
+        "xmax": -11864853.90268499,
+        "ymax": 6856618.034026255,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "pixel_sha256": "3c43d91a202450a31a22b0c3deedc6cfe5221da06a170efac63d62cde78ec01e"
+    }
+  },
+  "sk_pixel_redistribution": "No SGIC image bytes committed; only metadata and hashes",
+  "labels": {
+    "warman-commercial": "Warman vacant expansion tract; initial research name did not describe observed use"
+  },
+  "network_limits": {
+    "edmonton_arcgis_folder": "403",
+    "source_coop_pmtiles": "403",
+    "source_coop_published_s3_mirror": "503",
+    "official_city_drive_geotiff": "success after normal public large-file confirmation"
+  }
+}
