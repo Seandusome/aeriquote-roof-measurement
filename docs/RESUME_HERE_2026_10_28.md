@@ -1,3 +1,21 @@
+# October29,2026 — Mapbox imagery audit COMPLETE; STOP for review
+
+Read [MAPBOX_IMAGERY_AUDIT_2026_10_29.md](MAPBOX_IMAGERY_AUDIT_2026_10_29.md). Documentation only; no new imagery integration/application changes/vendor contact/API keys/purchases.
+
+Started HEAD51c3ce16fdde1cf04f4ddd7fcf6861823a51e852; GitHub40950579858/40950579865 success; Render dep-dbhqsn8u01pc73apej80 LIVE. Recovery branch protection absent; unchanged.
+
+Decision: request written Mapbox commercial licensing quote and property-specific source evidence. API-only costs appear manageable under estimated60 raster/1.8static requests/job:100/500/1000/5000 expected subscribers $0/$110.06/$410.02/$2204.95 monthly; full allowance $0/$217.50/$607.70/$2978.50. These exclude licence minimums, other vendors, hosting, tax and startup. Subscriber weighted revenue$43.60/month, expected39.675jobs, full54. Independent Python Decimal and JS calculations agree; tier boundaries verified. Heavy120tiles/3statics at5000 exceeds20m raster cutoff: quote needed, no invented published rate.
+
+Current official Product TermsOctober20,2026 retrieved as originalPDF. §1.6 restricts tracing; §1.7 satellitePDF print rights; §1.2 additional licence requirements; §2.8.1 limited30day devicecache and proxy/staticdistribution restrictions. CommercialSatellite licence named in official docs but no price. CommercialApplication classification must be confirmed, not assumed for everyB2Bapp. Permanent derived geometry, multi-tenant/end-user rights, PDF forwarding and historical/post-termination rights require express negotiated coverage.
+
+No Mapbox actual-property imagery inspected; GSD/date/accuracy for Saskatoon,Calgary,Edmonton,Toronto,Vancouver,Warman/ruralSK and US samples remains unverified. Do not substitute previous government pixels as Mapbox evidence.
+
+Read current app.py blob e35719018a15c456d87de84e5004915790f9065b: Mapbox currently geocode ambiguity check only. Leaflet measurement engine/pricing can be retained, but Google aerial image/session/reopen/PDF paths need a future licensed adapter. Solar preserved: /rgb legacy surface fallback still depends on it; manualroof guard blocks. Google address/StreetView remain separate. No runtime code changed; no application regression run for docs-only research.
+
+Next, only with approval: send saved unsent inquiry; obtain licence pricing and regionalsource samples; if viable approve isolated adapter pilot with extents/geometry/six-industry/PDF checks. Keep Google/Mapbox/Solar/Leaflet unchanged, AutoMeasure preserved, AI Trace removed, QA roofing/vector gates intact, main/production/customers untouched. Stop now.
+
+---
+
 # October29,2026 — imagery feasibility Phase2 COMPLETE
 
 STOP for review. Read [IMAGERY_PHASE2_2026_10_29.md](IMAGERY_PHASE2_2026_10_29.md). Research/evidence only; no new imagery integration or application changes.

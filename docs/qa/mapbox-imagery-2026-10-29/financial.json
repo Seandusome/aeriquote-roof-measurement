@@ -1,0 +1,157 @@
+{
+  "rt": [
+    [
+      750000,
+      0
+    ],
+    [
+      2000000,
+      0.25
+    ],
+    [
+      4000000,
+      0.2
+    ],
+    [
+      20000000,
+      0.15
+    ]
+  ],
+  "st": [
+    [
+      50000,
+      0
+    ],
+    [
+      500000,
+      1
+    ],
+    [
+      1000000,
+      0.8
+    ],
+    [
+      5000000,
+      0.6
+    ]
+  ],
+  "rows": [
+    {
+      "n": 100,
+      "full": false,
+      "jobs": 3967.4999999999995,
+      "tiles": 238049.99999999997,
+      "statics": 7141.499999999999,
+      "revenue": 4360,
+      "raster": 0,
+      "static": 0,
+      "total": 0,
+      "perJob": 0,
+      "percent": 0
+    },
+    {
+      "n": 100,
+      "full": true,
+      "jobs": 5400,
+      "tiles": 324000,
+      "statics": 9720,
+      "revenue": 4360,
+      "raster": 0,
+      "static": 0,
+      "total": 0,
+      "perJob": 0,
+      "percent": 0
+    },
+    {
+      "n": 500,
+      "full": false,
+      "jobs": 19837.5,
+      "tiles": 1190250,
+      "statics": 35707.5,
+      "revenue": 21800,
+      "raster": 110.0625,
+      "static": 0,
+      "total": 110.0625,
+      "perJob": 0.00554820415879017,
+      "percent": 0.5048738532110092
+    },
+    {
+      "n": 500,
+      "full": true,
+      "jobs": 27000,
+      "tiles": 1620000,
+      "statics": 48600,
+      "revenue": 21800,
+      "raster": 217.5,
+      "static": 0,
+      "total": 217.5,
+      "perJob": 0.008055555555555555,
+      "percent": 0.9977064220183487
+    },
+    {
+      "n": 1000,
+      "full": false,
+      "jobs": 39675,
+      "tiles": 2380500,
+      "statics": 71415,
+      "revenue": 43600,
+      "raster": 388.6,
+      "static": 21.415,
+      "total": 410.01500000000004,
+      "perJob": 0.010334341524889731,
+      "percent": 0.9404013761467891
+    },
+    {
+      "n": 1000,
+      "full": true,
+      "jobs": 54000,
+      "tiles": 3240000,
+      "statics": 97200,
+      "revenue": 43600,
+      "raster": 560.5,
+      "static": 47.2,
+      "total": 607.7,
+      "perJob": 0.011253703703703705,
+      "percent": 1.3938073394495414
+    },
+    {
+      "n": 5000,
+      "full": false,
+      "jobs": 198375,
+      "tiles": 11902500,
+      "statics": 357075,
+      "revenue": 218000,
+      "raster": 1897.875,
+      "static": 307.075,
+      "total": 2204.95,
+      "perJob": 0.01111505986137366,
+      "percent": 1.0114449541284403
+    },
+    {
+      "n": 5000,
+      "full": true,
+      "jobs": 270000,
+      "tiles": 16200000,
+      "statics": 486000,
+      "revenue": 218000,
+      "raster": 2542.5,
+      "static": 436,
+      "total": 2978.5,
+      "perJob": 0.01103148148148148,
+      "percent": 1.3662844036697248
+    }
+  ],
+  "assumptions": {
+    "tilesPerJob": 60,
+    "staticPerJob": 1.8,
+    "heavyTiles": 120,
+    "heavyStatic": 3,
+    "expectedJobsPerSubscriber": 39.675,
+    "fullJobsPerSubscriber": 54,
+    "revenuePerSubscriber": 43.6,
+    "currency": "USD",
+    "licenseFees": "unknown, excluded",
+    "verifiedWith": "Independent Python Decimal calculations and tier-boundary assertions"
+  },
+  "termsSha256": "e92f762d954e30fb637b24863898779ad9bbe167fd927d735266bfacb0c55ec2"
+}
