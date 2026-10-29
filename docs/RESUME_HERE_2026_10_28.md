@@ -1,3 +1,25 @@
+# October 29, 2026 — imagery licensing research checkpoint
+
+Research COMPLETE; STOP for review. No application implementation authorized by this batch.
+
+Read [IMAGERY_LAUNCH_FEASIBILITY_2026_10_29.md](IMAGERY_LAUNCH_FEASIBILITY_2026_10_29.md) for the Nearmap meeting briefing, licensing questions, code-based feasibility analysis, cost scenarios and supplier comparison.
+
+Verified starting recovery HEAD78dd1ffbc938157f2f2580f8c4cba77750a05543; both GitHub workflows40779768758/40779768938 succeeded, including postgres_integrity. Render test dep-dbh7cc5g1s2s73fij2r0 LIVE for that commit. Main read-only baseline unchanged c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a. The next documentation-only commit becomes the research checkpoint; application blob remains e35719018a15c456d87de84e5004915790f9065b.
+
+Sean reports written MapsPeople confirmation that Google standard terms do not permit AeriQuote's commercial tracing, derived measurement storage and customer aerial-PDF workflow, with no enterprise exemption from MapsPeople. Original letter not independently retrieved. Do NOT assume current Google workflow is cleared for launch. Do NOT disable/change integrations on this finding without approval.
+
+Nearmap is technically plausible with existing Leaflet/manual geometry/pitch/pricing/accounts/PDF engines retained, but all imagery/report/retry/reopen routes need a later approved adapter, including exceptional Solar and direct Google fallbacks. Nearmap imagery alone does not replace AutoMeasure geometry/pitch. Its standard MSA internal-use/output and termination restrictions require explicit SaaS, vector retention, customer redistribution and historical-survival contract rights. No vendor permission, quote, coverage-key test or integration has been obtained.
+
+Cost planning only, assuming USD subscriptions and no fixed fee/reopen multiplier:20% revenue imagery budget at full25/75/200 use gives Basic0.232/Pro0.1573/Business0.099 USD per completed property.10% gives0.116/0.0787/0.0495.25/50/100% utilization, hypothetical0.05/0.10/0.25/0.50 unit prices and minimum-commitment scenarios in report. Exact profitability cannot be certified without vendor quotes and other costs. Nearmap tokens/vendor meters are NOT AeriQuote allowance credits.
+
+Two preferred alternative follow-ups:Eagleview Imagery API and Hexagon HxGN Content Program. Rights/prices remain unconfirmed; standard Hexagon store agreement insufficient. Vexcel reserve has explicit published vectorization prohibition, so do not assume ordinary access permits tracing. Rural Canada and address-level image quality remain unverified for every candidate.
+
+Next action:Sean reviews report; request explicit written Nearmap rights/pricing/coverage proposal and comparable Eagleview/Hexagon terms only after vendor-contact approval. No vendor contact, purchases, trials, application code, customer/database changes or manual deployment performed. Documentation may auto-deploy under existing branch settings. No new application tests were run because source code is unchanged; prior passing CI/PG was verified directly.
+
+Preserve October28 priorities below:physical-iPhone Area retest; evaluate original-preserving Remeasure Area; Canadian province filtering without silent tax changes; existing Linear/manual-roof safeguards. Preserve AutoMeasure code, QA-only manual Roofing/Vector and removed AI Trace. No imagery/pricing/allowance/PDF redesign or changes. Historical Google-derived records need a separately approved licensing/retention plan; do not delete, shift, migrate or reprice.
+
+---
+
 # End-of-day checkpoint — October 28, 2026
 
 STOPPED FOR TODAY. No further implementation authorized tonight.
