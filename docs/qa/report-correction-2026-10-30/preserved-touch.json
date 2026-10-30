@@ -1,0 +1,71 @@
+[
+  {
+    "width": 320,
+    "touchEvents": {
+      "touch": 1,
+      "pointer": 1
+    },
+    "savedFeet": 93.53388568183986,
+    "mapStationary": true,
+    "pinch": true,
+    "saveCancel": true,
+    "reopened": true,
+    "savedEditing": true,
+    "areaTouch": true,
+    "roofTouchCancel": true,
+    "repeatedSaveCycles": 5,
+    "reopenedSaveCycles": 2,
+    "touchControls": true,
+    "nativeScrollLocked": true,
+    "areaSecondEdit": true,
+    "roofSecondEdit": true,
+    "manualRoofRepeatedEdit": true,
+    "polygonEstimateReopening": true
+  },
+  {
+    "width": 390,
+    "touchEvents": {
+      "touch": 1,
+      "pointer": 1
+    },
+    "savedFeet": 133.00742711769806,
+    "mapStationary": true,
+    "pinch": true,
+    "saveCancel": true,
+    "reopened": true,
+    "savedEditing": true,
+    "areaTouch": true,
+    "roofTouchCancel": true,
+    "repeatedSaveCycles": 5,
+    "reopenedSaveCycles": 2,
+    "touchControls": true,
+    "nativeScrollLocked": true,
+    "areaSecondEdit": true,
+    "roofSecondEdit": true,
+    "manualRoofRepeatedEdit": true,
+    "polygonEstimateReopening": true
+  },
+  {
+    "width": 768,
+    "touchEvents": {
+      "touch": 1,
+      "pointer": 1
+    },
+    "savedFeet": 340.2235247810162,
+    "mapStationary": true,
+    "pinch": true,
+    "saveCancel": true,
+    "reopened": true,
+    "savedEditing": true,
+    "areaTouch": true,
+    "roofTouchCancel": true,
+    "repeatedSaveCycles": 5,
+    "reopenedSaveCycles": 2,
+    "touchControls": true,
+    "nativeScrollLocked": true,
+    "areaSecondEdit": true,
+    "roofSecondEdit": true,
+    "manualRoofRepeatedEdit": true,
+    "polygonEstimateReopening": true
+  }
+]

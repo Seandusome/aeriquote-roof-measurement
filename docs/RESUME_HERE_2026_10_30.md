@@ -1,3 +1,28 @@
+# Urgent estimate-stage correction — October 30, 2026; STOP AFTER REVIEW
+
+## Latest application checkpoint
+6fa24567260c54f093b025df74063ec335ffaa8d on landscaping-multi-area-recovery-oct11. Starting checkpoint8b795fe was current; no newer work overwritten. Application blob40e59287e3739fc2563506b2395e6c3ac6703d64, code tree3d9bfc545c57ca113ee1a0b332759c36e8cf0284. Render test dep-dbidcq29lscs73ci6tq0 confirmed LIVE exact application commit. GitHub runs41100663322 (recovery/PostgreSQL) and41100663323 were queued at documentation preparation; verify terminal status before reporting checks passed. Final documentation HEAD will supersede this application checkpoint without changing application code.
+
+## Cause and behavior
+Read docs/QA_REPORT_CORRECTION_2026_10_30.md. Phone screenshot shows CORRECT MEASUREMENT LINE. Purple saved Area and teal LINE picture redraw are different types, not proof of duplicate saved Areas. The estimate picture editor hid ALL geometry during drawing; it saved an ephemeral picture override while keeping original measurement/price. New displayed line dimensions could therefore disagree with saved/billed length. Multi-area picture overrides were ignored on rebuild/export. No second saved Area was inserted by this editor.
+
+Fixed only surface correction entry points: explicit REMEASURE AREA1/AREA2/etc and separate EDIT LINEAR MEASUREMENT return to existing measured Save/Cancel. No picture-only surrogate; independent saved measurements retained. Original Area/rate protected until valid SAVE REPLACEMENT AREA. Cancel retains original. After Save select CREATE CUSTOMER ESTIMATE to explicitly persist/review updated estimate. Historical estimates require existing EDIT MEASUREMENTS / PRICE restoration; no migration or automatic rewrite. Fast replacement taps also reproduced unwanted double-tap zoom; suspend that handler only during replacement, restore its prior state afterward, preserve pinch.
+
+## Completed verification
+- Final full recovery suite74/74 commands PASS. New CI DOM regression covers five industries, explicit targets, original protection, Cancel, legacy dispatch, historical guard and Roofing separation, plus double-tap lock/restore and pinch handler.
+- Existing trusted-touch Linear/Area/Roofing/QA-manual-Roofing suite PASS at320/390/768, repeated Save/Cancel, saved reopening, stationary map, restored pan and pinch.
+- New15/15 browser cases:five surface industries x320/390/768. Trusted touchscreen taps/CDP touch drags, repeated Area replacements, Area1/2 Cancel, incomplete rejection, independent Line Save/Cancel, exact saved/rendered coordinates, no stale editing SVG/handles, preserved other measurements/customer, saved reopening/pricing and unchanged persisted payload on reopen/export.
+-30 actual Single/Expanded downloads;45 pages Poppler-rendered and visually reviewed on contact sheets. Detailed320px Snow pages inspected individually. Only two intended saved Areas plus the independent Line, correct quantities and totals; original designs unchanged. Fictional grid imagery and disposable loopback accounts only. Native iPhone/Safari and live-provider historical photographic regeneration NOT verified.
+- Independent haversine length and integer-cent pricing/tax checks passed each case. GeographicLib WGS84 checked30 polygons;max0.16838% difference from unchanged local projection/whole-ft2 rounding. Not a real-world surveying accuracy claim.
+- Evidence, before/after screenshots,30-polygon check,15-case results,74-command results, preserved touch results, three PDF contact sheets and two actual390px Snow example PDFs committed under docs/qa/report-correction-2026-10-30/.
+
+## Next action
+Sean physical iPhone retest PENDING. From estimate choose specifically REMEASURE AREA1, trace, Cancel, repeat Save, CREATE CUSTOMER ESTIMATE; confirm Area2 and separate line remain, correct quantities/prices, repeat Area2 and Linear, reopen and PDF. Do not hide an independent billed Line to make the picture appear simpler. Report whether an Area correction or Linear correction was selected if a problem remains.
+
+No imagery/provider/API/Solar/Street View changes. Geometry/pricing formulas, taxes, subscription plans/allowances, PDF exporter designs and historical customer estimates unchanged. Existing AutoMeasure and QA-only Roofing/Vector gates preserved; AI Trace removed. Main baseline c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a unchanged. No production/customer accounts accessed. No autosave/persistence changes. Recovery branch remains unprotected; no administrative change. Do not begin another feature. Preserve older notes below as historical context.
+
+---
+
 # October 30 usability improvements — COMPLETE; STOP FOR REVIEW
 
 ## Verified application checkpoints
