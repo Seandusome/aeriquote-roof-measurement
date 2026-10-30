@@ -13,7 +13,7 @@ const c={AbortController,setTimeout,clearTimeout,quotePricingError:()=>'',el:id=
  assert.equal(saved[4].job_status,'Booked');assert.equal(saved[4].amount_paid,50);
  fields.extraServiceDescription.value='Retry me';const previousKey=c.lastHistorySaveKey;fail=true;assert.equal(await c.saveEstimateHistory(),false);assert.equal(c.lastHistorySaveKey,previousKey);assert(messages.some(x=>x[0].includes('not saved')),'Save failure must be visible');
  fail=false;assert.equal(await c.saveEstimateHistory(),true);assert.equal(saved.length,6,'Failed save can retry');
- assert(s.includes('if(!historicalMode&&(await saveEstimateHistory())===false)'), 'Report opening must stop on failed save');
+ assert(s.includes('if(!historicalMode&&!correctionRefresh&&(await saveEstimateHistory())===false)'), 'Report opening must stop on failed save');
  // Delay image loading and edit the form while the save is in flight.
  fields.streetViewChoice.value='auto';c.savedPropertyEditActive=false;c.sessionToken='original-session';
  fields.extraServiceDescription.value='Frozen service';fields.extraServiceAmount.value=10;

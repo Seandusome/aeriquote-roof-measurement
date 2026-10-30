@@ -368,7 +368,7 @@ HTML = r"""<!doctype html>
 .roof-editing-indicator{display:block;margin:8px 0;color:#815700;font-weight:700}
 .roofing-simplified .roof-editor-active #traceBtn{background:#fff;color:#475569;border:1px solid #cbd5e1}
 @media(max-width:700px){.roofing-simplified .measure-toolbar{grid-template-columns:1fr}.roof-secondary-tools .roof-secondary-buttons{grid-template-columns:1fr}}
-</style>
+.reportPanel.correction-panel{overflow:visible}.correcting-measurement{touch-action:none!important}.report-correction-point{touch-action:none!important}.report-correction-point span{display:block;width:18px;height:18px;margin:5px;background:white;border:3px solid #f97316;border-radius:50%;box-sizing:border-box}.measurement-correction-controls{position:sticky;bottom:0;z-index:1100;background:#fff8e8;box-shadow:0 -2px 8px #0002;max-height:45dvh;overflow:auto}.measurement-correction-controls button{min-height:44px}.measurement-correction-controls .reportEditHelp{flex-basis:100%} </style>
 <style>
 .estimate-hide-street #reportStreet img,.estimate-hide-street .report-street img{visibility:hidden}
 .estimate-hide-street #reportStreet,.estimate-hide-street .report-street{background:linear-gradient(135deg,#f3f7f4,#e6efe9);position:relative}
@@ -465,7 +465,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
  <div class="reportHead"><img id="rDealerLogo" class="logo dealerLogo noDealerLogo" alt="Dealer logo"><div><h1 id="rEstimateTitle">Property Measurement &amp; Estimate</h1><div id="rEstimateSubtitle" style="text-align:center;color:#28612f;font-weight:800;margin-top:6px"></div><div id="rEstimateDealerSub" class="reportDealerSub"></div></div><div><img id="rWarrantyShield" alt="6-Year Transferable Warranty" style="display:none;width:125px;max-width:100%;height:125px;object-fit:contain"></div></div>
  <div class="reportMeta"><div><b>Property Address</b><div id="rAddress"></div></div><div><b>Date Prepared</b><div id="rDate"></div></div><div><b>Prepared For</b><div id="rCustomerName">Homeowner</div><div id="rCustomerPhone" class="small"></div><div id="rCustomerEmail" class="small"></div></div></div>
  <div class="reportGrid"><div>
-  <div class="reportPanel"><div class="reportTitle">PROPERTY ASSESSMENT</div><div class="reportMapWrap"><div id="customerMap" class="customerMap"></div><svg id="reportDrawLayer" class="reportDrawLayer" aria-label="Draw customer measurement outline"></svg></div><div id="reportOutlineControls" class="estimateOutlineBar"><div id="reportOutlineTargetButtons" style="display:flex;gap:7px;flex-wrap:wrap"></div><button id="reportCancelOutlineBtnTop" class="danger" onclick="cancelReportOutlineEdit()" style="display:none">CANCEL OUTLINE EDIT</button><button id="reportUndoOutlineBtnTop" class="ghost" onclick="undoReportOutlinePoint()" style="display:none">UNDO POINT</button><button id="reportSaveOutlineBtnTop" class="primary" onclick="saveReportOutline()" style="display:none" disabled>SAVE OUTLINE</button><span id="reportOutlineHelpTop" class="reportEditHelp">Choose an outline to edit. Picture only — quote numbers do not change.</span></div><div id="customerMapPlaceholder" class="reportImagePlaceholder"><div><div class="big">PROPERTY ASSESSMENT</div><div style="margin-top:10px;font-weight:700">Professional property estimate prepared for this address.</div><div class="small" style="margin-top:8px">Property imagery omitted from this estimate.</div></div></div><div class="reportBody"><div id="rProperty"></div></div></div>
+  <div class="reportPanel"><div class="reportTitle">PROPERTY ASSESSMENT</div><div class="reportMapWrap"><div id="customerMap" class="customerMap"></div><svg id="reportDrawLayer" class="reportDrawLayer" aria-label="Draw customer measurement outline"></svg></div><div id="reportOutlineControls" class="estimateOutlineBar"><div id="reportOutlineTargetButtons" style="display:flex;gap:7px;flex-wrap:wrap"></div><button id="reportCancelOutlineBtnTop" class="danger" onclick="cancelReportOutlineEdit()" style="display:none">CANCEL OUTLINE EDIT</button><button id="reportUndoOutlineBtnTop" class="ghost" onclick="undoReportOutlinePoint()" style="display:none">UNDO POINT</button><button id="reportSaveOutlineBtnTop" class="primary" onclick="saveReportOutline()" style="display:none" disabled>SAVE OUTLINE</button><button id="reportRedrawBtn" class="ghost" onclick="redrawSelectedReportMeasurement()" style="display:none">REDRAW</button><span id="reportOutlineHelpTop" class="reportEditHelp">Choose an outline to edit. Picture only — quote numbers do not change.</span></div><div id="customerMapPlaceholder" class="reportImagePlaceholder"><div><div class="big">PROPERTY ASSESSMENT</div><div style="margin-top:10px;font-weight:700">Professional property estimate prepared for this address.</div><div class="small" style="margin-top:8px">Property imagery omitted from this estimate.</div></div></div><div class="reportBody"><div id="rProperty"></div></div></div>
   <div class="reportPrice"><div class="rphead">ESTIMATE SUMMARY</div><div class="rpbody" id="rPricing"></div></div>
  </div><div>
   <div class="reportPanel"><div class="reportTitle">PROPERTY IMAGE</div><div class="reportBody">
@@ -475,7 +475,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
    <div class="cta"><strong id="rCtaHeading">YOUR ESTIMATE</strong><div id="rCtaText" style="margin-top:5px;color:#f59d0a;font-weight:800"></div><div style="margin-top:9px"><b id="rDealerCompany"></b></div><div id="rDealerName" style="margin-top:2px"></div><div class="dealerContactCompact"><span id="rPhoneWrap">Call or Text: <b id="rPhone"></b></span><span id="rDealerEmailWrap"><span class="contactSep">•</span><span id="rDealerEmail"></span></span><br><span id="rDealerWebsite"></span><span id="rDealerAddressWrap"><span class="contactSep">•</span><span id="rDealerAddress"></span></span></div></div>
  </div></div>
  <div class="reportFoot">Remote aerial measurements are used for estimating. Final property conditions and measurements should be confirmed before work begins.</div>
- <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="window.print()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
+ <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="printEstimate()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
 </div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2165,31 +2165,95 @@ async function saveVisualCorrection(){
  if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';
  if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='✓ Estimate image corrected. Original measurement and price are unchanged.';
 }
-// Surface corrections must use measured geometry, never a picture-only surrogate.
+// Estimate corrections use a separate draft; the saved workspace stays authoritative.
+let reportMeasurementCorrection=null;
+function reportCorrectionWorkspace(){return {areas:JSON.parse(JSON.stringify(commercialAreas)),area:areaPoints.map(p=>[p.lat,p.lng]),line:linearPoints.map(p=>[p.lat,p.lng]),snapshot:quoteSnapshot,index:commercialEditingIndex}}
+function restoreReportCorrectionWorkspace(w){commercialAreas=JSON.parse(JSON.stringify(w.areas));areaPoints=w.area.map(p=>L.latLng(p));linearPoints=w.line.map(p=>L.latLng(p));quoteSnapshot=w.snapshot;commercialEditingIndex=w.index}
+function applyReportCorrectionCandidate(){
+ const c=reportMeasurementCorrection,pts=c.points.map(p=>[p.lat,p.lng]);
+ if(c.mode==='area'){
+  commercialAreas[c.index]={...commercialAreas[c.index],points:pts,sqft:Math.round(localPolygonAreaM2(c.points)*10.76391041671)};
+  if(commercialEditingIndex===c.index)areaPoints=c.points.map(p=>L.latLng(p));
+ }else linearPoints=c.points.map(p=>L.latLng(p));
+}
+function reportCorrectionProblem(){
+ const c=reportMeasurementCorrection;if(!c)return '';
+ if(c.points.some(p=>!Number.isFinite(p.lat)||!Number.isFinite(p.lng)||Math.abs(p.lat)>90||Math.abs(p.lng)>180))return 'Invalid measurement coordinates.';
+ if(c.mode==='area')return measuredPolygonError(c.points)||savedAreaGeometryError(commercialAreas.map((a,i)=>i===c.index?{...a,points:c.points.map(p=>[p.lat,p.lng]),sqft:Math.round(localPolygonAreaM2(c.points)*10.76391041671)}:a));
+ if(c.points.length<2)return 'Add at least two different points.';
+ if(c.points.slice(1).some((p,i)=>customerMap.distance(p,c.points[i])*3.28084<.001))return 'The line has a zero-length edge. Move the repeated point or Undo.';
+ return '';
+}
+function redrawReportCorrection(){
+ const c=reportMeasurementCorrection;if(!c)return;
+ c.layers.forEach(l=>customerMap.removeLayer(l));c.layers=[];
+ const poly=(c.mode==='area'?L.polygon:L.polyline)(c.points,{color:'#f97316',weight:4,fillOpacity:.12,interactive:false}).addTo(customerMap);c.layers.push(poly);
+ c.points.forEach((p,i)=>{
+  const marker=L.marker(p,{draggable:!c.saving&&!c.uncertain,autoPan:false,icon:L.divIcon({className:'report-correction-point',html:'<span></span>',iconSize:[28,28],iconAnchor:[14,14]})}).addTo(customerMap);
+  marker.on('dragstart',()=>{c.history.push(c.points.map(p=>[p.lat,p.lng]))});
+  marker.on('drag',()=>{c.points[i]=marker.getLatLng();poly.setLatLngs(c.points)});
+  marker.on('dragend',()=>{c.error='';redrawReportCorrection()});c.layers.push(marker);
+ });
+ const issue=reportCorrectionProblem();let message=issue;
+ if(!issue){const before=reportCorrectionWorkspace();try{applyReportCorrectionCandidate();const calc=priceCalc();message=quotePricingError(calc);if(!message){const quantity=c.mode==='area'?commercialAreas[c.index].sqft:linearFeetTotal();message=`${c.mode==='area'?'Area '+(c.index+1):'Linear'}: ${c.originalQuantity.toLocaleString()} → ${c.mode==='area'?fmt(quantity):quantity.toFixed(1)} ${c.mode==='area'?'ft²':'ft'}. Estimate total: ${money(c.originalTotal)} → ${money(calc.total)}. Save confirms this measurement and price change.`;}}finally{restoreReportCorrectionWorkspace(before)}}
+ el('reportOutlineHelpTop').textContent=c.error||message||'Adjust the points or select Redraw. Cancel keeps the original.';
+ el('reportSaveOutlineBtnTop').disabled=!!issue||c.saving;
+ el('reportSaveOutlineBtnTop').textContent=c.saving?'SAVING…':'SAVE MEASUREMENT & UPDATE ESTIMATE';
+ el('reportCancelOutlineBtnTop').disabled=c.saving||!!c.uncertain;el('reportUndoOutlineBtnTop').disabled=c.saving||!!c.uncertain||!c.history.length;
+ el('reportRedrawBtn').disabled=c.saving||!!c.uncertain;
+}
 function correctSavedMeasurementFromReport(mode,index=0){
- if(!surfaceIndustry()||!sessionToken||!['area','linear'].includes(mode))return;
+ if(!surfaceIndustry()||!sessionToken||!customerMap||!['area','linear'].includes(mode)||reportMeasurementCorrection||pdfInProgress||estimateOpenInProgress)return;
  if(savedEstimateEditContext||quoteSnapshot?.savedPricing){status('Select EDIT MEASUREMENTS / PRICE to restore this saved job before correcting it.','warn');return}
- if(areaMode||linearMode||areaCorrectionOriginal||linearCorrectionOriginal){status('Save or cancel your current measurement correction first.','warn');return}
- if(mode==='area'&&!commercialAreas[index]?.points?.length)return;
- if(mode==='linear'&&(!linearMeasurementSaved||linearPoints.length<2))return;
- clearVisualCorrection();reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();reportOutlines={};reportOutlineTarget=null;
- document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);
- document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
- if(customerMap){customerMap.remove();customerMap=null}customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;
- if(mode==='area')remeasureSurfaceArea(index);else{editLinearMeasure();if(linearCorrectionOriginal){pendingMeasurementMode='linear';updatePropertyActionButton()}}
- // Closing a fixed report / embedded-browser viewport can leave Leaflet sized to
- // the hidden workspace. Keep existing center and show Save/Cancel above the map.
- map.invalidateSize({pan:false});
- el(mode==='area'?'areaTool':'linearTool')?.scrollIntoView({behavior:'auto',block:'start'});
+ if(areaMode||linearMode||areaCorrectionOriginal||linearCorrectionOriginal)return;
+ const pts=mode==='area'?commercialAreas[index]?.points:linearMeasurementSaved?linearPoints.map(p=>[p.lat,p.lng]):null;
+ if(!pts||pts.length<(mode==='area'?3:2))return;
+ clearVisualCorrection();clearReportOutlineTemp();reportOutlines={};
+ const c=reportMeasurementCorrection={mode,index,points:pts.map(p=>L.latLng(p)),layers:[],originalQuantity:mode==='area'?commercialAreas[index].sqft:Number(linearFeetTotal().toFixed(1)),originalTotal:priceCalc().total,saving:false,drawing:false,history:[],drag:customerMap.dragging.enabled(),double:customerMap.doubleClickZoom.enabled()};
+ customerMap.dragging.disable();customerMap.doubleClickZoom.disable();
+ // Remove saved labels while editing. Keep the original protected in memory.
+ customerOverlays.forEach(l=>customerMap.removeLayer(l));
+ c.click=e=>{if(c.saving||c.uncertain||!c.drawing)return;c.history.push(c.points.map(p=>[p.lat,p.lng]));c.points.push(e.latlng);c.error='';redrawReportCorrection()};customerMap.on('click',c.click);
+ el('reportOutlineTargetButtons').style.display='none';
+ ['reportSaveOutlineBtnTop','reportCancelOutlineBtnTop','reportUndoOutlineBtnTop','reportRedrawBtn'].forEach(id=>el(id).style.display='inline-block');
+ el('reportUndoOutlineBtnTop').textContent='UNDO';el('reportCancelOutlineBtnTop').textContent='CANCEL';el('downloadPdfBtn').disabled=true;el('backToDealerBtn').disabled=true;
+ el('reportOutlineControls').classList.add('measurement-correction-controls');el('reportOutlineControls').closest('.reportPanel').classList.add('correction-panel');el('customerMap').classList.add('correcting-measurement');
+ c.touchGuard=e=>{if(e.touches?.length===1&&e.cancelable)e.preventDefault()};el('customerMap').addEventListener('touchmove',c.touchGuard,{passive:false});
+ redrawReportCorrection();
+}
+function redrawSelectedReportMeasurement(){const c=reportMeasurementCorrection;if(!c||c.saving||c.uncertain)return;c.history.push(c.points.map(p=>[p.lat,p.lng]));c.points=[];c.drawing=true;c.error='';redrawReportCorrection()}
+function finishReportMeasurementCorrection(){
+ const c=reportMeasurementCorrection;if(!c)return;
+ c.layers.forEach(l=>customerMap.removeLayer(l));customerMap.off('click',c.click);
+ if(c.drag)customerMap.dragging.enable();if(c.double)customerMap.doubleClickZoom.enable();
+ el('customerMap').removeEventListener('touchmove',c.touchGuard);el('customerMap').classList.remove('correcting-measurement');el('reportOutlineControls').closest('.reportPanel').classList.remove('correction-panel');
+ reportMeasurementCorrection=null;el('backToDealerBtn').disabled=false;el('reportOutlineControls').classList.remove('measurement-correction-controls');el('reportRedrawBtn').style.display='none';
+ setReportOutlineButtons(false);renderReportOutlineTargetButtons();
+}
+function cancelReportMeasurementCorrection(){
+ if(!reportMeasurementCorrection||reportMeasurementCorrection.saving||reportMeasurementCorrection.uncertain)return;
+ finishReportMeasurementCorrection();customerOverlays.forEach(l=>l.addTo(customerMap));layoutCustomerMeasurementLabels();
+}
+async function saveReportMeasurementCorrection(){
+ const c=reportMeasurementCorrection;if(!c||c.saving||reportCorrectionProblem())return;
+ const before=reportCorrectionWorkspace();c.saving=true;c.error='';redrawReportCorrection();
+ let saved=false;
+ try{
+  applyReportCorrectionCandidate();const issue=quotePricingError();if(issue)throw new Error(issue);
+  quoteSnapshot=captureQuoteSnapshot();saved=await saveEstimateHistory();
+  if(!saved){c.uncertain=!saveEstimateHistory.lastFailureStatus||saveEstimateHistory.lastFailureStatus>=500;throw new Error(c.uncertain?'The save result could not be confirmed. Retry SAVE to safely confirm the same request before editing or cancelling. Your original and draft are retained.':el('status')?.textContent||'Estimate not saved. Retry Save or Cancel; the original is protected.')}
+ }catch(e){restoreReportCorrectionWorkspace(before);c.saving=false;c.error=e.message;redrawReportCorrection();return}
+ finishReportMeasurementCorrection();renderSummary();redrawAreaMeasure();commercialAreaDrawSaved();redrawLinearMeasure();
+ await showCustomerEstimate(false,'',true);
 }
 function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
  const snap=quoteSnapshot||captureQuoteSnapshot();let html='';
  if(surfaceIndustry()){
-  (snap.commercialAreas||[]).forEach((area,i)=>{if(area.points?.length>=3)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('area',${i})">REMEASURE AREA ${i+1}</button>`});
-  if(snap.linearPoints?.length>=2)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('linear')">EDIT LINEAR MEASUREMENT</button>`;
+  (snap.commercialAreas||[]).forEach((area,i)=>{if(area.points?.length>=3)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('area',${i})">CORRECT AREA ${i+1}</button>`});
+  if(snap.linearPoints?.length>=2)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('linear')">CORRECT LINEAR MEASUREMENT</button>`;
   box.innerHTML=html||'<span class="small">No saved measurement available to correct.</span>';
-  if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Choose the saved Area or Linear measurement to correct. Save the correction, then create the updated estimate. Cancel keeps the original. Other measurements remain in this job.';
+  if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Choose a measurement to correct here. Save confirms the displayed quantity and price change. Cancel keeps the original.';
   return;
  }
  (snap.structures||[]).forEach((st,i)=>{
@@ -2234,9 +2298,9 @@ async function startReportOutlineEdit(target){
  document.querySelector('#reportOverlay .report')?.classList.add('estimate-editing');setReportOutlineButtons(true);
  const svg=el('reportDrawLayer');if(svg&&!svg.dataset.bound){svg.addEventListener('pointerdown',reportOutlinePointer);svg.dataset.bound='1'}
 }
-function cancelReportOutlineEdit(){if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error(e));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error(e))}
-function undoReportOutlinePoint(){if(visualCorrectionMode){const m=visualCorrectionMarkers.pop();if(m)customerMap.removeLayer(m);refreshVisualCorrectionLine();return;}if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
-async function saveReportOutline(){if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error(e));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
+function cancelReportOutlineEdit(){if(reportMeasurementCorrection){cancelReportMeasurementCorrection();return}if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error(e));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error(e))}
+function undoReportOutlinePoint(){if(reportMeasurementCorrection){const c=reportMeasurementCorrection;if(!c.saving&&!c.uncertain&&c.history.length){c.points=c.history.pop().map(p=>L.latLng(p));c.error="";redrawReportCorrection()}return}if(visualCorrectionMode){const m=visualCorrectionMarkers.pop();if(m)customerMap.removeLayer(m);refreshVisualCorrectionLine();return;}if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
+async function saveReportOutline(){if(reportMeasurementCorrection){await saveReportMeasurementCorrection();return}if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error(e));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
 
 async function buildExactPinCustomerSnapshot(){
  const host=el('customerMap');if(!host||!sessionToken)return;
@@ -2552,6 +2616,7 @@ function workspaceSaveFingerprint(){
  try{return JSON.stringify({quote:captureQuoteSnapshot(),pricing:priceCalc(),fields:['address','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice'].map(id=>el(id)?.value||'')})}catch(e){return null}finally{quoteSnapshot=previous}
 }
 window.addEventListener('beforeunload',event=>{
+ if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){event.preventDefault();event.returnValue='';return}
  if(!sessionToken||(!areaPoints.length&&!linearPoints.length&&!structures.length&&!manualPlanes.length))return;
  if(saveEstimateHistory.cleanWorkspace&&saveEstimateHistory.cleanWorkspace===workspaceSaveFingerprint())return;
  event.preventDefault();event.returnValue='';
@@ -2592,7 +2657,7 @@ async function performEstimateHistorySave(){
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
   let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
   lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;return true;
- }catch(e){console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
+ }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
 function closeEstimateHistory(){el('historyModal').classList.remove('open')}
@@ -2741,7 +2806,7 @@ function estimateActionMessage(message){
  let box=el('estimateActionStatus');if(!box){box=document.createElement('div');box.id='estimateActionStatus';box.className='status error';box.setAttribute('role','status');box.setAttribute('aria-live','polite');(button.closest('.simple-actions')||button).after(box)}
  box.textContent=message;box.hidden=!message;
 }
-async function showCustomerEstimate(historicalMode=false,historicalDate=''){
+async function showCustomerEstimate(historicalMode=false,historicalDate='',correctionRefresh=false){
  if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
  if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
@@ -2753,7 +2818,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  if((!historicalMode&&roofRemeasureTarget)||estimateRoofs.some(st=>st.needs_remeasure||st.automatic_review_warning)){status('Finish remeasuring the incomplete roof or roof with mismatched area and outline before creating the customer estimate.','warn');return}
  if(!historicalMode&&linearCorrectionOriginal){status('Save or cancel the line edit before creating the estimate.','warn');return}
  if((!historicalMode&&!sessionToken)||((measurementViewMode!=='linear'&&measurementViewMode!=='area')&&!structures.length&&!manualPlanes.length)){status('Load and measure a property first.','error');return}if(!historicalMode&&measurementViewMode==='linear'&&(!linearMeasurementSaved||linearPoints.length<2)){status('Save the linear measurement before creating the estimate.','error');return}if(!historicalMode&&measurementViewMode==='area'&&(!areaMeasurementSaved||areaPoints.length<3)){status('Save the area measurement before creating the estimate.','error');return}
- if(estimateOpenInProgress||document.body.classList.contains('report-open'))return;
+ if(estimateOpenInProgress||(!correctionRefresh&&document.body.classList.contains('report-open')))return;
  estimateOpenInProgress=true;
  const createBtn=el('createEstimateBtn');if(createBtn)createBtn.disabled=true;
  let reportReady=false;
@@ -2827,12 +2892,12 @@ async function showCustomerEstimate(historicalMode=false,historicalDate=''){
  }
  price+=`<div class="line grand"><span>TOTAL (${currencyCode()})</span><span>${money(calc.total)}${escapeHistory(estimatePeriodSuffix(calc.estimatePeriod))}</span></div>`;
  el('rPricing').innerHTML=price;
- if(!historicalMode&&(await saveEstimateHistory())===false){estimateActionMessage(el('status')?.textContent||'Estimate was not saved. Your measurements are still here.');return}
+ if(!historicalMode&&!correctionRefresh&&(await saveEstimateHistory())===false){estimateActionMessage(el('status')?.textContent||'Estimate was not saved. Your measurements are still here.');return}
  reportOpenedAt=Date.now();
  document.body.classList.add('report-open');
  el('reportOverlay').style.display='block';reportReady=true;estimateActionMessage('');
  if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
- if(!historicalMode){usage.reports++;updateUsage();}
+ if(!historicalMode&&!correctionRefresh){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
  try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
 
@@ -3077,7 +3142,9 @@ function savedEstimateMoneyIssue(pricing){
  const cents=value=>Math.round((Number(value)+Number.EPSILON)*100);
  return cents(values[0])+cents(values[1])+cents(values[2])===cents(values[3])?'':'Saved estimate totals do not reconcile. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
 }
+function printEstimate(){if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
+ if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
  const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){status(moneyIssue,'warn');return}
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');
@@ -3178,6 +3245,7 @@ function armReportClose(e){
  reportCloseArmedAt=Date.now();
 }
 async function closeReport(e){
+ if(reportMeasurementCorrection)return;
  const b=el('backToDealerBtn');
  const deliberate=!!(e&&b&&e.currentTarget===b&&reportCloseArmedAt&&Date.now()-reportCloseArmedAt<1500);
  reportCloseArmedAt=0;
@@ -3207,7 +3275,7 @@ function clearLoadedPropertyForNewAddress(){
  if(el('measureClicked'))el('measureClicked').disabled=true;if(el('measureClickedTop'))el('measureClickedTop').disabled=true;
  setManualUi(false);renderSummary();status('New property — finish the address, then click LOAD & MEASURE ROOF.','ok');
 }
-function startNewProperty(){
+function startNewProperty(){if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before starting another property.';return}
  resetReportForNewProperty();
  clearLoadedPropertyForNewAddress();
  skipAddressConflictOnce=false;
