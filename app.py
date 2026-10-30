@@ -427,7 +427,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
  <div class="header"><div class="brand"><div class="brandLogoWrap"><a href="/site/" title="Back to AeriQuote website" aria-label="AeriQuote website"><img class="aeriquote-main-logo" src="/static/aeriquote-logo.png" alt="AeriQuote"></a><div id="industryBrandTag" class="industryBrandTag">ROOF MEASUREMENT &amp; ESTIMATE SOFTWARE</div></div></div><div class="header-actions" style="display:flex;gap:8px;align-items:center">{% if IS_HEAD_OFFICE %}<button type="button" class="secondary" onclick="window.location.href='/head-office/dealers'">ADMIN DASHBOARD</button>{% endif %}{% if IS_DEALER_OWNER %}<button type="button" class="secondary" onclick="window.location.href='/dealer-employees'">EMPLOYEES</button>{% endif %}<a href="/site/pricing.html" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:11px 16px;border-radius:8px;font-weight:900;background:#f47b20;color:#fff;border:2px solid #e46d10;box-shadow:0 2px 6px #0002;white-space:nowrap">VIEW PLANS / UPGRADE</a><button type="button" class="secondary" data-aq-help-topic="first-estimate">HELP / FIRST ESTIMATE</button><button type="button" class="secondary" onclick="openEstimateHistory()">PREVIOUS ESTIMATES</button><button type="button" class="ghost" onclick="window.location.href='/logout'">LOG OUT</button></div></div>
  <div class="stepbar"><div id="progress1" class="stepchip current"><strong><span class="stepnum">1</span>Property</strong>Enter address & load</div><div id="progress2" class="stepchip"><strong><span class="stepnum">2</span>Measure</strong>Choose measurement tools</div><div id="progress3" class="stepchip"><strong><span class="stepnum">3</span>Price</strong>Set this job's price</div><div id="progress4" class="stepchip"><strong><span class="stepnum">4</span>Customer</strong>Add customer details</div><div id="progress5" class="stepchip"><strong><span class="stepnum">5</span>Estimate</strong>Create customer estimate</div></div>
  <div class="setup">
-  <div class="stepcard"><h2>STEP 1 — Enter the property</h2><button type="button" class="aq-context-help" data-aq-help-topic="property">Help with this step</button><div class="grid2"><div><label>Property Address</label><input id="streetAddress" placeholder="Start typing the address — U.S. or Canada" value=""><div id="addressAutoStatus" class="small" style="margin-top:5px;color:#176b43;font-weight:700">City, state/province and ZIP/postal code will fill automatically when Google finds the address.</div><div id="addressParts" style="display:grid;grid-template-columns:1.2fr .55fr .8fr;gap:7px;margin-top:7px"><input id="cityTown" placeholder="City" value=""><select id="propertyProvince" onchange="propertyProvinceChanged()"><option value="">State / Province</option><optgroup label="United States"><option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option><option>DC</option></optgroup><optgroup label="Canada"><option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option><option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option><option>QC</option><option>SK</option><option>YT</option></optgroup></select><input id="postalCode" placeholder="ZIP / Postal Code — filled by Google" readonly></div><input id="address" type="hidden"><div id="googleMatch" class="small" style="margin-top:5px;color:#176b43;font-weight:700"></div><div id="propertyVerify" class="small" style="display:none;margin-top:7px;font-weight:700"></div>
+  <div class="stepcard"><h2>STEP 1 — Enter the property</h2><button type="button" class="aq-context-help" data-aq-help-topic="property">Help with this step</button><div class="grid2"><div><label for="propertyCountry">Property Country</label><select id="propertyCountry" onchange="propertyCountryChanged()"><option value="CA">Canada</option><option value="US">United States</option></select><label>Property Address</label><input id="streetAddress" placeholder="Start typing the address — U.S. or Canada" value=""><div id="addressAutoStatus" class="small" style="margin-top:5px;color:#176b43;font-weight:700">City, state/province and ZIP/postal code will fill automatically when Google finds the address.</div><div id="addressParts" style="display:grid;grid-template-columns:1.2fr .55fr .8fr;gap:7px;margin-top:7px"><input id="cityTown" placeholder="City" value=""><select id="propertyProvince" aria-label="Property province or state" onchange="propertyProvinceChanged()"><option value="">Choose province / territory</option></select><input id="postalCode" placeholder="ZIP / Postal Code — filled by Google" readonly></div><input id="address" type="hidden"><div id="googleMatch" class="small" style="margin-top:5px;color:#176b43;font-weight:700"></div><div id="propertyVerify" class="small" style="display:none;margin-top:7px;font-weight:700"></div>
 <details id="coordinateFallback" style="margin-top:10px;border:1px solid #d9e3dc;border-radius:9px;background:#fafcfb">
 <summary style="cursor:pointer;padding:10px 12px;font-weight:900;color:#5b675f">CAN'T LOCATE THE PROPERTY? USE DROPPED PIN / COORDINATES</summary>
 <div style="padding:0 12px 12px">
@@ -520,6 +520,7 @@ const AERIQUOTE_US_STATES=`<option value="AL">AL</option><option value="AK">AK</
 const AERIQUOTE_CA_PROVINCES=`<option value="AB">AB — Alberta</option><option value="BC">BC — British Columbia</option><option value="MB">MB — Manitoba</option><option value="NB">NB — New Brunswick</option><option value="NL">NL — Newfoundland and Labrador</option><option value="NS">NS — Nova Scotia</option><option value="NT">NT — Northwest Territories</option><option value="NU">NU — Nunavut</option><option value="ON">ON — Ontario</option><option value="PE">PE — Prince Edward Island</option><option value="QC">QC — Quebec</option><option value="SK">SK — Saskatchewan</option><option value="YT">YT — Yukon</option>`;
 function provinceRules(code){return [Number(el('gst')?.value||0),Number(el('pst')?.value||0)]}
 function countryChanged(preserveRegion=false){
+ if(typeof initializePropertyRegions==='function')initializePropertyRegions();
  const country=el('dealerCountry')?.value||'US',region=el('province'),old=region?.value||'';
  if(el('regionLabel'))el('regionLabel').textContent=country==='CA'?'Province / territory':'State';
  if(el('primaryTaxLabel'))el('primaryTaxLabel').textContent=country==='CA'?'Federal Tax %':'Sales Tax %';
@@ -861,7 +862,10 @@ function switchIndustryMarketing(){
 }
 function businessTypeChanged(){industryChosenByUser=true;if(['pressure','paving','landscaping','commercial','snow'].includes(currentBusinessType())){measurementViewMode='area';pendingMeasurementMode='area';updatePropertyActionButton();}switchIndustryMarketing();applyBusinessTerminology();fillLandscapingBenefits();fillCommercialBenefits();toggleMarketingEditor();renderSummary()}
 let _aeriTermTimer=null;
-const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>applyBusinessTerminology(),30)});
+const _aeriTermObserver=new MutationObserver(()=>{if(currentBusinessType()!=='snow')return;clearTimeout(_aeriTermTimer);_aeriTermTimer=setTimeout(()=>{
+ // Wording updates must not observe and continuously reschedule themselves.
+ _aeriTermObserver.disconnect();try{applyBusinessTerminology()}finally{_aeriTermObserver.observe(document.body,{childList:true,subtree:true})}
+},30)});
 document.addEventListener('DOMContentLoaded',()=>{_aeriTermObserver.observe(document.body,{childList:true,subtree:true})});
 
 
@@ -1217,10 +1221,15 @@ function commercialAreaUi(){
 function remeasureSurfaceArea(i){
  if(!surfaceIndustry()||!sessionToken||areaMode||linearMode||linearCorrectionOriginal)return;
  const saved=commercialAreas[i];if(!saved||!saved.points||saved.points.length<3)return;
- commercialEditArea(i);
- if(!areaCorrectionOriginal||commercialEditingIndex!==i)return;
- areaRemeasureMode=true;areaPoints=[];areaMeasurementSaved=false;
- redrawAreaMeasure();commercialAreaDrawSaved();renderSummary();
+ if(measurementViewMode==='linear')savedLinearJobRate=currentJobPrice();
+ commercialSelectArea(i);
+ if(commercialEditingIndex!==i)return;
+ // Enter the requested workflow directly; no transient corner-edit/tool toggle.
+ areaCorrectionOriginal=saved.points.map(p=>L.latLng(p[0],p[1]));
+ measurementViewMode='area';pendingMeasurementMode='area';
+ areaRemeasureMode=true;areaMode=true;areaPoints=[];areaMeasurementSaved=false;
+ hideRoofDisplayForLinear();if(linearMeasurementSaved)redrawLinearMeasure();
+ updatePropertyActionButton();redrawAreaMeasure();commercialAreaDrawSaved();renderSummary();
  status('Trace a new outline, then SAVE REPLACEMENT AREA. The original area and price stay unchanged until you save. Cancel keeps the original.','warn');
 }
 function replacementAreaError(){
@@ -2035,7 +2044,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
  resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
   resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
   sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
-  let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))el('propertyProvince').value=prov;syncPropertyProvince()}
+  let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))setPropertyRegion(prov);syncPropertyProvince()}
   el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
   installPropertyImagery(prepared);
   // Commercial surface measurements must never run the roof AutoMeasure path.
@@ -2167,8 +2176,11 @@ function correctSavedMeasurementFromReport(mode,index=0){
  document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);
  document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
  if(customerMap){customerMap.remove();customerMap=null}customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;
- if(mode==='area')remeasureSurfaceArea(index);else editLinearMeasure();
- el(mode==='area'?'map':'linearTool')?.scrollIntoView({behavior:'smooth',block:'center'});
+ if(mode==='area')remeasureSurfaceArea(index);else{editLinearMeasure();if(linearCorrectionOriginal){pendingMeasurementMode='linear';updatePropertyActionButton()}}
+ // Closing a fixed report / embedded-browser viewport can leave Leaflet sized to
+ // the hidden workspace. Keep existing center and show Save/Cancel above the map.
+ map.invalidateSize({pan:false});
+ el(mode==='area'?'areaTool':'linearTool')?.scrollIntoView({behavior:'auto',block:'start'});
 }
 function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
@@ -2663,7 +2675,7 @@ async function resumeSavedEstimateWorkspace(){
  sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
  const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
- const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setSavedField('propertyProvince',province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
+ const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setPropertyRegion(province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
  setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
  await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
  redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
@@ -3216,7 +3228,7 @@ function startNewProperty(){
 }
 function unitAddressSuggestion(street,province){const m=String(street||'').trim().match(/^(\d+[A-Za-z]?)\s+(\d{3,}[A-Za-z]?)\s+([A-Za-z].*)$/);return m&&Number(m[1])<Number(m[2])&&CANADIAN_PROVINCES.has(String(province||'').toUpperCase())?{unit:m[1],number:m[2],address:m[2]+' '+m[3]+' #'+m[1]}:null}
 function enteredStreetNumber(){const v=(el('streetAddress')?.value||'').trim();const m=v.match(/^\s*(\d+[A-Za-z]?)(?:\s|,|$)/);return m?m[1]:''}
-function applyAddressParts(parts){if(!parts)return;if(parts.city&&el('cityTown'))el('cityTown').value=parts.city;if(parts.province&&el('propertyProvince')){el('propertyProvince').value=parts.province;syncPropertyProvince()}if(parts.postal&&el('postalCode'))el('postalCode').value=parts.postal}
+function applyAddressParts(parts){if(!parts)return;if(parts.city&&el('cityTown'))el('cityTown').value=parts.city;if(parts.province&&el('propertyProvince')){setPropertyRegion(parts.province);syncPropertyProvince()}if(parts.postal&&el('postalCode'))el('postalCode').value=parts.postal}
 function clearAddressVerificationState(message='Address changed — enter/confirm city and state, then Google will verify it.'){
  addressPreviewSeq++;
  if(el('postalCode'))el('postalCode').value='';
@@ -3226,11 +3238,36 @@ function clearAddressVerificationState(message='Address changed — enter/confir
  if(el('addressAutoStatus')){el('addressAutoStatus').textContent=message;el('addressAutoStatus').style.color='#666';}
 }
 const CANADIAN_PROVINCES=new Set(['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT']);
+// Property location is independent of business tax defaults and saved quotes.
+function filterPropertyRegions(country,selected=''){
+ const region=el('propertyProvince'),field=el('propertyCountry');if(!region||!field)return;
+ const memory=region._countryRegions||(region._countryRegions={});if(region.dataset.country)memory[region.dataset.country]=region.value;
+ field.value=country==='US'?'US':'CA';
+ region.innerHTML='<option value="">Choose '+(field.value==='CA'?'province / territory':'state')+'</option>'+(field.value==='CA'?AERIQUOTE_CA_PROVINCES:AERIQUOTE_US_STATES);
+ region.value=[...region.options].some(o=>o.value===selected)?selected:'';region.dataset.country=field.value;
+}
+function setPropertyRegion(value){
+ const code=String(value||'').trim().toUpperCase();
+ filterPropertyRegions(code?(CANADIAN_PROVINCES.has(code)?'CA':'US'):(el('propertyCountry')?.value||'CA'),code);
+}
+function initializePropertyRegions(){
+ const region=el('propertyProvince'),field=el('propertyCountry');if(!region||!field)return;
+ if(region.value){setPropertyRegion(region.value);return}
+ if(!field.dataset.chosen&&!sessionToken&&!(el('streetAddress')?.value||'').trim())filterPropertyRegions(el('dealerCountry')?.value||'CA');
+ else if(!region.dataset.country)filterPropertyRegions(field.value);
+}
+function propertyCountryChanged(){
+ const field=el('propertyCountry'),region=el('propertyProvince');if(!field||!region)return;
+ field.dataset.chosen='1';filterPropertyRegions(field.value,region._countryRegions?.[field.value]||'');
+ // The old accepted address, measurements, customer and taxes remain untouched.
+ clearTimeout(addressPreviewTimer);addressPreviewSeq++;renderSummary();
+}
 function propertyCountryFromProvince(prov){return CANADIAN_PROVINCES.has(String(prov||'').toUpperCase())?'Canada':'USA'}
 function propertyLookupProvince(){
  const selected=(el('propertyProvince')?.value||'').trim();
  if(selected)return selected; // PROPERTY province is authoritative. Dealer profile province is never used for locating a property.
- return detectProvince(el('streetAddress')?.value||'')||'';
+ const detected=detectProvince(el('streetAddress')?.value||'')||'',country=el('propertyCountry')?.value;
+ return detected&&country&&((CANADIAN_PROVINCES.has(detected)?'CA':'US')!==country)?'':detected;
 }
 async function previewAddress(){
  const seq=addressPreviewSeq;
@@ -3268,7 +3305,7 @@ function addressTyped(){
  addressFieldChanged();
 }
 function propertyProvinceChanged(){syncPropertyProvince();addressFieldChanged()}
-window.addEventListener('DOMContentLoaded',()=>{loadDealerDefaults();updateUsage();const jp=el('jobPrice');if(jp){jp.addEventListener('input',jobPriceChanged);jp.addEventListener('change',jobPriceChanged);jp.addEventListener('keyup',jobPriceChanged);}const street=el('streetAddress'),city=el('cityTown');if(street)street.addEventListener('input',addressTyped);if(city)city.addEventListener('input',addressFieldChanged);renderSummary()});
+window.addEventListener('DOMContentLoaded',()=>{initializePropertyRegions();loadDealerDefaults();updateUsage();const jp=el('jobPrice');if(jp){jp.addEventListener('input',jobPriceChanged);jp.addEventListener('change',jobPriceChanged);jp.addEventListener('keyup',jobPriceChanged);}const street=el('streetAddress'),city=el('cityTown');if(street)street.addEventListener('input',addressTyped);if(city)city.addEventListener('input',addressFieldChanged);renderSummary()});
 function buildPropertyAddress(){
  const street=(el('streetAddress')?.value||'').trim(),city=(el('cityTown')?.value||'').trim(),prov=propertyLookupProvince();
  // Postal code is intentionally NEVER included in a property lookup. Google supplies it only after verification.
@@ -3301,7 +3338,7 @@ function coordinatesEntered(){
 }
 
 
-function syncPropertyProvince(){renderSummary();}
+function syncPropertyProvince(){if(el('propertyProvince')?.value)setPropertyRegion(el('propertyProvince').value);renderSummary();}
 const _aeriRenderSummary=renderSummary;renderSummary=function(){const r=_aeriRenderSummary.apply(this,arguments);setTimeout(()=>applyBusinessTerminology(),0);return r};
 </script>
 </body></html>"""
@@ -3680,7 +3717,7 @@ HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><t
 <div><button type="submit">SAVE INVENTORY SETTINGS</button></div>
 </form></div>
 <div class="card"><a href="/head-office/support">Support requests</a> · <a href="/head-office/storage">Deployment storage check</a></div><div class="card"><h2>Create Dealer Account</h2>{% if message %}<div class="msg">{{message}}</div>{% endif %}{% if error %}<div class="err" role="alert">{{error}}</div>{% endif %}
-<form method="post"><div class="grid"><div><label>Dealer / Owner Name</label><input name="dealer_name" required></div><div><label>Company Name</label><input name="company"></div><div><label>Email / Login</label><input name="email" type="email" required></div><div><label>State</label><select name="state"><option value="">Select State</option>{% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></div><div><label>Temporary Password</label><input name="password" type="password" minlength="8" required></div><div><label>Account Status</label><select name="status"><option value="active">Active</option><option value="disabled">Disabled</option></select></div><div class="full"><label>Permission Level</label><input value="Dealer Owner" readonly></div><div class="full"><button type="submit">CREATE DEALER ACCOUNT</button></div></div></form></div>
+<form method="post"><div class="grid"><div><label>Dealer / Owner Name</label><input name="dealer_name" required></div><div><label>Company Name</label><input name="company"></div><div><label>Email / Login</label><input name="email" type="email" required></div><div><label for="adminCountry">Country</label><select id="adminCountry" onchange="filterAdminRegions()"><option value="CA">Canada</option><option value="US">United States</option></select></div><div><label for="adminRegion">Province / State</label><select id="adminRegion" name="state"><option value="">Choose region</option><optgroup label="CA"><option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option><option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option><option>QC</option><option>SK</option><option>YT</option></optgroup><optgroup label="US">{% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}</optgroup></select></div><div><label>Temporary Password</label><input name="password" type="password" minlength="8" required></div><div><label>Account Status</label><select name="status"><option value="active">Active</option><option value="disabled">Disabled</option></select></div><div class="full"><label>Permission Level</label><input value="Dealer Owner" readonly></div><div class="full"><button type="submit">CREATE DEALER ACCOUNT</button></div></div></form></div>
 <div class="card"><h2>Dealer Accounts</h2>
 {% for d in dealers %}
 <div style="border:1px solid #d9e3ea;border-radius:12px;padding:14px;margin:12px 0">
@@ -3698,7 +3735,12 @@ HEAD_OFFICE_DEALERS_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><t
 <form method="post" action="/head-office/dealers/{{d.id}}/password" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><input style="max-width:320px" name="password" type="password" minlength="8" placeholder="New temporary password" required><button type="submit">SAVE NEW PASSWORD</button></form></details>
 <form method="post" action="/head-office/dealers/{{d.id}}/status" style="margin-top:12px"><input type="hidden" name="action" value="{{'activate' if d.status=='disabled' else 'disable'}}"><button type="submit" style="background:{{'#1677c8' if d.status=='disabled' else '#7a263a'}}">{{'ACTIVATE DEALER' if d.status=='disabled' else 'DISABLE DEALER'}}</button></form>
 {% else %}<div style="margin-top:10px;font-size:13px"><strong>Head Office</strong> — protected account</div>{% endif %}
-</div>{% endfor %}</div></div></body></html>"""
+</div>{% endfor %}</div></div><script>
+const adminRegionGroups=Array.from(document.querySelectorAll('#adminRegion optgroup')).map(g=>({country:g.label,options:Array.from(g.querySelectorAll('option')).map(o=>({value:o.value,text:o.textContent}))}));
+const adminRegionMemory={};let adminPreviousCountry='';
+function filterAdminRegions(){const country=document.getElementById('adminCountry').value,region=document.getElementById('adminRegion');if(adminPreviousCountry)adminRegionMemory[adminPreviousCountry]=region.value;region.replaceChildren(new Option('Choose '+(country==='CA'?'province / territory':'state'),''));for(const o of adminRegionGroups.find(g=>g.country===country).options)region.add(new Option(o.text,o.value));region.value=adminRegionMemory[country]||'';adminPreviousCountry=country}
+filterAdminRegions();
+</script></body></html>"""
 
 US_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC']
 

@@ -12,7 +12,7 @@ import tempfile
 import time
 
 test_script = sys.argv[1] if len(sys.argv) > 1 else "scripts/test_linear_touch_browser.cjs"
-if test_script not in {"scripts/test_linear_touch_browser.cjs", "scripts/test_area_correction_touch.cjs", "scripts/test_surface_remeasure_touch.cjs", "scripts/test_country_regions_browser.cjs", "scripts/test_estimate_correction_touch.cjs"}:
+if test_script not in {"scripts/test_linear_touch_browser.cjs", "scripts/test_area_correction_touch.cjs", "scripts/test_surface_remeasure_touch.cjs", "scripts/test_country_regions_browser.cjs", "scripts/test_estimate_correction_touch.cjs", "scripts/test_correction_pan_touch.cjs"}:
     raise SystemExit("Only the isolated touch QA scripts are permitted")
 root = Path(__file__).resolve().parents[1]
 env = dict(os.environ, DATABASE_URL="", PYTHONDONTWRITEBYTECODE="1")
