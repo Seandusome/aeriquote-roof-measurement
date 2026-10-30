@@ -32,6 +32,21 @@ def line_feet(points):
         total+=2*6371000*math.asin(min(1,math.sqrt(h)))/.3048
     return total
 
+def linear_error(points):
+    """Reject duplicated physical coverage, not ordinary intersections or closed loops."""
+    pts=coordinates(points,2);lat,lon=pts[0];scale=6378137*math.pi/180
+    xy=[(((b-lon+180)%360-180)*scale*math.cos(math.radians(lat)),(a-lat)*scale) for a,b in pts]
+    segments=[]
+    for a,b in zip(xy,xy[1:]):
+        dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+        if length<.0003048:return 'The line has a zero-length edge. Move the repeated point or Undo.'
+        for c,d in segments:
+            if max(abs(dx*(p[1]-a[1])-dy*(p[0]-a[0]))/length for p in (c,d))>1e-6:continue
+            lo,hi=sorted(((p[0]-a[0])*dx/length+(p[1]-a[1])*dy/length for p in (c,d)))
+            if min(length,hi)-max(0,lo)>1e-6:return 'Linear segments overlap and count the same length twice. Correct the line before quoting.'
+        segments.append((a,b))
+    return ''
+
 def planar(points):
     pts=coordinates(points,3);lat,lon=pts[0]
     scale=6378137*math.pi/180
@@ -102,6 +117,8 @@ def snapshot_error(payload):
             if abs(measured-float(quote['areaSqFt']))>max(1,measured*.001):return 'Saved area quantity does not match its outline. Remeasure before quoting.'
         length=quote.get('linearFeet',0)
         if length>0:
+            issue=linear_error(quote.get('linearPoints'))
+            if issue:return issue
             measured=line_feet(quote.get('linearPoints'))
             if abs(measured-float(length))>max(.05,measured*.00001):return 'Saved linear quantity does not match its line. Remeasure before quoting.'
             if 'linear_feet' in payload and abs(float(payload['linear_feet'])-float(length))>.0001:return 'Saved linear totals do not match the included line.'

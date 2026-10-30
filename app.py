@@ -1482,7 +1482,7 @@ function editLinearMeasure(){
 }
 function saveLinearCorrection(){
  if(!linearCorrectionOriginal)return;
- if(linearFeetTotal()<.001){status('The line needs two different points. Move a point or cancel the line edit.','error');return}
+ const issue=savedLinearGeometryError();if(issue){status(issue,'error');return}
  linearCorrectionOriginal=null;linearMeasurementSaved=true;redrawLinearMeasure();renderSummary();status(`LINE CHANGES SAVED — ${linearFeetTotal().toFixed(1)} ft.`,'ok');
 }
 function cancelLinearCorrection(){
@@ -1495,7 +1495,7 @@ function hideRoofDisplayForLinear(){clearOverlays();clearManualDisplayLayers();i
 function restoreAutoMeasureDisplay(){redrawRoofData();redrawManualDisplayLayers()}
 function stopLinearMode(restoreRoof=false){linearMode=false;if(el('linearStartBtn')){el('linearStartBtn').textContent='START LINEAR MEASURE';el('linearStartBtn').className='secondary'}if(restoreRoof){measurementViewMode='auto';restoreAutoMeasureDisplay()}updateLinearUi()}
 function returnToAutoMeasure(){if(linearMode&&linearPoints.length&&!linearCorrectionOriginal){status('Finish and save or clear the current line before returning to AutoMeasure.','warn');return}linearMode=false;measurementViewMode='auto';linearMeasurementSaved=linearPoints.length>1;if(el('linearStartBtn')){el('linearStartBtn').textContent='START LINEAR MEASURE';el('linearStartBtn').className='secondary'}restoreAutoMeasureDisplay();updateLinearUi();renderSummary();status('AutoMeasure restored. Your saved linear measurement is still available.','ok')}
-function toggleLinearMeasure(){if(surfaceIndustry()&&!linearMode&&!linearCorrectionOriginal&&measurementViewMode!=='linear'){selectMeasurementTool('linear');if(measurementViewMode!=='linear')return}if(surfaceIndustry()&&!linearMode&&!linearCorrectionOriginal&&sessionToken)surfaceLineDraftOriginal={points:linearPoints.map(p=>({lat:p.lat,lng:p.lng})),saved:linearMeasurementSaved,savedRate:savedLinearJobRate,jobRate:el('jobPrice')?.value};if(linearCorrectionOriginal){saveLinearCorrection();return}if(!sessionToken){status('Load the property first.','error');return}if(areaMode){areaMode=false;if(multiAreaSaved())commercialSyncCurrent();clearAreaLayers();commercialAreaDrawSaved();updateAreaUi()}if(linearMode){if(linearPoints.length<2||linearFeetTotal()<.001){status('Place at least two different points before saving the linear measurement.','error');return}linearMode=false;if(!linearMeasurementSaved)usage.linear++;linearMeasurementSaved=true;surfaceLineDraftOriginal=null;measurementViewMode='linear';if(el('linearStartBtn')){el('linearStartBtn').textContent='CONTINUE LINEAR MEASURE';el('linearStartBtn').className='secondary'}hideRoofDisplayForLinear();redrawLinearMeasure();updateLinearUi();renderSummary();status(`LINEAR MEASUREMENT SAVED — ${linearFeetTotal().toFixed(1)} ft. ${currentBusinessType()==='roofing'?'AutoMeasure remains hidden until you return to it.':'You can continue measuring or create the estimate.'}`,'ok');return}if(traceMode)cancelCurrentTrace();if(outlineEditMode){outlineEditMode=false;outlinePoints=[];clearOutlineTemp();setOutlineButtons(false)}roofFixMode=false;locateRoofMode=false;garageMode=false;measurementViewMode='linear';linearMeasurementSaved=false;hideRoofDisplayForLinear();linearMode=true;if(el('linearStartBtn')){el('linearStartBtn').textContent='FINISH & SAVE LINEAR';el('linearStartBtn').className='primary'}updateLinearUi();renderSummary();status(currentBusinessType()==='roofing'?'LINEAR MEASURE ON — roof overlays are hidden. Click the first point, then each turn or endpoint.':'LINEAR MEASURE ON — click the first point, then each turn or endpoint.','warn')}
+function toggleLinearMeasure(){if(surfaceIndustry()&&!linearMode&&!linearCorrectionOriginal&&measurementViewMode!=='linear'){selectMeasurementTool('linear');if(measurementViewMode!=='linear')return}if(surfaceIndustry()&&!linearMode&&!linearCorrectionOriginal&&sessionToken)surfaceLineDraftOriginal={points:linearPoints.map(p=>({lat:p.lat,lng:p.lng})),saved:linearMeasurementSaved,savedRate:savedLinearJobRate,jobRate:el('jobPrice')?.value};if(linearCorrectionOriginal){saveLinearCorrection();return}if(!sessionToken){status('Load the property first.','error');return}if(areaMode){areaMode=false;if(multiAreaSaved())commercialSyncCurrent();clearAreaLayers();commercialAreaDrawSaved();updateAreaUi()}if(linearMode){const issue=savedLinearGeometryError();if(issue){status(issue,'error');return}linearMode=false;if(!linearMeasurementSaved)usage.linear++;linearMeasurementSaved=true;surfaceLineDraftOriginal=null;measurementViewMode='linear';if(el('linearStartBtn')){el('linearStartBtn').textContent='CONTINUE LINEAR MEASURE';el('linearStartBtn').className='secondary'}hideRoofDisplayForLinear();redrawLinearMeasure();updateLinearUi();renderSummary();status(`LINEAR MEASUREMENT SAVED — ${linearFeetTotal().toFixed(1)} ft. ${currentBusinessType()==='roofing'?'AutoMeasure remains hidden until you return to it.':'You can continue measuring or create the estimate.'}`,'ok');return}if(traceMode)cancelCurrentTrace();if(outlineEditMode){outlineEditMode=false;outlinePoints=[];clearOutlineTemp();setOutlineButtons(false)}roofFixMode=false;locateRoofMode=false;garageMode=false;measurementViewMode='linear';linearMeasurementSaved=false;hideRoofDisplayForLinear();linearMode=true;if(el('linearStartBtn')){el('linearStartBtn').textContent='FINISH & SAVE LINEAR';el('linearStartBtn').className='primary'}updateLinearUi();renderSummary();status(currentBusinessType()==='roofing'?'LINEAR MEASURE ON — roof overlays are hidden. Click the first point, then each turn or endpoint.':'LINEAR MEASURE ON — click the first point, then each turn or endpoint.','warn')}
 function addLinearPoint(ll){linearPoints.push(L.latLng(ll.lat,ll.lng));redrawLinearMeasure();if(linearPoints.length===1)status('Start point set. Click the next point.','warn');else status(`Linear total: ${linearFeetTotal().toFixed(1)} ft.`,'ok')}
 function undoLinearPoint(){if(!linearPoints.length)return;linearPoints.pop();redrawLinearMeasure();status(linearPoints.length?`Last point removed. Linear total: ${linearFeetTotal().toFixed(1)} ft.`:'Linear measurement cleared.','ok')}
 function clearLinearMeasure(){linearCorrectionOriginal=null;linearPoints=[];linearMeasurementSaved=false;clearLinearLayers();updateLinearUi();renderSummary();status('Linear measurement cleared.','ok')}
@@ -1758,6 +1758,21 @@ function updateEstimatePeriodUi(){
   const total=el('jsTotal');if(total&&total.textContent.startsWith('$'))total.textContent=total.textContent.replace(/ per (visit|snowfall|month|season|year)$/,'')+suffix;
  }
 }
+function savedLinearGeometryError(points=linearPoints){
+ if(!Array.isArray(points)||points.length<2)return 'Add at least two different points.';
+ const pts=points.map(p=>Array.isArray(p)?p:[p?.lat,p?.lng]);
+ if(pts.some(p=>p.length!==2||p.some(v=>typeof v!=='number'||!Number.isFinite(v))||Math.abs(p[0])>90||Math.abs(p[1])>180))return 'Invalid measurement coordinates.';
+ const [lat,lon]=pts[0],scale=6378137*Math.PI/180,xy=pts.map(([a,b])=>[(((b-lon+180)%360+360)%360-180)*scale*Math.cos(lat*Math.PI/180),(a-lat)*scale]),segments=[];
+ for(let i=1;i<xy.length;i++){
+  const a=xy[i-1],b=xy[i],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+  if(length<.0003048)return 'The line has a zero-length edge. Move the repeated point or Undo.';
+  for(const [c,d] of segments){
+   if(Math.max(...[c,d].map(p=>Math.abs(dx*(p[1]-a[1])-dy*(p[0]-a[0]))/length))>1e-6)continue;
+   const [lo,hi]=[c,d].map(p=>((p[0]-a[0])*dx+(p[1]-a[1])*dy)/length).sort((x,y)=>x-y);
+   if(Math.min(length,hi)-Math.max(0,lo)>1e-6)return 'Linear segments overlap and count the same length twice. Correct the line before quoting.';
+  }segments.push([a,b]);
+ }return '';
+}
 function savedAreaGeometryError(inputAreas=commercialAreas){
  const areas=inputAreas.filter(a=>Number(a.sqft)>0);
  const inside=(p,poly)=>{let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[j],b=poly[i],cross=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);if(Math.abs(cross)<1e-16&&p[0]>=Math.min(a[0],b[0])-1e-12&&p[0]<=Math.max(a[0],b[0])+1e-12&&p[1]>=Math.min(a[1],b[1])-1e-12&&p[1]<=Math.max(a[1],b[1])+1e-12)return false;if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])hit=!hit}return hit};
@@ -1782,6 +1797,7 @@ function quotePricingError(calc=null){
   if(manualPlanes.length&&manualPlanes.some(p=>p.manual_roof_qa)&&!el('manualRoofScopeConfirmed')?.checked)return 'Confirm that all roof sections and intended buildings are included.';
  }
  if(typeof propertyAddressNeedsReload==='function'&&propertyAddressNeedsReload())return 'The address has changed. Your previous measurements are retained. Load the new property before creating an estimate.';
+ if(linearMeasurementSaved){const issue=savedLinearGeometryError();if(issue)return issue;}
  const valid=(value,max=Infinity)=>value!==null&&value!==undefined&&String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>=0&&Number(value)<=max;
  for(const id of ['gst','pst'])if(!valid(el(id)?.value,100))return 'Enter a tax percentage from 0 to 100. Enter 0 when no tax is charged.';
  if(el('pricingMode')?.value==='discount'&&!valid(el('discountPct')?.value,100))return 'Enter a promotion discount from 0 to 100%.';
@@ -2180,9 +2196,7 @@ function reportCorrectionProblem(){
  const c=reportMeasurementCorrection;if(!c)return '';
  if(c.points.some(p=>!Number.isFinite(p.lat)||!Number.isFinite(p.lng)||Math.abs(p.lat)>90||Math.abs(p.lng)>180))return 'Invalid measurement coordinates.';
  if(c.mode==='area')return measuredPolygonError(c.points)||savedAreaGeometryError(commercialAreas.map((a,i)=>i===c.index?{...a,points:c.points.map(p=>[p.lat,p.lng]),sqft:Math.round(localPolygonAreaM2(c.points)*10.76391041671)}:a));
- if(c.points.length<2)return 'Add at least two different points.';
- if(c.points.slice(1).some((p,i)=>customerMap.distance(p,c.points[i])*3.28084<.001))return 'The line has a zero-length edge. Move the repeated point or Undo.';
- return '';
+ return savedLinearGeometryError(c.points);
 }
 function redrawReportCorrection(){
  const c=reportMeasurementCorrection;if(!c)return;
@@ -3151,6 +3165,7 @@ function savedEstimateMoneyIssue(pricing){
 function printEstimate(){if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
+ if(quoteSnapshot?.linearFeet>0){const issue=savedLinearGeometryError(quoteSnapshot.linearPoints);if(issue){status(issue,'warn');return}}
  const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){status(moneyIssue,'warn');return}
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');

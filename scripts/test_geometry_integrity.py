@@ -60,6 +60,18 @@ with tempfile.TemporaryDirectory() as tmp:
   assert response.status_code==400,response.get_json()
  assert client.get('/api/estimates/'+eid).get_json()==before
  con=a.estimate_db();assert con.execute('SELECT COUNT(*) AS n FROM estimate_revisions').fetchone()['n']==0;con.close()
+ # A retraced linear segment cannot be billed twice, even with internally matching prices.
+ from measurement_integrity import linear_error
+ A=[52,-106];B=[52,-105.999];C=[52.001,-105.999];D=[52.001,-106]
+ invalid_lines=[[A,B,A],[A,B,[52,-105.9995]],[A,B,C,D,A,B],[A,A,B]]
+ valid_lines=[[A,B],[A,B,C,D,A],[A,C,B,D],[A,[52,-105.9995],B],[A,[52,-105.99999999]]]
+ for pts in invalid_lines:assert linear_error(pts)
+ for pts in valid_lines:assert not linear_error(pts)
+ for industry in ['snow','pressure','paving','landscaping','commercial','roofing']:
+  for pts in invalid_lines:
+   p={'address':'QA INVALID LINE '+industry,'quote':{'businessType':industry,'measurementMode':'linear','linearPoints':pts,'linearFeet':line_feet(pts)}}
+   price_fixture(p);assert client.post('/api/estimates',json=p).status_code==400
+  assert client.get('/api/estimates/'+eid).get_json()==before
  # Normal matching snapshots and shared-border multi-area work across the five surface industries.
  for industry in ['snow','pressure','paving','landscaping','commercial']:
   p=copy.deepcopy(original);p['address']='QA '+industry;p['quote']['businessType']=industry

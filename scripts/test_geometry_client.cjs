@@ -13,3 +13,9 @@ for(const industry of ['snow','pressure','paving','landscaping','commercial']){
 }
 const u=[[52,-106],[52,-105.997],[52.003,-105.997],[52.003,-105.998],[52.001,-105.998],[52.001,-105.999],[52.003,-105.999],[52.003,-106]];c.commercialAreas=[area(u),area(u)];assert(c.savedAreaGeometryError().includes('overlap'));const hole=[[52.0015,-105.9988],[52.0015,-105.9982],[52.0025,-105.9982],[52.0025,-105.9988]];c.commercialAreas=[area(u),area(hole)];assert.equal(c.savedAreaGeometryError(),'');
 console.log('PASS: actual client blocks missing/mismatched saved outlines and duplicate/partial overlap before report/save; adjacent and separated areas allowed');
+
+vm.runInContext(source.slice(source.indexOf('function savedLinearGeometryError('),source.indexOf('function savedAreaGeometryError(')),c);
+const A=[52,-106],B=[52,-105.999],C=[52.001,-105.999],D=[52.001,-106];
+for(const p of [[A,B,A],[A,B,[52,-105.9995]],[A,B,C,D,A,B],[A,A,B]])assert(c.savedLinearGeometryError(p),'Duplicated/backtracked/zero edge must be rejected');
+for(const p of [[A,B],[A,B,C,D,A],[A,C,B,D],[A,[52,-105.9995],B],[A,[52,-105.99999999]]])assert.equal(c.savedLinearGeometryError(p),'','Closed perimeter, crossing, adjacent collinear and very short valid edges remain allowed');
+console.log('PASS client duplicate/reversed/partial Linear coverage blocked; legitimate loops/crossings/short edges retained');
