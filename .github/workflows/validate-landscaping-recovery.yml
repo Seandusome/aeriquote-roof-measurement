@@ -108,7 +108,6 @@ jobs:
           --health-cmd "pg_isready -U qa -d aeriquote_qa"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      QA_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
       QA_POSTGRES_URL: postgresql://qa:qa-disposable-only@127.0.0.1:5432/aeriquote_qa
     steps:
       - uses: actions/checkout@v5
@@ -131,4 +130,6 @@ jobs:
       - name: Isolated operational privacy and support audit
         run: python scripts/audit_operational_safety.py
       - name: Backup into new disposable database and previous-app compatibility drill
+        env:
+          QA_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
         run: python scripts/test_emergency_backup_recovery.py --postgres
