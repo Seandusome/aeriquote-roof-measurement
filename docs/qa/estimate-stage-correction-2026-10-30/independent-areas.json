@@ -1,0 +1,212 @@
+[
+  {
+    "file": "snow-390-payload.json",
+    "index": 0,
+    "saved": 6516,
+    "wgs84_sqft": 6526.352932046991,
+    "relative_difference": 0.0015863273339315788
+  },
+  {
+    "file": "snow-390-payload.json",
+    "index": 1,
+    "saved": 9109,
+    "wgs84_sqft": 9123.92342184406,
+    "relative_difference": 0.0016356364640600514
+  },
+  {
+    "file": "pressure-320-payload.json",
+    "index": 0,
+    "saved": 4600,
+    "wgs84_sqft": 4607.6552492299825,
+    "relative_difference": 0.0016614197060992781
+  },
+  {
+    "file": "pressure-320-payload.json",
+    "index": 1,
+    "saved": 6388,
+    "wgs84_sqft": 6398.787633335102,
+    "relative_difference": 0.0016858870700604456
+  },
+  {
+    "file": "commercial-390-payload.json",
+    "index": 0,
+    "saved": 6516,
+    "wgs84_sqft": 6526.352932046991,
+    "relative_difference": 0.0015863273339315788
+  },
+  {
+    "file": "commercial-390-payload.json",
+    "index": 1,
+    "saved": 9109,
+    "wgs84_sqft": 9123.92342184406,
+    "relative_difference": 0.0016356364640600514
+  },
+  {
+    "file": "commercial-320-payload.json",
+    "index": 0,
+    "saved": 4600,
+    "wgs84_sqft": 4607.6552492299825,
+    "relative_difference": 0.0016614197060992781
+  },
+  {
+    "file": "commercial-320-payload.json",
+    "index": 1,
+    "saved": 6388,
+    "wgs84_sqft": 6398.787633335102,
+    "relative_difference": 0.0016858870700604456
+  },
+  {
+    "file": "commercial-768-payload.json",
+    "index": 0,
+    "saved": 16626,
+    "wgs84_sqft": 16652.97920366764,
+    "relative_difference": 0.0016200827093868556
+  },
+  {
+    "file": "commercial-768-payload.json",
+    "index": 1,
+    "saved": 23113,
+    "wgs84_sqft": 23150.784609596223,
+    "relative_difference": 0.0016321092452547409
+  },
+  {
+    "file": "pressure-390-payload.json",
+    "index": 0,
+    "saved": 6516,
+    "wgs84_sqft": 6526.352932046991,
+    "relative_difference": 0.0015863273339315788
+  },
+  {
+    "file": "pressure-390-payload.json",
+    "index": 1,
+    "saved": 9109,
+    "wgs84_sqft": 9123.92342184406,
+    "relative_difference": 0.0016356364640600514
+  },
+  {
+    "file": "landscaping-768-payload.json",
+    "index": 0,
+    "saved": 16626,
+    "wgs84_sqft": 16652.97920366764,
+    "relative_difference": 0.0016200827093868556
+  },
+  {
+    "file": "landscaping-768-payload.json",
+    "index": 1,
+    "saved": 23113,
+    "wgs84_sqft": 23150.784609596223,
+    "relative_difference": 0.0016321092452547409
+  },
+  {
+    "file": "pressure-768-payload.json",
+    "index": 0,
+    "saved": 16626,
+    "wgs84_sqft": 16652.97920366764,
+    "relative_difference": 0.0016200827093868556
+  },
+  {
+    "file": "pressure-768-payload.json",
+    "index": 1,
+    "saved": 23113,
+    "wgs84_sqft": 23150.784609596223,
+    "relative_difference": 0.0016321092452547409
+  },
+  {
+    "file": "snow-320-payload.json",
+    "index": 0,
+    "saved": 4600,
+    "wgs84_sqft": 4607.6552492299825,
+    "relative_difference": 0.0016614197060992781
+  },
+  {
+    "file": "snow-320-payload.json",
+    "index": 1,
+    "saved": 6388,
+    "wgs84_sqft": 6398.787633335102,
+    "relative_difference": 0.0016858870700604456
+  },
+  {
+    "file": "landscaping-320-payload.json",
+    "index": 0,
+    "saved": 4600,
+    "wgs84_sqft": 4607.6552492299825,
+    "relative_difference": 0.0016614197060992781
+  },
+  {
+    "file": "landscaping-320-payload.json",
+    "index": 1,
+    "saved": 6388,
+    "wgs84_sqft": 6398.787633335102,
+    "relative_difference": 0.0016858870700604456
+  },
+  {
+    "file": "paving-768-payload.json",
+    "index": 0,
+    "saved": 16626,
+    "wgs84_sqft": 16652.97920366764,
+    "relative_difference": 0.0016200827093868556
+  },
+  {
+    "file": "paving-768-payload.json",
+    "index": 1,
+    "saved": 23113,
+    "wgs84_sqft": 23150.784609596223,
+    "relative_difference": 0.0016321092452547409
+  },
+  {
+    "file": "paving-320-payload.json",
+    "index": 0,
+    "saved": 4600,
+    "wgs84_sqft": 4607.6552492299825,
+    "relative_difference": 0.0016614197060992781
+  },
+  {
+    "file": "paving-320-payload.json",
+    "index": 1,
+    "saved": 6388,
+    "wgs84_sqft": 6398.787633335102,
+    "relative_difference": 0.0016858870700604456
+  },
+  {
+    "file": "paving-390-payload.json",
+    "index": 0,
+    "saved": 6516,
+    "wgs84_sqft": 6526.352932046991,
+    "relative_difference": 0.0015863273339315788
+  },
+  {
+    "file": "paving-390-payload.json",
+    "index": 1,
+    "saved": 9109,
+    "wgs84_sqft": 9123.92342184406,
+    "relative_difference": 0.0016356364640600514
+  },
+  {
+    "file": "snow-768-payload.json",
+    "index": 0,
+    "saved": 16626,
+    "wgs84_sqft": 16652.97920366764,
+    "relative_difference": 0.0016200827093868556
+  },
+  {
+    "file": "snow-768-payload.json",
+    "index": 1,
+    "saved": 23113,
+    "wgs84_sqft": 23150.784609596223,
+    "relative_difference": 0.0016321092452547409
+  },
+  {
+    "file": "landscaping-390-payload.json",
+    "index": 0,
+    "saved": 6516,
+    "wgs84_sqft": 6526.352932046991,
+    "relative_difference": 0.0015863273339315788
+  },
+  {
+    "file": "landscaping-390-payload.json",
+    "index": 1,
+    "saved": 9109,
+    "wgs84_sqft": 9123.92342184406,
+    "relative_difference": 0.0016356364640600514
+  }
+]

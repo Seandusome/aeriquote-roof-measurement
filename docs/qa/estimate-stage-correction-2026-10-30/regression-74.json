@@ -1,0 +1,446 @@
+[
+  {
+    "command": "python scripts/check_release_files.py",
+    "exit": 0,
+    "seconds": 0.1,
+    "output": "PASS: 21 required deployment files are present and Python parses\n"
+  },
+  {
+    "command": "python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py",
+    "exit": 0,
+    "seconds": 0.1,
+    "output": ""
+  },
+  {
+    "command": "python scripts/test_database_initialization.py",
+    "exit": 0,
+    "seconds": 0.51,
+    "output": "PASS: 24 concurrent authenticated imagery requests, no repeated DDL, serialized PostgreSQL initialization/advisory lock, failure cleanup and retry\n"
+  },
+  {
+    "command": "python scripts/test_property_session_recovery.py",
+    "exit": 0,
+    "seconds": 0.39,
+    "output": "PASS: restart recovers Street View/aerial/mask/exact pin and extra-roof metadata, rotates runtime key, caches bytes, enforces ownership/expiry without consuming measurements\n"
+  },
+  {
+    "command": "python scripts/test_property_address.py",
+    "exit": 0,
+    "seconds": 0.39,
+    "output": "PASS: Canadian explicit unit formats preserve civic number, numbered streets unchanged, wrong/ambiguous addresses blocked, Street View uses base building then verified coordinates only on ZERO_RESULTS\n"
+  },
+  {
+    "command": "python scripts/test_complex_roofs.py",
+    "exit": 0,
+    "seconds": 0.25,
+    "output": "PASS: stable building ID/area, lazy per-building mask, caching, ownership, main imagery preservation and recoverable API failure\n"
+  },
+  {
+    "command": "python scripts/test_activation_metrics.py",
+    "exit": 0,
+    "seconds": 0.51,
+    "output": "PASS: Edmonton period boundaries/DST, signup-cohort conversion, employee attribution, idempotent first activation, invalid/cross-account rejection\nPASS: admin dashboard renders activation/conversion/revenue for each reporting period\nPASS: customer/QA separation, current plan mix, disabled versus paid distinction, future signup exclusion\nPASS: real Head Office report route and profile-based QA exclusion\n"
+  },
+  {
+    "command": "python scripts/test_account_access.py",
+    "exit": 0,
+    "seconds": 0.26,
+    "output": "PASS: plan values, business isolation, employee read-only settings, immediate disable, reactivation, owner disable, cross-business employee rejection and public-site access\n"
+  },
+  {
+    "command": "python scripts/test_business_isolation.py",
+    "exit": 0,
+    "seconds": 0.49,
+    "output": "PASS: real Flask business isolation, same-address separation, foreign revisions/metadata/edit/image rejection, employee permissions, profile isolation and immediate disable\n"
+  },
+  {
+    "command": "python scripts/test_workspace_account_binding.py",
+    "exit": 0,
+    "seconds": 0.42,
+    "output": "PASS old-tab account mismatch blocks estimate/profile writes before credits; original-login recovery, idempotency, expiry and rendered workspace identity\n"
+  },
+  {
+    "command": "python scripts/test_account_credits.py",
+    "exit": 0,
+    "seconds": 1.78,
+    "output": "PASS: Head Office-only grants, CSRF, duplicate retry, invalid inputs, profile escalation rejection, employee-shared limits, ordinary extra credits, 200 monthly quotas in both channels, Edmonton rollover, no reset on brand/resave, free revisions and separate reporting\n"
+  },
+  {
+    "command": "python scripts/test_password_recovery.py",
+    "exit": 0,
+    "seconds": 0.9,
+    "output": "PASS: real login/website routes, owner/employee resets, no account disclosure, CSRF, expiration, single use, password validation, old-session rejection, disabled-account enforcement, request limits and unconfigured-mail response\n"
+  },
+  {
+    "command": "python scripts/test_security_lifecycle.py",
+    "exit": 0,
+    "seconds": 0.8,
+    "output": "PASS reset/new-password/single-use checks owner\nPASS reset/new-password/single-use checks employee\nPASS explicit employee actions, login-email validation, disable/reactivation, employee permissions and owner/employee concurrent reset/login revocation; SQLite\n"
+  },
+  {
+    "command": "python scripts/test_login_identity_race.py",
+    "exit": 0,
+    "seconds": 2.5,
+    "output": "PASS concurrent case-insensitive signup/employee email collision has one identity, clear duplicate response and no foreign session; SQLite\n"
+  },
+  {
+    "command": "python scripts/test_public_routes.py",
+    "exit": 0,
+    "seconds": 3.92,
+    "output": "PASS: all clean public pages, legacy/query redirects, public homepage/favicon/assets, protected workspace/API, login/recovery markup and every static inline script\n"
+  },
+  {
+    "command": "python scripts/test_support_storage.py",
+    "exit": 0,
+    "seconds": 0.44,
+    "output": "[2026-10-31 03:46:39,047] ERROR in support_center: Support notification failed; the request remains saved in Head Office.\nPASS support validation, CSRF, idempotency, saved email failures, URL redaction, escaped admin inbox, protected checkpoint/restart/missing detection\nPASS mocked Resend recipient, Reply-To and idempotency header; no external email sent\n"
+  },
+  {
+    "command": "python scripts/test_support_workflow.py",
+    "exit": 0,
+    "seconds": 0.51,
+    "output": "PASS legacy migration, statuses, escaped private notes, archive/restore, admin/CSRF validation and confirmed deletion with notes; no customer emails\n"
+  },
+  {
+    "command": "python scripts/test_support_replies.py",
+    "exit": 0,
+    "seconds": 0.47,
+    "output": "[2026-10-31 03:46:40,033] ERROR in support_center: Support reply could not be confirmed; its text remains saved for retry.\nPASS collapsed private notes, customer reply recipient, CSRF/access, saved failures/retry, duplicate suppression, escaped history, mocked email isolation and deletion cleanup; no live email sent\n"
+  },
+  {
+    "command": "python scripts/test_support_inbound.py",
+    "exit": 0,
+    "seconds": 0.48,
+    "output": "[2026-10-31 03:46:40,508] ERROR in support_inbound: Incoming support email retrieval failed; webhook delivery should retry.\nPASS official signature vector, raw/timestamp verification, public fail-closed webhook, stable reply routes, matching/reopening, duplicates, HTML-to-text, attachments notice, sender/auth quarantine, autoreply handling, retrieval retry and outbound Reply-To; no live mail\n"
+  },
+  {
+    "command": "python scripts/test_support_quote_display.py",
+    "exit": 0,
+    "seconds": 0.39,
+    "output": "PASS familiar email quote headers, flat replies, Outlook, quoted tails, conservative fallback, escaped collapsed history and unchanged stored content\n"
+  },
+  {
+    "command": "node scripts/test_activation_controls.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS: only successful saved/manual/automatic measurements activate, repeat suppression, retry and historical-report exclusion\n"
+  },
+  {
+    "command": "python scripts/check_landscaping_multi_area.py",
+    "exit": 0,
+    "seconds": 0.04,
+    "output": "PASS: saved independent service area collection\nPASS: total across all saved areas\nPASS: create another service area\nPASS: edit existing service area\nPASS: remove existing service area\nPASS: persist areas in estimate snapshot\nPASS: priceCalc includes all saved service areas\n\n0 outstanding multi-area recovery checks\n"
+  },
+  {
+    "command": "node scripts/test_landscaping_engine.cjs",
+    "exit": 0,
+    "seconds": 0.12,
+    "output": "PASS landscaping: independent areas, draft preservation, per-area rates, mixed units, tax, snapshots, editing, removal, append after removal\nPASS landscaping: actual recurring-period helper is included, validates labels, and preserves totals\n"
+  },
+  {
+    "command": "python scripts/test_landscaping_rendering.py",
+    "exit": 0,
+    "seconds": 0.64,
+    "output": "PASS: all shipped inline JavaScript parses\nPASS: saved aerial includes both areas and open linear trace; large-property framing\nPASS: manual Roofing labels use exact static-image map view and retain baked outline\n"
+  },
+  {
+    "command": "node scripts/test_landscaping_controls.cjs",
+    "exit": 0,
+    "seconds": 20.01,
+    "output": " Leaflet layers; latest saved/draft roof trace wins; one review overlay; cancel restoration; explicit duplicate replacement; other roofs preserved; saved-boundary re-review; Roofing-specific footprint/linear wording\nPASS: repeated same-roof Remeasure restarts empty, removes every prior draft/review layer, resets pitch, preserves both saved roofs, blocks estimate during editing and restores readiness on Cancel\nPASS: default 5/12 saves without touching pitch; explicit pitch selection unlocks Save with no pitch checkbox; inline feedback; structured controls; custom pitch validation; actual button save preserves main roof\nPASS: simple Roofing default, collapsed secondary/advanced tools, one action per roof, targeted clean Fix -> pitch -> actual Save, saved state and named estimate blocker, no duplicate controls and reversible six-industry tool placement with unchanged measurements\nPASS: main AutoMeasure retains measured area; Snow placeholders, hover help, statuses and reversible Roofing terms\nPASS: real saved-area rate entry preserves blank and blocks quote; explicit zero allowed; excessive discount blocked and corrected discount recovers\nPASS snow: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset\nPASS landscaping: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset\nPASS commercial: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset\nScript errors: []\n"
+  },
+  {
+    "command": "node scripts/test_warranty_shields.cjs",
+    "exit": 0,
+    "seconds": 1.27,
+    "output": "PASS: both brands, default visibility, owner hide preference, ordinary-account absence, Roofing-only display, frozen historical choice, and expanded PDF header inclusion/exclusion\n"
+  },
+  {
+    "command": "node scripts/test_surface_workspace.cjs",
+    "exit": 0,
+    "seconds": 13.06,
+    "output": "PASS landscaping: one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals\nPASS snow: one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals\nPASS pressure: one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals\nPASS paving: one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals\nPASS commercial: one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals\nPASS: reversible Roofing controls; zero script errors\n"
+  },
+  {
+    "command": "node scripts/test_industry_wording.cjs",
+    "exit": 0,
+    "seconds": 12.46,
+    "output": "PASS roofing: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS snow: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS pressure: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS paving: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS landscaping: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS commercial: area + linear controls, instructions, estimates, switching and custom marketing preservation\nPASS: all six industry wording and estimate flows\n"
+  },
+  {
+    "command": "node scripts/test_unit_address_ui.cjs",
+    "exit": 0,
+    "seconds": 0.08,
+    "output": "PASS: ambiguous Canadian unit suggestion is explicit, numbered streets and already formatted units unchanged; US civic numbers never reinterpreted\n"
+  },
+  {
+    "command": "node scripts/test_phone_pdf.cjs",
+    "exit": 0,
+    "seconds": 0.8,
+    "output": "PASS: phone PDF uses full paper width, frozen map canvas, clean clone, cleanup on failure; proportional Street View and desktop layout preserved\n"
+  },
+  {
+    "command": "node scripts/test_expanded_pdf.cjs",
+    "exit": 0,
+    "seconds": 0.64,
+    "output": "PASS: Expanded PDF keeps photo and date together, fits small overflows, preserves readable continuation and unrelated blocks\n"
+  },
+  {
+    "command": "node scripts/test_saved_editing.cjs",
+    "exit": 0,
+    "seconds": 2.02,
+    "output": "PASS landscaping: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS snow: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS pressure: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS paving: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS commercial: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS roofing: owned saved workspace, geometry, rates, customer, aerial and Cancel restored\nPASS: six-industry saved edit restoration; new property clears frozen images\n"
+  },
+  {
+    "command": "node scripts/test_estimate_save_integrity.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS: unchanged-total edits persist, duplicate skips, job metadata preserved, failed save visible and retryable\n"
+  },
+  {
+    "command": "node scripts/test_profile_save.cjs",
+    "exit": 0,
+    "seconds": 0.08,
+    "output": "PASS: profile HTTP/network/unconfirmed failures preserve entries/cache/job price; retry and server-confirmed success; duplicate-click guard; shield/logo payload; browser-storage failure\n"
+  },
+  {
+    "command": "node scripts/test_profile_restore.cjs",
+    "exit": 0,
+    "seconds": 0.08,
+    "output": "PASS: server company/rate/taxes hydrate with blocked browser storage; active job settings/rate remain unchanged\n"
+  },
+  {
+    "command": "node scripts/test_country_regions.cjs",
+    "exit": 0,
+    "seconds": 2.45,
+    "output": "PASS property country filtering, address-part restoration and unchanged saved job/taxes\nPASS country-first profile, 13 Canadian/51 US regions, reversible selection, legacy country/profile restoration, unchanged taxes/frozen estimate, signup/onboarding compatibility\n"
+  },
+  {
+    "command": "node scripts/test_report_measurement_correction.cjs",
+    "exit": 0,
+    "seconds": 4.69,
+    "output": "PASS report targets, protected original, Cancel, line isolation, history guard, legacy dispatch: snow\nPASS report targets, protected original, Cancel, line isolation, history guard, legacy dispatch: pressure\nPASS report targets, protected original, Cancel, line isolation, history guard, legacy dispatch: paving\nPASS report targets, protected original, Cancel, line isolation, history guard, legacy dispatch: landscaping\nPASS report targets, protected original, Cancel, line isolation, history guard, legacy dispatch: commercial\nPASS no idle wording mutation loop\nPASS Roofing report correction remains separate\n"
+  },
+  {
+    "command": "node scripts/test_quote_pricing_validation.cjs",
+    "exit": 0,
+    "seconds": 0.08,
+    "output": "PASS roofing: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS snow: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS pressure: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS paving: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS landscaping: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS commercial: blank/negative/non-finite rates, taxes, discount limits, extras and intentional zero\nPASS: invalid prices blocked at actual save/report entry points before writes\n"
+  },
+  {
+    "command": "python scripts/test_estimate_pricing_api.py",
+    "exit": 0,
+    "seconds": 0.44,
+    "output": "PASS: invalid amounts/taxes/discounts rejected without changing saved estimate/history; explicit free quote allowed\n"
+  },
+  {
+    "command": "python scripts/test_saved_editing_session.py",
+    "exit": 0,
+    "seconds": 0.43,
+    "output": "PASS: saved editing preserves payload/revisions, recovers owned imagery token, rejects other owners/versions, and consumes no property lookup\n"
+  },
+  {
+    "command": "node scripts/test_price_rounding.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS: fractional roof area, half-cent tax, included taxes, discount and zero-tax totals equal displayed money lines\n"
+  },
+  {
+    "command": "node scripts/test_saved_money_guard.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS legacy one-cent mismatch blocks PDF before imagery/capture; clear report warning, no stored-data mutation; valid regular/discount/included amounts preserved\n"
+  },
+  {
+    "command": "node scripts/test_measurement_edges.cjs",
+    "exit": 0,
+    "seconds": 12.18,
+    "output": "PASS roofing: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, manual roof guard\nPASS snow: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, remove/clear last area retains priced saved line\nPASS pressure: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, remove/clear last area retains priced saved line\nPASS paving: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, remove/clear last area retains priced saved line\nPASS landscaping: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, remove/clear last area retains priced saved line\nPASS commercial: analytical area, concave/closed boundaries, crossed/zero-area rejection, unfinished-draft guards, zero-length line/correction protection, remove/clear last area retains priced saved line\nPASS: six-industry measurement edge cases\n"
+  },
+  {
+    "command": "node scripts/test_public_ui.cjs",
+    "exit": 0,
+    "seconds": 1.76,
+    "output": "PASS: 29 pages, accessible menu keyboard/link/outside handling, all form labels, anchor targets, legal contents, approved aerial thumbnails, readable estimate sample and WCAG AA text color pairs\n"
+  },
+  {
+    "command": "node scripts/test_help_center.cjs",
+    "exit": 0,
+    "seconds": 1.43,
+    "output": "PASS six searchable guides, deep links, all industry variants, optional five-step guide, keyboard focus/close and no job mutation or API calls\n"
+  },
+  {
+    "command": "node scripts/test_support_form.cjs",
+    "exit": 0,
+    "seconds": 0.73,
+    "output": "PASS six accessible icon topics, form submission, error recovery, duplicate-safe retry and saved reference\n"
+  },
+  {
+    "command": "node scripts/test_onboarding_finish.cjs",
+    "exit": 0,
+    "seconds": 2.43,
+    "output": "PASS: 12 four-step setup flows, signup prefill, CA/US region codes, explicit taxes and pricing, saved services/messages, validation, failed-save retry and duplicate-click prevention; late account response preserves edits\n"
+  },
+  {
+    "command": "node scripts/test_signup_flow.cjs",
+    "exit": 0,
+    "seconds": 0.86,
+    "output": "PASS: six signup industry confirmations, duplicate-submit prevention, inline account/network errors, retry and preserved inputs\n"
+  },
+  {
+    "command": "python scripts/test_new_user_flow.py",
+    "exit": 0,
+    "seconds": 3.3,
+    "output": "PASS: 12 four-step setup flows, signup prefill, CA/US region codes, explicit taxes and pricing, saved services/messages, validation, failed-save retry and duplicate-click prevention; late account response preserves edits\nPASS: all six new trial accounts, clean setup routes, actual shared-JS profile payloads persisted and reloaded, protected measurement workspace and saved-estimate API access\n"
+  },
+  {
+    "command": "python scripts/test_recovery_allowance.py",
+    "exit": 0,
+    "seconds": 0.42,
+    "output": "PASS: real quota logic keeps named recovery bypass, production exhausted trial rejection, unchanged usage and complimentary cap\n"
+  },
+  {
+    "command": "node scripts/test_landscaping_engine.cjs paving",
+    "exit": 0,
+    "seconds": 0.1,
+    "output": "PASS paving: independent areas, draft preservation, per-area rates, mixed units, tax, snapshots, editing, removal, append after removal\nPASS paving: actual recurring-period helper is included, validates labels, and preserves totals\n"
+  },
+  {
+    "command": "node scripts/test_landscaping_engine.cjs pressure",
+    "exit": 0,
+    "seconds": 0.1,
+    "output": "PASS pressure: independent areas, draft preservation, per-area rates, mixed units, tax, snapshots, editing, removal, append after removal\nPASS pressure: actual recurring-period helper is included, validates labels, and preserves totals\n"
+  },
+  {
+    "command": "node scripts/test_landscaping_engine.cjs snow",
+    "exit": 0,
+    "seconds": 0.11,
+    "output": "PASS snow: independent areas, draft preservation, per-area rates, mixed units, tax, snapshots, editing, removal, append after removal\nPASS snow: actual recurring-period helper is included, validates labels, and preserves totals\n"
+  },
+  {
+    "command": "python scripts/test_geometry_integrity.py",
+    "exit": 0,
+    "seconds": 0.51,
+    "output": "PASS: independent WGS84 area references, tiny/dateline outlines, spherical length, duplicate/partial overlaps, shared boundaries, real Flask mismatches preserve saved records/revisions, five industry combined snapshots\n"
+  },
+  {
+    "command": "python scripts/test_final_reliability.py",
+    "exit": 0,
+    "seconds": 1.08,
+    "output": "imal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS paving-included independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS landscaping-regular independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS landscaping-discount independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS landscaping-included independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS commercial-regular independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS commercial-discount independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS commercial-included independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS roofing-regular independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS roofing-discount independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS roofing-included independent quantity/Decimal pricing, save/reopen/edit, attacks, retry/expiry/account isolation\nPASS duplicate/resampled/partially overlapping automatic footprints rejected; shared boundaries and detached garages retained\nPASS 18 six-industry pricing/scope cases; zero foreign records; no provider calls or production database\n"
+  },
+  {
+    "command": "node scripts/test_geometry_client.cjs",
+    "exit": 0,
+    "seconds": 0.09,
+    "output": "PASS: actual client blocks missing/mismatched saved outlines and duplicate/partial overlap before report/save; adjacent and separated areas allowed\n"
+  },
+  {
+    "command": "python scripts/test_server_pricing.py",
+    "exit": 0,
+    "seconds": 1.05,
+    "output": "PASS: 70 actual-client fixtures across six industries/tax modes/periods, rounded lines, decimals, manual pitch, zero price; independent real API rejects forged consistent totals and preserves history\n"
+  },
+  {
+    "command": "python scripts/test_automatic_roof_api.py",
+    "exit": 0,
+    "seconds": 0.55,
+    "output": "PASS: multiple buildings/main+garage, missing outlines/sections, partial coverage, manipulated pitch, duplicate building and underreported area; flags cleared cannot bypass server; manual replacement retained\n"
+  },
+  {
+    "command": "node scripts/test_roof_integrity.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS: missing automatic outline cannot remain silently quotable\nPASS: complete roof accepted; missing coverage/sections/pitches and implausible areas blocked; repeated review preserves original automatic area\n"
+  },
+  {
+    "command": "python scripts/test_qa_auth_flow.py",
+    "exit": 0,
+    "seconds": 0.8,
+    "output": "PASS: real isolated signup, owner employee creation, case-insensitive login, permissions, recovery email targeting, old credential/session rejection, owner access preserved, immediate disable/reactivate and distinct business identities\n"
+  },
+  {
+    "command": "python scripts/test_failure_recovery.py",
+    "exit": 0,
+    "seconds": 0.97,
+    "output": "PASS SQLite: retries, lost responses, stale editors, rollback/credits, 12 concurrent metadata edits, 8 concurrent estimates/lookups/employees, expired access and business isolation\n"
+  },
+  {
+    "command": "node scripts/test_failure_recovery.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS: single-flight create/lookup, stable retry identity, lost response, timeout, expired login, conflict message and existing workspace preservation\n"
+  },
+  {
+    "command": "node scripts/test_property_loading.cjs",
+    "exit": 0,
+    "seconds": 0.09,
+    "output": "PASS strict coordinate grammar; old geometry/customer retained through image/accept failures; stable retry; swap only after readiness and acceptance\n"
+  },
+  {
+    "command": "python scripts/test_property_acceptance.py",
+    "exit": 0,
+    "seconds": 0.44,
+    "output": "PASS prepared lookup/no debit, reload replay, mismatch/isolation, eight simultaneous accepts one debit, lost-response retry, expired login, polar coordinate rejection\n"
+  },
+  {
+    "command": "python scripts/test_subscription_periods.py",
+    "exit": 0,
+    "seconds": 1.05,
+    "output": "PASS 25/75/200 exact anniversary rollover, leap/short month boundaries, preserved lifetime counters, denied-first-use rollback, separate estimates, zero-limit bypass blocked, eight concurrent final-credit requests, profile tampering and isolation\n"
+  },
+  {
+    "command": "python scripts/test_profile_integrity.py",
+    "exit": 0,
+    "seconds": 0.39,
+    "output": "PASS invalid/blank/header-injected dealer emails rejected before all writes, valid plus address trimmed, profile/logo/taxes/marketing survive independent sessions and employees, employee write denied, business isolation, explicit logo removal\n"
+  },
+  {
+    "command": "python scripts/test_manual_roofing.py",
+    "exit": 0,
+    "seconds": 0.68,
+    "output": "PASS QA double opt-in; default off/account isolation; manual property/pin and all automatic escape routes; imagery failures/retries/recovery zero Solar; five industries unchanged; independent multi-pitch/shared-edge/garage geometry; invalid/overlap/unconfirmed rejection; actual save/reopen\n"
+  },
+  {
+    "command": "node scripts/test_manual_roofing.cjs",
+    "exit": 0,
+    "seconds": 1.68,
+    "output": "PASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only\n"
+  },
+  {
+    "command": "python scripts/test_vector_pdf.py",
+    "exit": 0,
+    "seconds": 1.41,
+    "output": "PASS vector default off/double opt-in/account isolation; actual six-industry save/reopen, independent server geometry validation, mismatch rejection, immutable saved estimates and zero provider calls\n"
+  },
+  {
+    "command": "node scripts/test_vector_pdf.cjs",
+    "exit": 0,
+    "seconds": 0.88,
+    "output": "PASS vector six industries; saved/reopen invariance; independent spherical geometry, aspect and pitch checks; prices/customer branding text unchanged; missing/mismatched geometry rejection; SVG escaping; no inferred roof facets; no property imagery\n"
+  },
+  {
+    "command": "node scripts/test_vector_download.cjs",
+    "exit": 0,
+    "seconds": 0.6,
+    "output": "PASS actual vector download entry point in emulated DOM; rapid clicks, frozen customer/pricing/geometry, no aerial dependency, expired-session and unsaved-outline blocking\n"
+  },
+  {
+    "command": "node scripts/test_vector_full_report.cjs",
+    "exit": 0,
+    "seconds": 1.88,
+    "output": "PASS real customer report from DOM/Leaflet manual sections reaches QA vector download with matching price, unchanged snapshot, and no provider paths\nPASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only\n"
+  },
+  {
+    "command": "python scripts/test_api_cost_routing.py",
+    "exit": 0,
+    "seconds": 0.61,
+    "output": "snow area address Solar: 0 0\nsnow area pin Solar: 0 0\nsnow linear address Solar: 0 0\nsnow linear pin Solar: 0 0\npressure area address Solar: 0 0\npressure area pin Solar: 0 0\npressure linear address Solar: 0 0\npressure linear pin Solar: 0 0\npaving area address Solar: 0 0\npaving area pin Solar: 0 0\npaving linear address Solar: 0 0\npaving linear pin Solar: 0 0\nlandscaping area address Solar: 0 0\nlandscaping area pin Solar: 0 0\nlandscaping linear address Solar: 0 0\nlandscaping linear pin Solar: 0 0\ncommercial area address Solar: 0 0\ncommercial area pin Solar: 0 0\ncommercial linear address Solar: 0 0\ncommercial linear pin Solar: 0 0\nroofing area address Solar: 1 1\nroofing area pin Solar: 1 1\nroofing linear address Solar: 1 1\nroofing linear pin Solar: 1 1\nroofing auto address Solar: 1 1\nroofing auto pin Solar: 1 1\nPASS actual URL-level Solar call inventory, all six industries, Area/Linear, rural coordinates and validated addresses, malformed industry and address mismatch rejection\n"
+  },
+  {
+    "command": "node scripts/test_logo_cache.cjs",
+    "exit": 0,
+    "seconds": 0.07,
+    "output": "PASS actual logo helpers: blocked storage, server restoration/removal, visible preview, pending upload and account-isolated memory cache\n"
+  }
+]

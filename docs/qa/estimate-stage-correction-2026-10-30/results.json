@@ -1,0 +1,227 @@
+[
+  {
+    "industry": "snow",
+    "width": 320,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "pressure",
+    "width": 320,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "paving",
+    "width": 320,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 320,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "commercial",
+    "width": 320,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "snow",
+    "width": 390,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "pressure",
+    "width": 390,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "paving",
+    "width": 390,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 390,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "commercial",
+    "width": 390,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "snow",
+    "width": 768,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "pressure",
+    "width": 768,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "paving",
+    "width": 768,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 768,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  },
+  {
+    "industry": "commercial",
+    "width": 768,
+    "repeatedAreaSave": true,
+    "areaCancel": true,
+    "lineSaveCancel": true,
+    "exactSavedOverlays": true,
+    "independentLengthPricing": true,
+    "reopened": true,
+    "pdfs": [
+      "single",
+      "expanded"
+    ],
+    "trustedTouch": true
+  }
+]

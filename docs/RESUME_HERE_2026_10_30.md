@@ -1,3 +1,27 @@
+# Latest: Estimate-stage correction restored — October 30, 2026
+
+## Read first and checkpoint
+Application `4065c68bc9508c023d9e71e67956eaa2df8b8798` on `landscaping-multi-area-recovery-oct11`; application tree `ad360d50f7962dc6fc195f653ae25d73e1a54d1d`, app blob `ad450836646c14001eeadc4096d1018ebde46224`. Started at verified `ce27179`; no newer work overwritten. Read `docs/QA_ESTIMATE_STAGE_CORRECTION_2026_10_30.md` and committed evidence under `docs/qa/estimate-stage-correction-2026-10-30/`. This section supersedes the older instruction to return surface correction to Step2. Earlier evidence/history below is retained.
+
+## What changed
+Restored the existing Estimate-stage experience for five surface industries using the report map and controls, not an independent picture surrogate. CORRECT AREA1/2/etc or CORRECT LINEAR MEASUREMENT → adjust points or REDRAW → review proposed quantity/total → SAVE MEASUREMENT & UPDATE ESTIMATE. Remains on Estimate; no second Create step. Draft separate from original; explicit type/index; existing geometry/overlap/pricing validators and server ownership/version/idempotency save. Cancel exact original, selected-only replacement, other measurements/rates/taxes/customer retained. Original/other full-label overlays hidden during edit and restored on Cancel; only confirmed geometry after Save. Sticky adjacent Save/Cancel/Undo/Redraw, pan/double-tap lock and native single-touch restriction only while editing; pinch handler retained. Pointer adjustment cannot insert vertices unless Redraw was explicitly selected. No measurement-engine rewrite or image-only mode.
+
+Failed definitive saves roll back local candidate and keep draft. Uncertain/lost response locks Cancel and further changes until same-operation retry resolves whether the server committed; draft/original retained. No duplicate revisions from lost-response retry. PDF/Print/Back/New Property blocked while correction unfinished; close warning. Historical reports retain read-only/Edit Measurements restoration safeguard; no historical migration.
+
+## Verification
+Full local74/74 commands PASS, targeted rendered-DOM tests five industries;15/15 actual loopback Flask/temporary-account Chromium trusted-touch cases across320/390/768. Repeated Area1/Area2 and Linear, tap redraw/Undo, Save/Cancel,503failure and real committed-but-response-lost retry, exact report/saved/reopened geometry and independent haversine/integer-cent pricing.30 actual PDFs/45 rendered pages visually reviewed; existing designs preserved. Independent WGS8430polygons max0.168589% unchanged-projection/rounding difference, not surveying accuracy. Additional15/15 Messenger-UA/viewport Chromium first-tap cases pass; existing Linear/Area/reviewed Roofing/QA manual Roofing trusted-touch suite passes all3widths, including repeated edits, save/cancel, pan/pinch/reopen. Full security/isolation/allowance controlled regressions passed. No customer/deployed DB used for destructive tests.
+
+GitHub initial validation41110561979 SUCCESS; full recovery run41110561938 SUCCESS, including PostgreSQL job124251570524 SUCCESS. Application Render test deploy`dep-dbieeofb9u1s73fc02f0` LIVE exact4065c68. Check terminal recovery/docs checks and latest docs deployment on next resume; do not infer a pending run passed. Documentation commit changes no application code.
+
+## Next action: stop for Sean's physical iPhone review
+No actual physical iPhone, Safari/WebKit or Messenger engine test was performed. Sean reload Safari, Messenger separately: two Areas+Line → Estimate → Correct Area1 → adjust/Redraw → proposed old/new quantity/price → Save → updated Estimate without leaving it. Repeat Area2/Line, Cancel/Undo, invalid drafts, reopen and Single/Expanded PDFs. Verify first tap, stationary aerial, reachable controls and no duplicated outlines. Physical reliability remains OPEN until Sean confirms. Do not start another batch without approval.
+
+Fictional grid imagery in QA, Street View intentionally unavailable. Actual provider photographs and live authenticated QA workflow not reverified in this batch. Existing imagery licensing unresolved; no provider changes. Reused fixture marketing fields while switching industry are not an onboarding/branding test. Existing saved-history correction still uses explicit Edit Measurements restoration rather than silently changing a historical report.
+
+Main baseline`c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a` confirmed unchanged. No production/real customer accounts, imagery/API/Solar/Street View integration, pricing formula, subscriptions/allowances, PDF designs, AutoMeasure or QA gates changed. Python/server AST unchanged outside HTML. AI Trace remains removed. No Stripe/CRM/autosave. Recovery branch remains unprotected, unchanged administratively.
+
+---
+
 # Latest: property-country and correction follow-up — October 30, 2026
 
 ## Checkpoint and safety
