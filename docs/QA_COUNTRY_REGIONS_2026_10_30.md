@@ -1,0 +1,16 @@
+# Country-first profile and region compatibility — October 30, 2026
+
+This batch follows verified Area replacement checkpoint434c161661db1378c349dc1e1261547ce0c12333. Its GitHub checks and disposable PostgreSQL succeeded; Render exact commit LIVE. Work only on recovery; no main, production or real accounts.
+
+Existing trial signup already asks Country, and all six onboarding forms already filter region options. Preserve this simple flow; no duplicate signup-region field was added. Business profile now places Country and Province / territory or State together before contact fields. Canada offers13 provinces/territories, United States50states plusDC, each with a blank chooser. An incompatible country change no longer silently selects the first state/province. Switching back restores that country's previous in-page selection. The same reversible selection behavior is retained in onboarding. Existing persisted CA/US and legacy Canada/United States country formats load correctly. No profile database schema or historical record migration.
+
+Confirmed behavior corrected: the old business-profile country handler forcibly reset PST to0 when selecting US. Merely filtering region options must not silently alter current job taxes. Now preserves entered rates; a retained nonzero additional tax stays visible. Changing region does not calculate taxes. Historical frozen estimates and pricing are not rewritten. Signup/onboarding retains its existing explicit setup tax-entry validation and Alberta/US rules; no tax calculation, plan or allowance changes. Property-address selector, lookup, imagery integrations and all provider requests remain unchanged; these controls target signup/onboarding and dealer profile.
+
+Verification:
+- 73/73 full recovery commands passed, including new country-region regression. Existing server pricing, geometry, multi-area/linear, auth/business isolation, account allowances and Single/Expanded/QA Vector guards passed.
+- New DOM regression executes actual application and onboarding scripts:13/51 lists, all territories/DC, incompatible blank choice, country round-trip, legacy profile aliases, unchanged numeric tax/total and frozen snapshot, signup compatibility.
+- Actual loopback Chromium141 at320/390/768 mobile-emulated widths: profile controls, all country/region options, round-trip and unchanged tax/total; actual saved estimate payload read before/after remained byte-identical. Onboarding country/region round-trip and trial signup country choices verified. Seeded fictional geometry/QA customer; real Flask persistence and disposable SQLite. No live customers or imagery providers.
+- Actual profile screenshot at390px visually inspected, committed as docs/qa/country-profile-390-2026-10-30.jpg. Country/Region are stacked/readable without horizontal overflow. Browser selectOption drives native controls but does not verify physical iOS native picker behavior.
+- Machine results:docs/qa/country-regions-2026-10-30.json. Reproduce isolated browser via scripts/run_linear_touch_qa.py scripts/test_country_regions_browser.cjs with existing dependencies. Target only loopback.
+
+No imagery, manual Roofing, pricing formula, allowances, customer records or PDF design changes. AI Trace remains removed and AutoMeasure code preserved. Physical iPhone retest remains necessary.

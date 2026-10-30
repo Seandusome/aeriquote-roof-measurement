@@ -1,0 +1,35 @@
+[
+  {
+    "width": 320,
+    "profileCountryFirst": true,
+    "canada13": true,
+    "us51": true,
+    "regionRoundTrip": true,
+    "taxValuesUnchanged": true,
+    "savedHistoryUnchanged": true,
+    "onboarding": true,
+    "signup": true
+  },
+  {
+    "width": 390,
+    "profileCountryFirst": true,
+    "canada13": true,
+    "us51": true,
+    "regionRoundTrip": true,
+    "taxValuesUnchanged": true,
+    "savedHistoryUnchanged": true,
+    "onboarding": true,
+    "signup": true
+  },
+  {
+    "width": 768,
+    "profileCountryFirst": true,
+    "canada13": true,
+    "us51": true,
+    "regionRoundTrip": true,
+    "taxValuesUnchanged": true,
+    "savedHistoryUnchanged": true,
+    "onboarding": true,
+    "signup": true
+  }
+]

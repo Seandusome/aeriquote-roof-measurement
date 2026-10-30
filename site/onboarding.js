@@ -47,8 +47,10 @@ function syncSetupTaxes(){
  if(help){if(!help.dataset.taxHelp)help.dataset.taxHelp=help.textContent;help.textContent=alberta?'Alberta has no provincial sales tax. Provincial tax is set to 0%. Enter the GST percentage your business charges, or 0 if you do not charge GST.':help.dataset.taxHelp;help.textContent+=' Enter 5 for 5% (not 0.05). Decimal rates such as 7.25 are supported.'}
  setupAlbertaTax=alberta;
 }
-function updateSetupRegions(value=''){
+function updateSetupRegions(value){
  const r=document.getElementById('regionLabel'),field=document.getElementById('region');if(!country||!field)return;
+ const previous=field.dataset.country,memory=field._countryRegions||(field._countryRegions={});if(previous)memory[previous]=field.value;
+ if(value===undefined)value=memory[country.value]||'';field.dataset.country=country.value;
  const label=country.value==='Canada'?'Province / territory':'State';if(r?.childNodes[0])r.childNodes[0].nodeValue=label;
  field.replaceChildren(new Option('Choose your '+label.toLowerCase(),''));field.required=true;
  for(const pair of setupRegions[country.value].split('|')){const [code,name]=pair.split(':');field.add(new Option(name,code));if(value===code||value===name)field.value=code}
@@ -155,7 +157,7 @@ if(document.body.classList.contains('setup-page') && setupIndustry){
  fetch('/api/account/profile',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(account=>{
   if(!account)return;const p=account.profile||{};
   for(const [id,value] of [['companyName',p.company],['contactName',p.name],['companyPhone',p.phone],['companyEmail',p.email],['companyWebsite',p.website]]){const field=document.getElementById(id);if(field&&!edited.has(id)&&value)field.value=value}
-  if(!edited.has('country')&&!edited.has('region')){country.value=p.country==='US'?'United States':'Canada';updateSetupRegions(p.province||'')}
+  if(!edited.has('country')&&!edited.has('region')){country.value=['US','USA','UNITED STATES'].includes(String(p.country||'').toUpperCase())?'United States':'Canada';updateSetupRegions(p.province||'')}
   for(const [id,key] of [['tax1','gst'],['tax2','pst']]){if(!edited.has(id)&&p[key]!==undefined)document.getElementById(id).value=id==='tax2'&&country.value!=='Canada'?'0':p[key]}
   syncSetupTaxes();syncBusiness();
  }).catch(()=>{});
