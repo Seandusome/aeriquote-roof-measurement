@@ -1,0 +1,172 @@
+{
+  "currencyAssumption": "USD plan revenue and USD hypothetical commitment, quote currency unverified",
+  "commitment": 25000,
+  "period": "annual",
+  "rows": [
+    {
+      "subscribers": 100,
+      "usage": "expected",
+      "jobs": 3967.4999999999995,
+      "revenue": 4360,
+      "annualRevenue": 52320,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 0,
+      "conservativeTotal": 2083.3333333333335,
+      "share": 0.4778287461773701,
+      "remainingBeforeOtherCosts": 2276.6666666666665,
+      "licensePerJob": 0.5250997689561018,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 100,
+      "usage": "full",
+      "jobs": 5400,
+      "revenue": 4360,
+      "annualRevenue": 52320,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 0,
+      "conservativeTotal": 2083.3333333333335,
+      "share": 0.4778287461773701,
+      "remainingBeforeOtherCosts": 2276.6666666666665,
+      "licensePerJob": 0.3858024691358025,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 250,
+      "usage": "expected",
+      "jobs": 9918.75,
+      "revenue": 10900,
+      "annualRevenue": 130800,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 0,
+      "conservativeTotal": 2083.3333333333335,
+      "share": 0.191131498470948,
+      "remainingBeforeOtherCosts": 8816.666666666666,
+      "licensePerJob": 0.21003990758244068,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 250,
+      "usage": "full",
+      "jobs": 13500,
+      "revenue": 10900,
+      "annualRevenue": 130800,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 15,
+      "conservativeTotal": 2098.3333333333335,
+      "share": 0.19250764525993885,
+      "remainingBeforeOtherCosts": 8801.666666666666,
+      "licensePerJob": 0.154320987654321,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 500,
+      "usage": "expected",
+      "jobs": 19837.5,
+      "revenue": 21800,
+      "annualRevenue": 261600,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 110.0625,
+      "conservativeTotal": 2193.3958333333335,
+      "share": 0.10061448776758411,
+      "remainingBeforeOtherCosts": 19606.604166666668,
+      "licensePerJob": 0.10501995379122034,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 500,
+      "usage": "full",
+      "jobs": 27000,
+      "revenue": 21800,
+      "annualRevenue": 261600,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 217.5,
+      "conservativeTotal": 2300.8333333333335,
+      "share": 0.1055428134556575,
+      "remainingBeforeOtherCosts": 19499.166666666668,
+      "licensePerJob": 0.0771604938271605,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 1000,
+      "usage": "expected",
+      "jobs": 39675,
+      "revenue": 43600,
+      "annualRevenue": 523200,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 410.01500000000004,
+      "conservativeTotal": 2493.3483333333334,
+      "share": 0.057186888379204895,
+      "remainingBeforeOtherCosts": 41106.651666666665,
+      "licensePerJob": 0.05250997689561017,
+      "illustrative5000AnnualCreditsTotal": 2083.3333333333335
+    },
+    {
+      "subscribers": 1000,
+      "usage": "full",
+      "jobs": 54000,
+      "revenue": 43600,
+      "annualRevenue": 523200,
+      "monthlyLicense": 2083.3333333333335,
+      "monthlyAPI": 607.7,
+      "conservativeTotal": 2691.0333333333338,
+      "share": 0.06172094801223243,
+      "remainingBeforeOtherCosts": 40908.96666666667,
+      "licensePerJob": 0.03858024691358025,
+      "illustrative5000AnnualCreditsTotal": 2274.366666666667
+    }
+  ],
+  "usageAssumptions": {
+    "expectedJobsPerSubscriber": 39.675,
+    "fullJobsPerSubscriber": 54,
+    "weightedRevenue": 43.6,
+    "rasterPerJob": 60,
+    "staticPerJob": 1.8
+  },
+  "ratesSourceDate": "2026-10-29",
+  "ratesReverification": "October30 web retrieval returned tool errors; prior official snapshot used, not claimed freshly verified",
+  "rt": [
+    [
+      750000,
+      0
+    ],
+    [
+      2000000,
+      0.25
+    ],
+    [
+      4000000,
+      0.2
+    ],
+    [
+      20000000,
+      0.15
+    ]
+  ],
+  "st": [
+    [
+      50000,
+      0
+    ],
+    [
+      500000,
+      1
+    ],
+    [
+      1000000,
+      0.8
+    ],
+    [
+      5000000,
+      0.6
+    ]
+  ],
+  "feeOnlySubscribers": 48,
+  "budgetSubscribers": {
+    "expected20percent": 239,
+    "full20percent": 240,
+    "expected10percent": 504,
+    "full10percent": 535
+  },
+  "verification": "Independent Python Decimal calculations agree, round final totals HALF_UP"
+}
