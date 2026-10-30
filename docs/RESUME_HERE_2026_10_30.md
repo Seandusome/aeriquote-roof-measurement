@@ -1,3 +1,37 @@
+# October 30 usability improvements — COMPLETE; STOP FOR REVIEW
+
+## Verified application checkpoints
+- Area replacement:434c161661db1378c349dc1e1261547ce0c12333. GitHub41095133092/41095132978 SUCCESS including PostgreSQL; Renderdep-dbicqpvb9u1s73e1qkfg LIVE exact commit.
+- Country/profile:6cae01baaaf2c9083ebc7e2984f5e3cd55cf77cb. GitHub41096284856/41096285420 SUCCESS including recovery and disposable PostgreSQL integrity jobs. Renderdep-dbicud142hec73fjjksg LIVE exact commit.
+- The final documentation commit becomes the recovery checkpoint. Resolve current HEAD and exact CI/Render status on resume; do not assume a queued documentation deployment is live.
+
+## Completed requested work
+REMEASURE AREA is primary for Snow Removal, Pressure Washing, Paving & Sealcoating, Landscaping and Commercial Properties. Original saved area remains in the job and visible until SAVE REPLACEMENT AREA validates and commits a replacement. Crossing/duplicate-overlap drafts stay blocked; Start Over clears only the draft; Cancel restores the original. Other areas, Linear geometry/rate, customer details and existing prices remain until valid Save. EDIT OUTLINE remains secondary. No server persistence or allowance behavior changed. Refresh/crash recovery was not added.
+
+Business profile Country and Region are adjacent at the top. Canada offers13 provinces/territories; US50states+DC. An incompatible country has a blank chooser rather than silently selecting the first region; switching back restores the prior in-page region. Legacy country-name and code formats restore. Filtering no longer zeroes PST; retained additional tax remains visible. Historical saved payloads are unchanged. Signup already asks Country and onboarding already filters; these flows were preserved, with reversible region selection and legacy-country compatibility improved. The PROPERTY locator's combined region list was outside this requested signup/business-profile batch and is unchanged; no address/imagery request logic modified.
+
+## Test evidence
+Read docs/QA_AREA_REMEASURE_2026_10_30.md and docs/QA_COUNTRY_REGIONS_2026_10_30.md.
+- Phase1 full72/72 recovery commands passed; final Phase2 full73/73 passed (new country regression added to CI).
+- Independent geometry and server pricing, overlap/duplicate guards, failure recovery, account/business/employee isolation, monthly allowances, Single/Expanded and QA Vector exporters passed in that suite. PostgreSQL16 concurrency passed through GitHub disposable service, not customer databases.
+- Actual local Chromium141, fictional imagery and temporary SQLite QA accounts:15 surface industry/width combinations at320/390/768px. Trusted touch/pointer events, repeated Area1/Area2 replacement/Cancel, invalid drafts, explicit Save, saved other area/line/customer/price preservation, real Flask save and historical reopen all passed.
+- Three mobile country/profile/signup/onboarding browser combinations passed. Server-saved estimate payload read before and after country switching remained identical. Tax numbers and totals unchanged. Native selectOption automation is not physical OS-picker evidence.
+- Existing trusted touch regression passed at320/390/768 for repeated Linear Save/Cancel/reopen, second Area correction, reviewed Roofing and QA manual Roofing corrections; map stationary while editing, pan restored afterwards, pinch handler retained.
+- Visual screenshots inspected: profile390px has readable stacked Country/Province fields; remeasurement draft map inspected. Synthetic provider imagery only, not live-provider accuracy proof.
+- Single/Expanded PDF export block and provider route blocks compared byte-for-byte with baseline and remain unchanged. No new actual PDF visual comparison was performed in this batch; existing exporter regressions passed.
+- Machine summaries:docs/qa/area-remeasure-2026-10-30.json, country-regions-2026-10-30.json, preserved-touch-2026-10-30.json, usability-regressions-2026-10-30.json.
+
+## Exact resume and limitations
+1. Sean should retest the two-area+Linear workflow on physical iPhone: Remeasure each area, Cancel, valid replacement Save, repeat; verify the other area/line and prices. Agent testing was emulated Chromium, not physical iOS/WebKit.
+2. No autosave; cancel unfinished edits and create the completed estimate before refreshing. Do not imply saved-in-job equals persisted server estimate.
+3. Property locator region filtering remains a separate possible usability scope, not implemented here. No new feature without approval.
+4. Mapbox written licensing/coverage evidence, billing integration, actual QA reset-email and isolated deployed lifecycle verification remain the prior launch gates. No changes to imagery, Solar, Street View, Stripe, pricing plans or monthly allowances.
+5. Manual Roofing/Vector remain QA-only; AutoMeasure code preserved; AI Trace removed. Preserve all prior geometry, pricing, PDF, account and concurrency safeguards.
+
+All verified application changes are committed to recovery only. Fresh local checkout aeriquote-oct30 was created because old aeriquote checkout diverged; old work was not overwritten. Remote trees and local source hashes verified before publishing. Main c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a untouched; no production or real customer accounts accessed. Only disposable loopback fixtures used. Recovery branch protection remains absent; no administrative change. Stop after final checkpoint/status report.
+
+---
+
 # AeriQuote — resume here, October 30, 2026
 
 ## Latest task: Mapbox migration readiness — COMPLETE, STOP FOR REVIEW
