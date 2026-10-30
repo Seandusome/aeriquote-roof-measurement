@@ -23,6 +23,9 @@ except ImportError:
     psycopg=None
     dict_row=None
 
+from safe_logging import install_safe_logging
+install_safe_logging()
+
 app = Flask(__name__, static_folder=".", static_url_path="/static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
 
@@ -933,7 +936,7 @@ async function refreshAerialDetail(){
  const url=URL.createObjectURL(blob),layer=L.imageOverlay(url,staticMapBounds(c.lat,c.lng,z,640,640),{opacity:1,interactive:false});layer.once('remove',()=>URL.revokeObjectURL(url));
  await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',reject);layer.addTo(base)});
  if(seq!==aerialDetailSequence||token!==sessionToken||base!==fallbackLayer){base.removeLayer(layer);return}if(aerialDetailLayer&&base.hasLayer(aerialDetailLayer))base.removeLayer(aerialDetailLayer);aerialDetailLayer=layer;aerialDetailKey=key;
- }catch(e){console.warn('Detailed aerial unavailable',e)}
+ }catch(e){console.warn('AQ:detail-aerial-failed')}
 }
 function scheduleAerialDetail(){clearTimeout(aerialDetailTimer);aerialDetailTimer=setTimeout(refreshAerialDetail,300)}
 async function loadStandardWideAerial(token=sessionToken,targetMap=map,staging=false,center=null){
@@ -2301,7 +2304,7 @@ async function startReportOutlineEdit(target){
    const snap=quoteSnapshot||captureQuoteSnapshot();
    const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
    if(pureManual){
-     try{await buildInteractiveCustomerMap()}catch(e){console.error(e);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Could not open outline editor. Close and reopen the estimate, then try again.';return}
+     try{await buildInteractiveCustomerMap()}catch(e){console.error('AQ:outline-editor-failed');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Could not open outline editor. Close and reopen the estimate, then try again.';return}
    }
  }
  if(!customerMap){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Turn estimate images on to edit roof outlines.';return}
@@ -2316,9 +2319,9 @@ async function startReportOutlineEdit(target){
  document.querySelector('#reportOverlay .report')?.classList.add('estimate-editing');setReportOutlineButtons(true);
  const svg=el('reportDrawLayer');if(svg&&!svg.dataset.bound){svg.addEventListener('pointerdown',reportOutlinePointer);svg.dataset.bound='1'}
 }
-function cancelReportOutlineEdit(){if(reportMeasurementCorrection){cancelReportMeasurementCorrection();return}if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error(e));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error(e))}
+function cancelReportOutlineEdit(){if(reportMeasurementCorrection){cancelReportMeasurementCorrection();return}if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error('AQ:outline-render-failed'));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error('AQ:outline-render-failed'))}
 function undoReportOutlinePoint(){if(reportMeasurementCorrection){const c=reportMeasurementCorrection;if(!c.saving&&!c.uncertain&&c.history.length){c.points=c.history.pop().map(p=>L.latLng(p));c.error="";redrawReportCorrection()}return}if(visualCorrectionMode){const m=visualCorrectionMarkers.pop();if(m)customerMap.removeLayer(m);refreshVisualCorrectionLine();return;}if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
-async function saveReportOutline(){if(reportMeasurementCorrection){await saveReportMeasurementCorrection();return}if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error(e));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
+async function saveReportOutline(){if(reportMeasurementCorrection){await saveReportMeasurementCorrection();return}if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error('AQ:outline-render-failed'));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
 
 async function buildExactPinCustomerSnapshot(){
  const host=el('customerMap');if(!host||!sessionToken)return;
@@ -2467,7 +2470,7 @@ async function buildInteractiveCustomerMap(){
  customerMap.on('click',reportOutlineClick);customerMap.on('moveend zoomend',layoutCustomerMeasurementLabels);
  await new Promise(r=>setTimeout(r,180));
  customerMap.invalidateSize(true);
- let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadCustomerWideAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('Wide estimate image unavailable; using raster fallback',e);rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
+ let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadCustomerWideAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('AQ:wide-image-fallback');rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
  customerRgbLayer=rgb.layer;
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
@@ -2669,7 +2672,7 @@ async function performEstimateHistorySave(){
      const blob=await sr.blob();
      streetImageData=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(String(fr.result||''));fr.onerror=()=>reject(new Error('Street View capture failed'));fr.readAsDataURL(blob)});
     }
-   }catch(e){console.warn('Street View could not be stored with estimate',e)}
+   }catch(e){console.warn('AQ:street-snapshot-failed')}
   }
   payload.street_image_data=streetImageData;
   if(!operation.payload)operation.payload=payload;
@@ -2681,7 +2684,7 @@ async function performEstimateHistorySave(){
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
   let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
   lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;return true;
- }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('Estimate history save failed',e);status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
+ }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('AQ:estimate-save-failed');status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
 function closeEstimateHistory(){el('historyModal').classList.remove('open')}
@@ -2805,7 +2808,7 @@ async function openHistoricalEstimate(estimateId,versionIndex){
   await new Promise(resolve=>setTimeout(resolve,60));
   await showCustomerEstimate(true,(v.saved_at||v.created_at||v.revised_at||'').slice(0,10));
  }catch(e){
-  console.error('Historical estimate open failed:',e);
+  console.error('AQ:estimate-reopen-failed');
   const box=el('historyResults');
   if(box)box.insertAdjacentHTML('afterbegin',`<div class="error" style="padding:10px 0">Could not open this saved estimate: ${escapeHistory(e.message||'unknown error')}</div>`);
   status('Could not reopen that saved estimate.','error')
@@ -2923,7 +2926,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
  if(!historicalMode&&!correctionRefresh){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
- try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error(e);if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
+ try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error('AQ:estimate-image-failed');if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
 
  // Final business-specific estimate-summary label.
  if(currentBusinessType()==='roofing'){
@@ -2932,7 +2935,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
    });
  }
  }catch(e){
-  console.error('Customer estimate preparation failed',e);
+  console.error('AQ:estimate-prepare-failed');
   if(!reportReady){document.body.classList.remove('report-open');if(el('reportOverlay'))el('reportOverlay').style.display='none'}
   const message='Estimate could not be prepared. Your measurements are still here. Please try again.';
   estimateActionMessage(message);status(message,'error');
@@ -3258,7 +3261,7 @@ async function downloadEstimatePDF(){
   }
   const raw=(el('address')?.value||'Customer').split(',')[0].trim()||'Customer';const safe=raw.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
   pdf.save(`AeriQuote_Estimate_${safe||'Customer'}.pdf`);status('Estimate PDF downloaded.','ok');
- }catch(e){console.error(e);status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}
+ }catch(e){console.error('AQ:pdf-generation-failed');status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}
  finally{
    pdfInProgress=false;if(btn){btn.disabled=!!reportOutlineEditMode;btn.textContent=oldText||'DOWNLOAD ESTIMATE PDF'}
  }
