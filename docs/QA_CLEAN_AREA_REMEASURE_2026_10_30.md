@@ -1,0 +1,24 @@
+# Clean Area remeasurement — October 30, 2026
+
+## Scope and cause
+Started from verified recovery HEAD bbbdfbfa3eb177ca6e30338aa7dc630b64ac0de6. Both existing GitHub checks and PostgreSQL job124253697580 passed; Render dep-dbiegu7b9u1s73fc2rp0 was LIVE. Application fix de1dae19f453c79d652fcd66b703c3eb20cba7ef, recovery branch only.
+
+The measuring-page saved-Area renderer deliberately rendered the selected original during replacement (`!areaRemeasureMode` exemption). Removed that exemption: the selected original polygon, fill and all its labels are absent while the separate replacement draft is active. Original commercialAreas record, rate and price stay protected until validated Save. Other saved Areas and independent Linear measurements remain. Cancel restores the original; Edit Outline retains its polygon and draggable corners. No geometry deletion, vertex changes or validation bypass.
+
+The restored Estimate correction already removes saved overlays from its editing map and clears draft layers on Redraw. That path is verified separately rather than assumed covered by the workspace change. Its Area Redraw control now explicitly reads REMEASURE AREA; Linear still reads REDRAW. Adjusting the existing outline continues to show draggable corners. Undo, definitive failed-save rollback and uncertain-response idempotent retry behavior are unchanged.
+
+## Verification
+- Full local recovery suite **74/74 commands PASS**, including geometry, pricing/tax, business/employee isolation, allowances, Roofing and existing PDF regressions. Additional targeted rendered-DOM clean-Area tests PASS all five industries.
+- Workspace **15/15 Chromium trusted-touch cases** (five industries x320/390/768): repeated Area1/2 remeasurement; no original polygon/labels in selected render layers; other saved Area visible; crossing/duplicate invalid drafts blocked; Cancel exact original; valid Save selected-only replacement, same rate/customer/independent line; Edit Outline polygon and draggable handles; repeated Linear Cancel; actual server save and reopen.
+- Estimate-stage **15/15 Chromium trusted-touch cases** at the same widths: empty remeasurement map without original outlines/labels/handles, invalid/incomplete Save blocked, Undo, repeated Area1/2 and Linear Save/Cancel,503 failure retry and committed-but-response-lost idempotent retry, exact saved/report/reopened geometry, no stale handles, server-confirmed quantity/price, unchanged stored payload on reopen/export. Zero browser JavaScript exceptions.
+- **30 actual Single/Expanded PDFs downloaded;45 pages rendered and visually inspected** on three contact sheets, with Snow390 Expanded aerial page inspected individually. Finished PDFs show only two confirmed Areas plus independent Line, no original/draft duplicate or editing handles. Approved layouts preserved. Fictional imagery, intentional unavailable Street View placeholder; no actual property-photo verification this batch. Fixture marketing content was reused across industry changes and is not a fresh branding/onboarding test.
+- Independent haversine lengths and integer-cent prices/taxes checked in each estimate browser case. Independent GeographicLib WGS84 area check30polygons: maximum0.168589% difference from unchanged projection/whole-ft2 rounding. Not survey or real-property accuracy certification.
+- Application GitHub initial validation41113494414 SUCCESS. PostgreSQL job124261615761 SUCCESS in recovery run41113494117 (five disposable PostgreSQL16 concurrency/recovery/security/allowance tests). Full recovery run41113494117 SUCCESS.
+- Render recovery test deploy **dep-dbieoo740ujc739d3970 LIVE** exact application de1dae1. No manual/production deploy.
+
+Evidence: docs/qa/clean-area-remeasure-2026-10-30 contains regression results, workspace/estimate browser results, independent area checks, three PDF contact sheets and Snow390 actual Single/Expanded PDFs.
+
+## Boundaries and remaining verification
+Disposable loopback QA accounts and fictional grid imagery only. Chromium trusted touch/pointer events are emulation, not physical iPhone, Safari/WebKit or real Messenger-engine tests. Sean reported the preceding restored Estimate correction worked better with no unexpected map movement; this particular clean-remeasurement refinement still requires his physical iPhone retest.
+
+No imagery/provider/API/Street View/Solar changes, pricing/quantity formula changes, subscription/allowance changes, PDF design changes or customer data changes. Roofing not modified. Server/provider Python AST is unchanged outside HTML; PDF exporter bytes are unchanged. Main baseline c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a confirmed unchanged. AutoMeasure and QA gates preserved; AI Trace remains removed. No production or real customer access, Stripe, CRM or autosave. Stop after this batch.

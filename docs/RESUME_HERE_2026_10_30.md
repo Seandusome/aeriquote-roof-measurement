@@ -1,3 +1,20 @@
+# Latest: clean Area remeasurement — October 30, 2026
+
+Application checkpoint **de1dae19f453c79d652fcd66b703c3eb20cba7ef** on landscaping-multi-area-recovery-oct11, started at current bbbdfbf. Read docs/QA_CLEAN_AREA_REMEASURE_2026_10_30.md and docs/qa/clean-area-remeasure-2026-10-30. Final documentation checkpoint supersedes application HEAD without application changes.
+
+REMEASURE AREA hides the selected original polygon/fill/corners/dimensions/area labels while keeping original geometry/quantity/rate/price protected internally. Other saved Areas and independent Line remain. Cancel restores original; valid Save replaces selected-only geometry using existing validators/pricing. EDIT OUTLINE retains visible polygon and draggable handles. Estimate correction already clears originals during redraw; its Area button explicitly reads REMEASURE AREA, with original protected until server-confirmed Save. Linear redraw unchanged. No image-only editing.
+
+Full local74/74 commands PASS; additional rendered-DOM test PASS five industries. Workspace trusted-touch15/15 and Estimate trusted-touch15/15 at320/390/768, repeated remeasure/edit/save/cancel, invalid/incomplete drafts, independent Line, failed/uncertain save retries, exact saved/reopen/report geometry and independent pricing/taxes.30 actual PDFs downloaded,45 pages rendered and visually inspected; no original/draft duplication in finished reports. Independent WGS8430polygons maximum0.168589% relative difference vs existing projection/rounding, not survey certification. Fictional grid imagery only, intentional missing Street View. Reused marketing fixture is not branding/onboarding verification.
+
+GitHub application checks41113494414 and41113494117 SUCCESS; PostgreSQL job124261615761 SUCCESS (five isolated concurrency/recovery/security/allowance tests). Render dep-dbieoo740ujc739d3970 LIVE exact de1dae1. Final documentation checks/deployment may initially be queued; verify current HEAD status, do not assume pending checks passed. Main c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a unchanged.
+
+## Stop for Sean's physical iPhone retest
+Sean confirmed preceding Estimate correction worked better and aerial no longer moved unexpectedly. This refinement is NOT physically verified by the agent. Reload Safari, then separately Messenger: two Areas plus Line → REMEASURE AREA (workspace or Estimate correction) → original selected outline/labels absent → new trace → Cancel restores exactly → repeat valid Save updates selected Area/price only. EDIT OUTLINE keeps existing shape/corners visible. Reopen, Single/Expanded PDF and repeat Area2/Line. Chromium trusted-touch emulation is not Safari/WebKit/Messenger-engine or physical testing. Real-provider imagery not reverified this batch.
+
+No Roofing, imagery/API/Solar/Street View, measurement formulas, pricing/tax, subscriptions/allowances, historical estimates, PDFs/design, accounts, AutoMeasure or QA gates changed. No production/customer data accessed. AI Trace remains removed. No Stripe/CRM/autosave. No further work until review; preserve all earlier evidence below.
+
+---
+
 # Latest: Estimate-stage correction restored — October 30, 2026
 
 ## Read first and checkpoint
