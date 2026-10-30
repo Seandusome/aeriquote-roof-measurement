@@ -1,3 +1,17 @@
+# Latest: Production safety and emergency recovery audit - October 30, 2026
+
+Started at verified recovery `f3065e2154eaa801aae12e3013d6216ff1d5c3fe`; all application code unchanged. Read `docs/PRODUCTION_SAFETY_AUDIT_2026_10_30.md`, `docs/EMERGENCY_RECOVERY_2026_10_30.md` and one-page `output/pdf/AeriQuote_Emergency_Recovery_Guide.pdf`. Evidence: `docs/qa/production-safety-2026-10-30`.
+
+Operational readiness NOT signed off. Priorities before launch: verify dedicated production/test DB mapping and usable managed backup point; approve gated deployments/branch protections; redact reset query tokens and unexpected exception metadata; add privacy-safe client/server alerting and real HTTP readiness; assign technical responder/backup and validate external support channel. Paid PG18 database eligibility verified, actual recovery window/backup history/PITR restore NOT verified. Both web services free, TCP health, auto on commit. Main service still old c049a04; do not blindly promote recovery. No secrets/customer logs/data accessed.
+
+74/74 full existing local regression commands PASS. New isolated support/privacy audit PASS execution and confirms documented gaps (not readiness pass). Temporary SQLite native backup restored only into separate empty file; newer source estimates retained; previous recovery revision reads both saved payloads. New recovery CI steps run same privacy audit and native PostgreSQL16 pg_dump/pg_restore into unique empty QA DB, plus existing concurrency suite. Verify terminal new GitHub result; final report/addendum records observed outcome. No live restore/rollback, alert/email delivery, physical device or new PDF application workflow claimed.
+
+This commit changes only audit tests, recovery CI test steps and documents/owner PDF. `[skip render]` intentionally avoids unnecessary deployment; it DOES NOT skip CI. Recovery live application remains f3065e2, dep-dbig6k3bc2fs73bkt6q0; main c049a04 unchanged. Resolve current GitHub HEAD for final checkpoint; no application behaviour, imagery, pricing, allowances, RETRACE, PDFs, AutoMeasure or customer records changed. AI Trace remains removed.
+
+NEXT: review audit and owner guide. Obtain approval before infrastructure, monitoring/logging, release-policy or live recovery drill implementation. Do not begin another batch automatically. Preserve all older resume notes below.
+
+---
+
 # Latest: launch-critical reliability/security batch — October 30, 2026
 
 Start: verified6f2623a. Read docs/QA_LAUNCH_RELIABILITY_SECURITY_2026_10_30.md and docs/qa/launch-reliability-security-2026-10-30. Application checkpoints:

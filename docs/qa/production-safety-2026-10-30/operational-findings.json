@@ -1,0 +1,18 @@
+{
+  "health_status": 404,
+  "healthz_status": 302,
+  "healthz_redirects_to_login": true,
+  "support_saved_before_mail_failure": true,
+  "support_retry_idempotent": true,
+  "support_page_query_fragment_removed": true,
+  "support_notification_exception_sanitized": true,
+  "support_free_text_preserved_verbatim": true,
+  "support_free_text_secret_redaction": false,
+  "support_office_gate": true,
+  "support_status_and_manual_priority_note": true,
+  "automatic_priority_field": false,
+  "private_estimate_access_not_required": true,
+  "default_access_log_records_reset_query": true,
+  "unhandled_exception_log_lacks_global_secret_scrub": true,
+  "generic_500_body_does_not_echo_exception": true
+}
