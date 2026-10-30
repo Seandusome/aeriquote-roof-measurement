@@ -1,6 +1,6 @@
 # AeriQuote production safety and emergency recovery audit
 
-Audit date: October 30, 2026 (Edmonton; execution crossed into October 31 UTC).
+Audit date: October 30, 2026 (Edmonton and UTC; host PDF metadata uses JST).
 Baseline: `f3065e2154eaa801aae12e3013d6216ff1d5c3fe`, recovery branch only.
 
 **Decision: operational readiness is not yet demonstrated.** Existing correctness and isolation controls are valuable, but automated detection, safe release gates, proven recoverability and a named technical responder remain launch requirements. This audit changes tests and documentation only. No production requests, customer estimate reads, live database queries, restores, vendor contact or infrastructure changes were performed.
@@ -92,8 +92,8 @@ For actual corruption/loss: preserve current DB, stop affected operations throug
 
 - Operational audit: PASS execution; readiness findings include confirmed gaps, not a production-readiness pass.
 - Disposable SQLite backup/new-target restore and previous recovery app read: PASS.
-- Full local existing regression suite: see `docs/qa/production-safety-2026-10-30/regression-summary.json`.
-- New GitHub PostgreSQL16 native export/restore plus existing concurrency suite: verify terminal run after push; final checkpoint addendum/report records actual result. Local machine has no PostgreSQL tool/server, so no local PostgreSQL pass is claimed.
+- Full local existing regression suite: 74/74 PASS; see `docs/qa/production-safety-2026-10-30/regression-summary.json`.
+- GitHub PostgreSQL16 native export/restore, previous-app compatibility, privacy/support audit and all five existing PostgreSQL concurrency/lifecycle steps: PASS at `ec0a9d5`, run41131179510, job124322186303. See `postgres-drill.json`. Local machine has no PostgreSQL tool/server; no local PostgreSQL pass is claimed.
 - Owner guide: one-page rendered PDF visually inspected.
 - Not performed: production deployment/rollback/restore, managed PITR, live email/alert delivery, real customer tests, physical iPhone QA, new imagery/PDF app output tests (unchanged paths).
 
@@ -108,3 +108,7 @@ For actual corruption/loss: preserve current DB, stop affected operations throug
 - [Free-service limitations](https://render.com/docs/free)
 
 Current official docs checked during audit. These policies establish eligibility and platform behaviour, not proof of AeriQuote's actual backup history or configured alert receipt. Stop for review; monitoring/redaction, release gates, production hosting and live recovery drills require separately approved work.
+
+## Checkpoint history
+
+Audit/docs/tests checkpoint `1a2b971`: application validation PASS, recovery workflow rejected before jobs because a container context was placed at job-env level. Test-only follow-up `ec0a9d5` moves that reference to the drill step; PostgreSQL job PASS. Application run41131179468 and full recovery run41131179510 both SUCCESS, including recovery job124322186524. No application or infrastructure change. Final documentation checkpoint checks are reported separately; do not confuse the historical failed workflow with an application defect.

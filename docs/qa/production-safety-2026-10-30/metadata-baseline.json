@@ -1,0 +1,17 @@
+{
+  "recovery_head": "f3065e2154eaa801aae12e3013d6216ff1d5c3fe",
+  "main_head": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "recovery_live_deploy": "dep-dbig6k3bc2fs73bkt6q0",
+  "main_live_deploy": "dep-db5b726k1f9s73e862ug",
+  "recovery_service_id": "srv-db5a2g5ckfvc739fui70",
+  "main_service_id": "srv-db01g1p42hec73ehu1lg",
+  "web_plan": "free",
+  "auto_deploy_trigger": "commit",
+  "http_health_check_path": "",
+  "notify_on_fail": "default",
+  "database_plan": "0.1c-256mb",
+  "database_version": "18",
+  "actual_backup_history_verified": false,
+  "live_database_mapping_verified": false,
+  "raw_customer_logs_or_estimates_accessed": false
+}

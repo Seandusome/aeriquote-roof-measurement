@@ -1,0 +1,80 @@
+{
+  "tested_commit": "ec0a9d5d2b0334158ac938540096c146234fb299",
+  "workflow_run": 41131179510,
+  "job_id": 124322186303,
+  "result": "success",
+  "postgres_version": 16,
+  "environment": "disposable GitHub CI localhost container",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Initialize containers",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v5",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-python@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run python -m pip install -r requirements.txt",
+      "conclusion": "success"
+    },
+    {
+      "name": "Real PostgreSQL concurrent requests and failure recovery",
+      "conclusion": "success"
+    },
+    {
+      "name": "Property imagery acceptance and exactly-once credits",
+      "conclusion": "success"
+    },
+    {
+      "name": "Paid subscription anniversary concurrency",
+      "conclusion": "success"
+    },
+    {
+      "name": "Password-reset login race and employee access lifecycle",
+      "conclusion": "success"
+    },
+    {
+      "name": "Cross-role signup identity concurrency",
+      "conclusion": "success"
+    },
+    {
+      "name": "Isolated operational privacy and support audit",
+      "conclusion": "success"
+    },
+    {
+      "name": "Backup into new disposable database and previous-app compatibility drill",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-python@v6",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/checkout@v5",
+      "conclusion": "success"
+    },
+    {
+      "name": "Stop containers",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "native_logical_backup_restore": "PASS",
+  "prior_recovery_app_reads_current_fixture_data": "PASS",
+  "restore_target": "new unique empty disposable database",
+  "source_newer_estimates_preserved": true,
+  "managed_render_backup_or_restore_tested": false,
+  "production_or_customer_data_accessed": false
+}
