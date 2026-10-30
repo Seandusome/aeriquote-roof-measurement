@@ -72,6 +72,11 @@ with tempfile.TemporaryDirectory() as tmp:
    p={'address':'QA INVALID LINE '+industry,'quote':{'businessType':industry,'measurementMode':'linear','linearPoints':pts,'linearFeet':line_feet(pts)}}
    price_fixture(p);assert client.post('/api/estimates',json=p).status_code==400
   assert client.get('/api/estimates/'+eid).get_json()==before
+ # Zeroing the claimed length while retaining a real line must not remove it from pricing.
+ for industry in ['snow','pressure','paving','landscaping','commercial','roofing']:
+  p=copy.deepcopy(original);p['address']='QA ZERO LINE '+industry;p['quote']['businessType']=industry;p['quote']['linearFeet']=0;p['linear_feet']=0
+  price_fixture(p);assert client.post('/api/estimates',json=p).status_code==400
+ assert client.get('/api/estimates/'+eid).get_json()==before
  # Normal matching snapshots and shared-border multi-area work across the five surface industries.
  for industry in ['snow','pressure','paving','landscaping','commercial']:
   p=copy.deepcopy(original);p['address']='QA '+industry;p['quote']['businessType']=industry

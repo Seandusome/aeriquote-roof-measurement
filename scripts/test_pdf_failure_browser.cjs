@@ -13,6 +13,7 @@ assert(script.includes(anchor));script=script.replace(anchor,`
  assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),frozen);
  await page.evaluate(async()=>{const capture=html2canvas;try{window.html2canvas=async()=>{throw Error('FICTIONAL QA renderer interruption')};await downloadEstimatePDF()}finally{window.html2canvas=capture}});
  assert.equal(await page.evaluate(()=>pdfInProgress),false);assert(!await page.locator('#downloadPdfBtn').isDisabled());assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),frozen);
+ await page.evaluate(async()=>{const length=quoteSnapshot.linearFeet;try{quoteSnapshot.linearFeet=0;await downloadEstimatePDF()}finally{quoteSnapshot.linearFeet=length}});assert((await page.locator('#status').textContent()).includes('quantity does not match'));assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),frozen);
  let repeated=0;const count=()=>repeated++;page.on('download',count);await page.evaluate(()=>Promise.all([downloadEstimatePDF(),downloadEstimatePDF()]));await page.waitForTimeout(200);assert.equal(repeated,1,'Rapid duplicate download calls produce one PDF');page.off('download',count);
  console.log('PASS saved-image failure, stale placeholder cleanup, interrupted capture, duplicate download single-flight and safe retry');
 `);

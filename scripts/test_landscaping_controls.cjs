@@ -88,6 +88,7 @@ const painted=[];let imagesPainted=0;
 w.HTMLCanvasElement.prototype.getContext=()=>({drawImage(){imagesPainted++},beginPath(){},moveTo(){},lineTo(){},stroke(){},save(){},restore(){},measureText(t){return{width:t.length*10}},fillRect(){},strokeRect(){},fillText(t,x,y){painted.push({t,x,y})}});
 w.Image=class{naturalWidth=1280;naturalHeight=840;set src(v){queueMicrotask(()=>this.onload())}};
 w.eval(`quoteSnapshot={commercialAreas:[{name:'Area 1',sqft:1000,rate:.25,points:[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]},{name:'Area 2',sqft:2000,rate:.25,points:[[52.001,-106],[52.001,-105.9999],[52.0011,-105.9999],[52.0011,-106]]}],linearPoints:[[52,-106],[52.001,-106],[52.001,-105.9999]],savedPricing:{taxBase:800,gstAmt:0,pstAmt:0,total:800}}`);
+w.eval('quoteSnapshot.linearFeet=quoteSnapshot.linearPoints.slice(1).reduce((n,p,i)=>n+map.distance(L.latLng(quoteSnapshot.linearPoints[i]),L.latLng(p))*3.28084,0)');
 const snapshot=w.eval('JSON.stringify(quoteSnapshot)'),areas=w.eval('quoteSnapshot.commercialAreas'),line=w.eval('quoteSnapshot.linearPoints');
 w.fetch=async(url,options)=>{assert.equal(url,'/saved-estimate-report-map');const sent=JSON.parse(options.body);assert.equal(sent.roofs.filter(a=>a.kind==='area').length,areas.length);assert.equal(sent.roofs.filter(a=>a.kind==='linear').length,1);return{ok:true,headers:{get:()=>JSON.stringify({latitude:52,longitude:-105.99995,zoom:18,width:640,height:420})},blob:async()=>new w.Blob(['image'])}};
 await w.eval('buildSavedHistoricalSnapshot()');

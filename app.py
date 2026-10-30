@@ -1758,7 +1758,7 @@ function updateEstimatePeriodUi(){
   const total=el('jsTotal');if(total&&total.textContent.startsWith('$'))total.textContent=total.textContent.replace(/ per (visit|snowfall|month|season|year)$/,'')+suffix;
  }
 }
-function savedLinearGeometryError(points=linearPoints){
+function savedLinearGeometryError(points=linearPoints,expectedFeet=null){
  if(!Array.isArray(points)||points.length<2)return 'Add at least two different points.';
  const pts=points.map(p=>Array.isArray(p)?p:[p?.lat,p?.lng]);
  if(pts.some(p=>p.length!==2||p.some(v=>typeof v!=='number'||!Number.isFinite(v))||Math.abs(p[0])>90||Math.abs(p[1])>180))return 'Invalid measurement coordinates.';
@@ -1771,6 +1771,10 @@ function savedLinearGeometryError(points=linearPoints){
    const [lo,hi]=[c,d].map(p=>((p[0]-a[0])*dx+(p[1]-a[1])*dy)/length).sort((x,y)=>x-y);
    if(Math.min(length,hi)-Math.max(0,lo)>1e-6)return 'Linear segments overlap and count the same length twice. Correct the line before quoting.';
   }segments.push([a,b]);
+ }
+ if(expectedFeet!==null){
+  let measured=0;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],rad=Math.PI/180,h=Math.sin((b[0]-a[0])*rad/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin((b[1]-a[1])*rad/2)**2;measured+=2*6371000*Math.asin(Math.min(1,Math.sqrt(h)))*3.28084;}
+  if(!Number.isFinite(expectedFeet)||expectedFeet<=0||Math.abs(measured-expectedFeet)>Math.max(.05,measured*.00001))return 'Saved linear quantity does not match its line. Remeasure before quoting.';
  }return '';
 }
 function savedAreaGeometryError(inputAreas=commercialAreas){
@@ -3165,7 +3169,7 @@ function savedEstimateMoneyIssue(pricing){
 function printEstimate(){if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
- if(quoteSnapshot?.linearFeet>0){const issue=savedLinearGeometryError(quoteSnapshot.linearPoints);if(issue){status(issue,'warn');return}}
+ if(quoteSnapshot?.linearPoints?.length||quoteSnapshot?.linearFeet>0){const issue=savedLinearGeometryError(quoteSnapshot.linearPoints,Number(quoteSnapshot.linearFeet));if(issue){status(issue,'warn');return}}
  const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){status(moneyIssue,'warn');return}
  if((quoteSnapshot?.structures||[]).some(st=>st.needs_remeasure||st.automatic_review_warning)){status('This estimate contains a roof with unverified coverage. Remeasure it and create a corrected estimate before downloading a PDF.','warn');return}
  const btn=el('downloadPdfBtn'),report=document.querySelector('#reportOverlay .report');

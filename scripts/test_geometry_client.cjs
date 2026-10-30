@@ -19,3 +19,5 @@ const A=[52,-106],B=[52,-105.999],C=[52.001,-105.999],D=[52.001,-106];
 for(const p of [[A,B,A],[A,B,[52,-105.9995]],[A,B,C,D,A,B],[A,A,B]])assert(c.savedLinearGeometryError(p),'Duplicated/backtracked/zero edge must be rejected');
 for(const p of [[A,B],[A,B,C,D,A],[A,C,B,D],[A,[52,-105.9995],B],[A,[52,-105.99999999]]])assert.equal(c.savedLinearGeometryError(p),'','Closed perimeter, crossing, adjacent collinear and very short valid edges remain allowed');
 console.log('PASS client duplicate/reversed/partial Linear coverage blocked; legitimate loops/crossings/short edges retained');
+
+assert(c.savedLinearGeometryError([A,B],0).includes('quantity'));assert(c.savedLinearGeometryError([A,B],NaN).includes('quantity'));assert(c.savedLinearGeometryError([A,B],1).includes('quantity'));assert.equal(c.savedLinearGeometryError([A,B],224.60115677987105),'');console.log('PASS saved/PDF Linear zero, missing and manipulated quantities rejected');

@@ -116,6 +116,7 @@ def snapshot_error(payload):
             measured=polygon_sqft(quote['areaPoints'])
             if abs(measured-float(quote['areaSqFt']))>max(1,measured*.001):return 'Saved area quantity does not match its outline. Remeasure before quoting.'
         length=quote.get('linearFeet',0)
+        if quote.get('linearPoints') and not length:return 'Saved linear quantity does not match its line. Remeasure before quoting.'
         if length>0:
             issue=linear_error(quote.get('linearPoints'))
             if issue:return issue
