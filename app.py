@@ -2196,7 +2196,7 @@ function redrawReportCorrection(){
  });
  const issue=reportCorrectionProblem();let message=issue;
  if(!issue){const before=reportCorrectionWorkspace();try{applyReportCorrectionCandidate();const calc=priceCalc();message=quotePricingError(calc);if(!message){const quantity=c.mode==='area'?commercialAreas[c.index].sqft:linearFeetTotal();message=`${c.mode==='area'?'Area '+(c.index+1):'Linear'}: ${c.originalQuantity.toLocaleString()} → ${c.mode==='area'?fmt(quantity):quantity.toFixed(1)} ${c.mode==='area'?'ft²':'ft'}. Estimate total: ${money(c.originalTotal)} → ${money(calc.total)}. Save confirms this measurement and price change.`;}}finally{restoreReportCorrectionWorkspace(before)}}
- el('reportOutlineHelpTop').textContent=c.error||message||'Adjust the points or select Redraw. Cancel keeps the original.';
+ el('reportOutlineHelpTop').textContent=(c.mode==='area'?(c.drawing?'Remeasure Area — new replacement points. ':'Edit Outline — adjust existing corners, or select REMEASURE AREA to start empty. '):'')+(c.error||message||'Adjust the points or select Redraw. Cancel keeps the original.');
  el('reportSaveOutlineBtnTop').disabled=!!issue||c.saving;
  el('reportSaveOutlineBtnTop').textContent=c.saving?'SAVING…':'SAVE MEASUREMENT & UPDATE ESTIMATE';
  el('reportCancelOutlineBtnTop').disabled=c.saving||!!c.uncertain;el('reportUndoOutlineBtnTop').disabled=c.saving||!!c.uncertain||!c.history.length;
@@ -2211,8 +2211,8 @@ function correctSavedMeasurementFromReport(mode,index=0){
  clearVisualCorrection();clearReportOutlineTemp();reportOutlines={};
  const c=reportMeasurementCorrection={mode,index,points:pts.map(p=>L.latLng(p)),layers:[],originalQuantity:mode==='area'?commercialAreas[index].sqft:Number(linearFeetTotal().toFixed(1)),originalTotal:priceCalc().total,saving:false,drawing:false,history:[],drag:customerMap.dragging.enabled(),double:customerMap.doubleClickZoom.enabled()};
  customerMap.dragging.disable();customerMap.doubleClickZoom.disable();
- // Remove saved labels while editing. Keep the original protected in memory.
- customerOverlays.forEach(l=>customerMap.removeLayer(l));
+ // Hide only the selected saved measurement; unrelated Areas and Linear stay visible.
+ customerOverlays.filter(l=>l._reportMeasurement?.mode===mode&&(mode!=='area'||l._reportMeasurement.index===index)).forEach(l=>customerMap.removeLayer(l));
  c.click=e=>{if(c.saving||c.uncertain||!c.drawing)return;c.history.push(c.points.map(p=>[p.lat,p.lng]));c.points.push(e.latlng);c.error='';redrawReportCorrection()};customerMap.on('click',c.click);
  el('reportOutlineTargetButtons').style.display='none';
  ['reportSaveOutlineBtnTop','reportCancelOutlineBtnTop','reportUndoOutlineBtnTop','reportRedrawBtn'].forEach(id=>el(id).style.display='inline-block');
@@ -2470,20 +2470,25 @@ async function buildInteractiveCustomerMap(){
     ?snap.commercialAreas.filter(a=>Array.isArray(a.points)&&a.points.length>=3):[];
    if(areas.length){
     areas.forEach((area,i)=>{
+     const overlayStart=customerOverlays.length;
      const pts=area.points.map(p=>L.latLng(p[0],p[1]));
      const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
      customerOverlays.push(poly);allBounds.push(...pts);drawCustomerAreaEdgeLabels(area.points);
      customerOverlays.push(L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(area.sqft||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap));
+     customerOverlays.slice(overlayStart).forEach(l=>l._reportMeasurement={mode:'area',index:snap.commercialAreas.indexOf(area)});
     });
    }else{
+   const overlayStart=customerOverlays.length;
    const pts=(reportOutlines['area-visual']||snap.areaPoints).map(p=>L.latLng(p[0],p[1]));
    const poly=L.polygon(pts,{color:'#7357b8',weight:5,fillColor:'#7357b8',fillOpacity:.14,interactive:false,lineJoin:'round'}).addTo(customerMap);
    customerOverlays.push(poly);allBounds.push(...pts);drawCustomerAreaEdgeLabels(reportOutlines['area-visual']||snap.areaPoints);
    const lab=L.marker(poly.getBounds().getCenter(),{interactive:false,icon:L.divIcon({className:'',html:`<div class="area-label">${fmt(Number(snap.areaSqFt||0))} ft²</div>`,iconAnchor:[35,10]})}).addTo(customerMap);
    customerOverlays.push(lab);
+   customerOverlays.slice(overlayStart).forEach(l=>l._reportMeasurement={mode:'area',index:0});
    }
   }
   if(hasLinear){
+   const overlayStart=customerOverlays.length;
    const pts=(reportOutlines['linear-visual']||snap.linearPoints).map(p=>L.latLng(p[0],p[1]));
    allBounds.push(...pts);
    for(let i=1;i<pts.length;i++){
@@ -2493,6 +2498,7 @@ async function buildInteractiveCustomerMap(){
     customerOverlays.push(L.marker(mid,{interactive:false,icon:L.divIcon({className:'',html:`<div class="linear-seg-label">${feet.toFixed(1)} ft</div>`,iconAnchor:[24,9]})}).addTo(customerMap));
    }
    pts.forEach(pt=>customerOverlays.push(L.marker(pt,{interactive:false,icon:L.divIcon({className:'',html:'<div class="linear-point"></div>',iconAnchor:[6,6]})}).addTo(customerMap)));
+   customerOverlays.slice(overlayStart).forEach(l=>l._reportMeasurement={mode:'linear'});
   }
   try{customerMap.fitBounds(L.latLngBounds(allBounds).pad(0.12),{padding:[24,24],animate:false,maxZoom:21.5})}catch(e){}
   layoutCustomerMeasurementLabels();return;
