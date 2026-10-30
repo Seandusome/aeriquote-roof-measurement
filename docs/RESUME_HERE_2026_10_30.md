@@ -1,3 +1,22 @@
+# Latest: Estimate correction visibility — October 30, 2026
+
+Application **661541bda8afc2b9c7720867e979612d25b6b680** on landscaping-multi-area-recovery-oct11; started at current f44c811. Read docs/QA_ESTIMATE_CORRECTION_VISIBILITY_2026_10_30.md and evidence docs/qa/estimate-correction-visibility-2026-10-30. Final documentation HEAD supersedes this application checkpoint without code changes.
+
+Confirmed defect: Estimate correction hid ALL saved overlays, so independent Line and other Areas disappeared temporarily despite saved data remaining. Now transient map-layer type/index tags select only the chosen measurement for hiding. Other saved Areas and independent Line remain visible and unchanged. Cancel restores normal overlays; Save retains existing validated server-confirmed selected-only update. Map-only tags are not persisted. No measurement/pricing calculation changes.
+
+CORRECT AREA opens Edit Outline with existing orange corners; REMEASURE AREA explicitly clears points/handles. Newly tapped replacement points correctly receive orange draggable handles. No stale original points found in Remeasure. Help now clearly names these modes. Existing Undo, invalid/overlap guards, proposed quantity/price confirmation, failed/uncertain save retry and unfinished-PDF block preserved.
+
+74/74 full local regression commands PASS; targeted actual-DOM tests five industries PASS.15/15 Chromium trusted-touch industry/width cases at320/390/768: only selected saved layer hidden, other Area/Line visible during edit/remeasure, empty draft/no handles, repeated Area1/2 and Line Save/Cancel, Undo, invalid/incomplete blocks, failed503 and committed-but-response-lost retry, exact server save/report/reopen geometry and pricing/customer preservation, zero browser exceptions. Independent haversine/cent tax arithmetic matches all cases. WGS8430polygons maximum0.168589% vs unchanged projection/rounding, not survey certification.30 actual PDFs,45 rendered pages visually inspected, normal confirmed Areas/Line and no old/draft duplicates. Active Snow390 screenshot shows retained Area/Line beside orange draft.
+
+GitHub application validation41116637873 SUCCESS; full recovery41116637964 SUCCESS, including PostgreSQL job124272451460 and recovery124272451532. Render dep-dbif3g68bjmc73chrb6g LIVE exact661541b. Final documentation checks/deployment may initially be pending; verify next time rather than infer success. Main c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a unchanged; no production/customer accounts used.
+
+## Stop for Sean's physical iPhone retest
+Sean confirms the preceding Estimate correction and proposed quantity/price display worked on actual phone. This selective-visibility fix remains pending his Safari and separately Messenger retest: two Areas+Line → Correct Area1 (Area2/Line visible) → Remeasure (Area1 original gone, no draft handles before first point) → Cancel exact original → repeat Save, Area2/Line, reopen, Single/Expanded PDFs. Edit Outline retains its original corner draft. Actual agent verification used Chromium touch emulation and fictional grid imagery/temp loopback accounts only, not physical iPhone, Safari/WebKit or real Messenger engine. Street View intentionally unavailable; provider photography not reverified. Fixture marketing reused across industries is not branding/onboarding testing; fixture clock/timezone determines its displayed date.
+
+No imagery/API/Google/Mapbox/Solar/Street View integration, subscription/allowance, geometry/formula, PDF design, historical customer data, Roofing, AutoMeasure or QA gates changed. AI Trace remains removed. No Stripe/CRM/autosave. All verified code/evidence committed; stop for review and preserve older notes below.
+
+---
+
 # Latest: clean Area remeasurement — October 30, 2026
 
 Application checkpoint **de1dae19f453c79d652fcd66b703c3eb20cba7ef** on landscaping-multi-area-recovery-oct11, started at current bbbdfbf. Read docs/QA_CLEAN_AREA_REMEASURE_2026_10_30.md and docs/qa/clean-area-remeasure-2026-10-30. Final documentation checkpoint supersedes application HEAD without application changes.
