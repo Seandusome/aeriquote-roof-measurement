@@ -128,12 +128,12 @@ for(const industry of ['pressure','paving','snow','landscaping','commercial']){
 for(const industry of ['pressure','paving','snow','landscaping','commercial']){
  dom.reconfigure({url:'https://test.invalid/?industry='+industry});w.eval(`el('businessType').value='${industry}';measurementViewMode='area';areaMode=false;linearMode=false;commercialEditingIndex=-1;areaPoints=[];areaMeasurementSaved=false;commercialAreas=[]`);
  btn('toolAreaBtn').click();draw(0);btn('commercialAddAreaBtn').click();draw(.001);
- assert.equal(btn('commercialAddAreaBtn').style.display,'none');assert.equal(btn('areaCorrectBtn').style.display,'none');assert.equal(btn('areaClearBtn').style.display,'none');assert.equal(btn('areaStartBtn').style.display,'none');assert.equal(btn('commercialAreaList').querySelectorAll('button').length,4);
+ assert.equal(btn('commercialAddAreaBtn').style.display,'none');assert.equal(btn('areaCorrectBtn').style.display,'none');assert.equal(btn('areaClearBtn').style.display,'none');assert.equal(btn('areaStartBtn').style.display,'none');assert.equal(btn('commercialAreaList').querySelectorAll('button').length,6);
  const first=w.eval('JSON.stringify(commercialAreas[0])'),line=w.eval('JSON.stringify(linearPoints)'),rate=w.eval('savedLinearJobRate');
  btn('areaStartBtn').click();assert.equal(w.eval('areaMode'),true);assert.equal(btn('areaCorrectBtn').style.display,'none');assert.equal(w.eval('commercialAreas.length'),3);
- btn('commercialAreaList').querySelectorAll('button')[3].click();assert.equal(w.eval('commercialAreas.length'),1);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);assert.equal(w.eval('areaMode'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);assert.equal(w.eval('savedLinearJobRate'),rate);assert.equal(btn('jsRoofs').textContent,'1');
- assert(btn('areaHelp').textContent.includes('All saved service areas'));assert.equal(btn('commercialAreaList').querySelectorAll('button').length,2);
- btn('commercialAreaList').querySelectorAll('button')[1].click();assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('areaMeasurementSaved'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
+ btn('commercialAreaList').querySelector('button[onclick="commercialRemoveArea(1)"]').click();assert.equal(w.eval('commercialAreas.length'),1);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);assert.equal(w.eval('areaMode'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);assert.equal(w.eval('savedLinearJobRate'),rate);assert.equal(btn('jsRoofs').textContent,'1');
+ assert(btn('areaHelp').textContent.includes('All saved service areas'));assert.equal(btn('commercialAreaList').querySelectorAll('button').length,3);
+ btn('commercialAreaList').querySelector('button[onclick="commercialRemoveArea(0)"]').click();assert.equal(w.eval('commercialAreas.length'),0);assert.equal(w.eval('areaMeasurementSaved'),false);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
  console.log('PASS '+industry+': remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement');
 }
 // Saved area controls remain visible and usable from Linear without changing its rate or geometry.
@@ -144,9 +144,9 @@ for(const industry of ['pressure','paving','snow','landscaping','commercial']){
  const line=w.eval('JSON.stringify(linearPoints)'),feet=w.eval('linearFeetTotal()');
  btn('toolLinearBtn').click();w.eval("el('jobPrice').value='1.37';savedLinearJobRate=1.37;renderSummary()");
  assert.equal(btn('commercialAreaPanel').style.display,'block');assert(!btn('commercialAreaPanel').closest('#areaTool'),'Saved areas must be outside the hidden Area tool');
- const first=w.eval('JSON.stringify(commercialAreas[0])');btn('commercialAreaList').querySelectorAll('button')[3].click();
+ const first=w.eval('JSON.stringify(commercialAreas[0])');btn('commercialAreaList').querySelector('button[onclick="commercialRemoveArea(1)"]').click();
  assert.equal(w.eval('measurementViewMode'),'linear');assert.equal(btn('jobPrice').value,'1.37');assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
- btn('commercialAreaList').querySelectorAll('button')[0].click();assert.equal(w.eval('measurementViewMode'),'area');assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('commercialEditingIndex'),0);assert.equal(w.eval('savedLinearJobRate'),1.37);
+ btn('commercialAreaList').querySelector('button[onclick="commercialEditArea(0)"]').click();assert.equal(w.eval('measurementViewMode'),'area');assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('commercialEditingIndex'),0);assert.equal(w.eval('savedLinearJobRate'),1.37);
  const beforeEdit=w.eval('areaSqFtTotal()');const corner=w.eval('areaLayers.find(l=>l.dragging&&l.dragging.enabled())');assert(corner,'Edit must enable a draggable Leaflet corner');corner.setLatLng(w.L.latLng(52.00003,-106.00003));corner.fire('dragend');assert.notEqual(w.eval('areaSqFtTotal()'),beforeEdit);assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);
  btn('areaStartBtn').click();btn('toolLinearBtn').click();assert.equal(w.eval('linearFeetTotal()'),feet);
  btn('commercialAddAreaBtn').click();assert.equal(w.eval('measurementViewMode'),'area');assert.equal(w.eval('areaMode'),true);assert.equal(w.eval('JSON.stringify(linearPoints)'),line);

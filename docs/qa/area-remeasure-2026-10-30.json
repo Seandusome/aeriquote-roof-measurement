@@ -1,0 +1,137 @@
+[
+  {
+    "width": 320,
+    "industry": "snow",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 320,
+    "industry": "pressure",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 320,
+    "industry": "paving",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 320,
+    "industry": "landscaping",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 320,
+    "industry": "commercial",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 390,
+    "industry": "snow",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 390,
+    "industry": "pressure",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 390,
+    "industry": "paving",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 390,
+    "industry": "landscaping",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 390,
+    "industry": "commercial",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 768,
+    "industry": "snow",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 768,
+    "industry": "pressure",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 768,
+    "industry": "paving",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 768,
+    "industry": "landscaping",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  },
+  {
+    "width": 768,
+    "industry": "commercial",
+    "repeatedCancel": true,
+    "invalidBlocked": true,
+    "explicitSave": true,
+    "otherAreaAndLinePreserved": true,
+    "trustedTouch": true
+  }
+]

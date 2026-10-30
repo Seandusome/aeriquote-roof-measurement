@@ -16,7 +16,7 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  w.eval(`[[52.001,-106],[52.001,-105.9998],[52.0011,-105.9998]].forEach(p=>map.fire('click',{latlng:L.latLng(...p)}))`);btn('areaCancelCorrectionBtn').click();
  assert.equal(w.eval('commercialAreas.length'),1);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);assert.equal(w.eval('areaMode'),false);
  // Start Over during Edit keeps the saved record; Cancel restores original geometry and rate.
- btn('commercialAreaList').querySelector('button').click();assert(w.eval('areaCorrectionOriginal'));assert.equal(btn('areaStartBtn').textContent,'SAVE AREA CHANGES');btn('areaClearBtn').click();assert.equal(w.eval('areaPoints.length'),0);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);btn('areaCancelCorrectionBtn').click();assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);
+ btn('commercialAreaList').querySelector('button[onclick^="commercialEditArea"]').click();assert(w.eval('areaCorrectionOriginal'));assert.equal(btn('areaStartBtn').textContent,'SAVE AREA CHANGES');btn('areaClearBtn').click();assert.equal(w.eval('areaPoints.length'),0);assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);btn('areaCancelCorrectionBtn').click();assert.equal(w.eval('JSON.stringify(commercialAreas[0])'),first);
  btn('toolAreaBtn').click();draw(.001);const secondRate=btn('commercialAreaList').querySelectorAll('[aria-label="Rate per square foot"]')[1];secondRate.value='.4';secondRate.dispatchEvent(new w.Event('change'));
  btn('toolLinearBtn').click();assert(w.eval('linearMode'));assert.equal(btn('linearStartBtn').textContent,'SAVE LINE');assert(btn('linearStartBtn').disabled);assert(!btn('surfaceLineCancel').hidden);
  w.eval(`[[52,-106],[52,-105.999]].forEach(p=>map.fire('click',{latlng:L.latLng(...p)}));el('jobPrice').value='.7';jobPriceChanged();if(el('commercialLinearRate'))el('commercialLinearRate').value='.7'`);assert(!btn('linearStartBtn').disabled);btn('linearStartBtn').click();
@@ -52,6 +52,23 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  assert.equal(retryPosts,1,'Retry after preparation error must reach save once');assert(w.document.body.classList.contains('report-open'));assert(!btn('estimateActionStatus').textContent);assert(!btn('createEstimateBtn').disabled);
  assert.equal(w.eval('JSON.stringify({commercialAreas,linearPoints})'),savedForPreparation);w.fetch=savedFetch;w.document.body.classList.remove('report-open');btn('reportOverlay').style.display='none';
 
+ // Replacement drafts preserve the exact old records and prices until explicit Save.
+ const originalAreas=w.eval('JSON.stringify(commercialAreas)'),originalLine=w.eval('JSON.stringify(linearPoints)'),originalPrice=w.eval('priceCalc().total');
+ btn('customerName').value='Fictional Remeasure QA';
+ for(const which of [0,1,0,1]){
+  w.eval(`remeasureSurfaceArea(${which})`);assert(w.eval('areaRemeasureMode'));assert.equal(btn('areaStartBtn').textContent,'SAVE REPLACEMENT AREA');assert(btn('areaStartBtn').disabled);
+  assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);assert.equal(w.eval('priceCalc().total'),originalPrice);
+  // A self-crossing draft and a duplicate of the OTHER area must both fail closed.
+  w.eval(`areaPoints=[[52,-106],[52.0001,-105.9999],[52,-105.9999],[52.0001,-106]].map(p=>L.latLng(...p));redrawAreaMeasure()`);
+  assert(btn('areaStartBtn').disabled);w.eval('toggleAreaMeasure()');assert(w.eval('areaRemeasureMode'));assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);
+  w.eval(`areaPoints=commercialAreas[${1-which}].points.map(p=>L.latLng(...p));redrawAreaMeasure()`);assert(btn('areaStartBtn').disabled);assert(w.eval('replacementAreaError()').includes('overlap'));
+  btn('areaClearBtn').click();assert.equal(w.eval('areaPoints.length'),0);btn('areaCancelCorrectionBtn').click();assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);assert.equal(w.eval('JSON.stringify(linearPoints)'),originalLine);
+ }
+ w.eval('remeasureSurfaceArea(0)');assert.equal(w.eval('map.dragging.enabled()'),false);
+ w.eval(`[[52,-106],[52,-105.9998],[52.0001,-105.9998],[52.0001,-106]].forEach(p=>map.fire('click',{latlng:L.latLng(...p)}))`);
+ assert(!btn('areaStartBtn').disabled);assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);assert.equal(w.eval('priceCalc().total'),originalPrice);
+ btn('areaStartBtn').click();assert.equal(w.eval('areaRemeasureMode'),false);assert.equal(w.eval('map.dragging.enabled()'),true);assert.deepEqual(JSON.parse(w.eval('JSON.stringify(commercialAreas[1])')),JSON.parse(originalAreas)[1]);
+ assert.equal(w.eval('commercialAreas.length'),2);assert(w.eval('commercialAreas[0].sqft')>JSON.parse(originalAreas)[0].sqft);assert.equal(w.eval('commercialAreas[0].rate'),JSON.parse(originalAreas)[0].rate);assert.equal(w.eval('JSON.stringify(linearPoints)'),originalLine);assert.equal(btn('customerName').value,'Fictional Remeasure QA');
  console.log('PASS '+industry+': one saved list, clear Save/Cancel, reversible area Start Over, saved line options, independent rates and combined totals');
 }
 // Leaving surfaces restores Roofing's existing controls and does not duplicate nodes.
