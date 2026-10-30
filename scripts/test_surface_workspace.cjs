@@ -58,6 +58,7 @@ for(const industry of ['landscaping','snow','pressure','paving','commercial']){
  for(const which of [0,1,0,1]){
   w.eval(`remeasureSurfaceArea(${which})`);assert(w.eval('areaRemeasureMode'));assert.equal(btn('areaStartBtn').textContent,'SAVE REPLACEMENT AREA');assert(btn('areaStartBtn').disabled);
   assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);assert.equal(w.eval('priceCalc().total'),originalPrice);
+  assert(w.eval('areaLayers.length===0'), 'No original outline, fill, corners or labels in the active Area layer');assert.equal(w.eval('commercialAreaLayers.filter(l=>l instanceof L.Polygon).length'),1,'Only the other saved Area is rendered');assert.equal(w.eval('JSON.stringify(commercialAreaLayers.find(l=>l instanceof L.Polygon).getLatLngs()[0].map(p=>[p.lat,p.lng]))'),w.eval('JSON.stringify(commercialAreas[1-commercialEditingIndex].points)'));
   // A self-crossing draft and a duplicate of the OTHER area must both fail closed.
   w.eval(`areaPoints=[[52,-106],[52.0001,-105.9999],[52,-105.9999],[52.0001,-106]].map(p=>L.latLng(...p));redrawAreaMeasure()`);
   assert(btn('areaStartBtn').disabled);w.eval('toggleAreaMeasure()');assert(w.eval('areaRemeasureMode'));assert.equal(w.eval('JSON.stringify(commercialAreas)'),originalAreas);

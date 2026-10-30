@@ -17,6 +17,7 @@ script=script.slice(0,at)+String.raw`
    for(const which of [0,1,0,1]){
     const original=await record();await page.locator('#commercialAreaList .surface-saved-area').nth(which).getByRole('button',{name:'REMEASURE AREA',exact:true}).tap();
     assert(await page.evaluate(()=>areaRemeasureMode&&!map.dragging.enabled()));assert.equal(await record(),original);
+    assert(await page.evaluate(()=>areaLayers.length===0&&commercialAreaLayers.filter(l=>l instanceof L.Polygon).length===1&&JSON.stringify(commercialAreaLayers.find(l=>l instanceof L.Polygon).getLatLngs()[0].map(p=>[p.lat,p.lng]))===JSON.stringify(commercialAreas[1-commercialEditingIndex].points)), 'Remeasure must hide selected original and all its labels, preserving the other Area');
     await page.locator('#map').scrollIntoViewIfNeeded();const rect=await page.locator('#map').boundingBox();
     // Real trusted touch events place a self-crossing replacement. Original stays saved.
     const y=which?390:190,ring=[[70,y],[rect.width-75,y+70],[rect.width-75,y],[70,y+70]];
@@ -32,7 +33,7 @@ script=script.slice(0,at)+String.raw`
    await page.tap('#areaStartBtn');const after=JSON.parse(await record());assert.notDeepEqual(after.areas[0].points,before.areas[0].points);assert.deepEqual(after.areas[1],before.areas[1]);assert.deepEqual(after.line,before.line);assert.equal(after.customer,before.customer);assert.equal(after.areas[0].rate,before.areas[0].rate);assert.notEqual(after.total,before.total);
    const flags=await page.evaluate(()=>({mode:areaRemeasureMode,dragging:map.dragging.enabled(),events:touchQaEvents}));assert(!flags.mode&&flags.dragging&&flags.events.touch>0&&flags.events.pointer>0);
    // Secondary corner editing and repeated Linear editing retain prior locks and Cancel.
-   await page.locator('#commercialAreaList .surface-saved-area').first().getByRole('button',{name:'EDIT OUTLINE',exact:true}).tap();const saved=await record();await page.tap('#areaCancelCorrectionBtn');assert.equal(await record(),saved);
+   await page.locator('#commercialAreaList .surface-saved-area').first().getByRole('button',{name:'EDIT OUTLINE',exact:true}).tap();const saved=await record();assert(await page.evaluate(()=>!areaRemeasureMode&&areaLayers.some(l=>l instanceof L.Polygon)&&areaLayers.some(l=>l instanceof L.Marker&&l.dragging?.enabled())), 'Edit Outline must retain polygon and draggable corners');await page.tap('#areaCancelCorrectionBtn');assert.equal(await record(),saved);
    for(let repeat=0;repeat<2;repeat++){await page.tap('#linearEditBtn');assert(await page.evaluate(()=>!map.dragging.enabled()));const start=await marker('.linear-point');const original=await page.evaluate(()=>linearPoints.map(p=>[p.lat,p.lng]));const center=(await state()).center;await drag(start,{x:start.x+8,y:start.y+12});assert.deepEqual((await state()).center,center);await page.tap('#linearCancelEditBtn');assert.deepEqual(await page.evaluate(()=>linearPoints.map(p=>[p.lat,p.lng])),original);assert(await page.evaluate(()=>map.dragging.enabled()));}
    const expectedSaved=await page.evaluate(()=>({areas:JSON.parse(JSON.stringify(commercialAreas)),line:linearPoints.map(p=>[p.lat,p.lng]),total:priceCalc().total}));
    await page.selectOption('#streetViewChoice','none');
