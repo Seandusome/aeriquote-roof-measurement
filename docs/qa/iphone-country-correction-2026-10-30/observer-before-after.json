@@ -1,0 +1,9 @@
+{
+  "baseline_passes": 33,
+  "baseline_window_ms": 1200,
+  "controlled_after_passes": 2,
+  "first_tap_exact_physical_freeze_reproduced": false,
+  "physical_safari_messenger_pending": true,
+  "webkit": "not run: missing host libraries and dependency source503",
+  "latest_source_focus390": "PASS"
+}

@@ -1,3 +1,33 @@
+# Latest: property-country and correction follow-up — October 30, 2026
+
+## Checkpoint and safety
+Application commit2277d632b3da8668278dddfde31bf1c75c986a79 on landscaping-multi-area-recovery-oct11; treecb2835a7be182d2a2cb0069be1dd72217f4cbd90; appblob643f6cb62f03173b90a1314655332e14c3356c7a. Started at current2713305, no newer work overwritten. Render testdep-dbidr5favr4c73bk4img LIVE exact2277d63. GitHub validation41104590435 SUCCESS; PostgreSQL job124230628898 in41104590489 SUCCESS (five existing isolated PostgreSQL16 concurrency/recovery/credits/security jobs). Recovery job124230629400 was still running at documentation preparation, with no failed steps. Verify terminal status and final documentation HEAD checks before declaring all checks passed. Final documentation checkpoint changes no application code.
+
+## Read first
+Read docs/QA_IPHONE_COUNTRY_CORRECTION_2026_10_30.md and evidence under docs/qa/iphone-country-correction-2026-10-30/.
+
+## Implemented confirmed fixes
+1.Property Country before address,13Canada provinces/territories or51U.S./DC only. Compatible restoration before selecting SK/NU/YT/CA/TX/DC. In-page selection memory, blank incompatible region rather than silently choose one. Accepted address, customer, measurements, taxes and historical records untouched. Business profile location independent. Audited trial signup, all six onboarding pages, profile, property, legacy new-dealer dropdown and checkout; the legacy new-dealer dropdown also filters Country first. Legacy account edit/bootstrap free-text state fields remain unchanged; they are not combined region dropdowns.
+2.Snow wording observer no longer schedules itself indefinitely:baseline33passes/1.2s; controlled after2then settles; browser matrix1–3settling passes. Direct Area replacement initialization with protected original and explicit current/pending Area state; Linear entry explicitly sets pending Linear. Restore Leaflet size without panning after report closes and show existing active Save/Cancel controls immediately instead of smooth-scrolling past them. No new tool, persistence, math or PDF design.
+
+## Important: physical bug still OPEN pending Sean
+Inspected actual IMG_7247/7248/7249 screenshots, including Messenger chrome. A disabled Edit Line is expected while Area replacement is active; Area controls were above the scrolled map. The exact complete first-tap iPhone freeze was NOT reproduced in Chromium, and the observer loop is NOT proven its sole cause. Do not mark this physical report resolved until Sean retests standard Safari and Messenger. Prior-pan theory was experimentally ruled out; no speculative Leaflet moved-state workaround added.
+
+## Completed QA
+- Final local full74/74commands PASS. New targeted actual-DOM tests:property13/51 and saved address/regions; unchanged taxes/customer/history; legacy head-office13/51; explicit pending Area; no idle wording loop. Final source smoke390px Snow first three trusted taps after prior pan PASS.
+-15normal mobile +15Messenger-UA/844px-height Chromium cases (five surface industries x320/390/768):real emulated touch pan, estimate navigation, first/second/third taps accepted, Cancel restores pan, zero JS exceptions, idle observer settles. UA/viewport emulation is NOT Safari or Messenger engine proof.
+-Property/profile/signup controls plus all six onboarding pages at each320/390/768:13/51, round trips, persisted payload unchanged. Browser selectOption is not actual iOS native picker proof. Property390 screenshot visually checked.
+-Existing trusted touch Linear/Area/reviewed Roofing/QA manual Roofing repeated Save/Cancel/reopen suite PASS all three widths, stationary editing and restored map dragging/pinch.
+-Correction matrix15/15 with repeated replacement Save/Cancel, saved/reopen equivalence, independently saved Area/Line preservation, server pricing and independent haversine/cent checks.30Single/Expanded PDFs downloaded;45pages rendered and visually reviewed. PDF exporter block unchanged.30GeographicLib WGS84 polygons within0.16838% of unchanged local projection/whole-ft2 rounding; not survey-accuracy certification.
+-Controlled fictional imagery/temp QA accounts only. Real provider historical image regeneration not verified. WebKit downloaded but host dependencies unavailable (503fetch failures), so WebKit/Safari tests NOT RUN. No physical device used by agent.
+
+## Exact next step; stop for review
+Sean reload recovery test site in Safari first, Messenger separately. Choose Canada and confirm noU.S.states. Two Areas+Line → Create estimate → REMEASURE AREA1:active controls visible, first and later taps accepted, Cancel restores original, repeat valid Save → CREATE CUSTOMER ESTIMATE. Repeat Area2 and Linear, reopen and export bothPDFs. If freezing persists, capture selected button/browser and whether Save/Cancel responds. Do not hide/delete an independently saved billed Line. Never bypass invalidity/overlap guards.
+
+Main baselinec049a04b2ac5cc4df3d5c253fe9ca12f1d85806a unchanged; production/customer accounts untouched. Provider/API/Solar/Street View code, prices/taxes/allowances, historical records and PDF designs preserved. AutoMeasure intact, manual Roofing/Vector QA-only, AI Trace removed. No autosave, Stripe, CRM, imagery migration or new features. Keep all earlier notes below as historical context.
+
+---
+
 # Urgent estimate-stage correction — October 30, 2026; STOP AFTER REVIEW
 
 ## Latest application checkpoint
