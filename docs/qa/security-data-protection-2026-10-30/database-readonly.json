@@ -1,0 +1,24 @@
+{
+  "database_id": "dpg-db019ijncjis7383g3a0-a",
+  "plan": "0.1c-256mb",
+  "status": "available",
+  "server_version": "18.6",
+  "archive_mode": "on",
+  "wal_level": "replica",
+  "is_replica": false,
+  "archived_count": 4352,
+  "failed_count": 0,
+  "last_archived_time": "2026-10-30T21:43:16.921356Z",
+  "last_failed_time": null,
+  "stats_reset": "2026-10-02T20:32:25.426736Z",
+  "external_allowlist_includes_all_ipv4": true,
+  "base_backup_inventory_verified": false,
+  "instance_pitr_window_verified": false,
+  "qa_production_database_mapping_verified": false,
+  "credential_values_read": false,
+  "customer_tables_read": false,
+  "queries": [
+    "SELECT current_database() AS database_name, current_setting('server_version') AS server_version, current_setting('archive_mode') AS archive_mode, current_setting('wal_level') AS wal_level, pg_is_in_recovery() AS is_replica;",
+    "SELECT archived_count, last_archived_time, failed_count, last_failed_time, stats_reset FROM pg_stat_archiver;"
+  ]
+}

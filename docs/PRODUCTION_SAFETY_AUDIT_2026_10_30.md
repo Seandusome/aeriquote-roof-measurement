@@ -112,3 +112,7 @@ Current official docs checked during audit. These policies establish eligibility
 ## Checkpoint history
 
 Audit/docs/tests checkpoint `1a2b971`: application validation PASS, recovery workflow rejected before jobs because a container context was placed at job-env level. Test-only follow-up `ec0a9d5` moves that reference to the drill step; PostgreSQL job PASS. Application run41131179468 and full recovery run41131179510 both SUCCESS, including recovery job124322186524. No application or infrastructure change. Final documentation checkpoint checks are reported separately; do not confuse the historical failed workflow with an application defect.
+
+## October30 follow-up
+
+Approved narrow logging fix is recorded in `docs/SECURITY_DATA_PROTECTION_2026_10_30.md` (application6e9457f). The historical exposure findings above describe the pre-fix baseline. New read-only system metadata confirms active WAL archiving, while managed restore points and QA/production mapping remain unverified. See `docs/DEVELOPER_HANDOVER_2026_10_30.md`. No production setting or customer record changed.

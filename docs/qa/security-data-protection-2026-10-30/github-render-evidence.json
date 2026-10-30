@@ -1,0 +1,435 @@
+{
+  "application_commit": "6e9457f56f9b53c5ca6ea141764c1a3d15b2713d",
+  "application_workflow": 41133925154,
+  "application_result": "success",
+  "recovery_workflow": 41133925126,
+  "recovery_result": "success",
+  "jobs": [
+    {
+      "id": 124331538352,
+      "name": "postgres_integrity",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Initialize containers",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r requirements.txt",
+          "conclusion": "success"
+        },
+        {
+          "name": "Real PostgreSQL concurrent requests and failure recovery",
+          "conclusion": "success"
+        },
+        {
+          "name": "Property imagery acceptance and exactly-once credits",
+          "conclusion": "success"
+        },
+        {
+          "name": "Paid subscription anniversary concurrency",
+          "conclusion": "success"
+        },
+        {
+          "name": "Password-reset login race and employee access lifecycle",
+          "conclusion": "success"
+        },
+        {
+          "name": "Cross-role signup identity concurrency",
+          "conclusion": "success"
+        },
+        {
+          "name": "Secret-canary application, browser and actual Gunicorn logging regression",
+          "conclusion": "success"
+        },
+        {
+          "name": "Isolated operational privacy and support audit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Backup into new disposable database and previous-app compatibility drill",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Stop containers",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 124331538669,
+      "name": "recovery",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install Jinja2==3.1.6 Flask==3.1.2",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/check_release_files.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_database_initialization.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_property_session_recovery.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_property_address.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_complex_roofs.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_activation_metrics.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_account_access.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_business_isolation.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_workspace_account_binding.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_account_credits.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_password_recovery.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_security_lifecycle.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_login_identity_race.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_public_routes.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_support_storage.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_support_workflow.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_support_replies.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_support_inbound.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_support_quote_display.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_activation_controls.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/check_landscaping_multi_area.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_landscaping_engine.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_landscaping_rendering.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --no-save --package-lock=false jsdom@30.1.2 leaflet@1.9.4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_landscaping_controls.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_warranty_shields.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_surface_workspace.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_industry_wording.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_unit_address_ui.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_phone_pdf.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_browser_log_privacy.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_expanded_pdf.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_saved_editing.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_estimate_save_integrity.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_profile_save.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_profile_restore.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_country_regions.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_report_measurement_correction.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_quote_pricing_validation.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_estimate_pricing_api.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_saved_editing_session.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_price_rounding.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_saved_money_guard.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_measurement_edges.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_public_ui.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_help_center.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_support_form.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_onboarding_finish.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_signup_flow.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_new_user_flow.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_recovery_allowance.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_landscaping_engine.cjs paving",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_landscaping_engine.cjs pressure",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_landscaping_engine.cjs snow",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_geometry_integrity.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_final_reliability.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_geometry_client.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_server_pricing.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_automatic_roof_api.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_roof_integrity.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_qa_auth_flow.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_failure_recovery.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_failure_recovery.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_property_loading.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_property_acceptance.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_subscription_periods.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_profile_integrity.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_manual_roofing.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_manual_roofing.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_vector_pdf.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_vector_pdf.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_vector_download.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_vector_full_report.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python scripts/test_api_cost_routing.py",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run node scripts/test_logo_cache.cjs",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "render_deploy": "dep-dbih23ui0phs739e0at0",
+  "render_status": "live",
+  "render_commit": "6e9457f56f9b53c5ca6ea141764c1a3d15b2713d",
+  "production_changed": false
+}

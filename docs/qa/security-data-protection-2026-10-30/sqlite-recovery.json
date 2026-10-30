@@ -1,0 +1,1 @@
+{"result": "PASS", "backend": "SQLite", "prior_recovery_revision_reads_newer_estimates": true, "restore_target_new_and_empty": true, "source_newer_estimates_preserved": true, "backup_does_not_contain_post_backup_writes": true, "live_pitr_or_render_rollback_tested": false}

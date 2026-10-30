@@ -1,3 +1,19 @@
+# Latest: Sensitive logging fix and data protection - October 30, 2026
+
+Started at verified `2eb0de1`; application fix **6e9457f56f9b53c5ca6ea141764c1a3d15b2713d**. Read `docs/SECURITY_DATA_PROTECTION_2026_10_30.md` and `docs/DEVELOPER_HANDOVER_2026_10_30.md`. Evidence: `docs/qa/security-data-protection-2026-10-30`. Documentation HEAD can supersede app checkpoint without changing its code.
+
+Confirmed logging exposure fixed: process-wide `safe_logging.py` suppresses arbitrary message/argument/exception detail, preserves safe event/category/location and coarse access status/timing, excludes queries/raw paths/headers/bodies. Default `gunicorn.conf.py` installs before master/worker logs; app also installs it. All13 application browser console calls fixed-text only. Do not bypass default config or add raw diagnostic payloads. Historical/platform/third-party logs and user-pasted support content remain outside scope; no credentials or historical logs read/rotated/deleted.
+
+75/75 full local regression commands PASS (prior74 also passed after app fix). Six-canary real Gunicorn normal/preload/worker-boot-failure test PASS. Actual PDF failure-handler VM test across six industries/Single+Expanded PASS, same UI recovery; no physical or new visual-PDF claim. SQLite source-preserving recovery/adjacent-version read PASS. Application6e9457f: GitHub validation41133925154 and full recovery41133925126 SUCCESS; PostgreSQL job124331538352 and recovery job124331538669 SUCCESS, including new logging test and native restore. Render dep-dbih23ui0phs739e0at0 LIVE exact6e9457f at21:51:12Z. Final documentation HEAD checks verified separately after push.
+
+Read-only Render DB system metadata: paid PG18.6, `archive_mode=on`, WAL replica, primary;4352 successful archives,0 recorded failures since Oct2 reset, latest observed Oct30 21:43:16Z. NOT proof of managed base backup/PITR recoverability. Actual restore timestamps, workspace retention, base-backup inventory, QA/prod env mapping/shared credentials/least privilege still unavailable through connector. External allowlist includes all IPv4; requires approved review/restriction, not changed. No customer tables/active queries/credential values accessed, no DB writes/restore/resource creation.
+
+Both services remain free/On Commit/TCP health/inherited unknown notifications. Production/main unchanged c049a04. Before launch: prove dedicated database mapping/backup access, network scope, alerts/readiness, human-gated production release and named responder/backup. Pre-fix f3065e2 reintroduces logging weakness if blindly rolled back. No production settings changed. New logging app deployed only recovery and verified LIVE. Final docs use [skip render] to avoid unnecessary rebuild, CI still runs.
+
+Preserved RETRACE, all six industries, geometry/pricing/taxes, imagery/API integrations, accounts/allowances, historical data, PDF designs, AutoMeasure and QA gates; AI Trace remains removed. No Stripe/CRM/telemetry endpoint introduced. Stop after scoped security/data-protection batch. Next work requires review/approval; do not automatically implement monitoring, backup/credential/network settings or release gates. Existing emergency owner guide unchanged and still applicable. Preserve earlier notes below.
+
+---
+
 # Latest: Production safety and emergency recovery audit - October 30, 2026
 
 Started at verified recovery `f3065e2154eaa801aae12e3013d6216ff1d5c3fe`; all application code unchanged. Read `docs/PRODUCTION_SAFETY_AUDIT_2026_10_30.md`, `docs/EMERGENCY_RECOVERY_2026_10_30.md` and one-page `output/pdf/AeriQuote_Emergency_Recovery_Guide.pdf`. Evidence: `docs/qa/production-safety-2026-10-30`.

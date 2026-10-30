@@ -1,0 +1,1 @@
+{"result": "PASS", "python_secret_canaries": 6, "real_gunicorn_modes": ["normal", "preload", "worker_boot_failure"], "query_headers_body_exception_values_absent": true, "safe_status_duration_event_and_location_retained": true, "browser_fixed_message_calls": 13, "password_reset_and_session_semantics_changed": false, "production_data_accessed": false}
