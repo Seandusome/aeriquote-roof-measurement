@@ -1,6 +1,6 @@
 # Physical iPhone report follow-up — October 30, 2026
 
-Application checkpoint:2277d632b3da8668278dddfde31bf1c75c986a79, recovery only. Starting HEAD27133057b752257751b555ccac2a1d07e87d6484 was current and live (Renderdep-dbideo3bc2fs73d5b5l0). Its recovery/PostgreSQL jobs were confirmed SUCCESS before changes. Do not confuse initially queued collection results with the later completed jobs.
+Application checkpoint:2277d632b3da8668278dddfde31bf1c75c986a79, recovery only. Starting HEAD27133057b752257751b555ccac2a1d07e87d6484 was current and live (Renderdep-dbideo3bc2fs73d5b5l0). Initial workflow collection results were queued; its recovery/PostgreSQL jobs were subsequently confirmed SUCCESS. Do not confuse those initial collection results with the later completed jobs.
 
 ## Screenshot findings and confidence
 Inspected all three supplied physical-iPhone screenshots IMG_7247/7248/7249. The first is the estimate with Area1 plus an independent two-segment Linear measurement. The latter two explicitly show Messenger's embedded browser, the measurement map and a disabled Edit Line button. That is consistent with Area replacement being active, not proof that the Linear control was selected. The map was scrolled into view while the Area Save/Cancel controls were above it. Clipped labels and map repositioning are visible; screenshots cannot expose JavaScript exception/state history.
@@ -45,3 +45,6 @@ Playwright WebKit downloaded, but host libraries were absent; dependency fetches
 Do not mark the reported physical freeze resolved until Sean confirms. Reload recovery test page in standard Safari first, then Messenger separately. Choose Canada and check province list. Create Area1+Area2+Line; create estimate; REMEASURE AREA1 should show active Area controls, accept first and subsequent taps, retain original until valid Save, and Cancel should restore it. Repeat Area2 and EDIT LINEAR MEASUREMENT, Save/Cancel/reopen, recreate updated estimate and export both PDFs. Preserve independent measurements; never hide a billed Line to simplify the image. If freezing persists, capture which button was selected, browser and whether Save/Cancel can still be tapped.
 
 Main/production/customer data untouched. AutoMeasure preserved; manual Roofing/Vector remain QA-only; AI Trace removed. No imagery migration, paid services, subscriptions, Stripe, CRM, historical data migration or PDF redesign.
+
+## Verified release status
+Application2277d63:GitHub41104590489 recovery/PostgreSQL SUCCESS and41104590435 validation SUCCESS; Renderdep-dbidr5favr4c73bk4img LIVE. Documentation68abbc1:Renderdep-dbidt80473hc73cgp80g LIVE; final documentation regression status must be read from its run, not inferred from application checks. The documentation correction containing this status becomes the final checkpoint; application blob remains643f6cb62f03173b90a1314655332e14c3356c7a.
