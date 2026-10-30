@@ -28,4 +28,8 @@ if(process.env.QA_LONG_CUSTOMER==='1'){
  script=script.replaceAll('FICTIONAL QA ${industry} ${width}','FICTIONAL QA ${industry} ${width} FictionalFacilityOperationsAndPreventiveMaintenanceCoordinator');
  script=script.replaceAll('fictional.customer.with.a.long.contact.address.for.qa@example.invalid','fictional.customer.with.a.long.contact.address.for.qa@fictional-property-management-and-maintenance-company.example.invalid');
 }
+if(process.env.QA_PRICING_STRESS==='1'){
+ const priceAnchor=' const before=await page.evaluate(()=>({snapshot:captureQuoteSnapshot(),pricing:priceCalc(),overflow:document.documentElement.scrollWidth>innerWidth}));';assert(script.includes(priceAnchor));
+ script=script.replace(priceAnchor,` await page.evaluate(()=>{el('pricingMode').value='discount';el('discountPct').value='12.5';el('extraServiceAmount').value='23.47';el('extraServiceDescription').value='FICTIONAL QA extra service';el('estimatePeriod').value=['snow','landscaping','commercial'].includes(currentBusinessType())?'season':'one_time';renderSummary()});`+priceAnchor);
+}
 new Function('require',script)(require);
