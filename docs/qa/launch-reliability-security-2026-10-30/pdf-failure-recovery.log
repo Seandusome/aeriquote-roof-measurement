@@ -1,0 +1,13 @@
+START snow 390
+clicked property
+loaded Property aerial loaded — ready for Area measurement.
+drawn {
+  areas: 2,
+  points: 4,
+  line: 2,
+  manual: 0,
+  status: 'LINEAR MEASUREMENT SAVED — 62.0 ft. You can continue measuring or create the estimate.'
+}
+report opened
+PASS saved-image failure, stale placeholder cleanup, interrupted capture, duplicate download single-flight and safe retry
+{"industry":"snow","width":390,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-launch-final-pdf-recovery/snow-390-single.pdf","/tmp/aq-launch-final-pdf-recovery/snow-390-expanded.pdf"],"captureChecks":[{"sourceWidth":696,"sourceHeight":930,"drawWidth":472.96875,"drawHeight":632}],"saved":true,"reopened":true}

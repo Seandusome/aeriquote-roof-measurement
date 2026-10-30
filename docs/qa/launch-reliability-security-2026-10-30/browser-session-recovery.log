@@ -1,0 +1,20 @@
+START snow 390
+clicked property
+loaded Property aerial loaded — ready for Area measurement.
+drawn {
+  areas: 2,
+  points: 4,
+  line: 2,
+  manual: 0,
+  status: 'LINEAR MEASUREMENT SAVED — 62.0 ft. You can continue measuring or create the estimate.'
+}
+PASS real Chromium refresh/navigation warnings; dismiss preserves exact draft/customer
+BEFORE EXPIRY {
+  image: 'none',
+  status: 'LINEAR MEASUREMENT SAVED — 62.0 ft. You can continue measuring or create the estimate.'
+}
+PASS real workspace clears previous-business branding before profile hydration
+PASS real Chromium expired session + wrong-business re-login retain draft, block report and write no foreign estimate; original account restored
+report opened
+CONFIRMED LIMITATION: forced tab close bypasses warning and unsaved geometry is not restored; explicit saved estimate survives
+{"industry":"snow","width":390,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-launch-browser-recovery/snow-390-single.pdf","/tmp/aq-launch-browser-recovery/snow-390-expanded.pdf"],"captureChecks":[],"saved":true,"reopened":true}

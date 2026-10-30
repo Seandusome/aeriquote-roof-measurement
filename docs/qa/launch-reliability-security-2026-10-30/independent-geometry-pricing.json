@@ -1,0 +1,326 @@
+[
+  {
+    "case": "commercial-320-source",
+    "independent_total": "131.89",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "commercial-390-source",
+    "independent_total": "131.89",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.221642462187,
+        "relative_difference": 0.0026718824061090322,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187899215032,
+        "relative_difference": 0.002665660179259954,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "commercial-768-source",
+    "independent_total": "131.89",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.22164182060794,
+        "relative_difference": 0.0026718810066459118,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187889190359,
+        "relative_difference": 0.002665657992571495,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "landscaping-320-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "landscaping-390-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.221642462187,
+        "relative_difference": 0.0026718824061090322,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187899215032,
+        "relative_difference": 0.002665660179259954,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "landscaping-768-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.22164182060794,
+        "relative_difference": 0.0026718810066459118,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187889190359,
+        "relative_difference": 0.002665657992571495,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "paving-320-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "paving-390-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "paving-768-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.22164182060794,
+        "relative_difference": 0.0026718810066459118,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187889190359,
+        "relative_difference": 0.002665657992571495,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "pressure-320-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "pressure-390-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "pressure-768-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.22164182060794,
+        "relative_difference": 0.0026718810066459118,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187889190359,
+        "relative_difference": 0.002665657992571495,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "roofing-320-source",
+    "independent_total": "74.08",
+    "geometry": [
+      {
+        "saved_quantity": 494.52499014163163,
+        "wgs84_pitch_adjusted": 495.3239506738576,
+        "relative_difference": 0.0016130060562164214,
+        "pitch": 22.62
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "roofing-390-source",
+    "independent_total": "74.08",
+    "geometry": [
+      {
+        "saved_quantity": 494.52499014163163,
+        "wgs84_pitch_adjusted": 495.3239506738576,
+        "relative_difference": 0.0016130060562164214,
+        "pitch": 22.62
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "roofing-768-source",
+    "independent_total": "74.08",
+    "geometry": [
+      {
+        "saved_quantity": 494.5249892171844,
+        "wgs84_pitch_adjusted": 495.3239496747309,
+        "relative_difference": 0.001613005908701113,
+        "pitch": 22.62
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "snow-320-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2216592635385,
+        "relative_difference": 0.0026719190545484925,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2188065624599,
+        "relative_difference": 0.002665696478286526,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "snow-390-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.221642462187,
+        "relative_difference": 0.0026718824061090322,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187899215032,
+        "relative_difference": 0.002665660179259954,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  },
+  {
+    "case": "snow-768-source",
+    "independent_total": "121.53",
+    "geometry": [
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.22164182060794,
+        "relative_difference": 0.0026718810066459118,
+        "pitch": 0
+      },
+      {
+        "saved_quantity": 456,
+        "wgs84_pitch_adjusted": 457.2187889190359,
+        "relative_difference": 0.002665657992571495,
+        "pitch": 0
+      }
+    ],
+    "independent_price_tax": true
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "severity": "high",
+    "defect": "Combined snapshot retained a real Linear geometry but claimed zero quantity and omitted its charge",
+    "baseline_commit": "658639a",
+    "baseline_status": 200,
+    "claimed_ft": 0,
+    "actual_line_ft": 224.60115677987105,
+    "baseline_area_only_total": 821,
+    "fixed_status": 400,
+    "fix": "500c935f033bc564847d1fe5bbf36da9fda96e63"
+  },
+  {
+    "severity": "high",
+    "defect": "Duplicated/reversed/partially overlapping Linear segments could be quoted twice",
+    "baseline_commit": "6f2623a",
+    "baseline_status": 200,
+    "single_coverage_ft": 224.60115677987105,
+    "billed_ft": 449.2023135597421,
+    "baseline_total": 449.2,
+    "fixed_status": 400,
+    "fix": "7ac33fcec063ba6dfaf5dd666a33ff4cc16ba6d0"
+  },
+  {
+    "severity": "medium",
+    "defect": "Successful saved-aerial retry left stale image-error placeholder visible",
+    "baseline_browser_assertion": "Successful aerial retry must remove stale image-error placeholder",
+    "fixed_browser_test": "scripts/test_pdf_failure_browser.cjs",
+    "fix": "658639ac8f11e13f5fae08e9f496f037b992c305"
+  }
+]

@@ -1,0 +1,506 @@
+[
+  {
+    "industry": "snow",
+    "width": 320,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/snow-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/snow-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 367.078125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 200.875,
+        "drawHeight": 113
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "pressure",
+    "width": 320,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/pressure-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/pressure-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 367.078125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "paving",
+    "width": 320,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/paving-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/paving-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 367.078125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 320,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/landscaping-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/landscaping-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 367.078125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "commercial",
+    "width": 320,
+    "total": 131.89,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/commercial-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/commercial-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 367.078125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 320,
+    "total": 74.08,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/roofing-320-single.pdf",
+      "/tmp/aq-launch-final-pdfs/roofing-320-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 556,
+        "sourceHeight": 930,
+        "drawWidth": 378.4375,
+        "drawHeight": 633
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 238.219,
+        "drawHeight": 134
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "snow",
+    "width": 390,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/snow-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/snow-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 459.5,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 63.5625,
+        "drawHeight": 113
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "pressure",
+    "width": 390,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/pressure-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/pressure-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 459.5,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 95.625,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "paving",
+    "width": 390,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/paving-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/paving-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 459.5,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 95.625,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 390,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/landscaping-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/landscaping-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 459.5,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 95.625,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "commercial",
+    "width": 390,
+    "total": 131.89,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/commercial-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/commercial-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 459.5,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 95.625,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 390,
+    "total": 74.08,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/roofing-390-single.pdf",
+      "/tmp/aq-launch-final-pdfs/roofing-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 473.71875,
+        "drawHeight": 633
+      },
+      {
+        "street": true,
+        "sourceWidth": 360,
+        "sourceHeight": 640,
+        "drawWidth": 75.375,
+        "drawHeight": 134
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "snow",
+    "width": 768,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/snow-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/snow-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 900.53125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 200.875,
+        "drawHeight": 113
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "pressure",
+    "width": 768,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/pressure-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/pressure-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 900.53125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "paving",
+    "width": 768,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/paving-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/paving-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 900.53125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "landscaping",
+    "width": 768,
+    "total": 121.53,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/landscaping-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/landscaping-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 900.53125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "commercial",
+    "width": 768,
+    "total": 131.89,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/commercial-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/commercial-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 900.53125,
+        "drawHeight": 614
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 302.219,
+        "drawHeight": 170
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 768,
+    "total": 74.08,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-launch-final-pdfs/roofing-768-single.pdf",
+      "/tmp/aq-launch-final-pdfs/roofing-768-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1364,
+        "sourceHeight": 930,
+        "drawWidth": 928.390625,
+        "drawHeight": 633
+      },
+      {
+        "street": true,
+        "sourceWidth": 640,
+        "sourceHeight": 360,
+        "drawWidth": 238.219,
+        "drawHeight": 134
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  }
+]
