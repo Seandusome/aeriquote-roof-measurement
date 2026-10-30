@@ -2196,7 +2196,7 @@ function redrawReportCorrection(){
  });
  const issue=reportCorrectionProblem();let message=issue;
  if(!issue){const before=reportCorrectionWorkspace();try{applyReportCorrectionCandidate();const calc=priceCalc();message=quotePricingError(calc);if(!message){const quantity=c.mode==='area'?commercialAreas[c.index].sqft:linearFeetTotal();message=`${c.mode==='area'?'Area '+(c.index+1):'Linear'}: ${c.originalQuantity.toLocaleString()} → ${c.mode==='area'?fmt(quantity):quantity.toFixed(1)} ${c.mode==='area'?'ft²':'ft'}. Estimate total: ${money(c.originalTotal)} → ${money(calc.total)}. Save confirms this measurement and price change.`;}}finally{restoreReportCorrectionWorkspace(before)}}
- el('reportOutlineHelpTop').textContent=(c.mode==='area'?(c.drawing?'Remeasure Area — new replacement points. ':'Edit Outline — adjust existing corners, or select REMEASURE AREA to start empty. '):'')+(c.error||message||'Adjust the points or select Redraw. Cancel keeps the original.');
+ el('reportOutlineHelpTop').textContent=(c.mode==='area'?'RETRACE OUTLINE — tap the new boundary in order. Cancel keeps the original. ':'')+(c.error||message||'Adjust the points or select Redraw. Cancel keeps the original.');
  el('reportSaveOutlineBtnTop').disabled=!!issue||c.saving;
  el('reportSaveOutlineBtnTop').textContent=c.saving?'SAVING…':'SAVE MEASUREMENT & UPDATE ESTIMATE';
  el('reportCancelOutlineBtnTop').disabled=c.saving||!!c.uncertain;el('reportUndoOutlineBtnTop').disabled=c.saving||!!c.uncertain||!c.history.length;
@@ -2209,14 +2209,14 @@ function correctSavedMeasurementFromReport(mode,index=0){
  const pts=mode==='area'?commercialAreas[index]?.points:linearMeasurementSaved?linearPoints.map(p=>[p.lat,p.lng]):null;
  if(!pts||pts.length<(mode==='area'?3:2))return;
  clearVisualCorrection();clearReportOutlineTemp();reportOutlines={};
- const c=reportMeasurementCorrection={mode,index,points:pts.map(p=>L.latLng(p)),layers:[],originalQuantity:mode==='area'?commercialAreas[index].sqft:Number(linearFeetTotal().toFixed(1)),originalTotal:priceCalc().total,saving:false,drawing:false,history:[],drag:customerMap.dragging.enabled(),double:customerMap.doubleClickZoom.enabled()};
+ const c=reportMeasurementCorrection={mode,index,points:mode==='area'?[]:pts.map(p=>L.latLng(p)),layers:[],originalQuantity:mode==='area'?commercialAreas[index].sqft:Number(linearFeetTotal().toFixed(1)),originalTotal:priceCalc().total,saving:false,drawing:mode==='area',history:[],drag:customerMap.dragging.enabled(),double:customerMap.doubleClickZoom.enabled()};
  customerMap.dragging.disable();customerMap.doubleClickZoom.disable();
  // Hide only the selected saved measurement; unrelated Areas and Linear stay visible.
  customerOverlays.filter(l=>l._reportMeasurement?.mode===mode&&(mode!=='area'||l._reportMeasurement.index===index)).forEach(l=>customerMap.removeLayer(l));
  c.click=e=>{if(c.saving||c.uncertain||!c.drawing)return;c.history.push(c.points.map(p=>[p.lat,p.lng]));c.points.push(e.latlng);c.error='';redrawReportCorrection()};customerMap.on('click',c.click);
  el('reportOutlineTargetButtons').style.display='none';
  ['reportSaveOutlineBtnTop','reportCancelOutlineBtnTop','reportUndoOutlineBtnTop','reportRedrawBtn'].forEach(id=>el(id).style.display='inline-block');
- el('reportRedrawBtn').textContent=mode==='area'?'REMEASURE AREA':'REDRAW';el('reportUndoOutlineBtnTop').textContent='UNDO';el('reportCancelOutlineBtnTop').textContent='CANCEL';el('downloadPdfBtn').disabled=true;el('backToDealerBtn').disabled=true;
+ el('reportRedrawBtn').style.display=mode==='area'?'none':'inline-block';el('reportRedrawBtn').textContent='REDRAW';el('reportUndoOutlineBtnTop').textContent='UNDO';el('reportCancelOutlineBtnTop').textContent='CANCEL';el('downloadPdfBtn').disabled=true;el('backToDealerBtn').disabled=true;
  el('reportOutlineControls').classList.add('measurement-correction-controls');el('reportOutlineControls').closest('.reportPanel').classList.add('correction-panel');el('customerMap').classList.add('correcting-measurement');
  c.touchGuard=e=>{if(e.touches?.length===1&&e.cancelable)e.preventDefault()};el('customerMap').addEventListener('touchmove',c.touchGuard,{passive:false});
  redrawReportCorrection();
@@ -2250,7 +2250,7 @@ function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
  const snap=quoteSnapshot||captureQuoteSnapshot();let html='';
  if(surfaceIndustry()){
-  (snap.commercialAreas||[]).forEach((area,i)=>{if(area.points?.length>=3)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('area',${i})">CORRECT AREA ${i+1}</button>`});
+  (snap.commercialAreas||[]).forEach((area,i)=>{if(area.points?.length>=3)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('area',${i})">RETRACE OUTLINE — AREA ${i+1}</button>`});
   if(snap.linearPoints?.length>=2)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('linear')">CORRECT LINEAR MEASUREMENT</button>`;
   box.innerHTML=html||'<span class="small">No saved measurement available to correct.</span>';
   if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Choose a measurement to correct here. Save confirms the displayed quantity and price change. Cancel keeps the original.';

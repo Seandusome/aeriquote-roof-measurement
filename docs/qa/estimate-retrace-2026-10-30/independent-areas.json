@@ -1,0 +1,212 @@
+[
+  {
+    "case": "commercial-320-payload",
+    "area": 1,
+    "saved_sqft": 705,
+    "independent_wgs84_sqft": 706.115357126712,
+    "relative_difference": 0.0015795678644499526
+  },
+  {
+    "case": "commercial-320-payload",
+    "area": 2,
+    "saved_sqft": 2533,
+    "independent_wgs84_sqft": 2537.0042900790445,
+    "relative_difference": 0.0015783536885228264
+  },
+  {
+    "case": "commercial-390-payload",
+    "area": 1,
+    "saved_sqft": 998,
+    "independent_wgs84_sqft": 999.2793702960446,
+    "relative_difference": 0.0012802929131475677
+  },
+  {
+    "case": "commercial-390-payload",
+    "area": 2,
+    "saved_sqft": 3570,
+    "independent_wgs84_sqft": 3575.715013649738,
+    "relative_difference": 0.0015982855534968062
+  },
+  {
+    "case": "commercial-768-payload",
+    "area": 1,
+    "saved_sqft": 2582,
+    "independent_wgs84_sqft": 2585.9617640025817,
+    "relative_difference": 0.001532027293570523
+  },
+  {
+    "case": "commercial-768-payload",
+    "area": 2,
+    "saved_sqft": 8693,
+    "independent_wgs84_sqft": 8707.020292176863,
+    "relative_difference": 0.0016102284945241554
+  },
+  {
+    "case": "landscaping-320-payload",
+    "area": 1,
+    "saved_sqft": 705,
+    "independent_wgs84_sqft": 706.115357126712,
+    "relative_difference": 0.0015795678644499526
+  },
+  {
+    "case": "landscaping-320-payload",
+    "area": 2,
+    "saved_sqft": 2533,
+    "independent_wgs84_sqft": 2537.0042900790445,
+    "relative_difference": 0.0015783536885228264
+  },
+  {
+    "case": "landscaping-390-payload",
+    "area": 1,
+    "saved_sqft": 998,
+    "independent_wgs84_sqft": 999.2793702960446,
+    "relative_difference": 0.0012802929131475677
+  },
+  {
+    "case": "landscaping-390-payload",
+    "area": 2,
+    "saved_sqft": 3570,
+    "independent_wgs84_sqft": 3575.715013649738,
+    "relative_difference": 0.0015982855534968062
+  },
+  {
+    "case": "landscaping-768-payload",
+    "area": 1,
+    "saved_sqft": 2582,
+    "independent_wgs84_sqft": 2585.9617640025817,
+    "relative_difference": 0.001532027293570523
+  },
+  {
+    "case": "landscaping-768-payload",
+    "area": 2,
+    "saved_sqft": 8693,
+    "independent_wgs84_sqft": 8707.020292176863,
+    "relative_difference": 0.0016102284945241554
+  },
+  {
+    "case": "paving-320-payload",
+    "area": 1,
+    "saved_sqft": 705,
+    "independent_wgs84_sqft": 706.115357126712,
+    "relative_difference": 0.0015795678644499526
+  },
+  {
+    "case": "paving-320-payload",
+    "area": 2,
+    "saved_sqft": 2533,
+    "independent_wgs84_sqft": 2537.0042900790445,
+    "relative_difference": 0.0015783536885228264
+  },
+  {
+    "case": "paving-390-payload",
+    "area": 1,
+    "saved_sqft": 998,
+    "independent_wgs84_sqft": 999.2793702960446,
+    "relative_difference": 0.0012802929131475677
+  },
+  {
+    "case": "paving-390-payload",
+    "area": 2,
+    "saved_sqft": 3570,
+    "independent_wgs84_sqft": 3575.715013649738,
+    "relative_difference": 0.0015982855534968062
+  },
+  {
+    "case": "paving-768-payload",
+    "area": 1,
+    "saved_sqft": 2582,
+    "independent_wgs84_sqft": 2585.9617640025817,
+    "relative_difference": 0.001532027293570523
+  },
+  {
+    "case": "paving-768-payload",
+    "area": 2,
+    "saved_sqft": 8693,
+    "independent_wgs84_sqft": 8707.020292176863,
+    "relative_difference": 0.0016102284945241554
+  },
+  {
+    "case": "pressure-320-payload",
+    "area": 1,
+    "saved_sqft": 705,
+    "independent_wgs84_sqft": 706.115357126712,
+    "relative_difference": 0.0015795678644499526
+  },
+  {
+    "case": "pressure-320-payload",
+    "area": 2,
+    "saved_sqft": 2533,
+    "independent_wgs84_sqft": 2537.0042900790445,
+    "relative_difference": 0.0015783536885228264
+  },
+  {
+    "case": "pressure-390-payload",
+    "area": 1,
+    "saved_sqft": 998,
+    "independent_wgs84_sqft": 999.2793702960446,
+    "relative_difference": 0.0012802929131475677
+  },
+  {
+    "case": "pressure-390-payload",
+    "area": 2,
+    "saved_sqft": 3570,
+    "independent_wgs84_sqft": 3575.715013649738,
+    "relative_difference": 0.0015982855534968062
+  },
+  {
+    "case": "pressure-768-payload",
+    "area": 1,
+    "saved_sqft": 2582,
+    "independent_wgs84_sqft": 2585.9617640025817,
+    "relative_difference": 0.001532027293570523
+  },
+  {
+    "case": "pressure-768-payload",
+    "area": 2,
+    "saved_sqft": 8693,
+    "independent_wgs84_sqft": 8707.020292176863,
+    "relative_difference": 0.0016102284945241554
+  },
+  {
+    "case": "snow-320-payload",
+    "area": 1,
+    "saved_sqft": 705,
+    "independent_wgs84_sqft": 706.115357126712,
+    "relative_difference": 0.0015795678644499526
+  },
+  {
+    "case": "snow-320-payload",
+    "area": 2,
+    "saved_sqft": 2533,
+    "independent_wgs84_sqft": 2537.0042900790445,
+    "relative_difference": 0.0015783536885228264
+  },
+  {
+    "case": "snow-390-payload",
+    "area": 1,
+    "saved_sqft": 998,
+    "independent_wgs84_sqft": 999.2793702960446,
+    "relative_difference": 0.0012802929131475677
+  },
+  {
+    "case": "snow-390-payload",
+    "area": 2,
+    "saved_sqft": 3570,
+    "independent_wgs84_sqft": 3575.715013649738,
+    "relative_difference": 0.0015982855534968062
+  },
+  {
+    "case": "snow-768-payload",
+    "area": 1,
+    "saved_sqft": 2582,
+    "independent_wgs84_sqft": 2585.9617640025817,
+    "relative_difference": 0.001532027293570523
+  },
+  {
+    "case": "snow-768-payload",
+    "area": 2,
+    "saved_sqft": 8693,
+    "independent_wgs84_sqft": 8707.020292176863,
+    "relative_difference": 0.0016102284945241554
+  }
+]

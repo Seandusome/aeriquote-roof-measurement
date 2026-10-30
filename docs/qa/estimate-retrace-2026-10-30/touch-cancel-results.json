@@ -1,0 +1,122 @@
+[
+  {
+    "width": 320,
+    "industry": "snow",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 2,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 320,
+    "industry": "pressure",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 320,
+    "industry": "paving",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 320,
+    "industry": "landscaping",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 320,
+    "industry": "commercial",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 390,
+    "industry": "snow",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 2,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 390,
+    "industry": "pressure",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 390,
+    "industry": "paving",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 390,
+    "industry": "landscaping",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 390,
+    "industry": "commercial",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 768,
+    "industry": "snow",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 2,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 768,
+    "industry": "pressure",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 768,
+    "industry": "paving",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 768,
+    "industry": "landscaping",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  },
+  {
+    "width": 768,
+    "industry": "commercial",
+    "firstThreeTouches": true,
+    "previousPan": true,
+    "terminologyPasses": 1,
+    "embeddedUserAgent": true
+  }
+]

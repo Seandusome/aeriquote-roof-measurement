@@ -1,3 +1,20 @@
+# Latest: direct Estimate RETRACE OUTLINE — October 30, 2026
+
+This checkpoint includes the application fix, targeted tests and evidence together. Started at verified current recovery HEADf34d779. New appblob68574889a067e6f3efecdb6595eb628d8525b4bc, code-only tree9e13bba95083e89c09de0bc1ce49ac7b2350493d. Resolve latest recovery HEAD for commit/checks/Render; no newer work overwritten. Read docs/QA_ESTIMATE_RETRACE_2026_10_30.md and docs/qa/estimate-retrace-2026-10-30.
+
+Supersedes earlier Correct→existing corners→Remeasure instructions: Estimate now offers exactly one RETRACE OUTLINE — AREA1/2/etc per saved Area. Tap starts empty immediately, no original vertices/handles, no second Area Remeasure/Redraw option. Only chosen original hidden; other Areas and independent Line remain visible. Save/Cancel/Undo adjacent to aerial. New taps allow irregular six-point shapes; existing validated save, proposed quantity/total confirmation, selected-only replacement, old-data protection, failed/uncertain retry and unfinished-PDF guard retained. Cancel exact original. Step2 Edit Outline unchanged; Linear correction unchanged. No image-only surrogate.
+
+74/74 full local commands PASS.15/15 Chromium trusted-touch Save/reopen/PDF cases at320/390/768 for all five surface industries;15/15 additional Messenger-UA emulated first-tap/Undo/valid-six-point Cancel cases after prior workspace pan. Exact old data retained before Save/after Cancel, other Areas/Line visible, failed503 and committed-but-response-lost retries, no browser exceptions.30 actual PDFs/45 rendered pages visually inspected plus empty390 retrace screenshot. Independent haversine/integer-cent pricing/taxes match. WGS8430polygons max0.161023% vs unchanged projection/rounding; not survey certification.
+
+At preparation, previous checkpoint checks41117050245/41117050174 PASS and Renderdep-dbif4up5efls739ukh60 LIVE. New commit's GitHub/PostgreSQL and Render run after push: verify terminal state, do not infer pass from prior checkpoint. Final chat report records observed terminal results. Main c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a untouched. All verified code/docs/evidence saved in this recovery commit, no pending application edits intended.
+
+## Stop for physical iPhone confirmation
+Reload Safari, separately Messenger. Two Areas+Line → RETRACE OUTLINE — AREA1: selected original gone, zero corners before first tap, other Area/Line visible. Trace irregular boundary including extra walkway points, Undo, Cancel exact original. Repeat Save, Area2, Linear, reopen and both PDFs. Confirm proposed quantity/price then one confirmed outline. Agent tests are Chromium emulation/fictional imagery, not physical iPhone/Safari or real Messenger engine; actual provider photos not reverified. Physical retest remains pending. Do not start another batch without review.
+
+No imagery/API/Solar/Street View, calculations, plans/allowances, PDFs/design, accounts, saved historical data, Step2 corner editor, Roofing/AutoMeasure or QA gates changed. AI Trace removed. No Stripe/CRM/autosave, production or customer access. Preserve all prior notes/evidence below.
+
+---
+
 # Latest: Estimate correction visibility — October 30, 2026
 
 Application **661541bda8afc2b9c7720867e979612d25b6b680** on landscaping-multi-area-recovery-oct11; started at current f44c811. Read docs/QA_ESTIMATE_CORRECTION_VISIBILITY_2026_10_30.md and evidence docs/qa/estimate-correction-visibility-2026-10-30. Final documentation HEAD supersedes this application checkpoint without code changes.
