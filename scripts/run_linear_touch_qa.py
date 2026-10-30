@@ -12,7 +12,7 @@ import tempfile
 import time
 
 test_script = sys.argv[1] if len(sys.argv) > 1 else "scripts/test_linear_touch_browser.cjs"
-if test_script not in {"scripts/test_linear_touch_browser.cjs", "scripts/test_area_correction_touch.cjs", "scripts/test_surface_remeasure_touch.cjs", "scripts/test_country_regions_browser.cjs"}:
+if test_script not in {"scripts/test_linear_touch_browser.cjs", "scripts/test_area_correction_touch.cjs", "scripts/test_surface_remeasure_touch.cjs", "scripts/test_country_regions_browser.cjs", "scripts/test_estimate_correction_touch.cjs"}:
     raise SystemExit("Only the isolated touch QA scripts are permitted")
 root = Path(__file__).resolve().parents[1]
 env = dict(os.environ, DATABASE_URL="", PYTHONDONTWRITEBYTECODE="1")
@@ -40,7 +40,7 @@ with tempfile.TemporaryFile(mode="w+") as log:
             raise RuntimeError("Disposable fixture server did not become ready")
         result = subprocess.run(
             ["node", test_script],
-            cwd=root, env=env, timeout=240,
+            cwd=root, env=env, timeout=600 if test_script == "scripts/test_estimate_correction_touch.cjs" else 240,
         )
         sys.exit(result.returncode)
     finally:

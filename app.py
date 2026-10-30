@@ -1440,6 +1440,16 @@ function linearFeetTotal(){let total=0;for(let i=1;i<linearPoints.length;i++)tot
 // Keep the aerial fixed for saved line/polygon corrections, preserving prior dragging.
 // Touch zoom remains independent; do not disable Leaflet's two-finger zoom handler.
 function syncMeasurementEditMapDragging(){
+ // Rapid replacement taps must place corners, not trigger Leaflet double-tap zoom.
+ if(map.doubleClickZoom){
+  if(typeof areaRemeasureMode!=='undefined'&&areaRemeasureMode){
+   if(map._aqRemeasureDoubleClick===undefined)map._aqRemeasureDoubleClick=map.doubleClickZoom.enabled();
+   map.doubleClickZoom.disable();
+  }else if(map._aqRemeasureDoubleClick!==undefined){
+   if(map._aqRemeasureDoubleClick)map.doubleClickZoom.enable();
+   delete map._aqRemeasureDoubleClick;
+  }
+ }
  const polygonEditing=!!areaCorrectionOriginal||roofOutlineReviewMode||(traceMode&&manualRoofEditIndex!==null);
  map.getContainer().classList.toggle('polygon-correcting',polygonEditing);
  map.getContainer().classList.toggle('linear-correcting',!!linearCorrectionOriginal);
@@ -2122,6 +2132,7 @@ function addVisualCorrectionPoint(latlng){
  refreshVisualCorrectionLine();
 }
 function startVisualMeasurementCorrection(mode){
+ if(surfaceIndustry()){correctSavedMeasurementFromReport(mode);return}
  if(!customerMap){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='The aerial image is not ready. Please reopen the estimate.';return;}
  clearVisualCorrection();
  visualCorrectionMode=mode;
@@ -2145,9 +2156,30 @@ async function saveVisualCorrection(){
  if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';
  if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='✓ Estimate image corrected. Original measurement and price are unchanged.';
 }
+// Surface corrections must use measured geometry, never a picture-only surrogate.
+function correctSavedMeasurementFromReport(mode,index=0){
+ if(!surfaceIndustry()||!sessionToken||!['area','linear'].includes(mode))return;
+ if(savedEstimateEditContext||quoteSnapshot?.savedPricing){status('Select EDIT MEASUREMENTS / PRICE to restore this saved job before correcting it.','warn');return}
+ if(areaMode||linearMode||areaCorrectionOriginal||linearCorrectionOriginal){status('Save or cancel your current measurement correction first.','warn');return}
+ if(mode==='area'&&!commercialAreas[index]?.points?.length)return;
+ if(mode==='linear'&&(!linearMeasurementSaved||linearPoints.length<2))return;
+ clearVisualCorrection();reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();reportOutlines={};reportOutlineTarget=null;
+ document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);
+ document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
+ if(customerMap){customerMap.remove();customerMap=null}customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;
+ if(mode==='area')remeasureSurfaceArea(index);else editLinearMeasure();
+ el(mode==='area'?'map':'linearTool')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
 function renderReportOutlineTargetButtons(){
  const box=el('reportOutlineTargetButtons');if(!box)return;
  const snap=quoteSnapshot||captureQuoteSnapshot();let html='';
+ if(surfaceIndustry()){
+  (snap.commercialAreas||[]).forEach((area,i)=>{if(area.points?.length>=3)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('area',${i})">REMEASURE AREA ${i+1}</button>`});
+  if(snap.linearPoints?.length>=2)html+=`<button class="orange" onclick="correctSavedMeasurementFromReport('linear')">EDIT LINEAR MEASUREMENT</button>`;
+  box.innerHTML=html||'<span class="small">No saved measurement available to correct.</span>';
+  if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Choose the saved Area or Linear measurement to correct. Save the correction, then create the updated estimate. Cancel keeps the original. Other measurements remain in this job.';
+  return;
+ }
  (snap.structures||[]).forEach((st,i)=>{
    const key=`structure-${i}`;
    const label=i===0?'EDIT MAIN HOUSE OUTLINE':`EDIT ${reportTargetLabel(key)} OUTLINE`;
