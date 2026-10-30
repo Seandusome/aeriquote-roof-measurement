@@ -1,3 +1,50 @@
+# END OF DAY - October 30, 2026
+
+**STOP: work finished for today. No further development, deployment or infrastructure changes authorized by this checkpoint.** Read this section first next session, then verify current recovery HEAD before proceeding. Branch: `landscaping-multi-area-recovery-oct11` only; never overwrite newer work.
+
+## Saved application and verification
+
+Pre-save GitHub HEAD: **de982a0d1b1acdbfd2c0a01a601b4dbd99baef2b**. Final end-of-day HEAD is the documentation commit containing this section; resolve branch HEAD rather than treating the pre-save SHA as final. No application changes after **6e9457f56f9b53c5ca6ea141764c1a3d15b2713d**. Local tracked working tree was clean before this documentation update; only disposable Python caches were untracked. No important unsaved source or evidence found.
+
+Confirmed included in recovery history:
+- `7ac33fc`: reject duplicated/reversed/overlapping Linear coverage that could overbill.
+- `658639a`: clear stale saved-image error placeholder only after successful image retry.
+- `500c935`: reject nonzero saved Linear geometry paired with a missing/zero claimed length; keep PDF/estimate consistency safeguards.
+- `6e9457f`: safe Python/Gunicorn diagnostics, including reset-query and exception exposure; browser console calls use fixed messages. No authentication, measurement, pricing or provider behaviour changed.
+- `2eb0de1`: operational safety audit, isolated backup/restore compatibility drills and one-page owner emergency guide.
+- `de982a0`: security/data-protection evidence, developer handover and prior resume checkpoint.
+
+Regression evidence: **75/75** full local commands PASS; secret-canary real Gunicorn normal/preload/worker-boot-failure tests PASS; actual PDF failure handler VM checks across six industries and Single/Expanded PASS; isolated SQLite source-preserving recovery PASS. At pre-save HEADde982a0, GitHub application workflow **41134305100 SUCCESS**; full recovery workflow **41134305144 SUCCESS**, including recovery job **124332820967 SUCCESS** and PostgreSQL job **124332820796 SUCCESS**. PostgreSQL checks include concurrent failure recovery, property acceptance/exactly-once deductions, subscription boundaries, employee/password-reset lifecycle, identity races, secret logging and native backup restoration into a new disposable database. Prior application6e9457f workflows41133925154/41133925126 also SUCCESS.
+
+No new tests, development or manual deployments started for this end-of-day save. A docs-only push runs existing CI automatically; final exact documentation-HEAD check results are reported in the completion message. `[skip render]` prevents a new Render deployment; it does not skip GitHub CI.
+
+Exact live recovery deployment verified: **dep-dbih23ui0phs739e0at0**, status **LIVE**, application **6e9457f56f9b53c5ca6ea141764c1a3d15b2713d**, completed **2026-10-30T21:51:12.363135Z**. Service `aeriquote-commercial-test` / `srv-db5a2g5ckfvc739fui70`. Final docs save must leave this deployment unchanged.
+
+Main remains **c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a**. Main service `aeriquote-roof-measurement` / `srv-db01g1p42hec73ehu1lg` remains LIVE at that same old commit, deploy **dep-db5b726k1f9s73e862ug**. No main ref, production setting, customer account, credential or customer database record was changed. Preserve the current physical-iPhone visually approved RETRACE OUTLINE, all six industries, saved geometry, quantity/pricing/tax validation, historical estimates, imagery integrations, PDFs, allowances and QA restrictions. AutoMeasure code intact; AI Trace removed.
+
+## Supplier update from Sean - verbal / unsigned, no purchasing approval
+
+**Spexi:** Sean reports that Spexi verbally confirmed the intended commercial measurement and estimating workflow is supported. Proposed pricing: **$2,500 CAD annually for approximately13,333 imagery lookups**, with additional lookups available at the same effective rate. Coverage is limited to areas Spexi supplies; **Aaron will send detailed coverage information**. No signed licensing terms or coverage package reviewed. Confirm written rights for multi-tenant tracing, permanent derived-geometry storage, customer PDF redistribution and historical retention, plus exact lookup definition, expiry/renewal and additional-usage terms before relying on this offer. Do not treat this verbal account as contractual approval. No purchase or integration authorized.
+
+**Stadia Maps:** Sean created a Professional trial under Shinglextra and visually tested Alidade Satellite in Saskatoon; promising for larger properties/ordinary roofs, blurry at complex residential-roof zoom. This is Sean's visual observation, not a measurement-accuracy certification. Official enterprise contact verified: `entsales@stadiamaps.com` (https://stadiamaps.com/support/). This assistant prepared the full inquiry but **did not send it** because the connected Gmail service was disabled. Any submission by Sean or another channel, vendor receipt and written response remain unconfirmed. Do not claim the inquiry was sent or licensing granted. Ready-to-send wording is in the conversation; no vendor was contacted by this assistant.
+
+**Mapbox:** remains a potential supplier with an indicative enterprise package of approximately **$25,000 annually**. Currency, final price, included API usage, coverage and exact permanent-derived-data/PDF/historical rights remain unconfirmed pending written contractual terms. No purchase, migration, agreement or supplier substitution approved.
+
+All supplier comments above are reports/indications rather than signed commercial rights. Do not assume permission from a trial or paid plan. No imagery migration or subscription-price change approved.
+
+## Remaining launch risks and next-session priorities
+
+1. Verify actual managed database recovery timestamps/base-backup inventory and workspace retention; prove test and production database separation using masked service/database IDs. Read-only system checks already confirmed PG18.6 WAL archiving on,4352 successful archives and0 recorded failures at the recorded snapshot; this is NOT proof of restore readiness. No live restore authorized.
+2. Review broad external database allowlist, shared credentials/env groups and least privilege. Do not restrict/rotate until dependencies are confirmed and changes approved. Historical/platform logs and user-pasted support messages are outside the new logging boundary; do not reintroduce raw credential/payload diagnostics.
+3. Establish privacy-safe central failure/PDF monitoring, real HTTP readiness, verified owner/responder notifications, human-approved production releases and a named technical responder plus backup. Current services remain free/On Commit/TCP-only/inherited notification defaults; branches report unprotected. These infrastructure/settings changes require approval.
+4. Continue intensive isolated measurement, pricing, save/reopen, PDF and security testing when next batch is approved. Preserve physical-iPhone RETRACE behaviour. Distinguish synthetic/VM/Chromium tests from physical Safari/Messenger and real-provider verification. No new physical-device test or visual customer-PDF inspection performed in the logging batch.
+5. Review Aaron's Spexi coverage and written licensing/price terms; confirm whether Stadia inquiry was submitted and review its written response; retain Mapbox as an option. No supplier contact beyond separately authorized inquiry, paid commitments or integration without approval.
+6. **Imagery migration and Stripe integration remain on hold** pending separate approval. No CRM, new measuring tools, architectural roof features or autosave work authorized.
+
+Read `docs/SECURITY_DATA_PROTECTION_2026_10_30.md`, `docs/DEVELOPER_HANDOVER_2026_10_30.md`, `docs/PRODUCTION_SAFETY_AUDIT_2026_10_30.md` and the unchanged `docs/EMERGENCY_RECOVERY_2026_10_30.md` / `output/pdf/AeriQuote_Emergency_Recovery_Guide.pdf`. Detailed prior evidence is retained under `docs/qa/`. Operational/commercial launch sign-off is still pending. Stop for today; preserve all earlier resume notes below.
+
+---
+
 # Latest: Sensitive logging fix and data protection - October 30, 2026
 
 Started at verified `2eb0de1`; application fix **6e9457f56f9b53c5ca6ea141764c1a3d15b2713d**. Read `docs/SECURITY_DATA_PROTECTION_2026_10_30.md` and `docs/DEVELOPER_HANDOVER_2026_10_30.md`. Evidence: `docs/qa/security-data-protection-2026-10-30`. Documentation HEAD can supersede app checkpoint without changing its code.
