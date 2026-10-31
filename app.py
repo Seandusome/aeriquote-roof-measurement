@@ -2420,7 +2420,7 @@ async function buildManualCustomerSnapshot(){
 }
 async function loadCustomerWideAerial(token,targetMap){
  // Use one continuous satellite image for estimates instead of a raster tile mosaic.
- const snap=quoteSnapshot||captureQuoteSnapshot(),pts=[];
+ const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot()),pts=[];
  (snap.commercialAreas||[]).forEach(a=>(a.points||[]).forEach(p=>pts.push(L.latLng(p[0],p[1]))));
  (snap.areaPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
  (snap.linearPoints||[]).forEach(p=>pts.push(L.latLng(p[0],p[1])));
@@ -2489,7 +2489,7 @@ async function buildInteractiveCustomerMap(){
  await new Promise(r=>setTimeout(r,220));
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
- const snap=quoteSnapshot||captureQuoteSnapshot();
+ const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
  // Draw saved area and linear outlines together on the customer estimate and PDF.
  const hasArea=(snap.commercialAreas||[]).some(a=>a.points?.length>=3)||(Array.isArray(snap.areaPoints)&&snap.areaPoints.length>=3);
  const hasLinear=Array.isArray(snap.linearPoints)&&snap.linearPoints.length>=2;
@@ -2575,7 +2575,44 @@ async function buildInteractiveCustomerMap(){
  layoutCustomerMeasurementLabels();
  setReportOutlineButtons(false);
 }
+// Project only the geometry selected by the existing pricing rules. Never mutate
+// the saved snapshot: inactive families remain available in earlier revisions.
+function activeSavedDiagramSnapshot(snap){
+ const out={...snap,structures:[],manualPlanes:[],commercialAreas:[],areaPoints:[],linearPoints:[]};
+ const surface=snap.businessType!=='roofing',mode=snap.measurementMode||'auto';
+ if(surface&&(snap.commercialAreas||[]).length){
+  out.commercialAreas=snap.commercialAreas;
+  if(Number(snap.linearFeet)>0)out.linearPoints=snap.linearPoints||[];
+ }else if(mode==='area')out.areaPoints=snap.areaPoints||[];
+ else if(mode==='linear'){
+  out.linearPoints=snap.linearPoints||[];
+  if(surface&&snap[snap.businessType+'Combined'])out.areaPoints=snap.areaPoints||[];
+ }else if(mode==='auto'){
+  const source=snap.measureSource||'google',planes=snap.manualPlanes||[],roofs=snap.structures||[];
+  if(source==='manual'){if(planes.reduce((n,p)=>n+Number(p.surface_sqft||0),0)>0)out.manualPlanes=planes;else out.structures=roofs}
+  else if(source==='hybrid'){out.structures=roofs;out.manualPlanes=planes}
+  else if(source==='google'||source==='adjusted')out.structures=roofs;
+  else throw new Error('Saved estimate measurement source is unavailable. Review its measurements before export.');
+ }else throw new Error('Saved estimate measurement mode is unavailable. Review its measurements before export.');
+ return out;
+}
+function savedDiagramGeometryError(snapshot){
+ if(!snapshot)return '';
+ try{
+  const snap=activeSavedDiagramSnapshot(snapshot),areas=snap.commercialAreas.length?snap.commercialAreas:(snap.areaPoints.length||Number(snap.areaSqFt)>0&&snap.measurementMode==='area'?[{points:snap.areaPoints,sqft:snap.areaSqFt}]:[]);
+  if(areas.length){if(areas.some(a=>!Number.isFinite(Number(a.sqft))||Number(a.sqft)<=0))return 'Saved area quantity is invalid. Review the saved estimate before export.';const issue=savedAreaGeometryError(areas);if(issue)return issue;}
+  if(snap.linearPoints.length||Number(snap.linearFeet)>0&&(snap.measurementMode==='linear'||snap.commercialAreas.length)){const issue=savedLinearGeometryError(snap.linearPoints,Number(snap.linearFeet));if(issue)return issue;}
+  if(!areas.length&&!snap.linearPoints.length&&!snap.structures.length&&!snap.manualPlanes.length)return 'Saved estimate has no active measurement geometry. Review its measurements before export.';
+  if(snapshot.savedPricing&&areas.length&&snap.measurementMode!=='linear'){
+   const quantity=areas.reduce((n,a)=>n+Number(a.sqft),0);
+   if(!Number.isFinite(Number(snapshot.savedPricing.area))||Math.abs(quantity-Number(snapshot.savedPricing.area))>1)return 'Saved estimate quantity does not match its active diagram. Review the saved estimate before export.';
+  }
+  return '';
+ }catch(e){return 'Saved estimate diagram cannot be reconciled with its measurements. Review the saved estimate before export.'}
+}
+function savedDiagramFingerprint(snap){const active=activeSavedDiagramSnapshot(snap);return JSON.stringify([active.businessType,active.measurementMode,active.measureSource,active.structures,active.manualPlanes,active.commercialAreas,active.areaPoints,active.linearPoints,active.areaSqFt,active.linearFeet])}
 function drawSavedMeasurementLabels(ctx,snap,view,width,height){
+ snap=activeSavedDiagramSnapshot(snap);
  const occupied=[];const world=256*Math.pow(2,view.zoom),xy=p=>{const lat=Number(p[0]??p.lat),lng=Number(p[1]??p.lng),v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]},center=xy([view.latitude,view.longitude]);
  const pixel=p=>{const q=xy(p);return[width/2+(q[0]-center[0])*width/view.width,height/2+(q[1]-center[1])*height/view.height]};
  const label=(point,text,color,anchored=false)=>{const [px,py]=pixel(point);ctx.save();ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.measureText(text).width+14,box=anchored?{x:px-w/2,y:py-14}:measurementLabelPosition(px,py,w,28,occupied,width,height,8),x=box.x+w/2,y=box.y+14;ctx.strokeStyle=color;ctx.lineWidth=1;if(!anchored&&Math.hypot(x-px,y-py)>4){ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke()}ctx.fillStyle='#fff';ctx.fillRect(box.x,box.y,w,28);ctx.strokeRect(box.x,box.y,w,28);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore()};
@@ -2595,7 +2632,8 @@ async function buildSavedHistoricalSnapshot(){
  const host=el('customerMap');if(!host)return;
  if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
  host.innerHTML='';host.style.position='relative';host.style.overflow='hidden';host.style.display='flex';host.style.alignItems='center';host.style.justifyContent='center';
- const snap=quoteSnapshot||captureQuoteSnapshot(),roofs=[];
+ const original=quoteSnapshot||captureQuoteSnapshot(),issue=savedDiagramGeometryError(original);if(issue)throw new Error(issue);
+ const snap=activeSavedDiagramSnapshot(original),roofs=[];
  (snap.structures||[]).forEach((st,i)=>{
    const pts=st.outline;
    if(Array.isArray(pts)&&pts.length>=3)roofs.push({kind:st.manually_measured?'manual':i===0?'house':'garage',points:pts.map(v=>({lat:Number(v.lat!==undefined?v.lat:v[0]),lng:Number(v.lng!==undefined?v.lng:v[1])}))});
@@ -2616,7 +2654,7 @@ async function buildSavedHistoricalSnapshot(){
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='auto';canvas.style.height='auto';canvas.style.maxWidth='100%';canvas.style.maxHeight='100%';canvas.style.flex='none';canvas.style.display='block';
-   canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
+   canvas.dataset.diagramScope=savedDiagramFingerprint(original);canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
@@ -2624,7 +2662,7 @@ async function buildCustomerMap(){
  if(!sessionToken)return;
  const imageChoice=el('streetViewChoice')?.value||'auto';
  const useAerial=imageChoice!=='none';
- const snap=quoteSnapshot||captureQuoteSnapshot();
+ const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
  const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
  // V11.6.63 — MANUAL ESTIMATE PIXEL LOCK
  // For a pure dealer-manual quote, do not re-project the saved trace onto a
@@ -3068,7 +3106,7 @@ async function buildExpandedEstimatePDF(report){
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
  const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none';
  const aerial=hasAerial?await html2canvas(el('customerMap'),options):null;
- const areas=(quoteSnapshot?.commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
+ const areas=(activeSavedDiagramSnapshot(quoteSnapshot||{}).commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
  if(aerial&&areas.length){const host=el('customerMap'),savedCanvas=host.querySelector('canvas'),savedView=savedCanvas?.dataset.mapView,view=savedView?JSON.parse(savedView):null,hostRect=host.getBoundingClientRect(),savedRect=savedCanvas?.getBoundingClientRect(),frame=savedRect?{x:savedRect.left-hostRect.left,y:savedRect.top-hostRect.top,width:savedRect.width,height:savedRect.height}:null;
  const project=p=>{if(customerMap)return customerMap.latLngToContainerPoint(L.latLng(p[0],p[1]));if(!view||!frame)throw new Error('Reopen this estimate to restore aerial coordinates before expanded export.');return savedAerialPoint(p,view,frame)};
  const occupied=customerMap?[...host.querySelectorAll('.aeri-edge-label,.linear-seg-label,.area-label,.edge-label,.seg-label,.manual-label')].map(n=>{const r=n.getBoundingClientRect(),h=host.getBoundingClientRect();return{x:r.left-h.left,y:r.top-h.top,w:r.width,h:r.height}}):JSON.parse(savedCanvas?.dataset.labelBoxes||'[]').map(b=>({x:frame.x+b.x*frame.width/savedCanvas.width,y:frame.y+b.y*frame.height/savedCanvas.height,w:b.w*frame.width/savedCanvas.width,h:b.h*frame.height/savedCanvas.height}));
@@ -3181,8 +3219,9 @@ function savedEstimateMoneyIssue(pricing){
  const cents=value=>Math.round((Number(value)+Number.EPSILON)*100);
  return cents(values[0])+cents(values[1])+cents(values[2])===cents(values[3])?'':'Saved estimate totals do not reconcile. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
 }
-function printEstimate(){if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
+function printEstimate(){if(typeof savedDiagramGeometryError==='function'){const issue=savedDiagramGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
+ if(typeof savedDiagramGeometryError==='function'){const issue=savedDiagramGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}
  if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
  if(quoteSnapshot?.linearPoints?.length||quoteSnapshot?.linearFeet>0){const issue=savedLinearGeometryError(quoteSnapshot.linearPoints,Number(quoteSnapshot.linearFeet));if(issue){status(issue,'warn');return}}
@@ -3203,7 +3242,7 @@ async function downloadEstimatePDF(){
   // Do not rebuild the manual aerial and do not refit/recenter the map before capture.
   // The saved outline and the PDF therefore use the exact same Leaflet viewport + geometry.
   const useAerial=(el('streetViewChoice')?.value||'auto')!=='none';
-  if(useAerial&&!customerMap){if(quoteSnapshot?.savedPricing){if(!el('customerMap')?.querySelector('canvas'))await buildSavedHistoricalSnapshot()}else{await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}}
+  if(useAerial&&!customerMap){if(quoteSnapshot?.savedPricing){if(el('customerMap')?.querySelector('canvas')?.dataset.diagramScope!==savedDiagramFingerprint(quoteSnapshot))await buildSavedHistoricalSnapshot()}else{await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}}
   else if(customerMap){await new Promise(r=>setTimeout(r,160))}
   const actions=report.querySelector('.reportActions'),outlineControls=el('reportOutlineControls');
   const oldActionsDisplay=actions?actions.style.display:'',oldOutlineDisplay=outlineControls?outlineControls.style.display:'';
@@ -3217,7 +3256,7 @@ async function downloadEstimatePDF(){
   // Satellite images and labels remain in the map; restore SVGs even if capture fails.
   const pdfVectors=[],pdfLabels=[];
   try{
-    const snap=quoteSnapshot||captureQuoteSnapshot();
+    const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
     // Capture all commercial area polygons and the linear trace together.
     // The old PDF path chose just one outline based on the selected tool.
     const traces=[];
