@@ -1653,6 +1653,17 @@ function manualRoofGeometryError(planes){
  if(areas.some(a=>measuredPolygonError(a.points.map(v=>({lat:v[0],lng:v[1]})))))return 'Roof section outline is incomplete or invalid.';
  return savedAreaGeometryError(areas).replaceAll('service area','roof section');
 }
+function pricedRoofGeometryError(snapshot){
+ if(!snapshot||snapshot.businessType!=='roofing'||snapshot.measurementMode!=='auto')return '';
+ const source=snapshot.measureSource||'google';if(!['google','manual','hybrid'].includes(source))return '';
+ // Existing incomplete-roof safeguards retain their specific repair instructions.
+ if((snapshot.structures||[]).some(r=>r.needs_remeasure||r.automatic_review_warning))return '';
+ try{
+  const roofs=(snapshot.structures||[]).map(r=>({points:r.outline||[]})),planes=(snapshot.manualPlanes||[]).map(p=>({points:p.points||[]}));
+  const included=source==='manual'?(planes.length?planes:roofs):source==='hybrid'?roofs.concat(planes):roofs;
+  return manualRoofGeometryError(included);
+ }catch(e){return 'Roof measurement snapshot is incomplete or invalid. Review the saved measurements before quoting.'}
+}
 function beginManualRoofSection(){
  if(!sessionToken){status('Load the property first.','warn');return}
  if(traceMode){status('Save or cancel the current roof section first.','warn');return}
@@ -1799,6 +1810,7 @@ function savedAreaGeometryError(inputAreas=commercialAreas){
  return '';
 }
 function quotePricingError(calc=null){
+ if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError({businessType:currentBusinessType(),measurementMode:measurementViewMode,measureSource:el('measureSource')?.value||'google',structures,manualPlanes});if(issue)return issue;}
  if(typeof manualRoofQa==='function'&&manualRoofQa()&&measurementViewMode==='auto'){
   if(traceMode)return 'Save or cancel the roof section before creating the estimate.';
   if(manualPlanes.length&&manualPlanes.some(p=>p.manual_roof_qa)&&!el('manualRoofScopeConfirmed')?.checked)return 'Confirm that all roof sections and intended buildings are included.';
@@ -3169,8 +3181,9 @@ function savedEstimateMoneyIssue(pricing){
  const cents=value=>Math.round((Number(value)+Number.EPSILON)*100);
  return cents(values[0])+cents(values[1])+cents(values[2])===cents(values[3])?'':'Saved estimate totals do not reconcile. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
 }
-function printEstimate(){if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
+function printEstimate(){if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
+ if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
  if(quoteSnapshot?.linearPoints?.length||quoteSnapshot?.linearFeet>0){const issue=savedLinearGeometryError(quoteSnapshot.linearPoints,Number(quoteSnapshot.linearFeet));if(issue){status(issue,'warn');return}}
  const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){status(moneyIssue,'warn');return}

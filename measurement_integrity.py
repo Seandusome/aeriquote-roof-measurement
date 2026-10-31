@@ -173,6 +173,16 @@ def snapshot_error(payload):
                 section_area=sum(seg['area_sqft'] for seg in segments)
                 section_ground=sum(seg['area_sqft']*math.cos(math.radians(seg['pitch_degrees'])) for seg in segments)
                 if abs(section_area-roof['total_roof_sqft'])>max(1,roof['total_roof_sqft']*.01) or not .75<=section_ground/ground<=1.25:return 'Automatic roof sections do not match the complete roof area and pitch.'
+            # Validate the geometry actually included in this price, independent of
+            # client QA flags and automatic/manual source labels. Cached, unpriced
+            # measurements must not be mistaken for a second billable building.
+            if source in ('google','manual','hybrid'):
+                structure_outlines=[r.get('outline') for r in roofs]
+                plane_outlines=[r.get('points') for r in planes]
+                included=(plane_outlines or structure_outlines) if source=='manual' else structure_outlines+plane_outlines if source=='hybrid' else structure_outlines
+                for i,outline in enumerate(included):
+                    if any(polygons_overlap(outline,previous) for previous in included[:i]):
+                        return 'Priced roof sections overlap. Correct the measurements before quoting to avoid counting coverage twice.'
             google=sum(r['total_roof_sqft'] for r in roofs);manual=sum(r['surface_sqft'] for r in planes)
             expected=google+manual if source=='hybrid' else (manual or google) if source=='manual' else google
             if source!='adjusted':
