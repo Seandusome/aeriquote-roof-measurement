@@ -1,3 +1,18 @@
+# Latest checkpoint — saved-estimate PDF scope fix
+
+Read [focused diagnosis, tests and actual PDF evidence](QA_PDF_ACTIVE_SCOPE_2026_10_31.md). Application fix **60ae098f7f2010dea2c9bbde767b0a35d3395f57** is committed on the recovery branch and LIVE at **dep-dbj5esc9v7es7395qou0**. This containing documentation commit is the final checkpoint; it skips Render.
+
+- Root cause: historical renderer/label painter used every saved geometry family, unlike pricing’s active scope. Both reopened Single and Expanded could show an inactive roof. Read-only projection now follows existing pricing selection without changing snapshots/history, geometry math or pricing.
+- Full local **79/79**; GitHub runs41241456362 /41241456410 SUCCESS, recovery job124656051282 and disposable PG16/18 jobs124656051141 /124656051267 SUCCESS. Do not repeat completed testing just to resume.
+- Exact fictional Commercial revision7 reopened; actual Single/Expanded rendered and visually inspected, only its two Areas and Linear remain. Quantities13,633ft² /205.4ft; total$1,570.25 unchanged. Original Roofing revision1 /7,348ft² /$815.67 and its actual Single PDF preserved. Four before/after PDFs and screenshots committed. No live estimate Save or historical rewrite in this follow-up.
+- Dedicated QA DB **dpg-dbj4f7lg1s2s73eob8t0-a** configuration/credentials untouched; recovery auto-deploy still Off. Production deployment/main remainc049a04 /dep-db5b726k1f9s73e862ug. No production/original paid database/customer activity.
+- Physical iPhone/Safari/Messenger still pending. Other live workflows remain bounded by the isolation acceptance report. Imagery licensing, billing and operational launch blockers remain; this is not commercial launch sign-off.
+- Stop for review. Do not add features, change providers or alter infrastructure. Never reconnect recovery to the original database as rollback.
+
+---
+
+Earlier checkpoint history follows; the stale PDF failure below is resolved by the focused report above.
+
 # Latest checkpoint — dedicated QA isolation implemented
 
 Read [implementation and acceptance report](QA_DATABASE_ISOLATION_IMPLEMENTATION_2026_10_31.md) first. This containing commit is the final documentation checkpoint; preserve newer recovery HEAD if advanced.

@@ -1,3 +1,5 @@
+> **PDF scope follow-up resolved:** [verified fix and actual PDFs](QA_PDF_ACTIVE_SCOPE_2026_10_31.md). Application60ae098 is LIVE only on recovery,79/79 regression and PG16/18 checks passed. Exact reopened Commercial Single/Expanded no longer show inactive Roofing; original Roofing revision preserved. Physical-device and commercial launch blockers remain. Earlier failure text below is historical.
+
 > **Latest isolation outcome:** recovery is isolated on dpg-dbj4f7lg1s2s73eob8t0-a with distinct logical database/login; original production mapping unchanged. See [implementation report](QA_DATABASE_ISOLATION_IMPLEMENTATION_2026_10_31.md).12 PDFs reviewed; reopened mixed-history Commercial Expanded stale Roofing overlay is a newly confirmed P1 presentation/priced-scope defect. Full commercial acceptance remains blocked; no application fix in this infrastructure batch. Earlier planning/shared-storage notes below are historical.
 
 # Launch blockers - October 31, 2026
@@ -10,7 +12,7 @@ Operational and commercial launch sign-off remains pending. Passing regressions 
 | P0 | Production versus recovery database isolation | Implemented and masked identities verified distinct; recovery QA-only PG18. Production original unchanged. Keep isolated; no shared-DB rollback |
 | P0 | Managed recovery points and recovery access | Active WAL archives verified, actual usable base backups/PITR window/retention unverified; approved new-instance drill and RPO/RTO needed |
 | P0 | Production deployment approval | On Commit/unprotected metadata and recovery-only full CI are inadequate; apply reviewed proposal only after approval; require full checks and explicit owner release approval |
-| P1 | Reopened mixed-history Expanded PDF | Commercial surface example shows old unpriced Roofing outline after reopening. Source/correction follow-up required; do not release mismatched imagery |
+| P1 | Reopened mixed-history PDF scope | Fixed60ae098: active pricing scope selects historical diagram/labels and export traces; actual Commercial Single/Expanded and original Roofing revision verified. Historical data unchanged |
 | P1 | DB network/credential scope | Paid external allowlist permits any IP with valid credentials; dependency inventory and approved restriction/role review pending |
 | P1 | Monitoring and response | TCP-only checks, inherited unverified notifications, no central PDF/error reporting; approve minimal monitoring/readiness, verify delivery, name primary/backup responder |
 | P1 | Expiring QA database | November20 expiry; historical unused intent confirmed, current contents/dependencies inaccessible. Do not certify safe expiry without final read-only host/inventory checks |

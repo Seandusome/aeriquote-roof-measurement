@@ -1,0 +1,28 @@
+{
+  "application_commit": "60ae098f7f2010dea2c9bbde767b0a35d3395f57",
+  "live_deployment": "dep-dbj5esc9v7es7395qou0",
+  "files": [
+    {
+      "file": "commercial-reopened-expanded-after.pdf",
+      "pages": 2,
+      "sha256": "a47969e57259f14e3937d7275d71f757109fc0c6b77952ce04356ba8d166c3ae"
+    },
+    {
+      "file": "commercial-reopened-single-after.pdf",
+      "pages": 1,
+      "sha256": "752fd4a41aff2b39d3b1a5d973577917c2a63cdca9a9a50816d7a13392d5c49d"
+    },
+    {
+      "file": "commercial-reopened-single-before.pdf",
+      "pages": 1,
+      "sha256": "eb5738434b14b90b48a6e5f5fd4fe88329728cf7ca644ff1d272254879c95d09"
+    },
+    {
+      "file": "roofing-historical-single-after.pdf",
+      "pages": 1,
+      "sha256": "a339c4307ad58ed9705d60ca5f2ff8ebfc9d5044febbdcdba759fb4c97e30b5d"
+    }
+  ],
+  "qa_data_only": true,
+  "physical_device": false
+}

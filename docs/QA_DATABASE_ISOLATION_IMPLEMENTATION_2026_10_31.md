@@ -1,3 +1,5 @@
+> **Follow-up resolution:** the stale Roofing overlay acceptance exception recorded here was fixed in the separately approved application batch60ae098. [Diagnosis and actual before/after PDFs](QA_PDF_ACTIVE_SCOPE_2026_10_31.md). Recovery deploydep-dbj5esc9v7es7395qou0 LIVE;79/79 and PG16/18 passed. Database configuration/cost/separation unchanged. The report below preserves the original isolation audit history.
+
 # Dedicated QA database implementation — isolated and verified, acceptance exception recorded
 
 ## Outcome
