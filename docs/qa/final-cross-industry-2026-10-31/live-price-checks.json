@@ -1,0 +1,38 @@
+[
+  {
+    "industry": "commercial",
+    "total": "1570.25",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  },
+  {
+    "industry": "commercial-corrected",
+    "total": "1423.32",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  },
+  {
+    "industry": "snow",
+    "total": "1391.97",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  },
+  {
+    "industry": "pressure",
+    "total": "1391.97",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  },
+  {
+    "industry": "paving",
+    "total": "1391.97",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  },
+  {
+    "industry": "landscaping",
+    "total": "1391.97",
+    "taxes_checked": true,
+    "no_roof_pitch_labels": true
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "industry": "roofing",
+    "total": "815.67",
+    "quantity": "7348 ft²",
+    "saveConfirmed": true
+  },
+  {
+    "industry": "commercial",
+    "property": "Total Measured Area\n13,633 ft²\nService Areas\n2\nService Area 1\n6,125 ft²\nService Area 2\n7,508 ft²\nLinear Service\n205.4 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 7,508 ft² × $0.10/ft²\n$750.80\nLinear Service — 205.4 ft × $0.25/ft\n$51.34\nSubtotal Before Tax\n$1,414.64\nSales Tax (5%)\n$70.73\nAdditional Tax (6%)\n$84.88\nTOTAL (CAD)\n$1,570.25",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n33.9 ft\n221 ft\n33.9 ft\n221 ft\n7,508 ft²\n184.1 ft\n21.2 ft"
+  },
+  {
+    "industry": "commercial-corrected",
+    "property": "Total Measured Area\n12,352 ft²\nService Areas\n2\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nLinear Service\n188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nLinear Service — 188.3 ft × $0.25/ft\n$47.07\nSubtotal Before Tax\n$1,282.27\nSales Tax (5%)\n$64.11\nAdditional Tax (6%)\n$76.94\nTOTAL (CAD)\n$1,423.32",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n28.5 ft\n218 ft\n28.5 ft\n218 ft\n6,227 ft²\n167.0 ft\n21.2 ft"
+  },
+  {
+    "industry": "snow",
+    "property": "Total Service Area\n12,352 ft²\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nSnow Removal Linear — 188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nSnow Removal Linear — 188.3 ft × $0.10/ft\n$18.83\nSubtotal Before Tax\n$1,254.03\nSales Tax (5%)\n$62.70\nAdditional Tax (6%)\n$75.24\nTOTAL (CAD)\n$1,391.97",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n28.5 ft\n218 ft\n28.5 ft\n218 ft\n6,227 ft²\n167.0 ft\n21.2 ft"
+  },
+  {
+    "industry": "pressure",
+    "property": "Total Service Area\n12,352 ft²\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nPressure Washing Linear — 188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nPressure Washing Linear — 188.3 ft × $0.10/ft\n$18.83\nSubtotal Before Tax\n$1,254.03\nSales Tax (5%)\n$62.70\nAdditional Tax (6%)\n$75.24\nTOTAL (CAD)\n$1,391.97",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n28.5 ft\n218 ft\n28.5 ft\n218 ft\n6,227 ft²\n167.0 ft\n21.2 ft"
+  },
+  {
+    "industry": "paving",
+    "property": "Total Service Area\n12,352 ft²\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nPaving & Sealcoating Linear — 188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nPaving & Sealcoating Linear — 188.3 ft × $0.10/ft\n$18.83\nSubtotal Before Tax\n$1,254.03\nSales Tax (5%)\n$62.70\nAdditional Tax (6%)\n$75.24\nTOTAL (CAD)\n$1,391.97",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n28.5 ft\n218 ft\n28.5 ft\n218 ft\n6,227 ft²\n167.0 ft\n21.2 ft"
+  },
+  {
+    "industry": "landscaping",
+    "property": "Total Service Area\n12,352 ft²\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nLandscaping Linear — 188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nLandscaping Linear — 188.3 ft × $0.10/ft\n$18.83\nSubtotal Before Tax\n$1,254.03\nSales Tax (5%)\n$62.70\nAdditional Tax (6%)\n$75.24\nTOTAL (CAD)\n$1,391.97",
+    "diagramLabels": "143 ft\n42.8 ft\n143 ft\n42.8 ft\n6,125 ft²\n28.5 ft\n218 ft\n28.5 ft\n218 ft\n6,227 ft²\n167.0 ft\n21.2 ft"
+  }
+]

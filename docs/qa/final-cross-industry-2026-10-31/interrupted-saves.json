@@ -1,0 +1,1 @@
+{"passed":true,"industry_failure_retry_cases":24,"failures":["offline","timeout","409","400"],"original_revisions_unchanged":true,"same_idempotency_key_on_retry":true,"environment":"VM controlled responses only","physical_device":false}

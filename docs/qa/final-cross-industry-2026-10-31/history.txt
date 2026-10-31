@@ -1,0 +1,129 @@
+← BACK TO RESULTS
+Estimate History
+One property record. Earlier versions are stored as data only — no PDF files are stored.
+CURRENT ESTIMATE
+2026-10-31 22:06:24
+$1,391.97
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 1
+2026-10-31 20:31:28
+$815.67
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Roof area: 7,348 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 2
+2026-10-31 20:31:56
+$1,725.76
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 15,342 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 3
+2026-10-31 20:32:22
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 4
+2026-10-31 20:32:38
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 5
+2026-10-31 20:32:49
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 6
+2026-10-31 20:32:59
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 7
+2026-10-31 20:35:22
+$1,570.25
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 8
+2026-10-31 20:36:11
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 9
+2026-10-31 20:36:36
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 10
+2026-10-31 22:00:51
+$1,536.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 11
+2026-10-31 22:03:42
+$815.67
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Roof area: 7,348 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 12
+2026-10-31 22:04:25
+$1,570.25
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 13,633 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 13
+2026-10-31 22:04:55
+$1,428.06
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 14
+2026-10-31 22:05:06
+$1,423.32
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 15
+2026-10-31 22:05:37
+$1,391.97
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 16
+2026-10-31 22:06:06
+$1,391.97
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE
+PREVIOUS VERSION 17
+2026-10-31 22:06:24
+$1,391.97
+FICTIONAL QA Customer
+2301 Avenue C North, Saskatoon, SK, Canada
+Service area: 12,352 ft²
+OPEN ESTIMATE

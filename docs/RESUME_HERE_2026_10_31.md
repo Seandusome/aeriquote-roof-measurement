@@ -1,3 +1,18 @@
+# Final end-of-day checkpoint — cross-industry QA
+
+Read [final round results and limitations](QA_FINAL_CROSS_INDUSTRY_2026_10_31.md) first. This containing documentation/evidence commit is the latest checkpoint; preserve newer recovery HEAD if advanced.
+
+- No new confirmed high-severity application defect, runtime change or deployment this round. Application remains **60ae098f7f2010dea2c9bbde767b0a35d3395f57**, recovery LIVE **dep-dbj5esc9v7es7395qou0**, auto-deploy Off. QA database connections/credentials/infrastructure unchanged; main/production/original DB untouched.
+- New live saved revisions across all six industries; Area2 RETRACE Cancel/Save and Linear Cancel/Save preserved other geometry and pricing. Latest surface scope12,352ft² +188.2640110545814ft. Corrected Commercial$1,423.32; other four surface industries$1,391.97. Original Roofing$815.67 and older Commercial$1,570.25 retained through out-of-order reopening.
+- New controlled coverage:180 mixed revisions /1,080 renders;540 independent pricing cases;24 failure/retry cases; WGS84 geometry/pitch reference. Passed. Full79/79 and PG16/18 verified through successful b74bc3b workflows41242172010 /41242172011. No need to repeat these merely to resume.
+- **Fresh PDFs NOT verified:** two Roofing Single transfers and one Landscaping Expanded transfer after one refresh failed in Cloud Browser while AeriQuote said downloaded; extension errors/runtime reset observed. No new PDFs obtained. Cause unresolved; no speculative application fix. Prior actual60ae098 PDF evidence remains valid historical evidence only.
+- First next step: isolated-QA Single/Expanded downloads in a normal browser/physical iPhone, then visual inspection of newest corrected revisions; separate product failures from tool transfer limitations. Physical Safari/Messenger touch testing remains pending. Do not reset real accounts or use production for this.
+- End-of-day stop. No imagery migration, Stripe, account/allowance changes, infrastructure changes or new development authorized without a next assignment.
+
+---
+
+Earlier checkpoints below are historical.
+
 # Latest checkpoint — saved-estimate PDF scope fix
 
 Read [focused diagnosis, tests and actual PDF evidence](QA_PDF_ACTIVE_SCOPE_2026_10_31.md). Application fix **60ae098f7f2010dea2c9bbde767b0a35d3395f57** is committed on the recovery branch and LIVE at **dep-dbj5esc9v7es7395qou0**. This containing documentation commit is the final checkpoint; it skips Render.

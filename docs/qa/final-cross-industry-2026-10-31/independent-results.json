@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "pricing_scenarios": 540,
+  "independent_reference": "Decimal line-item/tax arithmetic compared with server pricing; GeographicLib WGS84 versus existing spherical quantities",
+  "maximum_area_relative_difference": 0.0018678058230809924,
+  "maximum_line_relative_difference": 0.003197289396473235,
+  "maximum_pitch_adjusted_roof_relative_difference": 0.001613728723279917,
+  "area_rounding_and_spherical_model_tolerance": ".01 maximum; not survey accuracy",
+  "physical_device": false
+}

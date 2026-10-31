@@ -1,0 +1,64 @@
+[
+  {
+    "revision": "current-landscaping",
+    "scope": {
+      "areas": [
+        {
+          "rate": 0.1,
+          "sqft": 6125
+        },
+        {
+          "rate": 0.1,
+          "sqft": 6227
+        }
+      ],
+      "industry": "landscaping",
+      "linearFeet": 188.2640110545814,
+      "mode": "area",
+      "planes": 0,
+      "structures": 0
+    },
+    "property": "Total Service Area\n12,352 ft²\nService Area 1\n6,125 ft²\nService Area 2\n6,227 ft²\nLandscaping Linear — 188.3 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 6,227 ft² × $0.10/ft²\n$622.70\nLandscaping Linear — 188.3 ft × $0.10/ft\n$18.83\nSubtotal Before Tax\n$1,254.03\nSales Tax (5%)\n$62.70\nAdditional Tax (6%)\n$75.24\nTOTAL (CAD)\n$1,391.97"
+  },
+  {
+    "revision": "original-roofing-1",
+    "scope": {
+      "areas": 0,
+      "industry": "roofing",
+      "linearPoints": 0,
+      "mode": "auto",
+      "planes": [
+        {
+          "pitch_degrees": 22.62,
+          "surface_sqft": 7348.380392728047
+        }
+      ],
+      "structures": 0
+    },
+    "property": "Roof Area\n7,348 ft²\nRoofs in Quote\n1\nDealer Manual Measurement\n7,348 ft²\nOnly the shingle roof planes traced by the dealer are included in this estimate.",
+    "pricing": "Roofing Service — Manual Measurement\n$734.84\nSubtotal Before Tax\n$734.84\nSales Tax (5%)\n$36.74\nAdditional Tax (6%)\n$44.09\nTOTAL (CAD)\n$815.67"
+  },
+  {
+    "revision": "older-commercial-7",
+    "scope": {
+      "areas": [
+        {
+          "rate": 0.1,
+          "sqft": 6125
+        },
+        {
+          "rate": 0.1,
+          "sqft": 7508
+        }
+      ],
+      "industry": "commercial",
+      "linearFeet": 205.3547041980894,
+      "mode": "area",
+      "planes": 0,
+      "structures": 0
+    },
+    "property": "Total Measured Area\n13,633 ft²\nService Areas\n2\nService Area 1\n6,125 ft²\nService Area 2\n7,508 ft²\nLinear Service\n205.4 ft",
+    "pricing": "Service Area 1 — 6,125 ft² × $0.10/ft²\n$612.50\nService Area 2 — 7,508 ft² × $0.10/ft²\n$750.80\nLinear Service — 205.4 ft × $0.25/ft\n$51.34\nSubtotal Before Tax\n$1,414.64\nSales Tax (5%)\n$70.73\nAdditional Tax (6%)\n$84.88\nTOTAL (CAD)\n$1,570.25"
+  }
+]
