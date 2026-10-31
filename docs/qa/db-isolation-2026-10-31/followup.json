@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "checks": [
+    "Actual concurrent save allowance delta is exactly one",
+    "overlap rejected with saved record unchanged",
+    "self-cross rejected with saved record unchanged",
+    "incomplete rejected with saved record unchanged",
+    "zero-length-line rejected with saved record unchanged",
+    "Invalid geometry rejection preserves live allowance counters",
+    "Selected-Area saved correction preserves other Area and independent Linear geometry/pricing"
+  ],
+  "touch_or_ui_test": false,
+  "fictional_only": true
+}

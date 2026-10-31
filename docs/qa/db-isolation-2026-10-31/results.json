@@ -1,0 +1,221 @@
+{
+  "database_id": "dpg-dbj4f7lg1s2s73eob8t0-a",
+  "base_host": "aeriquote-commercial-test.onrender.com",
+  "fictional_only": true,
+  "checks": [
+    "Fictional bootstrap owner created on new target",
+    "9 fictional QA accounts created through new service",
+    "Live Basic25 Pro75 Business200 configured allowances",
+    "All newly created QA business estimate lists initially empty",
+    "Independent WGS84 area and distance references within unchanged spherical tolerance",
+    "snow live save/reopen geometry and three Decimal pricing/tax modes",
+    "pressure live save/reopen geometry and three Decimal pricing/tax modes",
+    "paving live save/reopen geometry and three Decimal pricing/tax modes",
+    "landscaping live save/reopen geometry and three Decimal pricing/tax modes",
+    "commercial live save/reopen geometry and three Decimal pricing/tax modes",
+    "roofing live save/reopen geometry and three Decimal pricing/tax modes",
+    "Four simultaneous live saves produce one record and one receipt",
+    "Other business cannot access saved QA estimate",
+    "Reopening estimate does not change allowance counters",
+    "Live stale revision rejected and latest customer detail preserved",
+    "Invalid property coordinates preserve live allowance counters",
+    "Employee shares correct business and branding",
+    "Employee cannot change business profile",
+    "Owner reopens employee-created estimate",
+    "Disabled employee session rejected",
+    "Reactivation does not revive old employee session",
+    "Reactivated employee can sign in anew"
+  ],
+  "accounts": [
+    {
+      "id": "cf26ec4b-b649-4983-bd35-a4d7c2e773a9",
+      "industry": "snow",
+      "plan": "basic"
+    },
+    {
+      "id": "9e61989b-27e1-4bc4-8f12-02620a41bf1b",
+      "industry": "pressure",
+      "plan": "basic"
+    },
+    {
+      "id": "c423ed48-b9b6-448b-a79a-739975b1ea2a",
+      "industry": "paving",
+      "plan": "basic"
+    },
+    {
+      "id": "f4b6f1c1-de51-4b6c-828e-ecfe644f492c",
+      "industry": "landscaping",
+      "plan": "basic"
+    },
+    {
+      "id": "78c569f1-1d3a-4dd2-9633-3c4e1081becd",
+      "industry": "commercial",
+      "plan": "basic"
+    },
+    {
+      "id": "d5db3af6-ee53-4b97-812f-63304cc3fdb7",
+      "industry": "roofing",
+      "plan": "basic"
+    },
+    {
+      "id": "aa71f59c-2ae8-43e4-a2a5-e8d7c2c59195",
+      "industry": "snow",
+      "plan": "pro"
+    },
+    {
+      "id": "6706c8a9-29d9-4ca0-b194-d8161942c4f3",
+      "industry": "snow",
+      "plan": "business"
+    },
+    {
+      "id": "4477d25e-2d44-4827-94f7-19e9c4bc173c",
+      "industry": "snow",
+      "plan": "basic"
+    }
+  ],
+  "cases": [
+    {
+      "industry": "snow",
+      "mode": "regular",
+      "id": "137021f1-a239-4230-bd6c-32ff988a90d1",
+      "total": 312.12,
+      "version": "af9d632f08c9d29cf380d744e4a9612e97a4de2e7c262919a9d0afd6eec27a35"
+    },
+    {
+      "industry": "snow",
+      "mode": "included",
+      "id": "0d8a402c-59b6-471f-b2af-0db26e0b684f",
+      "total": 281.19,
+      "version": "c19fa29eb4b8bc0bf98c148d0b3d64f7aea9098bbc5372afa7752be19d99dadc"
+    },
+    {
+      "industry": "snow",
+      "mode": "discount",
+      "id": "fcfe789b-b67c-4c7e-b1a2-1dd544dc5c93",
+      "total": 282.83,
+      "version": "d66959320928d3b3de0f3a5746a0dedb6e61e3758d5f8702c9f345a3fe93b72b"
+    },
+    {
+      "industry": "pressure",
+      "mode": "regular",
+      "id": "d26cfb1a-331f-4950-9eb6-a3b151595289",
+      "total": 312.12,
+      "version": "de9c10c035ed22141a541869bb55f74e1d847fffb5e3189eab35af374e3760ca"
+    },
+    {
+      "industry": "pressure",
+      "mode": "included",
+      "id": "45652886-c4ca-48e2-899b-ef1838af8132",
+      "total": 281.19,
+      "version": "c0b690212075ba01b0b2e5fb950dbd850e7b29b020a528e8d841c91a1f103089"
+    },
+    {
+      "industry": "pressure",
+      "mode": "discount",
+      "id": "be016ffe-e866-46fc-b63a-6d01ae3e2420",
+      "total": 282.83,
+      "version": "35f0294f7e19745075a8c1512873b42608a674ef66697269d10cc780269a852a"
+    },
+    {
+      "industry": "paving",
+      "mode": "regular",
+      "id": "ef112530-f192-41ff-aeef-607ad4f19b18",
+      "total": 312.12,
+      "version": "583bb593f783a660418876c462596455815431e393303695d8c52783b8b98ca1"
+    },
+    {
+      "industry": "paving",
+      "mode": "included",
+      "id": "8e6e5922-f72b-4b3e-b495-6bec1286128a",
+      "total": 281.19,
+      "version": "cd056a02c0d27ff0400f9b0a3e1bb363b7eb449a7614945c6e00f9e49fa5dd26"
+    },
+    {
+      "industry": "paving",
+      "mode": "discount",
+      "id": "2c9bab7b-7566-4053-bfc8-9271175ed441",
+      "total": 282.83,
+      "version": "879926fe5a4a2a3ef6dfd05f3c1770fd525780bf239625a00ee581309f88b78b"
+    },
+    {
+      "industry": "landscaping",
+      "mode": "regular",
+      "id": "7393824f-488f-4a17-82d5-b75ba9cbdf3b",
+      "total": 312.12,
+      "version": "f8414b2e2f3bd23d430ace3817194bfc78fdd866b8dd0069e8f853b67d8688c4"
+    },
+    {
+      "industry": "landscaping",
+      "mode": "included",
+      "id": "f8535e8a-a3d9-4205-a0a2-ab58a0342f0b",
+      "total": 281.19,
+      "version": "a73500a267fb1d532bb46ede5807da5c28590b99753bd6ce1284052df08700e0"
+    },
+    {
+      "industry": "landscaping",
+      "mode": "discount",
+      "id": "e721fe47-44a4-48a2-b869-acae6bcbca1e",
+      "total": 282.83,
+      "version": "7806e940a97136ed511416ff2f33218374e638efa8f6d7125a419f8ae76f136a"
+    },
+    {
+      "industry": "commercial",
+      "mode": "regular",
+      "id": "286ed17a-ce6f-461c-a16d-df63839a6eca",
+      "total": 312.12,
+      "version": "d5251f8cba89af9b66f4cfa7f08f5fb562383c61f244978c70c4dee4baef88da"
+    },
+    {
+      "industry": "commercial",
+      "mode": "included",
+      "id": "96db5bc4-40cd-4d2c-9bf8-3dc14bfe1284",
+      "total": 281.19,
+      "version": "af81d0181bc1c63ca33b9f9b9b059d71297fedc6dbdce0435cdbf65a029c3dca"
+    },
+    {
+      "industry": "commercial",
+      "mode": "discount",
+      "id": "a4db8f62-b914-41f0-ab1c-0cad6caed2ce",
+      "total": 282.83,
+      "version": "8ae2ec08ff7097321bf8a719e7997074e94816d5f9d77cf5f60b0802aeec7e7a"
+    },
+    {
+      "industry": "roofing",
+      "mode": "regular",
+      "id": "e717b80a-bac0-4382-b1f3-fc5f5c0af2e0",
+      "total": 1447.23,
+      "version": "8748beb969ddf10b8cacaea541a546a4ceeb3fc09da4e86a9d2f792bd96c99bd"
+    },
+    {
+      "industry": "roofing",
+      "mode": "included",
+      "id": "266b95a1-b5cd-4d6d-b976-8000ad6449f2",
+      "total": 1303.81,
+      "version": "3c374976653ad52381e65661a89be006ddb306799d900f090113b2f77b6eb266"
+    },
+    {
+      "industry": "roofing",
+      "mode": "discount",
+      "id": "bc414a70-d107-4bd2-9f7b-07a7a64ba4fe",
+      "total": 1304.43,
+      "version": "c853fcd35cb8c47f4d5e17c89c5d1096fbd30c9a637aabdc234dae9693d11173"
+    }
+  ],
+  "completed": true,
+  "concurrency_usage_before": {
+    "basis": "account_anniversary_provisional",
+    "end": "2026-11-30T20:08:17+00:00",
+    "estimates": 3,
+    "limit": 25,
+    "lookups": 0,
+    "start": "2026-10-31T20:08:17+00:00"
+  },
+  "concurrency_usage_after": {
+    "basis": "account_anniversary_provisional",
+    "end": "2026-11-30T20:08:17+00:00",
+    "estimates": 4,
+    "limit": 25,
+    "lookups": 0,
+    "start": "2026-10-31T20:08:17+00:00"
+  }
+}
