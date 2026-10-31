@@ -1,3 +1,5 @@
+> Later read-only verification: [Database recovery assessment](DATABASE_RECOVERY_VERIFICATION_2026_10_31.md) updates archive statistics, connector-role findings and recovery planning. Recovery inventory and environment mapping are still unverified. Earlier observations below are preserved.
+
 # Database safety and expiring QA dependency audit - October 31, 2026
 
 Read-only audit. No database writes, exports, recovery/restore, upgrades, credentials, connection changes or network-rule changes. No customer records, password hashes, active SQL text or private estimate data read. Resource names alone are not proof of runtime dependency.

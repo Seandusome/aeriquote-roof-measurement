@@ -1,3 +1,5 @@
+> Database-only follow-up: [actual findings and approval plan](DATABASE_RECOVERY_VERIFICATION_2026_10_31.md). Recovery inventory and environment isolation remain P0-unverified; broad connector role permissions require mapping before any changes.
+
 # Launch blockers - October 31, 2026
 
 Operational and commercial launch sign-off remains pending. Passing regressions is bounded evidence, not proof that every customer scenario is safe.
