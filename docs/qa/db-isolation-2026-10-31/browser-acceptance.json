@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-31",
+  "environment": "recovery isolated PostgreSQL18",
+  "qa_owner_id": "c417b9a2-51ea-4816-84da-1e597a7de98d",
+  "physical_device": false,
+  "browser": "Cloud Chromium desktop; no viewport/touch emulator provided by this browser API",
+  "actual_imagery": "2301 Avenue C North, Saskatoon; Street View 2015-07; fictional QA boundaries/customer",
+  "industries_created": [
+    "roofing",
+    "snow",
+    "pressure",
+    "paving",
+    "landscaping",
+    "commercial"
+  ],
+  "surface_geometry": {
+    "area1_before": 7834,
+    "area1_after": 6125,
+    "area2": 7508,
+    "linear_display_ft": 205.4
+  },
+  "retrace": {
+    "cancel_preserved_original": true,
+    "save_only_selected_area": true,
+    "other_area_and_line_visible": true,
+    "pdf_blocked_while_draft": true,
+    "proposed_total": 1536.06,
+    "previous_total": 1725.76
+  },
+  "pricing": {
+    "surface_subtotal": 1383.84,
+    "gst": 69.19,
+    "pst": 83.03,
+    "total": 1536.06,
+    "roof_subtotal": 734.84,
+    "roof_gst": 36.74,
+    "roof_pst": 44.09,
+    "roof_total": 815.67,
+    "commercial_subtotal": 1414.64,
+    "commercial_gst": 70.73,
+    "commercial_pst": 84.88,
+    "commercial_total": 1570.25
+  },
+  "visual_failure": "Commercial Expanded exported after saved reopening includes an old orange Roofing section absent from current surface pricing. Single and other surface Expanded examples do not show that stale roof. No application fix in DB scope.",
+  "downloads": "12 actual completed files; initially four Expanded handles had no file. Retrying without immediate navigation produced files; one additional tool timeout recovered. This alone is not an app download defect.",
+  "files": [
+    {
+      "file": "commercial-expanded.pdf",
+      "bytes": 1447191,
+      "sha256": "97cad382694e24756f7f75d6e26729f37e7df22f6f3499e39372437ab4f3080c",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "commercial-single.pdf",
+      "bytes": 971229,
+      "sha256": "7b0d3bf866e16a8f2b039af882b88d6922682ebd88a3924dfad935a8bd705072",
+      "pages": 1,
+      "javascript": false
+    },
+    {
+      "file": "landscaping-expanded.pdf",
+      "bytes": 1417078,
+      "sha256": "0b49504d615d40e32f3193d0434e8979a8db41f611a465b7cceb3a342d6b067d",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "landscaping-single.pdf",
+      "bytes": 962242,
+      "sha256": "5b473e9a0ca6923ad5419dc284109069afa208944dc7fc1c219af0e5738abddc",
+      "pages": 1,
+      "javascript": false
+    },
+    {
+      "file": "paving-expanded.pdf",
+      "bytes": 1452816,
+      "sha256": "43eedc469e5108e24bf200d4ae007acc08c8b0b495ec15b26e4653df9c397290",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "paving-single.pdf",
+      "bytes": 996293,
+      "sha256": "ec3f9cbff5acd143e4cba578d357a72f9550a7d5d1db762346bb92d5a5949f90",
+      "pages": 1,
+      "javascript": false
+    },
+    {
+      "file": "pressure-expanded.pdf",
+      "bytes": 1431392,
+      "sha256": "97f2ab52dec05976f8e970a1b616dc096afa809940f4aeaf3dc45c9fe660fb3c",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "pressure-single.pdf",
+      "bytes": 975284,
+      "sha256": "c3147a0646c2054f6f8a37089305698a81092aa35ed79792a05d3bbab8cf4d96",
+      "pages": 1,
+      "javascript": false
+    },
+    {
+      "file": "roofing-expanded.pdf",
+      "bytes": 1360598,
+      "sha256": "587cfa7b031c9cb3fe96db609298be0aa007f7af6db2399de47058f5ec92fc53",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "roofing-single.pdf",
+      "bytes": 917545,
+      "sha256": "a28c0c0447c708e28eb398d025f97c0884b2c535cfa7888d4a6b24eb34d0b833",
+      "pages": 1,
+      "javascript": false
+    },
+    {
+      "file": "snow-expanded.pdf",
+      "bytes": 1428120,
+      "sha256": "6baaa6dc2157590ea472d47d8014d9f9ad93906099fcd0ba17f3c9d34f1bbd06",
+      "pages": 2,
+      "javascript": false
+    },
+    {
+      "file": "snow-single.pdf",
+      "bytes": 971373,
+      "sha256": "96b3a09f0cd97ed855ebb6815c1d22342a182ff874e5bf2de5142062fe51630a",
+      "pages": 1,
+      "javascript": false
+    }
+  ]
+}

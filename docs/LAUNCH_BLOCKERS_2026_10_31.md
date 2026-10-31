@@ -1,10 +1,4 @@
-> **Isolation implemented; acceptance pending:** [Implementation evidence](QA_DATABASE_ISOLATION_IMPLEMENTATION_2026_10_31.md). Recovery now has its own PG18 resource/database/login; production mapping unchanged. Treat the earlier shared-DB row below as historical, not current topology. Remaining sign-off: authenticated RETRACE/UI/PDF verification, physical device coverage and operational/imagery blockers. Auto-deploy remains Off.
-
-> Approved implementation still required: [costed recovery QA isolation plan](QA_DATABASE_ISOLATION_PLAN_2026_10_31.md). Fresh paid PG18 recommended; no creation/configuration/deployment performed. Live QA writes remain prohibited while recovery shares production storage.
-
-> **Dashboard verification update:** [Authorized read-only findings](RENDER_DASHBOARD_VERIFICATION_2026_10_31.md) confirms recovery and main share the same paid resource, logical database and login role — a critical launch blocker. Both have nonempty persisted Flask session secrets; workspace has no environment groups. Actual PITR overview says three days; no exports listed; exact timestamps unverified (Restore not opened). Pause live QA writes pending an approved separation plan. This update supersedes earlier isolation/secret-presence unknowns; preserve the historical evidence below.
-
-> Database-only follow-up: [actual findings and approval plan](DATABASE_RECOVERY_VERIFICATION_2026_10_31.md). Recovery inventory and environment isolation remain P0-unverified; broad connector role permissions require mapping before any changes.
+> **Latest isolation outcome:** recovery is isolated on dpg-dbj4f7lg1s2s73eob8t0-a with distinct logical database/login; original production mapping unchanged. See [implementation report](QA_DATABASE_ISOLATION_IMPLEMENTATION_2026_10_31.md).12 PDFs reviewed; reopened mixed-history Commercial Expanded stale Roofing overlay is a newly confirmed P1 presentation/priced-scope defect. Full commercial acceptance remains blocked; no application fix in this infrastructure batch. Earlier planning/shared-storage notes below are historical.
 
 # Launch blockers - October 31, 2026
 
@@ -13,9 +7,10 @@ Operational and commercial launch sign-off remains pending. Passing regressions 
 | Priority | Item | Status / release condition |
 |---|---|---|
 | P0 | Imagery rights and coverage | Blocked. Stadia standard tracing explicitly rejected per Sean; Spexi verbal and Mapbox indicative only. Require written tracing/storage/PDF/history/SaaS rights and property coverage; migration not authorized |
-| P0 | Production versus recovery database isolation | Unverified; masked service/DB/role/env group mapping required before real customer release |
+| P0 | Production versus recovery database isolation | Implemented and masked identities verified distinct; recovery QA-only PG18. Production original unchanged. Keep isolated; no shared-DB rollback |
 | P0 | Managed recovery points and recovery access | Active WAL archives verified, actual usable base backups/PITR window/retention unverified; approved new-instance drill and RPO/RTO needed |
 | P0 | Production deployment approval | On Commit/unprotected metadata and recovery-only full CI are inadequate; apply reviewed proposal only after approval; require full checks and explicit owner release approval |
+| P1 | Reopened mixed-history Expanded PDF | Commercial surface example shows old unpriced Roofing outline after reopening. Source/correction follow-up required; do not release mismatched imagery |
 | P1 | DB network/credential scope | Paid external allowlist permits any IP with valid credentials; dependency inventory and approved restriction/role review pending |
 | P1 | Monitoring and response | TCP-only checks, inherited unverified notifications, no central PDF/error reporting; approve minimal monitoring/readiness, verify delivery, name primary/backup responder |
 | P1 | Expiring QA database | November20 expiry; historical unused intent confirmed, current contents/dependencies inaccessible. Do not certify safe expiry without final read-only host/inventory checks |
