@@ -1,3 +1,5 @@
+> Approved implementation still required: [costed recovery QA isolation plan](QA_DATABASE_ISOLATION_PLAN_2026_10_31.md). Fresh paid PG18 recommended; no creation/configuration/deployment performed. Live QA writes remain prohibited while recovery shares production storage.
+
 > **Dashboard verification update:** [Authorized read-only findings](RENDER_DASHBOARD_VERIFICATION_2026_10_31.md) confirms recovery and main share the same paid resource, logical database and login role — a critical launch blocker. Both have nonempty persisted Flask session secrets; workspace has no environment groups. Actual PITR overview says three days; no exports listed; exact timestamps unverified (Restore not opened). Pause live QA writes pending an approved separation plan. This update supersedes earlier isolation/secret-presence unknowns; preserve the historical evidence below.
 
 > Database-only follow-up: [actual findings and approval plan](DATABASE_RECOVERY_VERIFICATION_2026_10_31.md). Recovery inventory and environment isolation remain P0-unverified; broad connector role permissions require mapping before any changes.
