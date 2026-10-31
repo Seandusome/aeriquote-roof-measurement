@@ -1,3 +1,5 @@
+> **Dashboard verification update:** [Authorized read-only findings](RENDER_DASHBOARD_VERIFICATION_2026_10_31.md) confirms recovery and main share the same paid resource, logical database and login role — a critical launch blocker. Both have nonempty persisted Flask session secrets; workspace has no environment groups. Actual PITR overview says three days; no exports listed; exact timestamps unverified (Restore not opened). Pause live QA writes pending an approved separation plan. This update supersedes earlier isolation/secret-presence unknowns; preserve the historical evidence below.
+
 > Latest scoped follow-up: [Database safety and recovery verification](DATABASE_RECOVERY_VERIFICATION_2026_10_31.md). Its containing documentation commit is the next resume checkpoint after cde3d5b. No application or infrastructure changes.
 
 ## Database-only follow-up checkpoint
