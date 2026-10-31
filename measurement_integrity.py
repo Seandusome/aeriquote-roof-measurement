@@ -18,10 +18,18 @@ def coordinates(points, minimum):
 def polygon_sqft(points):
     pts=coordinates(points,3)
     # Spherical trapezoids; independent of the client's projected shoelace calculation.
-    area=0
+    reference=math.sin(math.radians(pts[0][0]))
+    terms=[];deltas=[]
     for (lat1,lon1),(lat2,lon2) in zip(pts,pts[1:]+pts[:1]):
         delta=math.radians((lon2-lon1+180)%360-180)
-        area+=delta*(math.sin(math.radians(lat1))+math.sin(math.radians(lat2)))
+        deltas.append(delta)
+        # Subtract the common latitude term before summing. Otherwise the
+        # rounding residual of closing longitudes can dwarf a tiny polygon.
+        terms.append(delta*((math.sin(math.radians(lat1))-reference)+(math.sin(math.radians(lat2))-reference)))
+    # Ordinary properties have zero winding. Retain the original spherical
+    # expression for polygons which wrap a full longitude circuit as well.
+    winding=round(math.fsum(deltas)/(2*math.pi))
+    area=math.fsum(terms)+4*math.pi*reference*winding
     return abs(area)*6378137**2/2*FT2
 
 def line_feet(points):

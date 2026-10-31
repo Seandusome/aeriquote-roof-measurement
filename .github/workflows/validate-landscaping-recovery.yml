@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
-      - run: python -m pip install Jinja2==3.1.6 Flask==3.1.2
+      - run: python -m pip install Jinja2==3.1.6 Flask==3.1.2 shapely==2.1.2 geographiclib==2.1
       - run: python scripts/check_release_files.py
       - run: python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
       - run: python scripts/test_database_initialization.py
@@ -74,6 +74,7 @@ jobs:
       - run: node scripts/test_landscaping_engine.cjs snow
       - run: python scripts/test_geometry_integrity.py
       - run: python scripts/test_priced_roof_scope.py
+      - run: python scripts/test_adversarial_oct31.py
       - run: python scripts/test_final_reliability.py
       - run: node scripts/test_geometry_client.cjs
       - run: python scripts/test_server_pricing.py
