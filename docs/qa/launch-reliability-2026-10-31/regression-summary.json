@@ -1,0 +1,397 @@
+{
+  "commands": 78,
+  "passed": 78,
+  "failed": 0,
+  "results": [
+    {
+      "command": "python scripts/check_release_files.py",
+      "exit": 0,
+      "seconds": 0.1
+    },
+    {
+      "command": "python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "python scripts/test_database_initialization.py",
+      "exit": 0,
+      "seconds": 0.58
+    },
+    {
+      "command": "python scripts/test_property_session_recovery.py",
+      "exit": 0,
+      "seconds": 0.48
+    },
+    {
+      "command": "python scripts/test_property_address.py",
+      "exit": 0,
+      "seconds": 0.54
+    },
+    {
+      "command": "python scripts/test_complex_roofs.py",
+      "exit": 0,
+      "seconds": 0.32
+    },
+    {
+      "command": "python scripts/test_activation_metrics.py",
+      "exit": 0,
+      "seconds": 0.62
+    },
+    {
+      "command": "python scripts/test_account_access.py",
+      "exit": 0,
+      "seconds": 0.33
+    },
+    {
+      "command": "python scripts/test_business_isolation.py",
+      "exit": 0,
+      "seconds": 0.62
+    },
+    {
+      "command": "python scripts/test_workspace_account_binding.py",
+      "exit": 0,
+      "seconds": 0.56
+    },
+    {
+      "command": "python scripts/test_account_credits.py",
+      "exit": 0,
+      "seconds": 2.74
+    },
+    {
+      "command": "python scripts/test_password_recovery.py",
+      "exit": 0,
+      "seconds": 1.33
+    },
+    {
+      "command": "python scripts/test_security_lifecycle.py",
+      "exit": 0,
+      "seconds": 1.09
+    },
+    {
+      "command": "python scripts/test_login_identity_race.py",
+      "exit": 0,
+      "seconds": 2.69
+    },
+    {
+      "command": "python scripts/test_public_routes.py",
+      "exit": 0,
+      "seconds": 4.93
+    },
+    {
+      "command": "python scripts/test_support_storage.py",
+      "exit": 0,
+      "seconds": 0.54
+    },
+    {
+      "command": "python scripts/test_support_workflow.py",
+      "exit": 0,
+      "seconds": 0.63
+    },
+    {
+      "command": "python scripts/test_support_replies.py",
+      "exit": 0,
+      "seconds": 0.58
+    },
+    {
+      "command": "python scripts/test_support_inbound.py",
+      "exit": 0,
+      "seconds": 0.71
+    },
+    {
+      "command": "python scripts/test_support_quote_display.py",
+      "exit": 0,
+      "seconds": 0.58
+    },
+    {
+      "command": "node scripts/test_activation_controls.cjs",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "python scripts/check_landscaping_multi_area.py",
+      "exit": 0,
+      "seconds": 0.04
+    },
+    {
+      "command": "node scripts/test_landscaping_engine.cjs",
+      "exit": 0,
+      "seconds": 0.18
+    },
+    {
+      "command": "python scripts/test_landscaping_rendering.py",
+      "exit": 0,
+      "seconds": 1.21
+    },
+    {
+      "command": "node scripts/test_landscaping_controls.cjs",
+      "exit": 0,
+      "seconds": 23.9
+    },
+    {
+      "command": "node scripts/test_warranty_shields.cjs",
+      "exit": 0,
+      "seconds": 1.75
+    },
+    {
+      "command": "node scripts/test_surface_workspace.cjs",
+      "exit": 0,
+      "seconds": 15.95
+    },
+    {
+      "command": "node scripts/test_industry_wording.cjs",
+      "exit": 0,
+      "seconds": 15.98
+    },
+    {
+      "command": "node scripts/test_unit_address_ui.cjs",
+      "exit": 0,
+      "seconds": 0.09
+    },
+    {
+      "command": "node scripts/test_phone_pdf.cjs",
+      "exit": 0,
+      "seconds": 1.05
+    },
+    {
+      "command": "node scripts/test_browser_log_privacy.cjs",
+      "exit": 0,
+      "seconds": 0.11
+    },
+    {
+      "command": "node scripts/test_expanded_pdf.cjs",
+      "exit": 0,
+      "seconds": 0.94
+    },
+    {
+      "command": "node scripts/test_saved_editing.cjs",
+      "exit": 0,
+      "seconds": 3.25
+    },
+    {
+      "command": "node scripts/test_estimate_save_integrity.cjs",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "node scripts/test_profile_save.cjs",
+      "exit": 0,
+      "seconds": 0.11
+    },
+    {
+      "command": "node scripts/test_profile_restore.cjs",
+      "exit": 0,
+      "seconds": 0.11
+    },
+    {
+      "command": "node scripts/test_country_regions.cjs",
+      "exit": 0,
+      "seconds": 3.14
+    },
+    {
+      "command": "node scripts/test_report_measurement_correction.cjs",
+      "exit": 0,
+      "seconds": 5.73
+    },
+    {
+      "command": "node scripts/test_quote_pricing_validation.cjs",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "python scripts/test_estimate_pricing_api.py",
+      "exit": 0,
+      "seconds": 0.77
+    },
+    {
+      "command": "python scripts/test_saved_editing_session.py",
+      "exit": 0,
+      "seconds": 0.76
+    },
+    {
+      "command": "node scripts/test_price_rounding.cjs",
+      "exit": 0,
+      "seconds": 0.1
+    },
+    {
+      "command": "node scripts/test_saved_money_guard.cjs",
+      "exit": 0,
+      "seconds": 0.09
+    },
+    {
+      "command": "node scripts/test_measurement_edges.cjs",
+      "exit": 0,
+      "seconds": 16.07
+    },
+    {
+      "command": "node scripts/test_public_ui.cjs",
+      "exit": 0,
+      "seconds": 2.55
+    },
+    {
+      "command": "node scripts/test_help_center.cjs",
+      "exit": 0,
+      "seconds": 1.79
+    },
+    {
+      "command": "node scripts/test_support_form.cjs",
+      "exit": 0,
+      "seconds": 1.04
+    },
+    {
+      "command": "node scripts/test_onboarding_finish.cjs",
+      "exit": 0,
+      "seconds": 3.38
+    },
+    {
+      "command": "node scripts/test_signup_flow.cjs",
+      "exit": 0,
+      "seconds": 1.16
+    },
+    {
+      "command": "python scripts/test_new_user_flow.py",
+      "exit": 0,
+      "seconds": 4.84
+    },
+    {
+      "command": "python scripts/test_recovery_allowance.py",
+      "exit": 0,
+      "seconds": 0.57
+    },
+    {
+      "command": "node scripts/test_landscaping_engine.cjs paving",
+      "exit": 0,
+      "seconds": 0.17
+    },
+    {
+      "command": "node scripts/test_landscaping_engine.cjs pressure",
+      "exit": 0,
+      "seconds": 0.14
+    },
+    {
+      "command": "node scripts/test_landscaping_engine.cjs snow",
+      "exit": 0,
+      "seconds": 0.17
+    },
+    {
+      "command": "python scripts/test_geometry_integrity.py",
+      "exit": 0,
+      "seconds": 0.76
+    },
+    {
+      "command": "python scripts/test_priced_roof_scope.py",
+      "exit": 0,
+      "seconds": 0.6
+    },
+    {
+      "command": "python scripts/test_adversarial_oct31.py",
+      "exit": 0,
+      "seconds": 4.75
+    },
+    {
+      "command": "python scripts/test_final_reliability.py",
+      "exit": 0,
+      "seconds": 1.7
+    },
+    {
+      "command": "node scripts/test_geometry_client.cjs",
+      "exit": 0,
+      "seconds": 0.11
+    },
+    {
+      "command": "python scripts/test_server_pricing.py",
+      "exit": 0,
+      "seconds": 1.25
+    },
+    {
+      "command": "python scripts/test_automatic_roof_api.py",
+      "exit": 0,
+      "seconds": 0.53
+    },
+    {
+      "command": "node scripts/test_roof_integrity.cjs",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "node scripts/test_priced_roof_scope.cjs",
+      "exit": 0,
+      "seconds": 0.16
+    },
+    {
+      "command": "python scripts/test_qa_auth_flow.py",
+      "exit": 0,
+      "seconds": 1.25
+    },
+    {
+      "command": "python scripts/test_failure_recovery.py",
+      "exit": 0,
+      "seconds": 1.26
+    },
+    {
+      "command": "node scripts/test_failure_recovery.cjs",
+      "exit": 0,
+      "seconds": 0.12
+    },
+    {
+      "command": "node scripts/test_property_loading.cjs",
+      "exit": 0,
+      "seconds": 0.13
+    },
+    {
+      "command": "python scripts/test_property_acceptance.py",
+      "exit": 0,
+      "seconds": 0.65
+    },
+    {
+      "command": "python scripts/test_subscription_periods.py",
+      "exit": 0,
+      "seconds": 1.68
+    },
+    {
+      "command": "python scripts/test_profile_integrity.py",
+      "exit": 0,
+      "seconds": 0.67
+    },
+    {
+      "command": "python scripts/test_manual_roofing.py",
+      "exit": 0,
+      "seconds": 0.97
+    },
+    {
+      "command": "node scripts/test_manual_roofing.cjs",
+      "exit": 0,
+      "seconds": 2.59
+    },
+    {
+      "command": "python scripts/test_vector_pdf.py",
+      "exit": 0,
+      "seconds": 2.12
+    },
+    {
+      "command": "node scripts/test_vector_pdf.cjs",
+      "exit": 0,
+      "seconds": 1.14
+    },
+    {
+      "command": "node scripts/test_vector_download.cjs",
+      "exit": 0,
+      "seconds": 0.86
+    },
+    {
+      "command": "node scripts/test_vector_full_report.cjs",
+      "exit": 0,
+      "seconds": 2.7
+    },
+    {
+      "command": "python scripts/test_api_cost_routing.py",
+      "exit": 0,
+      "seconds": 0.74
+    },
+    {
+      "command": "node scripts/test_logo_cache.cjs",
+      "exit": 0,
+      "seconds": 0.11
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+PASS independent WGS84 + Decimal commercial-1440-source.json 163.52
+PASS independent WGS84 + Decimal commercial-390-source.json 163.52
+PASS independent WGS84 + Decimal commercial-768-source.json 163.52
+PASS independent WGS84 + Decimal landscaping-1440-source.json 153.18
+PASS independent WGS84 + Decimal landscaping-390-source.json 153.18
+PASS independent WGS84 + Decimal landscaping-768-source.json 153.18
+PASS independent WGS84 + Decimal paving-1440-source.json 153.18
+PASS independent WGS84 + Decimal paving-390-source.json 153.18
+PASS independent WGS84 + Decimal paving-768-source.json 153.18
+PASS independent WGS84 + Decimal pressure-1440-source.json 153.18
+PASS independent WGS84 + Decimal pressure-390-source.json 153.18
+PASS independent WGS84 + Decimal pressure-768-source.json 153.18
+PASS independent WGS84 + Decimal roofing-1440-source.json 79.3
+PASS independent WGS84 + Decimal roofing-390-source.json 79.3
+PASS independent WGS84 + Decimal roofing-768-source.json 79.3
+PASS independent WGS84 + Decimal snow-1440-source.json 153.18
+PASS independent WGS84 + Decimal snow-390-source.json 153.18
+PASS independent WGS84 + Decimal snow-768-source.json 153.18
+PASS 18 saved browser snapshots; WGS84 tolerance 0.6% reflects existing spherical measurements, not survey accuracy

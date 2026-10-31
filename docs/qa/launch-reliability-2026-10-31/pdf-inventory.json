@@ -1,0 +1,290 @@
+[
+  {
+    "file": "commercial-1440-expanded.pdf",
+    "pages": 3,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "commercial-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "commercial-390-expanded.pdf",
+    "pages": 3,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "commercial-390-single.pdf",
+    "pages": 1,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "commercial-768-expanded.pdf",
+    "pages": 3,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "commercial-768-single.pdf",
+    "pages": 1,
+    "expected_total": "163.52",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-1440-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-390-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-390-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-768-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "landscaping-768-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-1440-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": false,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-390-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-390-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-768-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "paving-768-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-1440-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-390-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-390-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-768-expanded.pdf",
+    "pages": 3,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "pressure-768-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-1440-expanded.pdf",
+    "pages": 2,
+    "expected_total": "79.30",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "79.30",
+    "total_ocr_found": false,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-390-expanded.pdf",
+    "pages": 2,
+    "expected_total": "79.30",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-390-single.pdf",
+    "pages": 1,
+    "expected_total": "79.30",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-768-expanded.pdf",
+    "pages": 2,
+    "expected_total": "79.30",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "roofing-768-single.pdf",
+    "pages": 1,
+    "expected_total": "79.30",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-1440-expanded.pdf",
+    "pages": 2,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-1440-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-390-expanded.pdf",
+    "pages": 2,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-390-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-768-expanded.pdf",
+    "pages": 2,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  },
+  {
+    "file": "snow-768-single.pdf",
+    "pages": 1,
+    "expected_total": "153.18",
+    "total_ocr_found": true,
+    "brand_ocr_found": true,
+    "customer_ocr_found": true
+  }
+]

@@ -1,0 +1,144 @@
+{
+  "address": "1 Fictional QA Street, Saskatoon, SK, Canada",
+  "amount_paid": 0,
+  "area_sqft": 1318,
+  "completion_date": "",
+  "customer_email": "fictional-customer@example.invalid",
+  "customer_name": "FICTIONAL QA pressure 1440",
+  "customer_notes": "",
+  "customer_phone": "555-0100",
+  "extra_service_amount": 0,
+  "extra_service_description": "",
+  "image_choice": "hide",
+  "job_status": "Estimate",
+  "linear_feet": 62.04996065170652,
+  "measurement_mode": "linear",
+  "pricing": {
+    "area": 1318,
+    "disc": 0,
+    "discount": 0,
+    "estimatePeriod": "one_time",
+    "extraAmount": 0,
+    "extraDescription": "",
+    "gst": 5,
+    "gstAmt": 6.9,
+    "measurementMode": "linear",
+    "mode": "regular",
+    "price": 0.1,
+    "pst": 6,
+    "pstAmt": 8.28,
+    "subtotal": 138,
+    "taxBase": 138,
+    "total": 153.18,
+    "unit": "ft²"
+  },
+  "quote": {
+    "adjustedArea": 0,
+    "areaPoints": [
+      [
+        52.000089815939795,
+        -106.00011980332516
+      ],
+      [
+        52.000089815939795,
+        -106.00002056592285
+      ],
+      [
+        52.00017073100951,
+        -106.00002056592285
+      ],
+      [
+        52.00017073100951,
+        -106.00011980332516
+      ]
+    ],
+    "areaSqFt": 1318,
+    "businessType": "pressure",
+    "commercialAreas": [
+      {
+        "name": "Service Area 1",
+        "points": [
+          [
+            51.99994945271682,
+            -106.00011980332516
+          ],
+          [
+            51.99994945271682,
+            -106.00002056592285
+          ],
+          [
+            52.00003036804024,
+            -106.00002056592285
+          ],
+          [
+            52.00003036804024,
+            -106.00011980332516
+          ]
+        ],
+        "rate": 0.1,
+        "source": "manual",
+        "sqft": 659
+      },
+      {
+        "name": "Service Area 2",
+        "points": [
+          [
+            52.000089815939795,
+            -106.00011980332516
+          ],
+          [
+            52.000089815939795,
+            -106.00002056592285
+          ],
+          [
+            52.00017073100951,
+            -106.00002056592285
+          ],
+          [
+            52.00017073100951,
+            -106.00011980332516
+          ]
+        ],
+        "rate": 0.1,
+        "source": "manual",
+        "sqft": 659
+      }
+    ],
+    "commercialLinearRate": 0,
+    "commercialLinearSaved": false,
+    "dealerCountry": "CA",
+    "landscapingAreaRate": 0,
+    "landscapingCombined": false,
+    "landscapingLinearRate": 0.1,
+    "linearFeet": 62.04996065170652,
+    "linearPoints": [
+      [
+        51.99994945271682,
+        -105.99989987178493
+      ],
+      [
+        52.00011953985993,
+        -105.99989987178493
+      ]
+    ],
+    "manualPlanes": [],
+    "manualRoofWorkflow": false,
+    "measureSource": "google",
+    "measurementMode": "linear",
+    "pavingAreaRate": 0,
+    "pavingCombined": false,
+    "pavingLinearRate": 0.1,
+    "pressureAreaRate": 0.1,
+    "pressureCombined": true,
+    "pressureLinearRate": 0.1,
+    "roofScopeConfirmed": false,
+    "showWarrantyShield": true,
+    "structures": [],
+    "warrantyBrand": ""
+  },
+  "scheduled_date": "",
+  "street_image_data": "",
+  "street_meta": "Actual Street View",
+  "total_area": 1318,
+  "total_price": 153.18
+}

@@ -1,0 +1,23 @@
+{
+  "proposal_only": true,
+  "applied": false,
+  "production_service_id": "srv-db01g1p42hec73ehu1lg",
+  "render_auto_deploy_ui": "Off",
+  "owner_approval_required_for_exact_commit": true,
+  "main_branch_protection": {
+    "require_pull_request": true,
+    "required_successful_checks": [
+      "recovery",
+      "postgres_integrity"
+    ],
+    "block_force_push_and_deletion": true,
+    "restrict_bypass": true
+  },
+  "before_enabling_release": [
+    "confirm actual production service/domain and dedicated database IDs",
+    "verify managed recovery points and environment/credential isolation",
+    "apply and validate full-CI proposal with separate approval",
+    "appoint responder and backup, verify owner approval procedure",
+    "record compatible approved commit/build/schema/environment before rollback"
+  ]
+}

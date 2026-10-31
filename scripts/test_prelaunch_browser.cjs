@@ -52,6 +52,16 @@ for(const width of widths)for(const industry of industries){
  assert.equal(await page.evaluate(()=>quoteSnapshot.savedPricing.total),before.pricing.total);
  assert.equal(await page.locator('#rCustomerName').textContent(),payload.customer_name);
  if(imageChoice!=='none'){const savedFrame=await page.locator('#customerMap canvas[data-map-view]').evaluate(n=>{const r=n.getBoundingClientRect();return{source:n.width/n.height,display:r.width/r.height}});assert(Math.abs(savedFrame.display/savedFrame.source-1)<.001,'Reopened saved aerial must retain intrinsic proportions');}
+ if(process.env.QA_BROWSER_CHECK_ROOF_SCOPE==='1'&&industry==='roofing'){
+  const frozen=await page.evaluate(()=>JSON.stringify(quoteSnapshot));let unsafeDownloads=0;const onUnsafe=()=>unsafeDownloads++;page.on('download',onUnsafe);
+  await page.evaluate(()=>{window.qaOriginalCapture=window.html2canvas;window.qaOriginalPrint=window.print;window.html2canvas=()=>{throw Error('Unsafe PDF capture')};window.print=()=>{throw Error('Unsafe print')};quoteSnapshot.manualRoofWorkflow=false;quoteSnapshot.manualPlanes.forEach(p=>delete p.manual_roof_qa);quoteSnapshot.manualPlanes.push(JSON.parse(JSON.stringify(quoteSnapshot.manualPlanes[0])))});
+  const invalid=await page.evaluate(()=>JSON.stringify(quoteSnapshot));await page.click('#downloadPdfBtn');await page.waitForTimeout(300);
+  assert((await page.locator('#status').textContent()).includes('overlap'));assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),invalid);assert.equal(unsafeDownloads,0);
+  await page.evaluate(()=>printEstimate());assert((await page.locator('#status').textContent()).includes('overlap'));
+  const stillSaved=(await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+saved.id)).json()).payload;assert.deepEqual(stillSaved,payload);
+  await page.evaluate(original=>{quoteSnapshot=JSON.parse(original);window.html2canvas=window.qaOriginalCapture;window.print=window.qaOriginalPrint;delete window.qaOriginalCapture;delete window.qaOriginalPrint},frozen);page.off('download',onUnsafe);
+  console.log('PASS actual Chromium: flag-stripped duplicate roof blocks PDF/Print before capture, original saved payload unchanged');
+ }
  const captureChecks=[];const pdfState=await page.evaluate(()=>({quote:JSON.stringify(quoteSnapshot),price:el('rPricing').textContent,customer:el('rCustomerName').textContent,company:el('rEstimateSubtitle').textContent}));
  await page.exposeFunction('qaRecordPdfImage',check=>captureChecks.push(check));
  await page.evaluate(()=>{const capture=window.html2canvas;window.html2canvas=async(node,options)=>{

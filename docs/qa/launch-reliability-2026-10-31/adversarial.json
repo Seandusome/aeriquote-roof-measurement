@@ -1,0 +1,1 @@
+{"result": "PASS", "seed": 10312026, "independent_geometry_pairs": 1200, "max_wgs84_area_difference": 0.004495383534166453, "max_wgs84_distance_difference": 0.003439625604082508, "model_tolerance_not_survey_certification": true, "real_api_valid_cases": 72, "adversarial_mutations_rejected": 276, "selected_area_revision_cases": 60, "all_six_industries": true}

@@ -1,0 +1,29 @@
+--- a/.github/workflows/validate-landscaping-recovery.yml
++++ b/.github/workflows/validate-landscaping-recovery.yml
+@@ -1,12 +1,15 @@
+ name: Validate landscaping recovery
+ on:
+   push:
+-    branches: [landscaping-multi-area-recovery-oct11]
++    branches: [landscaping-multi-area-recovery-oct11, main]
++  pull_request:
++    branches: [main]
++  workflow_dispatch:
+ permissions:
+   contents: read
+ jobs:
+   recovery:
+-    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
++    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11' || github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v5
+@@ -98,7 +101,7 @@
+       - run: node scripts/test_logo_cache.cjs
+ 
+   postgres_integrity:
+-    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
++    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11' || github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+     runs-on: ubuntu-latest
+     services:
+       postgres:

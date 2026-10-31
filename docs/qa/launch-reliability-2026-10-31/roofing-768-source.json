@@ -1,0 +1,94 @@
+{
+  "address": "1 Fictional QA Street, Saskatoon, SK, Canada",
+  "amount_paid": 0,
+  "area_sqft": 0,
+  "completion_date": "",
+  "customer_email": "fictional-customer@example.invalid",
+  "customer_name": "FICTIONAL QA roofing 768",
+  "customer_notes": "",
+  "customer_phone": "555-0100",
+  "extra_service_amount": 0,
+  "extra_service_description": "",
+  "image_choice": "hide",
+  "job_status": "Estimate",
+  "linear_feet": 0,
+  "measurement_mode": "auto",
+  "pricing": {
+    "area": 714.4012759787623,
+    "disc": 0,
+    "discount": 0,
+    "estimatePeriod": "one_time",
+    "extraAmount": 0,
+    "extraDescription": "",
+    "gst": 5,
+    "gstAmt": 3.57,
+    "measurementMode": "auto",
+    "mode": "regular",
+    "price": 0.1,
+    "pst": 6,
+    "pstAmt": 4.29,
+    "subtotal": 71.44,
+    "taxBase": 71.44,
+    "total": 79.3,
+    "unit": "ft²"
+  },
+  "quote": {
+    "adjustedArea": 0,
+    "areaPoints": [],
+    "areaSqFt": 0,
+    "businessType": "roofing",
+    "commercialAreas": [],
+    "commercialLinearRate": 0,
+    "commercialLinearSaved": false,
+    "dealerCountry": "CA",
+    "landscapingAreaRate": 0,
+    "landscapingCombined": false,
+    "landscapingLinearRate": 0.1,
+    "linearFeet": 0,
+    "linearPoints": [],
+    "manualPlanes": [
+      {
+        "manual_roof_qa": true,
+        "pitch_confirmed": true,
+        "pitch_degrees": 22.62,
+        "points": [
+          {
+            "lat": 51.999949504321016,
+            "lng": -106.00011974573138
+          },
+          {
+            "lat": 51.999949504321016,
+            "lng": -106.00002050399782
+          },
+          {
+            "lat": 52.00003041964436,
+            "lng": -106.00002050399782
+          },
+          {
+            "lat": 52.00003041964436,
+            "lng": -106.00011974573138
+          }
+        ],
+        "surface_sqft": 714.4012759787623
+      }
+    ],
+    "manualRoofWorkflow": true,
+    "measureSource": "manual",
+    "measurementMode": "auto",
+    "pavingAreaRate": 0,
+    "pavingCombined": false,
+    "pavingLinearRate": 0.1,
+    "pressureAreaRate": 0,
+    "pressureCombined": false,
+    "pressureLinearRate": 0.1,
+    "roofScopeConfirmed": true,
+    "showWarrantyShield": true,
+    "structures": [],
+    "warrantyBrand": ""
+  },
+  "scheduled_date": "",
+  "street_image_data": "",
+  "street_meta": "Actual Street View",
+  "total_area": 714.4012759787623,
+  "total_price": 79.3
+}

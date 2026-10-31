@@ -1,3 +1,5 @@
+> Superseded for next-session entry by [October 31 resume](RESUME_HERE_2026_10_31.md). The October 30 record below is preserved.
+
 # END OF DAY - October 30, 2026
 
 **STOP: work finished for today. No further development, deployment or infrastructure changes authorized by this checkpoint.** Read this section first next session, then verify current recovery HEAD before proceeding. Branch: `landscaping-multi-area-recovery-oct11` only; never overwrite newer work.

@@ -1,0 +1,13 @@
+START roofing 390
+clicked property
+loaded Trace each roof section, confirm its pitch, then review the estimate.
+drawn {
+  areas: 0,
+  points: 0,
+  line: 0,
+  manual: 1,
+  status: '✓ MANUAL ROOF SAVED — 714 ft² total. Add another roof if needed.'
+}
+report opened
+PASS actual Chromium: flag-stripped duplicate roof blocks PDF/Print before capture, original saved payload unchanged
+{"industry":"roofing","width":390,"total":79.3,"overflow":false,"errors":[],"pdfs":["/tmp/aq-oct31-roof-browser/roofing-390-single.pdf","/tmp/aq-oct31-roof-browser/roofing-390-expanded.pdf"],"captureChecks":[{"sourceWidth":696,"sourceHeight":930,"drawWidth":487.1875,"drawHeight":651}],"saved":true,"reopened":true}
