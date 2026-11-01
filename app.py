@@ -3558,25 +3558,47 @@ LOGIN_HTML = r"""<!doctype html><html><head><meta charset="utf-8"><meta name="vi
 def dealer_login():
     if request.method=="POST":
         email=str(request.form.get("email") or "").strip().lower(); password=str(request.form.get("password") or "")
+        # Opt-in recovery-only diagnostics: fixed decisions and random request ID,
+        # never credentials, identity values, hashes, request bodies or cookies.
+        diagnostic_email=os.environ.get('AERIQUOTE_LOGIN_DIAGNOSTIC_EMAIL','').strip().lower()
+        diagnostic_id=uuid.uuid4().hex if (is_recovery_test_service() and diagnostic_email and email==diagnostic_email) else None
+        def diagnostic(stage):
+            if diagnostic_id:app.logger.warning('AQ login diagnostic stage=%s id=%s',stage,diagnostic_id)
+        def login_response(response,stage):
+            diagnostic(stage)
+            response=app.make_response(response)
+            if diagnostic_id:response.headers['X-AeriQuote-Login-Diagnostic']=diagnostic_id
+            return response
+        diagnostic('received')
         con=estimate_db()
         try:
             ip_blocked=limited(con,"login-ip:"+str(request.remote_addr),100)
             email_blocked=limited(con,"login-email:"+email,20)
-            if ip_blocked or email_blocked:return render_template_string(LOGIN_HTML,error="Too many login attempts. Please try again in 15 minutes."),429
+            if ip_blocked or email_blocked:return login_response((render_template_string(LOGIN_HTML,error="Too many login attempts. Please try again in 15 minutes."),429),'rate_limited')
             # Read credentials and their revocation version in one DB snapshot.
             row=con.execute("SELECT d.*,COALESCE(v.version,0) AS login_version FROM dealers d LEFT JOIN account_auth_versions v ON v.account_type='owner' AND v.account_id=d.id WHERE LOWER(d.email)=?",(email,)).fetchone()
         finally: con.close()
-        if row and str(row["status"]).lower()=="active" and password_ok(password,row["password_hash"]):
+        diagnostic('owner_found' if row else 'owner_missing')
+        owner_active=bool(row and str(row['status']).lower()=='active')
+        if row and not owner_active:diagnostic('owner_inactive')
+        owner_verified=owner_active and password_ok(password,row['password_hash'])
+        if owner_active:diagnostic('owner_verifier_pass' if owner_verified else 'owner_verifier_fail')
+        if owner_verified:
             session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner";session["auth_version"]=int(row["login_version"] or 0)
-            return redirect("/")
+            return login_response(redirect('/'),'session_created')
         con=estimate_db()
         try:
             emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status,COALESCE(v.version,0) AS login_version FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id LEFT JOIN account_auth_versions v ON v.account_type='employee' AND v.account_id=e.id WHERE LOWER(e.email)=?",(email,)).fetchone()
         finally: con.close()
-        if emp and str(emp["status"]).lower()=="active" and str(emp["dealer_status"]).lower()=="active" and password_ok(password,emp["password_hash"]):
+        diagnostic('employee_found' if emp else 'employee_missing')
+        employee_active=bool(emp and str(emp['status']).lower()=='active' and str(emp['dealer_status']).lower()=='active')
+        if emp and not employee_active:diagnostic('employee_inactive')
+        employee_verified=employee_active and password_ok(password,emp['password_hash'])
+        if employee_active:diagnostic('employee_verifier_pass' if employee_verified else 'employee_verifier_fail')
+        if employee_verified:
             session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee";session["auth_version"]=int(emp["login_version"] or 0)
-            return redirect("/")
-        return render_template_string(LOGIN_HTML,error="Email or password is incorrect.")
+            return login_response(redirect('/'),'session_created')
+        return login_response(render_template_string(LOGIN_HTML,error="Email or password is incorrect."),'rejected')
     return render_template_string(LOGIN_HTML,error=None)
 
 @app.get("/dealer-logout")

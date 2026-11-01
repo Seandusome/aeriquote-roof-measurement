@@ -29,6 +29,7 @@ jobs:
       - run: python scripts/test_workspace_account_binding.py
       - run: python scripts/test_account_credits.py
       - run: python scripts/test_password_recovery.py
+      - run: python scripts/test_login_diagnostics.py
       - run: python scripts/test_security_lifecycle.py
       - run: python scripts/test_login_identity_race.py
       - run: python scripts/test_public_routes.py

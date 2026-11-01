@@ -1,3 +1,15 @@
+# November 1 — login diagnosis prepared; live capture pending
+
+Read [login diagnosis and exact evidence](QA_LOGIN_DIAGNOSIS_2026_11_01.md) before continuing. Sean has used only `qa-browser-oct31-2026@example.invalid` for these failed attempts. The email is directly verified for QA owner `c417b9a2-51ea-4816-84da-1e597a7de98d`; do not suggest alternative emails or repeat password resets.
+
+- Owner-approved recovery compute upgrade is live at US$7/month. It automatically deployed documentation checkpoint `b1562019` as `dep-dbjq0jcs728c738gen3g`; application source remains equivalent to `60ae098`. Auto-deploy Off; QA database connection unchanged. Production/main untouched.
+- Owner personally completed a QA-only password reset; auth version now 1. No new password/reset/account replacement authorized. Saved estimates unchanged by that operation.
+- Failed login requests reach the recovery server and return the rejection page before its ordinary successful redirect. Exact lookup/verifier decision for a correlated attempt remains unproven. A prepared secure browser-auth attempt was declined; do not repeatedly prompt.
+- This containing commit adds default-off, recovery-only, single-email diagnostic stages and random request IDs. Targeted diagnostics, existing login/reset tests and real Gunicorn secret-canary tests PASS. Not deployed or enabled. Owner approval is required before deploying and enabling `AERIQUOTE_LOGIN_DIAGNOSTIC_EMAIL` for this fictional email.
+- Fresh live PDF and login/session success remain unverified. Preserve all measurement, pricing, PDF and isolation safeguards.
+
+---
+
 # Final end-of-day checkpoint — cross-industry QA
 
 Read [final round results and limitations](QA_FINAL_CROSS_INDUSTRY_2026_10_31.md) first. This containing documentation/evidence commit is the latest checkpoint; preserve newer recovery HEAD if advanced.

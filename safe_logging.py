@@ -30,6 +30,10 @@ _EVENTS = {
 _EXCEPTION_TYPES = frozenset(('Exception','RuntimeError','ValueError','TypeError',
     'KeyError','IndexError','AttributeError','OSError','PermissionError','TimeoutError',
     'ConnectionError','OperationalError','IntegrityError','HTTPError','URLError'))
+_LOGIN_STAGES = frozenset(('received','rate_limited','owner_found','owner_missing',
+    'owner_inactive','owner_verifier_pass','owner_verifier_fail','employee_found',
+    'employee_missing','employee_inactive','employee_verifier_pass',
+    'employee_verifier_fail','session_created','rejected'))
 
 
 def _number(value, limit=999999999):
@@ -68,6 +72,12 @@ def _sanitize(record):
         record.msg='http method=%s route=%s status=%s bytes=%s seconds=%s' % (
             method,_route(atoms.get('U')),_number(atoms.get('s'),599),
             _number(atoms.get('B')),_number(atoms.get('L'),86400))
+    elif (isinstance(raw,str) and raw=='AQ login diagnostic stage=%s id=%s' and
+          isinstance(record.args,tuple) and len(record.args)==2 and
+          isinstance(record.args[0],str) and record.args[0] in _LOGIN_STAGES and
+          isinstance(record.args[1],str) and len(record.args[1])==32 and
+          all(ch in '0123456789abcdef' for ch in record.args[1])):
+        record.msg='event=qa_login stage=%s id=%s' % record.args
     elif isinstance(raw,str) and raw in _SAFE_MESSAGES and not record.args:
         record.msg=raw
     else:
