@@ -1,3 +1,14 @@
+# November 1 — fresh six-industry PDFs and repeated retrace PASS
+
+Read [current QA evidence](QA_MEASUREMENT_PDF_2026_11_01.md). All six industries now have fresh Single and Expanded PDFs rendered and visually inspected; fourteen PDFs/21 pages including a new repeated-retrace Paving revision. Independent quantities/pricing/taxes/totals agree. No reproducible runtime defect, code fix or deployment this batch.
+
+- Recovery LIVE remains4f2b233f /dep-dbjqlnijnfac738poig0; auto-deploy Off, temporary diagnostics disabled, isolated QA database unchanged. Main/production/customer data untouched.
+- Repeated Commercial Area2 Cancel preserved both Areas/Linear/total. Paving Area2 Save twice changed6,227→2,382→2,815ft² while Area1=6,125 and Linear188.2640110545814ft stayed intact. New fictional current revision at21:20:15UTC:8,940ft²/$1,013.24. Current plus18 previous versions retained. Prior Paving17 remains12,352ft²/$1,391.97; original Roofing remains7,348ft²/$815.67.
+- Allowance fixture fix7e01cec2 confirmed: full recovery41350107603 and application41350107613 SUCCESS, including PostgreSQL16/18 and login diagnostics. No runtime allowance change.
+- Physical touch, expired-login/unsaved-work recovery and fresh Linear-drag checks remain outstanding. Fresh desktop PDFs are now verified; do not repeat the historical missing-download report as a current app defect. Download files one per browser tool call.
+
+---
+
 # November 1 — live QA sign-in confirmed
 
 At 21:09:39 UTC the owner-entered browser attempt emitted `received`, `owner_found`, `owner_verifier_pass`, `session_created`, correlated ID `440aa779f94c430a98e8332985b29ca4`. Authentication POST returned 302; subsequent application GET returned 200. Browser tab 5 reached `/` and displayed the authenticated measuring workspace with LOG OUT and PREVIOUS ESTIMATES. This proves credential verification, session creation, redirect and browser session continuity for this attempt. No password/account change occurred. The verified fictional QA email had been prefilled before the owner entered their password. Earlier failures remain unexplained; do not assert a password defect or email typo.

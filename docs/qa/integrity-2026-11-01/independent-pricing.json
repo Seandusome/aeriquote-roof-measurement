@@ -1,0 +1,77 @@
+[
+  {
+    "industry": "commercial",
+    "area1": 6125,
+    "area2": 6227,
+    "linear": "188.2640110545814",
+    "subtotal": "1282.27",
+    "tax5": "64.11",
+    "tax6": "76.94",
+    "total": "1423.32",
+    "match": true
+  },
+  {
+    "industry": "landscaping",
+    "area1": 6125,
+    "area2": 6227,
+    "linear": "188.2640110545814",
+    "subtotal": "1254.03",
+    "tax5": "62.70",
+    "tax6": "75.24",
+    "total": "1391.97",
+    "match": true
+  },
+  {
+    "industry": "snow",
+    "area1": 6125,
+    "area2": 6227,
+    "linear": "188.2640110545814",
+    "subtotal": "1254.03",
+    "tax5": "62.70",
+    "tax6": "75.24",
+    "total": "1391.97",
+    "match": true
+  },
+  {
+    "industry": "pressure",
+    "area1": 6125,
+    "area2": 6227,
+    "linear": "188.2640110545814",
+    "subtotal": "1254.03",
+    "tax5": "62.70",
+    "tax6": "75.24",
+    "total": "1391.97",
+    "match": true
+  },
+  {
+    "industry": "paving",
+    "area1": 6125,
+    "area2": 6227,
+    "linear": "188.2640110545814",
+    "subtotal": "1254.03",
+    "tax5": "62.70",
+    "tax6": "75.24",
+    "total": "1391.97",
+    "match": true
+  },
+  {
+    "industry": "paving-retrace",
+    "area1": 6125,
+    "area2": 2815,
+    "linear": "188.2640110545814",
+    "subtotal": "912.83",
+    "tax5": "45.64",
+    "tax6": "54.77",
+    "total": "1013.24",
+    "match": true
+  },
+  {
+    "industry": "roofing",
+    "area": "7348.380392728047",
+    "subtotal": "734.84",
+    "tax5": "36.74",
+    "tax6": "44.09",
+    "total": "815.67",
+    "match": true
+  }
+]

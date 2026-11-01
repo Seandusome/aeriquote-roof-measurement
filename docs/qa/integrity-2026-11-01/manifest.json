@@ -1,0 +1,114 @@
+[
+  {
+    "file": "commercial-expanded.pdf",
+    "bytes": 1438203,
+    "pages": 2,
+    "sha256": "e64e420350f535dcfbf5c99969b2f7d3c9d3cee38c0c04a4cf8c29f828eac210",
+    "git_blob": "297cb07579042068c712d8b8844f9f4cc8e7de5f",
+    "visually_reviewed": true
+  },
+  {
+    "file": "commercial-single.pdf",
+    "bytes": 988744,
+    "pages": 1,
+    "sha256": "f9e4b45d5b8eb638603bba99787baff9d994358310fb9394ecb6ee207e2b4ca5",
+    "git_blob": "9bc9ff49d1a3bd28ee5e751b11e644ef771dce04",
+    "visually_reviewed": true
+  },
+  {
+    "file": "landscaping-expanded.pdf",
+    "bytes": 1429749,
+    "pages": 2,
+    "sha256": "156cff43819160f06568c2295685e7989d33b10a3f3f5f07aa93ae50fe0f96f3",
+    "git_blob": "dc023267d14b1d0c3cd8b9069800be2443ad3b10",
+    "visually_reviewed": true
+  },
+  {
+    "file": "landscaping-single.pdf",
+    "bytes": 979662,
+    "pages": 1,
+    "sha256": "f55bfc94889d001c8a669b747e7932e045ea17bbb9c8df399c1ffeaea0f8e838",
+    "git_blob": "bf9ff27292578b8da6c64935133597e2c2b32ed5",
+    "visually_reviewed": true
+  },
+  {
+    "file": "paving-expanded.pdf",
+    "bytes": 1466280,
+    "pages": 2,
+    "sha256": "634d5cf48fe2dcae1a8118ea5276a1a0f6ccdf5f6d8d38ea43090314d1b114b0",
+    "git_blob": "853d7c1c1d5bf432fd9b354583ae9d73f57bc525",
+    "visually_reviewed": true
+  },
+  {
+    "file": "paving-retrace-expanded.pdf",
+    "bytes": 1511036,
+    "pages": 2,
+    "sha256": "932a85017c9ce40643c603e419408b6e0d1cd73748e1289e75ace9eb49db9293",
+    "git_blob": "7172ae454f603a07309aa1efecd3ed12a9c570cf",
+    "visually_reviewed": true
+  },
+  {
+    "file": "paving-retrace-single.pdf",
+    "bytes": 1037752,
+    "pages": 1,
+    "sha256": "e6e0c10f1d7f67498ea9fcf3cf74e8f9d58605e8e07fec7311919adda4e7f711",
+    "git_blob": "c2c10092048fce0447caf46c577c520e5ee4cc0a",
+    "visually_reviewed": true
+  },
+  {
+    "file": "paving-single.pdf",
+    "bytes": 1013438,
+    "pages": 1,
+    "sha256": "7e91d859a60789f287e08193dbb96d42aee49fcff38ac775d6bb767ccb72e6c2",
+    "git_blob": "28bdd3fc53923c5aebd8829e985178d4368570dd",
+    "visually_reviewed": true
+  },
+  {
+    "file": "pressure-expanded.pdf",
+    "bytes": 1444199,
+    "pages": 2,
+    "sha256": "a9975945041d317ee29b6eb87e8836a39761ce87c8e14e95a868d13d3858f471",
+    "git_blob": "dbdd8aaef5e985136634ee645940e25cefd0f30c",
+    "visually_reviewed": true
+  },
+  {
+    "file": "pressure-single.pdf",
+    "bytes": 992648,
+    "pages": 1,
+    "sha256": "ea9abb356fe4bc4b9e6c5ef86e72d5d628531a6eca88436eea89e92c5f7474ea",
+    "git_blob": "5b848c3b9ec371b51015490dcad755c47dd7dc7c",
+    "visually_reviewed": true
+  },
+  {
+    "file": "roofing-expanded.pdf",
+    "bytes": 1284713,
+    "pages": 2,
+    "sha256": "e17f28bf403fe99301eb9e2bab80fbcaa154abf0e6364340fdb6a0add4e73ae8",
+    "git_blob": "e712f71bec3d143e04ff156154ff00d9e214ec16",
+    "visually_reviewed": true
+  },
+  {
+    "file": "roofing-single.pdf",
+    "bytes": 871111,
+    "pages": 1,
+    "sha256": "a4cdc629b17cc6d8eb8c1a3cae596487fcee34ea2bdf71bd723bc31cadacd4d1",
+    "git_blob": "c3da016919b9512d60cd05ae2a9c5230679aea8c",
+    "visually_reviewed": true
+  },
+  {
+    "file": "snow-expanded.pdf",
+    "bytes": 1441039,
+    "pages": 2,
+    "sha256": "62eb51a3d126c65bc504478f6ce0cdd4793923dcaaab8117367a4525cbe89464",
+    "git_blob": "4f1c641d198f286ce2a4a5e469b25cb9925958f7",
+    "visually_reviewed": true
+  },
+  {
+    "file": "snow-single.pdf",
+    "bytes": 988425,
+    "pages": 1,
+    "sha256": "066799a131214299f9cd7ad021485fa514af42ce76582f2205600d8b9f76abd5",
+    "git_blob": "c9389cd0f88c5325e921c80b429e173bb616d1aa",
+    "visually_reviewed": true
+  }
+]
