@@ -28,6 +28,8 @@ install_safe_logging()
 
 app = Flask(__name__, static_folder=".", static_url_path="/static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
+from qa_session_expiry import configure_qa_session_expiry
+configure_qa_session_expiry(app, os.environ)
 
 def password_hash(password, salt=None):
     salt=salt or secrets.token_hex(16)
