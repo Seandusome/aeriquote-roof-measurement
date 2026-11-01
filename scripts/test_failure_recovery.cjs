@@ -35,7 +35,7 @@ vm.createContext(c);vm.runInContext(save,c);
  // Browser refresh guard: unsaved geometry/price changes warn; saved work can reload.
  const listeners={},f={...c,window:{addEventListener:(name,fn)=>listeners[name]=fn},areaPoints:[[52,-106]],linearPoints:[],structures:[],manualPlanes:[]};
  vm.createContext(f);vm.runInContext(save,f);
- vm.runInContext(source.slice(source.indexOf('function workspaceSaveFingerprint(){'),source.indexOf('async function saveEstimateHistory(){')),f);
+ vm.runInContext(source.slice(source.indexOf('function stableWorkspaceJSON(value){'),source.indexOf('async function saveEstimateHistory(){')),f);
  let prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
  f.saveEstimateHistory.cleanWorkspace=f.workspaceSaveFingerprint();prevented=false;listeners.beforeunload({preventDefault(){prevented=true}});assert.equal(prevented,false);
  fields.customerName.value='QA TEST unsaved after successful save';listeners.beforeunload({preventDefault(){prevented=true}});assert(prevented);
