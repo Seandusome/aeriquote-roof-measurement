@@ -99,7 +99,13 @@
  }
  window.aqRecovery={flush,lastError:()=>lastError,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
  let debounce;
- document.addEventListener('input',()=>{if(paused)return;say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700)});
+ function changed(){
+  if(paused||busy)return;
+  try{const w=capture();if(!w||JSON.stringify(w)===ack)return}catch(e){}
+  say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700);
+ }
+ document.addEventListener('input',changed);
+ const priorSummary=renderSummary;renderSummary=function(){const result=priorSummary.apply(this,arguments);changed();return result};
  setInterval(()=>{if(!paused&&!busy)flush()},1800);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
  window.addEventListener('online',flush);
