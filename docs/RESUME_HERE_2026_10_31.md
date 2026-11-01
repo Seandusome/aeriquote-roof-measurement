@@ -1,3 +1,15 @@
+# November 1 — server recovery drafts deployed; full regression rerun PASS
+
+Read [recovery drafts and evidence](QA_RECOVERY_DRAFTS_2026_11_01.md). Owner-approved24-hour server drafts are implemented with business+individual isolation, separate tab records, Restore/Discard, immediate save/discard payload deletion, stale-write tombstones, retained save IDs/base versions, acknowledged/offline status and no-charge imagery-session rehydration. No production/main/account/connection/pricing/allowance change.
+
+- Verified source0f78e40f; full recovery41358627500 PASS including PostgreSQL16/18 and every check after the previously failing test; application41358627501 PASS; actual Chromium41358627517 all6jobs PASS. Independent WGS84/Decimal16sources pass;8restored PDFs/12pages rendered/visually checked. Evidence under qa/recovery-drafts-2026-11-01.
+- User-reported41357915739 line40:150 was a missing VM dependency: extraction omitted stableWorkspaceJSON, causing null fingerprints and an unwanted saved-work warning. Fixaa711367 includes the real helper; all warning/idempotency assertions unchanged. Omitting the helper reproduces failure, corrected fixture passes, and full CI now passes.
+- Recovery dep-dbjs3aajnfac738t6vs0 LIVE22:48:55UTC at0f78e40f. Running commit, exact isolated QA DB and service verified; auto-deploy Off; diagnostics/QA timeout Off. Live login200, script200, unauthenticated drafts API401. Read-only QA counts unchanged1/20/23.
+- Pending live authenticated Restore/Discard smoke: fresh browser tab9 reached login. No password/account change; do not guess why or repeat credentials. Known QA identity qa-browser-oct31-2026@example.invalid. Automated owner/employee/charged recovery passed. Physical-phone/Safari/Messenger pending.
+- Original saved measuring/report tab5 remains available; Render shelltab3 verified newinstance6d7rr. Preserve these if continuing. The containing docs/evidence commit is the final checkpoint; do not deploy it. Mainc049a04b and productiondep-db5b726k1f9s73e862ug untouched.
+
+---
+
 # November 1 — browser exception/retry matrix executed and PASS
 
 Read [browser QA and startup diagnosis](QA_BROWSER_CRASH_RECOVERY_2026_11_01.md). Final Chromium41355170665 at167a3ece executed all5jobs PASS; fresh1440/390contexts cover signup/login failures and success, six-industry measurement/preview/reopen/PDF, API503/imagery failures/acceptance401, expired/wrong-account save, capture interruption and retry. Full recovery41355170615 +application41355170587 PASS, including PostgreSQL16/18. All12 source snapshots pass independent WGS84/Decimal checks.

@@ -1,0 +1,26 @@
+{
+  "source_commit": "0f78e40f3acfd24979e53c1931b0c4448062ed29",
+  "deployment": "dep-dbjs3aajnfac738t6vs0",
+  "live_at": "2026-11-01T22:48:55Z",
+  "recovery_service_verified": true,
+  "exact_isolated_QA_database_verified_before_and_after": true,
+  "auto_deploy": "off",
+  "diagnostics": "off",
+  "QA_timeout": "off",
+  "read_only_QA_counts": {
+    "estimates": 1,
+    "estimate_revisions": 20,
+    "estimate_save_receipts": 23
+  },
+  "http_smoke": {
+    "/dealer-login": 200,
+    "/static/workspace_drafts.js": 200,
+    "/api/workspace-drafts_without_auth": 401
+  },
+  "main_unchanged": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "production_unchanged": "dep-db5b726k1f9s73e862ug",
+  "pending": [
+    "Live authenticated Restore/Discard smoke requires QA sign-in",
+    "Physical phone/Safari/Messenger"
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "roofing-1440-expanded.pdf",
+    "pages": 2,
+    "sha256": "c68a2a435dc1eb8bb611c4431a2d6c5ca7604e5ca28cba9b40e09a629a01f6f0"
+  },
+  {
+    "file": "roofing-1440-single.pdf",
+    "pages": 1,
+    "sha256": "db5c6336e1a24171c7c938c499c0e15ae808600880c02168b48b10eeb5bd08e3"
+  },
+  {
+    "file": "roofing-390-expanded.pdf",
+    "pages": 2,
+    "sha256": "fdba6ab88129dcc6b126ef09172c335720b192ce32b02aff31752cd84c7ec39f"
+  },
+  {
+    "file": "roofing-390-single.pdf",
+    "pages": 1,
+    "sha256": "3f7e77d63e91f1bf6fba3325b84d87fb9a40ebf51ea5d6f6c6e24ff60a4205c5"
+  },
+  {
+    "file": "snow-1440-expanded.pdf",
+    "pages": 2,
+    "sha256": "665959ede4b3193d5f3fb8929e6464c88c3f6764a2182a64c80d2091df823115"
+  },
+  {
+    "file": "snow-1440-single.pdf",
+    "pages": 1,
+    "sha256": "64011a4660d11c69e8b819f88a894ca4692b08a08d9289ce89c7e37bd3171394"
+  },
+  {
+    "file": "snow-390-expanded.pdf",
+    "pages": 2,
+    "sha256": "14becf87028bbee414d76fb10bd30f6519ea1e8aefa8be376d717e644c9f761b"
+  },
+  {
+    "file": "snow-390-single.pdf",
+    "pages": 1,
+    "sha256": "199d8faf228464f877494b84c3c0d1102efd61d0bf360fef82f29959163751be"
+  }
+]

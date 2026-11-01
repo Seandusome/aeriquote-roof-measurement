@@ -1,0 +1,177 @@
+[
+  {
+    "file": "baseline/commercial-1440-source.json",
+    "bytes": 3255,
+    "sha256": "c0c7bcb4f45b56dfae6796c4bfd16e5b047740ef9e03d3fbda25cd992614aca4"
+  },
+  {
+    "file": "baseline/commercial-390-source.json",
+    "bytes": 3261,
+    "sha256": "5208097bfff56b833f447c7347a66fb5d3ef0f6870b4dfd9b6d7c53810e23e02"
+  },
+  {
+    "file": "baseline/landscaping-1440-source.json",
+    "bytes": 3249,
+    "sha256": "aa7daf0a310ca9fd2957f9af700642474f1bd75f01448019dae69fa4e0393597"
+  },
+  {
+    "file": "baseline/landscaping-390-source.json",
+    "bytes": 3255,
+    "sha256": "f5e72095a00fa92db88a20a7da773f65ae475580c342fcb82cfeb53bddff0fc5"
+  },
+  {
+    "file": "baseline/paving-1440-source.json",
+    "bytes": 3239,
+    "sha256": "2d9c9773bafcff486b2cd06bf9eca0277b34d04176ab89f872b2d862071d7ea7"
+  },
+  {
+    "file": "baseline/paving-390-source.json",
+    "bytes": 3245,
+    "sha256": "113477f524a00678121374f6aa8f01a555cbae93032befcea8b1c0e06a2d9d5e"
+  },
+  {
+    "file": "baseline/pressure-1440-source.json",
+    "bytes": 3243,
+    "sha256": "318ffca0f0ea047b24797f02eae6869b0cb87fdddd902329a5016768a95c115c"
+  },
+  {
+    "file": "baseline/pressure-390-source.json",
+    "bytes": 3249,
+    "sha256": "a0f3e070d84b643e6e286194f0a34a70dee72f7f58fbcf4c4d6a2e68d962cd12"
+  },
+  {
+    "file": "baseline/results.json",
+    "bytes": 5493,
+    "sha256": "c69431d921444bf92319f4494aa2c670978a279351759a020d753a5170f05d15"
+  },
+  {
+    "file": "baseline/roofing-1440-source.json",
+    "bytes": 2371,
+    "sha256": "7eb5d0ec55dd8776f5256bd5badcbc827fa6aa43fd6ff7ac02eab678dbafd693"
+  },
+  {
+    "file": "baseline/roofing-390-source.json",
+    "bytes": 2370,
+    "sha256": "bc05a91abeaa4986396ca778bf6bf0cf222fc5665d9f518b36a64cf0bb1ae04b"
+  },
+  {
+    "file": "baseline/snow-1440-source.json",
+    "bytes": 3234,
+    "sha256": "7d83de81f990a593f0fb4c2a346d161cb223998829778194c453e22dacfb021b"
+  },
+  {
+    "file": "baseline/snow-390-source.json",
+    "bytes": 3240,
+    "sha256": "bda4571e6b7fb17331bd63af1c68b044b349393b677699f8bfa0f397538a1177"
+  },
+  {
+    "file": "deployment-verification.json",
+    "bytes": 813,
+    "sha256": "58bfab77f10de3c7e239545449d8806ca1ce28988982c9a0f43defe4984b7d6b"
+  },
+  {
+    "file": "drafts/results.json",
+    "bytes": 1803,
+    "sha256": "dbf520ba8aad051ce18b66f9af763f00eee44f3f876e812a37591c3fab4dc070"
+  },
+  {
+    "file": "drafts/roofing-1440-expanded.pdf",
+    "bytes": 767340,
+    "sha256": "c68a2a435dc1eb8bb611c4431a2d6c5ca7604e5ca28cba9b40e09a629a01f6f0"
+  },
+  {
+    "file": "drafts/roofing-1440-single.pdf",
+    "bytes": 544193,
+    "sha256": "db5c6336e1a24171c7c938c499c0e15ae808600880c02168b48b10eeb5bd08e3"
+  },
+  {
+    "file": "drafts/roofing-1440-source.json",
+    "bytes": 2401,
+    "sha256": "733878bedaae1de6234cfce11ddec3fd080547640b403a18ed5a411c21be983f"
+  },
+  {
+    "file": "drafts/roofing-1440.png",
+    "bytes": 373368,
+    "sha256": "c1c2cb47ec0c139a2faf31ce5e5105075b54e29581c267ed78bba40d3366efc4"
+  },
+  {
+    "file": "drafts/roofing-390-expanded.pdf",
+    "bytes": 743031,
+    "sha256": "fdba6ab88129dcc6b126ef09172c335720b192ce32b02aff31752cd84c7ec39f"
+  },
+  {
+    "file": "drafts/roofing-390-single.pdf",
+    "bytes": 531976,
+    "sha256": "3f7e77d63e91f1bf6fba3325b84d87fb9a40ebf51ea5d6f6c6e24ff60a4205c5"
+  },
+  {
+    "file": "drafts/roofing-390-source.json",
+    "bytes": 2400,
+    "sha256": "2f03ce17651a57959277b17102575eedde3ed28072cee03f254463d07a394fb9"
+  },
+  {
+    "file": "drafts/roofing-390.png",
+    "bytes": 286320,
+    "sha256": "eed2732bb4522ce1a158fb41accf105c285cbbacc577e9201113374842b5914e"
+  },
+  {
+    "file": "drafts/snow-1440-expanded.pdf",
+    "bytes": 675775,
+    "sha256": "665959ede4b3193d5f3fb8929e6464c88c3f6764a2182a64c80d2091df823115"
+  },
+  {
+    "file": "drafts/snow-1440-single.pdf",
+    "bytes": 456854,
+    "sha256": "64011a4660d11c69e8b819f88a894ca4692b08a08d9289ce89c7e37bd3171394"
+  },
+  {
+    "file": "drafts/snow-1440-source.json",
+    "bytes": 3264,
+    "sha256": "47dd3e7bed9ebe68fb697025d516651600b250b5cd73543532a2cd2b02f214fb"
+  },
+  {
+    "file": "drafts/snow-1440.png",
+    "bytes": 299962,
+    "sha256": "44e4d938a69dbeacc24f65497e28c125cddb3eeabd57e50f35a5566530d80c8b"
+  },
+  {
+    "file": "drafts/snow-390-expanded.pdf",
+    "bytes": 648303,
+    "sha256": "14becf87028bbee414d76fb10bd30f6519ea1e8aefa8be376d717e644c9f761b"
+  },
+  {
+    "file": "drafts/snow-390-single.pdf",
+    "bytes": 436407,
+    "sha256": "199d8faf228464f877494b84c3c0d1102efd61d0bf360fef82f29959163751be"
+  },
+  {
+    "file": "drafts/snow-390-source.json",
+    "bytes": 3270,
+    "sha256": "a8e1952769d0d855d0509de42530269a874e2f36d5d2912e6bcd052491627b87"
+  },
+  {
+    "file": "drafts/snow-390.png",
+    "bytes": 290480,
+    "sha256": "0f1d9255c82f76bbfd46aa7dd03b2852ac31377649fff1e2432c5e4a0109ff78"
+  },
+  {
+    "file": "independent-baseline.txt",
+    "bytes": 894,
+    "sha256": "f4dc7d92fda6e26b78a239aee31e970f5dddf7b1008b0b574786b8339bf5fe34"
+  },
+  {
+    "file": "independent-drafts.txt",
+    "bytes": 363,
+    "sha256": "d3b8da997fd5cffcd0c25435a3d564724680292d5a3fea4473293cca8a66bc75"
+  },
+  {
+    "file": "pdf-manifest.json",
+    "bytes": 1155,
+    "sha256": "df93d598985db8d6bdc0222129afd8e5c73c63d3acf57c7cc17c232a2d90cc1c"
+  },
+  {
+    "file": "workflow-evidence.json",
+    "bytes": 34698,
+    "sha256": "3aa8f6d7f02f16c63aa58f737946ed05c0f7a6439d3bd45eff7052b2a0aecb7b"
+  }
+]

@@ -1,0 +1,5 @@
+PASS independent WGS84 + Decimal roofing-1440-source.json 79.3
+PASS independent WGS84 + Decimal roofing-390-source.json 79.3
+PASS independent WGS84 + Decimal snow-1440-source.json 153.18
+PASS independent WGS84 + Decimal snow-390-source.json 153.18
+PASS 4 saved browser snapshots; WGS84 tolerance 0.6% reflects existing spherical measurements, not survey accuracy
