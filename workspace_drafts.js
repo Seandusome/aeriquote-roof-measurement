@@ -28,7 +28,7 @@
  }
  async function request(path,options={}){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
-  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok){const e=new Error(data.error||'Recovery request failed');e.status=r.status;throw e}return data}finally{clearTimeout(timer)}
+  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok){const e=new Error(data.error||'Recovery request failed');e.status=r.status;e.code=data.code;throw e}return data}finally{clearTimeout(timer)}
  }
  async function flush(){
   if(paused||ended)return false;
@@ -76,7 +76,9 @@
    const sourceId=row.draft_id;newDraft();paused=false;
    say('Draft restored. Review your measurements, then create the estimate when ready.');
    if(!await flush())return false;
-   await request('/'+sourceId,{method:'DELETE'});return true;
+   const cleanup=await request('/'+sourceId,{method:'DELETE',body:JSON.stringify({version:d.version})});
+   if(!cleanup.deleted)say('Recovery copy saved for 24 hours. Newer work from another tab was kept separately.');
+   return true;
   }catch(e){say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false}
   finally{busy=false}
  }
@@ -98,7 +100,17 @@
    say('Choose Restore, Discard or start a separate draft.');
   }catch(e){paused=false;say('Recovery storage is unavailable. Changes have not reached the server. Keep this tab open.',true)}
  }
- window.aqRecovery={flush,lastError:()=>lastError,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
+ async function prepareSave(){
+  if(paused||busy)return false;
+  lastError=null;
+  if(await flush())return true;
+  // A source consumed in another tab must not strand this tab's later edits.
+  // Only an explicit Create retries under a fresh ID. Background autosave and
+  // account/version conflicts never resurrect or overwrite a closed draft.
+  if(lastError?.code!=='draft_closed')return false;
+  newDraft();return flush();
+ }
+ window.aqRecovery={flush,prepareSave,lastError:()=>lastError,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
  let debounce;
  function changed(){
   if(paused||busy)return;

@@ -2737,7 +2737,7 @@ async function performEstimateHistorySave(){
   if(!operation.payload)operation.payload=payload;
   const frozen=operation.payload,saveKey=JSON.stringify(frozen);
   if(saveKey===lastHistorySaveKey)return true;
-  if(typeof window!=='undefined'&&window.aqRecovery&&!await window.aqRecovery.flush())throw window.aqRecovery.lastError()||new Error('Recovery acknowledgement failed');
+  if(typeof window!=='undefined'&&window.aqRecovery&&!await window.aqRecovery.prepareSave())throw window.aqRecovery.lastError()||new Error('Recovery acknowledgement failed');
   const headers={...(typeof window!=='undefined'&&window.aqRecovery?window.aqRecovery.headers():{}),'Content-Type':'application/json','Idempotency-Key':operation.id,'X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
   try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}
@@ -4995,7 +4995,10 @@ def workspace_draft_api(draft_id=None):
             con.commit()
             return jsonify(drafts=[dict(r) for r in rows])
         if request.method=="DELETE":
-            drafts.close(con,dealer,user,draft_id);con.commit();return jsonify(deleted=True)
+            cleanup=request.get_json(silent=True) or {}
+            if not isinstance(cleanup,dict):return jsonify(error="Recovery cleanup must be an object."),400
+            deleted=drafts.close(con,dealer,user,draft_id,expected_version=cleanup.get("version"))
+            con.commit();return jsonify(deleted=deleted)
         if request.method=="GET":
             row=drafts.load(con,dealer,user,draft_id)
             con.commit()
@@ -5014,7 +5017,7 @@ def workspace_draft_api(draft_id=None):
         result=drafts.put(con,dealer,user,draft_id,body.get("version"),body.get("workspace"),metadata)
         con.commit();return jsonify(result)
     except drafts.DraftError as e:
-        return jsonify(error=str(e)),e.status
+        return jsonify(error=str(e),code=e.code),e.status
     finally:con.close()
 
 @app.post("/api/workspace-drafts/<draft_id>/save-status")

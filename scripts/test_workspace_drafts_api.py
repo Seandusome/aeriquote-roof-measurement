@@ -54,6 +54,20 @@ with tempfile.TemporaryDirectory() as tmp:
   assert c.execute('SELECT COUNT(*) AS n FROM '+table+' WHERE dealer_id=?',('draft-owner',)).fetchone()['n']==0,table
  assert c.execute('SELECT estimates,lookups FROM account_month_usage WHERE dealer_id=? AND period=?',('draft-owner',month_key())).fetchone()['estimates']==199
  c.close()
+ # Different failure case: Restore reads v1, original tab acknowledges v2,
+ # then Restore's source cleanup arrives late. v2 must remain recoverable.
+ race='fictional-race-source-0001';fork='fictional-race-copy-00001'
+ assert owner.put('/api/workspace-drafts/'+race,headers=h,json={'version':0,'workspace':w}).status_code==200
+ observed=owner.get('/api/workspace-drafts/'+race,headers=h).get_json()
+ newer={**w,'values':{'customerName':'NEWER ACKNOWLEDGED ORIGINAL TAB'}}
+ assert owner.put('/api/workspace-drafts/'+race,headers=h,json={'version':1,'workspace':newer}).status_code==200
+ assert owner.put('/api/workspace-drafts/'+fork,headers=h,json={'version':0,'workspace':observed['workspace']}).status_code==200
+ cleanup=owner.delete('/api/workspace-drafts/'+race,headers=h,json={'version':observed['version']})
+ assert cleanup.status_code==200 and cleanup.get_json()['deleted'] is False,'Late Restore cleanup must not erase newer acknowledged work'
+ assert owner.get('/api/workspace-drafts/'+race,headers=h).get_json()['workspace']==newer
+ assert owner.get('/api/workspace-drafts/'+fork,headers=h).get_json()['workspace']==w
+ assert owner.delete('/api/workspace-drafts/'+race,headers=h,json={'version':2}).get_json()['deleted'] is True
+ assert owner.delete('/api/workspace-drafts/'+fork,headers=h).get_json()['deleted'] is True
  # Valid explicit save atomically removes the recovery payload; replay is exactly once.
  p={'address':'1 Fictional QA Street','customer_name':'FICTIONAL ONLY','quote':{'commercialAreas':[{'points':[[52,-106],[52,-105.999],[52.001,-106]],'rate':.1}]}}
  from measurement_integrity import polygon_sqft
@@ -66,6 +80,8 @@ with tempfile.TemporaryDirectory() as tmp:
  assert owner.get('/api/workspace-drafts',headers=h).get_json()['drafts']==[]
  state=owner.post('/api/workspace-drafts/'+tab+'/save-status',headers=h,json={'operation_id':'qa-operation-0001'}).get_json();assert state['saved'] and state['result']==r.get_json()
  assert owner.post('/api/workspace-drafts/'+tab+'/save-status',headers=h,json={'operation_id':'wrong-operation'}).get_json()['saved'] is False
+ assert owner.delete('/api/workspace-drafts/'+tab,headers=h,json={'version':1}).get_json()['deleted'] is False
+ assert owner.post('/api/workspace-drafts/'+tab+'/save-status',headers=h,json={'operation_id':'qa-operation-0001'}).get_json()['saved'] is True,'Late Restore cleanup must retain lost-response receipt confirmation'
  assert owner.post('/api/estimates',headers=sh,json=p).get_json()==r.get_json()
  assert owner.put('/api/workspace-drafts/'+tab,headers=h,json={'version':1,'workspace':w}).status_code==409
  c=a.estimate_db();row=c.execute('SELECT payload,property_metadata FROM workspace_drafts WHERE dealer_id=?',('draft-owner',)).fetchone();assert row['payload'] is None and row['property_metadata'] is None

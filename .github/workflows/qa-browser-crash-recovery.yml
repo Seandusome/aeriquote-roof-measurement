@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -57,6 +57,7 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
+            draft-races) node scripts/test_draft_races_browser.cjs ;;
             drafts) node scripts/test_workspace_drafts_browser.cjs ;;
             baseline) node scripts/test_prelaunch_browser.cjs ;;
             recovery) node scripts/test_browser_recovery.cjs ;;

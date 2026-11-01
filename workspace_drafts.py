@@ -13,8 +13,8 @@ ID = re.compile(r'^[A-Za-z0-9_-]{16,128}$')
 
 
 class DraftError(Exception):
-    def __init__(self, message, status=409):
-        self.status = status
+    def __init__(self, message, status=409, code=None):
+        self.status, self.code = status, code
         super().__init__(message)
 
 
@@ -80,7 +80,9 @@ def put(con, dealer, user, draft_id, expected, payload, metadata=None, now=None)
     inspect(payload)
     row = con.execute('SELECT * FROM workspace_drafts WHERE dealer_id=? AND principal=? AND draft_id=?', (dealer, user, draft_id)).fetchone()
     if row:
-        if row['closed'] or row['expires_at'] <= now:
+        if row['closed']:
+            raise DraftError('This recovery draft has ended. Start a new recovery draft.',code='draft_closed')
+        if row['expires_at'] <= now:
             raise DraftError('This recovery draft has ended. Start a new recovery draft.')
         if row['version'] != expected:
             # A lost acknowledgement may be retried, but stale edits never overwrite.
@@ -98,10 +100,18 @@ def put(con, dealer, user, draft_id, expected, payload, metadata=None, now=None)
     return dict(version=expected + 1, expires_at=now + TTL)
 
 
-def close(con, dealer, user, draft_id, now=None, operation=None):
+def close(con, dealer, user, draft_id, now=None, operation=None, expected_version=None):
     validate_id(draft_id)
     now = time.time() if now is None else now
+    if expected_version is not None:
+        if isinstance(expected_version,bool) or not isinstance(expected_version,int) or expected_version < 0:
+            raise DraftError('Invalid recovery cleanup version.',400)
+        row=con.execute('SELECT version,closed FROM workspace_drafts WHERE dealer_id=? AND principal=? AND draft_id=?',(dealer,user,draft_id)).fetchone()
+        if not row or row['closed'] or row['version']!=expected_version:
+            return False
     # Scope matches even on receipt replay. Payload and imagery metadata are erased
     # in the same transaction as the estimate, before acknowledging success.
     con.execute('INSERT INTO workspace_drafts(dealer_id,principal,draft_id,version,expires_at,payload,property_metadata,closed,save_operation) VALUES(?,?,?,?,?,NULL,NULL,1,?) ON CONFLICT(dealer_id,principal,draft_id) DO UPDATE SET closed=1,payload=NULL,property_metadata=NULL,expires_at=excluded.expires_at,save_operation=excluded.save_operation',
                 (dealer, user, draft_id, 0, now + TTL, operation))
+
+    return True
