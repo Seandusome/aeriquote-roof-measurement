@@ -1,0 +1,1 @@
+PASS: explicit save recovers from a consumed draft ID, background autosave never resurrects it, exact operation/base version retained, account and stale-edit conflicts stay blocked

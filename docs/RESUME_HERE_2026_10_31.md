@@ -1,3 +1,15 @@
+# November 1 — desktop race fixes; end-of-day checkpoint
+
+Read [desktop closeout](QA_DESKTOP_CLOSEOUT_2026_11_01.md) and [tomorrow's short desktop checklist](QA_TOMORROW_DESKTOP_2026_11_02.md).
+
+- Two reproduced defects fixed: delayed Restore cleanup no longer removes a newer acknowledged source or already-committed receipt; explicit Create can preserve later edits after its original recovery ID closed elsewhere, retaining operation/base version. Background resurrection/account/stale conflicts remain blocked. No new features.
+- Runtime source0f065b9d. Full recovery41362491708 PASS including PostgreSQL16/18; application41362491712 PASS; actual Chromium41362491734 all7jobs PASS, new delayed-cleanup/original-tab/stale-editor cases included. Evidence in qa/desktop-closeout-2026-11-01.
+- Recovery deployment/runtime/isolation verification appears in the closeout report. Auto-deploy Off; main/production/customer data untouched. No live QA estimate was edited in this batch. Prior fictional job remains1,200.65 and prior live recovery/PDF evidence is retained.
+- Pending: physical-phone/Safari/Messenger. New race paths verified in actual automated browser/disposable DB fixtures; not manually repeated live after deployment. Owner requested no more manual testing today.
+- The containing docs/evidence commit is the final checkpoint; do not deploy it. STOP FOR TODAY. Tomorrow: refresh recovery, use QA only, follow the three-item checklist.
+
+---
+
 # November 1 — live acknowledged draft recovery and Discard PASS
 
 Read [live recovery evidence](QA_LIVE_RECOVERY_DRAFTS_2026_11_01.md). Owner signed in; actual tab9 closure/newtab10 Restore preserved the full quote and all captured fields by canonical SHA256. New Paving Area2=1,733ft²@0.23; Area1=6,125@0.10; Linear188.264ft@0.10; extra51.75. Independent total1,200.65 =1,081.67+54.08+64.90. Actual Single1page/Expanded3pages rendered and visually inspected; all active measurements/customer/pricing match.

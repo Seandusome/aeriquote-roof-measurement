@@ -1,0 +1,25 @@
+{
+  "source_commit": "0f065b9de44b7ad8e9a90ad0c78ad73b43e515d6",
+  "recovery_deployment": "dep-dbjsosetlv9c73e6ck3g",
+  "live_at_UTC": "2026-11-01T23:34:58Z",
+  "isolated_QA_verified_before_and_after": true,
+  "recovery_service_verified": true,
+  "prior_QA_quote_hash_unchanged": true,
+  "prior_QA_total": 1200.65,
+  "prior_QA_counts_unchanged": {
+    "estimates": 1,
+    "revisions": 21,
+    "save_receipts": 24
+  },
+  "active_QA_drafts": 0,
+  "new_client_fix_present": true,
+  "auto_deploy": "off",
+  "main_unchanged": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "live_manual_race_retest": false,
+  "physical_phone": "pending",
+  "http_smoke": {
+    "/dealer-login": 200,
+    "/static/workspace_drafts.js": 200,
+    "/api/workspace-drafts_without_auth": 401
+  }
+}

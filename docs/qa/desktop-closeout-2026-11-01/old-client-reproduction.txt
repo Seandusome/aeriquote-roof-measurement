@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Explicit Create must be able to preserve later edits after another tab consumed the original recovery ID
+
+false !== true
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_workspace_draft_save_retry.cjs:27:9 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

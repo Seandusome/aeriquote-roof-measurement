@@ -1,0 +1,16 @@
+[
+  {
+    "industry": "snow",
+    "width": 1440,
+    "total": 153.18,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-browser-evidence/snow-1440-single.pdf",
+      "/tmp/aq-browser-evidence/snow-1440-expanded.pdf"
+    ],
+    "captureChecks": [],
+    "saved": true,
+    "reopened": true
+  }
+]

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+  File "scripts/test_workspace_drafts_api.py", line 66, in <module>
+    assert cleanup.status_code==200 and cleanup.get_json()['deleted'] is False,'Late Restore cleanup must not erase newer acknowledged work'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Late Restore cleanup must not erase newer acknowledged work

@@ -1,0 +1,1 @@
+PASS API: owner/business/employee isolation, foreign-origin rejection, expired imagery without lookup/charge, side-effect-free restore, atomic save deletion, replay exactly once, late autosave rejection
