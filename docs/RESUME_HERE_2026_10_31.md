@@ -1,3 +1,11 @@
+# November 1 — live QA sign-in confirmed
+
+At 21:09:39 UTC the owner-entered browser attempt emitted `received`, `owner_found`, `owner_verifier_pass`, `session_created`, correlated ID `440aa779f94c430a98e8332985b29ca4`. Authentication POST returned 302; subsequent application GET returned 200. Browser tab 5 reached `/` and displayed the authenticated measuring workspace with LOG OUT and PREVIOUS ESTIMATES. This proves credential verification, session creation, redirect and browser session continuity for this attempt. No password/account change occurred. The verified fictional QA email had been prefilled before the owner entered their password. Earlier failures remain unexplained; do not assert a password defect or email typo.
+
+Temporary diagnostics disabled by merging only `AERIQUOTE_LOGIN_DIAGNOSTIC_EMAIL` to an empty value. Render automatically launched cleanup deployment `dep-dbjqlnijnfac738poig0` at commit `4f2b233fccc9a8a2a44cfdd3bc7449195190f91d`. Cleanup reached LIVE at 21:11:38 UTC. New runtime verified commit `4f2b233f`, diagnostics disabled=True, QA database unchanged=True; Render auto-deploy confirmed Off. Auto-deploy must remain Off. All connections, account settings, main, production and customer data remain untouched. Full CI on runtime-equivalent fixture fix `7e01cec2` passed, as recorded below. No new measurement/PDF batch this follow-up.
+
+---
+
 # November 1 — deterministic allowance fixture; login capture still pending
 
 Recovery diagnostics are deployed at commit `dc28613942b57eab773121e463caf2d354d9b444`, deployment `dep-dbjqfq3bc2fs73djc4og`. Running checkout, recovery service, exact isolated QA database (`dpg-dbj4f7lg1s2s73eob8t0-a`, logical DB `aeriquote_recovery_qa`) and single-email gate were verified internally. Auto-deploy remains Off. Main and production untouched.
