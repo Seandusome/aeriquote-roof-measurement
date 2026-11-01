@@ -1,0 +1,1 @@
+FINAL_DISCARD_PROOF {'active': 0, 'retained_payloads': 0, 'saved_note_unchanged': True, 'counts': [('estimates', 1), ('estimate_revisions', 21), ('estimate_save_receipts', 24)], 'monthly_usage': []}

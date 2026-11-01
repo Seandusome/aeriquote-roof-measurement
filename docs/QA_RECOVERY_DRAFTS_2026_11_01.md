@@ -1,3 +1,5 @@
+> Follow-up: authenticated live tab-close/Restore, exact data equality, one saved revision, unchanged retry/PDF counts, and Discard/refresh checks subsequently passed. Read [live QA results](QA_LIVE_RECOVERY_DRAFTS_2026_11_01.md). Earlier pending status below is historical. Physical-phone testing remains pending.
+
 # Server-side recovery drafts — November 1, 2026
 
 Owner approved implementation on recovery only, after checkpoint 965ec111. Production, main, customer data, database connections, prices and allowances are outside scope. Physical-phone/Safari/Messenger testing remains pending.

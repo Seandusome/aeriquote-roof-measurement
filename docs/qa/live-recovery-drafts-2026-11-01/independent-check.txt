@@ -1,0 +1,7 @@
+PASS WGS84 active Area 1 stored 6125 independent 6135.48 rate 0.1
+PASS WGS84 active Area 2 stored 1733 independent 1735.469 rate 0.23
+PASS original acknowledged draft = restored quote = saved quote (canonical SHA256)
+PASS WGS84 active linear 188.81575 stored 188.2640110545814
+PASS Decimal subtotal 1029.92 extra 51.75 tax base 1081.67 GST 54.08 PST 64.90 total 1200.65
+Scope: retained Roofing history is inactive for Paving; it is neither charged nor drawn in either inspected PDF.
+Tolerance 0.6% checks existing spherical quantities against WGS84; not survey accuracy.

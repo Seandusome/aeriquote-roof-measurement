@@ -1,0 +1,80 @@
+{
+  "application_commit": "0f78e40f3acfd24979e53c1931b0c4448062ed29",
+  "starting_checkpoint": "b975e036b2a17c768eba94f0c298efc742b579da",
+  "QA_database_isolation_verified": true,
+  "QA_principal_verified": true,
+  "closed_original_tab": 9,
+  "restored_in_new_tab": 10,
+  "discard_verified_in_tab": 11,
+  "acknowledged_quote_sha256": "a9abf3d553ed77bd6c0ef1b8d90c7f7b6e09332b5b67c21b7dbb1716b3999466",
+  "acknowledged_all_fields_sha256": "4c82ae696dea5b26b5610d7b1ff324a1fce0b27e2c9868ec2b9aeded7da5b766",
+  "quote_exact_after_restore": true,
+  "all_fields_exact_after_restore": true,
+  "quote_exact_after_save": true,
+  "customer_notes_extra_exact_after_save": true,
+  "baseline_counts": {
+    "estimates": 1,
+    "revisions": 20,
+    "save_receipts": 23
+  },
+  "after_restore_counts": {
+    "estimates": 1,
+    "revisions": 20,
+    "save_receipts": 23
+  },
+  "after_save_counts": {
+    "estimates": 1,
+    "revisions": 21,
+    "save_receipts": 24
+  },
+  "after_unchanged_retry_and_PDFs_counts": {
+    "estimates": 1,
+    "revisions": 21,
+    "save_receipts": 24
+  },
+  "after_discard_and_refresh_counts": {
+    "estimates": 1,
+    "revisions": 21,
+    "save_receipts": 24
+  },
+  "final_recovery_records": {
+    "total_tombstones": 3,
+    "active_drafts": 0,
+    "retained_workspace_or_imagery_payloads": 0
+  },
+  "discarded_note_did_not_change_saved_estimate": true,
+  "after_refresh_recovery_choices": 0,
+  "live_monthly_usage_rows_before_and_after": [],
+  "charged_plan_live_test": false,
+  "charged_plan_scope_note": "Live QA uses the existing recovery bypass. PostgreSQL16/18 charged fixtures passed in source workflow41358627500; no live plan or allowance settings changed.",
+  "area_quantities": [
+    6125,
+    1733
+  ],
+  "area_rates": [
+    0.1,
+    0.23
+  ],
+  "linear_feet": 188.2640110545814,
+  "linear_rate": 0.1,
+  "extra": 51.75,
+  "tax_base": 1081.67,
+  "GST": 54.08,
+  "PST": 64.9,
+  "total": 1200.65,
+  "PDFs": {
+    "Single": {
+      "pages": 1,
+      "visually_inspected": true
+    },
+    "Expanded": {
+      "pages": 3,
+      "visually_inspected": true
+    }
+  },
+  "Street_View_note": "Image bytes are excluded from drafts; this restored historical job uses the labelled Property Assessment placeholder. Pixel-identical Street View restoration is not claimed.",
+  "physical_phone": "pending",
+  "runtime_changes": false,
+  "deployments_this_batch": false,
+  "auto_deploy": "off"
+}

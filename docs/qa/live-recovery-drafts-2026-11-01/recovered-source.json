@@ -1,0 +1,155 @@
+{
+  "quote": {
+    "manualRoofWorkflow": false,
+    "roofScopeConfirmed": false,
+    "warrantyBrand": "",
+    "showWarrantyShield": true,
+    "structures": [],
+    "manualPlanes": [
+      {
+        "manual_roof_qa": true,
+        "pitch_confirmed": true,
+        "pitch_degrees": 22.62,
+        "points": [
+          {
+            "lat": 52.16196245542267,
+            "lng": -106.67613435688385
+          },
+          {
+            "lat": 52.16196245542267,
+            "lng": -106.67580448093824
+          },
+          {
+            "lat": 52.16171115185071,
+            "lng": -106.67580448093824
+          },
+          {
+            "lat": 52.16171115185071,
+            "lng": -106.67613435688385
+          }
+        ],
+        "surface_sqft": 7348.380392728047
+      }
+    ],
+    "measureSource": "google",
+    "adjustedArea": 0,
+    "measurementMode": "area",
+    "linearPoints": [
+      [
+        52.16159069869516,
+        -106.67604661234887
+      ],
+      [
+        52.16159069869516,
+        -106.67530018782598
+      ],
+      [
+        52.16164887110198,
+        -106.67530018782598
+      ]
+    ],
+    "linearFeet": 188.2640110545814,
+    "areaPoints": [
+      [
+        52.16175125435327,
+        -106.67605238186192
+      ],
+      [
+        52.16175125435327,
+        -106.67582488120978
+      ],
+      [
+        52.16165817868,
+        -106.67582488120978
+      ],
+      [
+        52.16165817868,
+        -106.67605238186192
+      ]
+    ],
+    "areaSqFt": 7858,
+    "commercialAreas": [
+      {
+        "name": "Service Area 1",
+        "points": [
+          [
+            52.16219316112098,
+            -106.6760897515266
+          ],
+          [
+            52.16219316112098,
+            -106.67545209210746
+          ],
+          [
+            52.16207576175465,
+            -106.67545209210746
+          ],
+          [
+            52.16207576175465,
+            -106.6760897515266
+          ]
+        ],
+        "rate": 0.1,
+        "source": "manual",
+        "sqft": 6125
+      },
+      {
+        "name": "Service Area 2",
+        "rate": 0.23,
+        "source": "manual",
+        "points": [
+          [
+            52.16175125435327,
+            -106.67605238186192
+          ],
+          [
+            52.16175125435327,
+            -106.67582488120978
+          ],
+          [
+            52.16165817868,
+            -106.67582488120978
+          ],
+          [
+            52.16165817868,
+            -106.67605238186192
+          ]
+        ],
+        "sqft": 1733
+      }
+    ],
+    "businessType": "paving",
+    "dealerCountry": "CA",
+    "commercialLinearRate": 0,
+    "commercialLinearSaved": false,
+    "landscapingCombined": false,
+    "landscapingAreaRate": 0,
+    "landscapingLinearRate": 0.1,
+    "pressureCombined": false,
+    "pressureAreaRate": 0,
+    "pressureLinearRate": 0.1,
+    "pavingCombined": true,
+    "pavingAreaRate": 0,
+    "pavingLinearRate": 0.1
+  },
+  "pricing": {
+    "estimatePeriod": "one_time",
+    "area": 7858,
+    "price": 0.17,
+    "mode": "regular",
+    "disc": 0,
+    "subtotal": 1029.92,
+    "extraDescription": "FICTIONAL draft recovery extra service",
+    "extraAmount": 51.75,
+    "discount": 0,
+    "taxBase": 1081.67,
+    "gst": 5,
+    "pst": 6,
+    "gstAmt": 54.08,
+    "pstAmt": 64.9,
+    "total": 1200.65,
+    "measurementMode": "area",
+    "unit": "ft²"
+  },
+  "total_price": 1200.65
+}

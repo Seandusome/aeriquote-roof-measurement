@@ -1,3 +1,15 @@
+# November 1 — live acknowledged draft recovery and Discard PASS
+
+Read [live recovery evidence](QA_LIVE_RECOVERY_DRAFTS_2026_11_01.md). Owner signed in; actual tab9 closure/newtab10 Restore preserved the full quote and all captured fields by canonical SHA256. New Paving Area2=1,733ft²@0.23; Area1=6,125@0.10; Linear188.264ft@0.10; extra51.75. Independent total1,200.65 =1,081.67+54.08+64.90. Actual Single1page/Expanded3pages rendered and visually inspected; all active measurements/customer/pricing match.
+
+- Restore: counts1/20/23 unchanged. Explicit save:1/21/24. Unchanged retry and PDF downloads:1/21/24 unchanged. Save deleted the recovery payload. Discarded a separately acknowledged note-edit draft, refreshed, confirmed zero Restore choices/active drafts/retained payloads; saved note unchanged. Saved current estimate reopened intact afterward.
+- Live QA allowance bypass unchanged; monthly usage rows stayed empty. Charged-plan199→200 exactly-once coverage is from prior passing disposable PostgreSQL16/18 tests, not a new live charge. Street View bytes are excluded by design; recovered job uses a labelled assessment placeholder. See report for scope.
+- Runtime/deployment unchanged:0f78e40f /dep-dbjs3aajnfac738t6vs0; auto-deploy Off; exact isolated QA DB verified. No code fix/deploy/account/network/pricing/allowance change this batch. Main/production/customer data untouched.
+- Tab11 is signed in and displays the saved recovered current estimate. Render shelltab3 is read-only verification. Originaltab5 remains available. Physical-phone/Safari/Messenger still pending.
+- The containing documentation/evidence commit is the next resume checkpoint. Do not deploy it. Previous b975e036 authenticated-smoke pending item is resolved by this live batch.
+
+---
+
 # November 1 — server recovery drafts deployed; full regression rerun PASS
 
 Read [recovery drafts and evidence](QA_RECOVERY_DRAFTS_2026_11_01.md). Owner-approved24-hour server drafts are implemented with business+individual isolation, separate tab records, Restore/Discard, immediate save/discard payload deletion, stale-write tombstones, retained save IDs/base versions, acknowledged/offline status and no-charge imagery-session rehydration. No production/main/account/connection/pricing/allowance change.
