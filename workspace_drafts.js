@@ -22,7 +22,7 @@
   const values={};fields.forEach(k=>{const n=el(k);if(n)values[k]=n.type==='checkbox'?n.checked:n.value});
   const pending=saveEstimateHistory.pending?clone(saveEstimateHistory.pending):null;
   // The exact operation identifier survives; image bytes never enter draft storage.
-  if(pending){if(pending.requestKey){const k=JSON.parse(pending.requestKey);k.street_image_data='';pending.requestKey=JSON.stringify(k)}if(pending.payload?.street_image_data){pending.imageOmitted=true;pending.payload.street_image_data=''}}
+  if(pending){if(pending.requestKey){const k=JSON.parse(pending.requestKey);k.street_image_data='';pending.requestKey=stableWorkspaceJSON(k)}if(pending.payload?.street_image_data){pending.imageOmitted=true;pending.payload.street_image_data=''}}
   return {schema:1,sessionToken,quote,values,streetMeta:el('streetMeta')?.textContent||'',state:{areaPoints:points(areaPoints),linearPoints:points(linearPoints),areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,tracePoints:points(tracePoints),garageMode,roofFixMode,outlineEditMode,outlinePoints:points(outlinePoints),adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,loadedAddressKey:loadProperty.loadedAddressKey,manualRoofEditIndex},reportCorrection:reportMeasurementCorrection?{mode:reportMeasurementCorrection.mode,index:reportMeasurementCorrection.index,points:points(reportMeasurementCorrection.points),uncertain:!!reportMeasurementCorrection.uncertain}:null,pending,baseVersion:saveEstimateHistory.baseVersion||null,lastHistorySaveKey:null};
  }
  async function request(path,options={}){
@@ -64,7 +64,7 @@
    }
    sessionToken=imagery.token;fallbackMode=true;removeStaleAerialLayers();
    loadProperty.loadedAddressKey=v.loadedAddressKey;
-   saveEstimateHistory.pending=w.pending;if(w.pending?.payload&&!w.pending.requestKey)saveEstimateHistory.pending.requestKey=JSON.stringify(w.pending.payload);if(el('streetMeta'))el('streetMeta').textContent=w.streetMeta||'';saveEstimateHistory.baseVersion=w.baseVersion;saveEstimateHistory.cleanWorkspace=null;lastHistorySaveKey='';quoteSnapshot=null;
+   saveEstimateHistory.pending=w.pending;if(w.pending?.payload&&!w.pending.requestKey)saveEstimateHistory.pending.requestKey=stableWorkspaceJSON(w.pending.payload);if(el('streetMeta'))el('streetMeta').textContent=w.streetMeta||'';saveEstimateHistory.baseVersion=w.baseVersion;saveEstimateHistory.cleanWorkspace=null;lastHistorySaveKey='';quoteSnapshot=null;
    map.setView([imagery.center.latitude,imagery.center.longitude],18);setPropertyMarker(imagery.center.latitude,imagery.center.longitude);
    redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
    // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.

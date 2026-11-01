@@ -2048,7 +2048,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
   clearTimeout(addressPreviewTimer);addressPreviewSeq++;
   payload.business_type=currentBusinessType();
-  const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
+  const requestKey=typeof stableWorkspaceJSON==='function'?stableWorkspaceJSON(payload):JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
@@ -2692,9 +2692,10 @@ async function buildCustomerMap(){
  }
  return buildInteractiveCustomerMap();
 }
+function stableWorkspaceJSON(value){return JSON.stringify(value,function(key,v){return v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v})}
 function workspaceSaveFingerprint(){
  const previous=quoteSnapshot;
- try{return JSON.stringify({quote:captureQuoteSnapshot(),pricing:priceCalc(),fields:['address','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice'].map(id=>el(id)?.value||'')})}catch(e){return null}finally{quoteSnapshot=previous}
+ try{return stableWorkspaceJSON({quote:captureQuoteSnapshot(),pricing:priceCalc(),fields:['address','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice'].map(id=>el(id)?.value||'')})}catch(e){return null}finally{quoteSnapshot=previous}
 }
 window.addEventListener('beforeunload',event=>{
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){event.preventDefault();event.returnValue='';return}
