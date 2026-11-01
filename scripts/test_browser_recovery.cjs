@@ -49,8 +49,8 @@ script=script.replace(finish,`
  await discarded.evaluate(()=>{sessionToken='FICTIONAL-UNSAVED';areaPoints=[L.latLng(52,-106),L.latLng(52,-105.9999),L.latLng(52.0001,-106)];el('customerName').value='UNSAVED DISCARD QA';});
  let closeWarnings=0;discarded.on('dialog',async d=>{closeWarnings++;await d.dismiss()});await discarded.locator('#streetAddress').click();await discarded.close({runBeforeUnload:true});await discarded.waitForTimeout(150);assert.equal(closeWarnings,1);assert.equal(discarded.isClosed(),false);assert.equal(await discarded.locator('#customerName').inputValue(),'UNSAVED DISCARD QA');const forceSession=await context.newCDPSession(discarded);const forcedTarget=(await forceSession.send('Target.getTargetInfo')).targetInfo.targetId;await forceSession.send('Target.closeTarget',{targetId:forcedTarget});
  const replacement=await context.newPage();await replacement.goto('http://127.0.0.1:8765/?industry=snow');await replacement.waitForFunction(()=>typeof captureQuoteSnapshot==='function');
- assert.equal(await replacement.evaluate(()=>areaPoints.length+linearPoints.length+manualPlanes.length),0,'There is no crash/forced-discard draft autosave');
+ assert.equal(await replacement.evaluate(()=>areaPoints.length+linearPoints.length+manualPlanes.length),0,'Recovery requires an explicit Restore choice');
  const history=await(await context.request.get('http://127.0.0.1:8765/api/estimates')).json();assert.equal(history.length,1,'Only explicit successful estimate exists; discarded draft creates no revision');
- await replacement.close();console.log('CONFIRMED LIMITATION: forced tab close bypasses warning and unsaved geometry is not restored; explicit saved estimate survives');
+ await replacement.close();console.log('PASS: forced close never implicitly restores or saves work; durable Restore is covered by the drafts browser suite');
 `+finish);
 new Function('require',script)(require);

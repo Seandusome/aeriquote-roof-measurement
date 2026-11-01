@@ -6,6 +6,8 @@ on:
       - .github/workflows/qa-browser-crash-recovery.yml
       - scripts/test_*browser*.cjs
       - app.py
+      - workspace_drafts.py
+      - workspace_drafts.js
       - site/trial-signup.html
   workflow_dispatch:
 permissions:
@@ -18,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -55,6 +57,7 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
+            drafts) node scripts/test_workspace_drafts_browser.cjs ;;
             baseline) node scripts/test_prelaunch_browser.cjs ;;
             recovery) node scripts/test_browser_recovery.cjs ;;
             pdf-failure) node scripts/test_pdf_failure_browser.cjs ;;

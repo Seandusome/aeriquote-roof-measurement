@@ -1,0 +1,103 @@
+/* Server-acknowledged recovery only: no customer data in browser storage. */
+(() => {
+ 'use strict';
+ const meta=document.getElementById('aqAccountId');
+ if(!meta?.dataset.principal)return;
+ const identity=meta.dataset.principal,account=meta.dataset.accountId;
+ const headers={'Content-Type':'application/json','X-AeriQuote-Account':account,'X-AeriQuote-Principal':identity};
+ const uuid=()=>crypto.randomUUID();
+ let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null;
+ const badge=document.createElement('div');badge.id='workspaceRecoveryStatus';badge.setAttribute('role','status');badge.style.cssText='padding:7px 12px;font-size:12px;background:#f0f5f3;color:#24483a';
+ document.body.prepend(badge);
+ const say=(message,warn=false)=>{badge.textContent=message;badge.style.background=warn?'#fff0d5':'#f0f5f3'};
+ const fields=['address','streetAddress','cityTown','postalCode','propertyProvince','businessType','dealerCountry','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice','jobPrice','pricingMode','discountPct','gst','pst','estimatePeriod','commercialLinearRate','landscapingAreaRate','pressureAreaRate','pavingAreaRate','measureSource','adjustedArea','manualRoofScopeConfirmed','pitchSel','pitchDeg','roofRemeasurePitch'];
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const points=x=>(x||[]).map(p=>[p.lat??p[0],p.lng??p[1]]);
+ const latlng=x=>(x||[]).map(p=>L.latLng(p));
+ function capture(){
+  if(!sessionToken)return null;
+  if(!reportMeasurementCorrection&&saveEstimateHistory.cleanWorkspace&&saveEstimateHistory.cleanWorkspace===workspaceSaveFingerprint())return null;
+  const previous=quoteSnapshot;let quote;
+  try{quote=clone(captureQuoteSnapshot())}finally{quoteSnapshot=previous}
+  const values={};fields.forEach(k=>{const n=el(k);if(n)values[k]=n.type==='checkbox'?n.checked:n.value});
+  const pending=saveEstimateHistory.pending?clone(saveEstimateHistory.pending):null;
+  // The exact operation identifier survives; image bytes never enter draft storage.
+  if(pending){delete pending.requestKey;if(pending.payload?.street_image_data){pending.imageOmitted=true;pending.payload.street_image_data=''}}
+  return {schema:1,sessionToken,quote,values,state:{areaPoints:points(areaPoints),linearPoints:points(linearPoints),areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,tracePoints:points(tracePoints),garageMode,roofFixMode,outlineEditMode,outlinePoints:points(outlinePoints),adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,loadedAddressKey:loadProperty.loadedAddressKey,manualRoofEditIndex},reportCorrection:reportMeasurementCorrection?{mode:reportMeasurementCorrection.mode,index:reportMeasurementCorrection.index,points:points(reportMeasurementCorrection.points),uncertain:!!reportMeasurementCorrection.uncertain}:null,pending,baseVersion:saveEstimateHistory.baseVersion||null,lastHistorySaveKey:null};
+ }
+ async function request(path,options={}){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok)throw new Error(data.error||'Recovery request failed');return data}finally{clearTimeout(timer)}
+ }
+ async function flush(){
+  if(paused||ended)return false;
+  if(writing){await writing;return flush()}
+  let workspace;try{workspace=capture()}catch(e){say('Changes have not reached recovery storage. Keep this tab open.',true);return false}
+  if(!workspace)return true;
+  const serialized=JSON.stringify(workspace);if(serialized===ack)return true;
+  say('Changes have not reached the server yet. Keep this tab open.',true);
+  const draftId=id,draftVersion=version;
+  writing=(async()=>{
+   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;version=r.version;ack=serialized;say('Recovery copy saved for 24 hours.');return true}
+   catch(e){say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
+  })();
+  try{return await writing}finally{writing=null}
+ }
+ function newDraft(){id=uuid();version=0;ack='';ended=false}
+ async function restore(row){
+  busy=true;
+  try{
+   const d=await request('/'+row.draft_id),w=d.workspace;
+   const imagery=await request('/'+row.draft_id+'/imagery-session',{method:'POST',body:'{}'});
+   // Read the retained workspace only after ownership and imagery metadata checks.
+   resetMeasurementForNewProperty();
+   restoreSavedQuoteFields({address:w.values.address||''},w.quote,{});
+   fields.forEach(k=>{const n=el(k);if(n&&k in w.values){if(n.type==='checkbox')n.checked=w.values[k];else n.value=w.values[k]}});
+   const v=w.state;
+   areaPoints=latlng(v.areaPoints);linearPoints=latlng(v.linearPoints);
+   ({areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,garageMode,roofFixMode,outlineEditMode,adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,manualRoofEditIndex}=v);
+   tracePoints=latlng(v.tracePoints);outlinePoints=latlng(v.outlinePoints);
+   if(w.reportCorrection){
+    const c=w.reportCorrection;
+    if(c.mode==='area'){commercialEditingIndex=c.index;areaCorrectionOriginal=latlng(commercialAreas[c.index]?.points||[]);areaPoints=latlng(c.points);areaMode=true;areaRemeasureMode=true;areaMeasurementSaved=false;measurementViewMode='area'}
+    else{linearCorrectionOriginal=latlng(w.quote.linearPoints);linearPoints=latlng(c.points);linearMode=true;linearMeasurementSaved=false;measurementViewMode='linear'}
+   }
+   sessionToken=imagery.token;fallbackMode=true;removeStaleAerialLayers();
+   loadProperty.loadedAddressKey=v.loadedAddressKey;
+   saveEstimateHistory.pending=w.pending;if(w.pending?.payload)saveEstimateHistory.pending.requestKey=JSON.stringify(w.pending.payload);saveEstimateHistory.baseVersion=w.baseVersion;saveEstimateHistory.cleanWorkspace=null;lastHistorySaveKey='';quoteSnapshot=null;
+   map.setView([imagery.center.latitude,imagery.center.longitude],18);setPropertyMarker(imagery.center.latitude,imagery.center.longitude);
+   redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
+   // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.
+   await loadStandardWideAerial();
+   id=row.draft_id;version=d.version;ack='';paused=false;ended=false;
+   say('Draft restored. Review your measurements, then create the estimate when ready.');
+   await flush();return true;
+  }catch(e){say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false}
+  finally{busy=false}
+ }
+ async function choose(){
+  try{
+   const data=await request('');
+   if(!data.drafts.length){paused=false;say('Recovery autosave is ready.');return}
+   const panel=document.createElement('div');panel.id='workspaceRecoveryChoices';panel.style.cssText='padding:12px;border:1px solid #bbb;background:white';
+   const title=document.createElement('p');title.textContent='Unsaved recovery drafts are available for this user. Restore one or discard it. Each tab has a separate draft.';panel.append(title);
+   for(const row of data.drafts){
+    const line=document.createElement('div'),label=document.createElement('span');label.textContent='Draft · expires '+new Date(row.expires_at*1000).toLocaleString()+' ';
+    const yes=document.createElement('button');yes.textContent='Restore';
+    const no=document.createElement('button');no.textContent='Discard';
+    yes.onclick=async()=>{if(busy)return;yes.disabled=true;const ok=await restore(row);yes.disabled=false;if(ok)panel.remove()};
+    no.onclick=async()=>{if(busy)return;no.disabled=true;try{await request('/'+row.draft_id,{method:'DELETE'});line.remove();if(panel.children.length===2){panel.remove();paused=false;newDraft();say('Recovery draft discarded.')}}catch(e){say(e.message,true);no.disabled=false}};
+    line.append(label,yes,no);panel.append(line);
+   }
+   const fresh=document.createElement('button');fresh.textContent='Start a separate draft';fresh.onclick=()=>{panel.remove();paused=false;newDraft();say('Separate recovery draft ready.');};panel.append(fresh);badge.after(panel);
+   say('Choose Restore, Discard or start a separate draft.');
+  }catch(e){paused=false;say('Recovery storage is unavailable. Changes have not reached the server. Keep this tab open.',true)}
+ }
+ window.aqRecovery={flush,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
+ let debounce;
+ document.addEventListener('input',()=>{if(paused)return;say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700)});
+ setInterval(()=>{if(!paused&&!busy)flush()},1800);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+ window.addEventListener('online',flush);
+ choose();
+})();

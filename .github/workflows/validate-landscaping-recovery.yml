@@ -20,6 +20,8 @@ jobs:
       - run: python scripts/check_release_files.py
       - run: python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py
       - run: python scripts/test_database_initialization.py
+      - run: python scripts/test_workspace_drafts.py
+      - run: python scripts/test_workspace_drafts_api.py
       - run: python scripts/test_property_session_recovery.py
       - run: python scripts/test_property_address.py
       - run: python scripts/test_complex_roofs.py

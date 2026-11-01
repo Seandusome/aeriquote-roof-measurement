@@ -97,6 +97,8 @@ def estimate_db():
         raise
 
 def _initialize_estimate_schema(con):
+    import workspace_drafts
+    workspace_drafts.initialize(con)
     con.execute("CREATE TABLE IF NOT EXISTS property_sessions (token TEXT PRIMARY KEY, dealer_id TEXT NOT NULL, expires_at DOUBLE PRECISION NOT NULL, payload TEXT NOT NULL)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_property_sessions_expiry ON property_sessions(expires_at)")
     con.execute("""CREATE TABLE IF NOT EXISTS estimates (id TEXT PRIMARY KEY, created_at TEXT NOT NULL, customer_name TEXT, customer_phone TEXT, customer_email TEXT, address TEXT NOT NULL, total_area REAL, total_price REAL, payload TEXT NOT NULL)""")
@@ -167,7 +169,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta id="aqAccountId" data-account-id="{{ACCOUNT_ID}}">
+<meta id="aqAccountId" data-account-id="{{ACCOUNT_ID}}" data-principal="{{DRAFT_PRINCIPAL}}">
 <title>AeriQuote Roof Measurement & Estimate</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -2709,13 +2711,17 @@ async function performEstimateHistorySave(){
  const pricingIssue=quotePricingError();if(pricingIssue){status(pricingIssue,'error');return false}
  try{
   const workspaceStamp=typeof workspaceSaveFingerprint==='function'?workspaceSaveFingerprint():null;
+  if(typeof window!=='undefined'&&window.aqRecovery&&saveEstimateHistory.pending){
+   const pending=saveEstimateHistory.pending,confirmed=await window.aqRecovery.confirmSave(pending.id);
+   if(confirmed){saveEstimateHistory.baseVersion=confirmed.version||saveEstimateHistory.baseVersion;saveEstimateHistory.pending=null;window.aqRecovery.saved();if(pending.workspaceStamp===workspaceStamp){saveEstimateHistory.cleanWorkspace=workspaceStamp;return true}}
+  }
   const calc=priceCalc(),snap=quoteSnapshot||captureQuoteSnapshot();
   let streetImageData=savedPropertyEditActive?savedStreetImageData:'';
   const imageChoice=(el('streetViewChoice')?.value||'auto');
   const payload=JSON.parse(JSON.stringify({customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:savedJobDetails?.job_status||'Estimate',scheduled_date:savedJobDetails?.scheduled_date||'',completion_date:savedJobDetails?.completion_date||'',amount_paid:Number(savedJobDetails?.amount_paid||0),address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData}));
   const requestKey=JSON.stringify(payload);
   if(saveEstimateHistory.pending?.requestKey!==requestKey)saveEstimateHistory.pending={requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),payload:null};
-  const operation=saveEstimateHistory.pending;
+  const operation=saveEstimateHistory.pending;if(!operation.workspaceStamp)operation.workspaceStamp=workspaceStamp;
   const imageSessionToken=sessionToken;
   if(imageChoice==='auto'&&sessionToken&&!savedPropertyEditActive){
    try{
@@ -2730,12 +2736,13 @@ async function performEstimateHistorySave(){
   if(!operation.payload)operation.payload=payload;
   const frozen=operation.payload,saveKey=JSON.stringify(frozen);
   if(saveKey===lastHistorySaveKey)return true;
-  const headers={'Content-Type':'application/json','Idempotency-Key':operation.id,'X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
+  if(typeof window!=='undefined'&&window.aqRecovery&&!await window.aqRecovery.flush())throw new Error('Recovery acknowledgement failed');
+  const headers={...(typeof window!=='undefined'&&window.aqRecovery?window.aqRecovery.headers():{}),'Content-Type':'application/json','Idempotency-Key':operation.id,'X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
   try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
   let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
-  lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;return true;
+  lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;if(typeof window!=='undefined'&&window.aqRecovery)window.aqRecovery.saved();return true;
  }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('AQ:estimate-save-failed');status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
 function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
@@ -3491,6 +3498,7 @@ function coordinatesEntered(){
 function syncPropertyProvince(){if(el('propertyProvince')?.value)setPropertyRegion(el('propertyProvince').value);renderSummary();}
 const _aeriRenderSummary=renderSummary;renderSummary=function(){const r=_aeriRenderSummary.apply(this,arguments);setTimeout(()=>applyBusinessTerminology(),0);return r};
 </script>
+<script src="/static/workspace_drafts.js"></script>
 </body></html>"""
 
 def req_json(url):
@@ -4339,7 +4347,7 @@ def manual_roof_session(sess):
     return bool(sess and sess.get("mode")=="manual_roof_static")
 
 @app.route("/")
-def home():return render_template_string(HTML, VECTOR_PDF_QA_FLAG="1" if vector_pdf_qa_enabled() else "0", MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
+def home():return render_template_string(HTML, VECTOR_PDF_QA_FLAG="1" if vector_pdf_qa_enabled() else "0", MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), DRAFT_PRINCIPAL=__import__("workspace_drafts").principal(session), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
 @app.get("/mapbox-test")
 def mapbox_test():
     address = request.args.get("address", "").strip()
@@ -4961,6 +4969,87 @@ def estimate_version(payload):
     if isinstance(payload,str):payload=json.loads(payload)
     return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
 
+def draft_identity():
+    import workspace_drafts as drafts
+    dealer=str(session.get("dealer_id") or "")
+    user=drafts.principal(session)
+    if request.headers.get("X-AeriQuote-Principal") != user:
+        raise drafts.DraftError("Sign in to the original user account before recovering this workspace.",409)
+    origin=request.headers.get("Origin","").lower()
+    if request.headers.get("Sec-Fetch-Site","")=="cross-site" or (origin and origin not in {"https://"+request.host.lower(),"http://"+request.host.lower()}):
+        raise drafts.DraftError("Recovery requests must come from this AeriQuote page.",403)
+    return dealer,user
+
+@app.route("/api/workspace-drafts",methods=["GET"])
+@app.route("/api/workspace-drafts/<draft_id>",methods=["GET","PUT","DELETE"])
+def workspace_draft_api(draft_id=None):
+    import workspace_drafts as drafts
+    con=estimate_db()
+    try:
+        dealer,user=draft_identity()
+        lock_account(con,dealer)
+        drafts.purge(con)
+        if draft_id is None:
+            rows=con.execute("SELECT draft_id,version,expires_at FROM workspace_drafts WHERE dealer_id=? AND principal=? AND closed=0 ORDER BY expires_at DESC",(dealer,user)).fetchall()
+            con.commit()
+            return jsonify(drafts=[dict(r) for r in rows])
+        if request.method=="DELETE":
+            drafts.close(con,dealer,user,draft_id);con.commit();return jsonify(deleted=True)
+        if request.method=="GET":
+            row=drafts.load(con,dealer,user,draft_id)
+            con.commit()
+            return jsonify(draft_id=draft_id,version=row["version"],expires_at=row["expires_at"],workspace=json.loads(row["payload"]))
+        body=request.get_json(silent=True) or {}
+        # Only metadata from a previously accepted, owned imagery session is retained.
+        token=body.get("workspace",{}).get("sessionToken") if isinstance(body.get("workspace"),dict) else None
+        source=SESSIONS.get(token) if isinstance(token,str) else None
+        metadata=None
+        if source:
+            from property_sessions import FIELDS,image_url
+            metadata={k:source[k] for k in FIELDS if k in source}
+            for k in ("rgb","mask","street"):
+                if k in metadata:metadata[k]=image_url(metadata[k])
+        result=drafts.put(con,dealer,user,draft_id,body.get("version"),body.get("workspace"),metadata)
+        con.commit();return jsonify(result)
+    except drafts.DraftError as e:
+        return jsonify(error=str(e)),e.status
+    finally:con.close()
+
+@app.post("/api/workspace-drafts/<draft_id>/save-status")
+def workspace_draft_save_status(draft_id):
+    import workspace_drafts as drafts
+    con=estimate_db()
+    try:
+        dealer,user=draft_identity();drafts.validate_id(draft_id)
+        operation=(request.get_json(silent=True) or {}).get("operation_id")
+        row=con.execute("SELECT save_operation FROM workspace_drafts WHERE dealer_id=? AND principal=? AND draft_id=? AND expires_at>? AND closed=1",(dealer,user,draft_id,time.time())).fetchone()
+        if not row or not operation or row["save_operation"]!=operation:return jsonify(saved=False)
+        receipt=con.execute("SELECT response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer,operation)).fetchone()
+        return jsonify(saved=bool(receipt),result=json.loads(receipt["response_json"]) if receipt else None)
+    except drafts.DraftError as e:return jsonify(error=str(e)),e.status
+    finally:con.close()
+
+@app.post("/api/workspace-drafts/<draft_id>/imagery-session")
+def workspace_draft_imagery(draft_id):
+    import workspace_drafts as drafts
+    con=estimate_db()
+    try:
+        dealer,user=draft_identity()
+        row=drafts.load(con,dealer,user,draft_id)
+        metadata=json.loads(row["property_metadata"] or "null")
+        if not metadata:return jsonify(error="Property imagery was not acknowledged before interruption. Your measurements are retained; retry the original property loading step."),409
+        if not GOOGLE_MAPS_API_KEY:return jsonify(error="Imagery is unavailable. Your draft remains available; retry later."),503
+        token=uuid.uuid4().hex
+        metadata.update(key=GOOGLE_MAPS_API_KEY,created=time.time(),dealer_id=dealer)
+        from property_sessions import CACHES,image_url
+        metadata.update({k:None for k in CACHES})
+        if metadata.get("street"):metadata["street"]=image_url(metadata["street"],GOOGLE_MAPS_API_KEY)
+        metadata["structure_masks"]={}
+        SESSIONS[token]=metadata;SESSIONS.persist(token)
+        return jsonify(token=token,center={"latitude":metadata["lat"],"longitude":metadata["lng"]})
+    except drafts.DraftError as e:return jsonify(error=str(e)),e.status
+    finally:con.close()
+
 @app.route("/api/estimates", methods=["GET","POST"])
 def estimate_history_api():
     dealer_id=str(session.get("dealer_id") or "")
@@ -4968,6 +5057,12 @@ def estimate_history_api():
     try:
         if request.method=="POST":
             lock_account(con,dealer_id)
+            recovery_id=request.headers.get("X-AeriQuote-Draft")
+            if recovery_id:
+                import workspace_drafts as drafts
+                try:
+                    _,recovery_user=draft_identity();drafts.validate_id(recovery_id)
+                except drafts.DraftError as e:return jsonify(error=str(e)),e.status
             d=request.get_json(silent=True) or {}
             pricing_error=estimate_pricing_error(d)
             if pricing_error:return jsonify(error=pricing_error),400
@@ -4981,8 +5076,11 @@ def estimate_history_api():
                 receipt=con.execute("SELECT payload_hash,response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,operation)).fetchone()
                 if receipt:
                     if receipt["payload_hash"]!=request_hash:return jsonify(error="This save identifier was already used for different estimate details."),409
+                    if recovery_id:
+                        drafts.close(con,dealer_id,recovery_user,recovery_id,operation=operation);con.commit()
                     return jsonify(json.loads(receipt["response_json"]))
             def finish_save(result):
+                if recovery_id:drafts.close(con,dealer_id,recovery_user,recovery_id,operation=operation)
                 result["version"]=estimate_version(d)
                 if operation:con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,operation,request_hash,json.dumps(result)))
                 con.commit()

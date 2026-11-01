@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     'app.py', 'safe_logging.py', 'gunicorn.conf.py', 'requirements.txt', 'account_credits.py', 'account_recovery.py',
     'activation_metrics.py', 'measurement_integrity.py', 'pricing_integrity.py',
-    'property_address.py', 'property_sessions.py', 'saved_estimate_edit.py',
+    'property_address.py', 'property_sessions.py', 'saved_estimate_edit.py', 'workspace_drafts.py', 'workspace_drafts.js',
     'storage_checks.py', 'support_center.py', 'support_inbound.py',
     'site/index.html', 'site/pricing.html', 'site/styles.css',
     'site/assets/aeriquote-logo.png',
