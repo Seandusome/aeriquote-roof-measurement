@@ -2,8 +2,17 @@
 import os,sys,tempfile,uuid
 from pathlib import Path
 from datetime import datetime,timezone
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-with tempfile.TemporaryDirectory() as tmp:
+# Keep implicit allowance calls in October: November below is deliberately a
+# different Edmonton month, regardless of the machine's actual calendar date.
+class AllowanceClock(datetime):
+ @classmethod
+ def now(cls,tz=None):
+  fixed=datetime(2026,10,20,12,tzinfo=timezone.utc)
+  return fixed.astimezone(tz) if tz else fixed.replace(tzinfo=None)
+
+with tempfile.TemporaryDirectory() as tmp, patch('account_credits.datetime',AllowanceClock):
  os.environ['DATABASE_URL']='';os.environ['ESTIMATE_DB_PATH']=str(Path(tmp)/'credits.db')
  import app as a
  from account_credits import consume,month_key,settings,lock_account
@@ -78,7 +87,9 @@ with tempfile.TemporaryDirectory() as tmp:
  assert month_key(datetime(2026,11,1,5,59,tzinfo=timezone.utc))=='2026-10'
  assert month_key(datetime(2026,11,1,6,0,tzinfo=timezone.utc))=='2026-11'
  con=a.estimate_db();lock_account(con,'dealer')
- assert consume(con,'dealer','lookups',999,1,datetime(2026,11,2,tzinfo=timezone.utc))[0]
+ assert consume(con,'dealer','lookups',999,1,datetime(2026,11,2,tzinfo=timezone.utc))==(True,1,200)
+ assert con.execute("SELECT lookups FROM account_month_usage WHERE dealer_id='dealer' AND period='2026-10'").fetchone()['lookups']==225
+ assert con.execute("SELECT lookups FROM account_month_usage WHERE dealer_id='dealer' AND period='2026-11'").fetchone()['lookups']==1
  assert settings(con,'dealer')['lookup_bonus']==0
  con.commit();con.close()
  # Changing brand or re-saving membership cannot reset usage.
