@@ -53,7 +53,7 @@ footer{background:#071a3d;color:#dce6f3;margin-top:0}footer a{color:#dce6f3;text
    try{localStorage.setItem('aeriQuoteTrial',JSON.stringify(data));localStorage.setItem('aeriQuoteIndustry',industry)}catch(ignore){}
    const routes={snow:'snow-setup.html',roofing:'roofer-setup.html',pressure:'pressure-setup.html',paving:'paving-setup.html',landscaping:'landscaping-setup.html',commercial:'commercial-setup.html'};
    location.href=routes[industry]||result.redirect||'roofer-setup.html';
-   }catch(err){error.textContent=err.message||'Could not connect. Please try again.';error.hidden=false;button.disabled=false;button.textContent='CREATE FREE ACCOUNT →';}
+   }catch(err){error.textContent=['TypeError','SyntaxError'].includes(err?.name)?'Could not connect to create your account. Your details are still here. Please try again.':(err.message||'Could not connect. Please try again.');error.hidden=false;button.disabled=false;button.textContent='CREATE FREE ACCOUNT →';}
  });
 })();
 </script>
