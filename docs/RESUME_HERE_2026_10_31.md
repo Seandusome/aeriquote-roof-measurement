@@ -1,3 +1,14 @@
+# November 1 — real401 recovery and same-account save PASS
+
+Read [expired-login recovery evidence](qa/expired-login-2026-11-01/progress.md). Unsaved Area2 geometry, custom rate, extra pricing and fictional customer/notes survived authentication loss in the original tab. Owner signed back in separately; account IDs matched. Same-owner retry saved exactly one revision: estimates1→1, revisions18→19, receipts21→22. Unchanged retry added nothing. Exact stored fields/quantities/rates/total passed. Actual Single1page /Expanded3pages visually reviewed; total$1,155.94 matches independent Decimal calculation.
+
+- Authentication was cleared by normal logout in a second tab to exercise real401. Natural time-based expiry, closing/refreshing the unsaved tab and physical-phone touch remain pending; do not infer those from this result.
+- Live QA allowances bypass unchanged. Disposable charged-account experiment using real password login at199/200 consumed exactly once; repeated/auth-retry and wrong-account409 did not deduct/write again. Live PostgreSQL charged-account recovery is not claimed.
+- No application defect reproduced, runtime code change or deployment. Recovery stays4f2b233f /dep-dbjqlnijnfac738poig0; auto-deploy Off, diagnostics disabled, isolated QA database unchanged. Main/production/customer data untouched.
+- QA session remains working; current fictional Paving revision now8,318ft² +188.2640110545814ft, Area2$0.17, extra$37.25, customer QA EXPIRED LOGIN NOV1, total$1,155.94. Prior revisions retained.
+
+---
+
 # November 1 — fresh six-industry PDFs and repeated retrace PASS
 
 Read [current QA evidence](QA_MEASUREMENT_PDF_2026_11_01.md). All six industries now have fresh Single and Expanded PDFs rendered and visually inspected; fourteen PDFs/21 pages including a new repeated-retrace Paving revision. Independent quantities/pricing/taxes/totals agree. No reproducible runtime defect, code fix or deployment this batch.

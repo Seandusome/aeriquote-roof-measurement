@@ -1,0 +1,78 @@
+{
+  "live_account_match": true,
+  "live_stored_fields_match": true,
+  "live_counts": {
+    "before": [
+      1,
+      18,
+      21
+    ],
+    "after_401": [
+      1,
+      18,
+      21
+    ],
+    "after_reauth_save": [
+      1,
+      19,
+      22
+    ],
+    "after_unchanged_retry": [
+      1,
+      19,
+      22
+    ],
+    "columns": [
+      "estimates",
+      "revisions",
+      "save_receipts"
+    ]
+  },
+  "live_usage": "QA bypass; monthly/paid/bonus rows absent and unchanged; no charged-plan claim",
+  "disposable_charged_recovery": {
+    "before": [
+      0,
+      0,
+      0,
+      199
+    ],
+    "after": [
+      1,
+      0,
+      1,
+      200
+    ],
+    "columns": [
+      "estimates",
+      "revisions",
+      "receipts",
+      "used_estimate_allowance"
+    ],
+    "wrong_account_unchanged": true,
+    "result": "PASS"
+  },
+  "independent_pricing": {
+    "subtotal": "1041.39",
+    "tax5": "52.07",
+    "tax6": "62.48",
+    "total": "1155.94"
+  },
+  "pdfs": [
+    {
+      "file": "recovered-expanded.pdf",
+      "bytes": 1694483,
+      "pages": 3,
+      "sha256": "0baf0392050a46e7c8068d986eff5d4398a2e4a986086435fc87022f0d5496e7",
+      "git_blob": "864c6da10174795643e8a0e6d10d62d95b288703",
+      "visual_review": "PASS"
+    },
+    {
+      "file": "recovered-single.pdf",
+      "bytes": 1055993,
+      "pages": 1,
+      "sha256": "bf27a61ee4ba1bdd4102db22e5cad7bed0cca56a755d5585f8dcf0fed75bc9a5",
+      "git_blob": "80a17606411f80d7d24ce16326793ae126a66037",
+      "visual_review": "PASS"
+    }
+  ]
+}
