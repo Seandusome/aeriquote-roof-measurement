@@ -32,7 +32,7 @@ script=script.replace(after,String.raw`
  console.log('PASS explicit Create after a remotely closed recovery ID retains the exact later edit and saves successfully');
  const raceEditors=[];
  for(let n=0;n<2;n++){
-  const editor=await context.newPage();editor.on('dialog',d=>d.accept());editor.on('pageerror',e=>errors.push(e.message));await editor.goto('http://127.0.0.1:8765/');await editor.waitForFunction(()=>typeof openHistoricalEstimate==='function');await editor.waitForTimeout(1000);
+  const editor=await context.newPage();editor.on('dialog',d=>d.accept());editor.on('pageerror',e=>errors.push(e.message));await editor.goto('http://127.0.0.1:8765/');await editor.waitForFunction(()=>typeof openHistoricalEstimate==='function');await editor.waitForTimeout(1000);await editor.waitForFunction(()=>el('workspaceRecoveryStatus')?.textContent);if(await editor.getByRole('button',{name:'Start a separate draft'}).count())await editor.getByRole('button',{name:'Start a separate draft'}).click();
   await editor.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await editor.getByRole('button',{name:'EDIT MEASUREMENTS / PRICE',exact:true}).click();
   await editor.waitForFunction(()=>sessionToken&&!savedEstimateEditContext&&!document.body.classList.contains('report-open'));
   await editor.click('#customerNotes');await editor.fill('#customerNotes','FICTIONAL CONCURRENT EDITOR '+n);raceEditors.push(editor);
