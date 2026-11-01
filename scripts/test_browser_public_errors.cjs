@@ -34,7 +34,7 @@ for(const width of [1440,390]){
   assert.equal(await page.inputValue('#trialBusiness'),'FICTIONAL QA ONLY');assert.equal(await page.inputValue('#trialEmail'),email);
  }
  await page.screenshot({path:`${out}/signup-recovery-${width}.png`,fullPage:true});
- await page.unroute('**/api/public/signup');await Promise.all([page.waitForURL(/pressure-setup\.html/),page.click('#trialForm button')]);
+ await page.unroute('**/api/public/signup');await Promise.all([page.waitForURL(u=>u.pathname.replace(/\.html$/,'')==='/site/pressure-setup'),page.click('#trialForm button')]);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  assert.deepEqual(errors,[]);results.push({stage:'signup network/invalid JSON/server failure then successful retry',width,uncaught:errors,preserved:true});await context.close();
 }
