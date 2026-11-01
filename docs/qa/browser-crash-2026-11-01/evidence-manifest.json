@@ -1,0 +1,123 @@
+{
+  "workflow": 41355170665,
+  "head": "167a3ece1f48b73e1a15a2f727a4d7101de43e0e",
+  "artifacts": [
+    {
+      "name": "baseline",
+      "id": 13102967566
+    },
+    {
+      "name": "recovery",
+      "id": 13103345225
+    },
+    {
+      "name": "property-failure",
+      "id": 13103240743
+    },
+    {
+      "name": "public",
+      "id": 13103111195
+    },
+    {
+      "name": "pdf-failure",
+      "id": 13102788900
+    }
+  ],
+  "files": [
+    {
+      "path": "baseline-commercial-1440-source.json",
+      "bytes": 3255,
+      "sha256": "c0c7bcb4f45b56dfae6796c4bfd16e5b047740ef9e03d3fbda25cd992614aca4"
+    },
+    {
+      "path": "baseline-commercial-390-source.json",
+      "bytes": 3261,
+      "sha256": "5208097bfff56b833f447c7347a66fb5d3ef0f6870b4dfd9b6d7c53810e23e02"
+    },
+    {
+      "path": "baseline-landscaping-1440-source.json",
+      "bytes": 3249,
+      "sha256": "aa7daf0a310ca9fd2957f9af700642474f1bd75f01448019dae69fa4e0393597"
+    },
+    {
+      "path": "baseline-landscaping-390-source.json",
+      "bytes": 3255,
+      "sha256": "f5e72095a00fa92db88a20a7da773f65ae475580c342fcb82cfeb53bddff0fc5"
+    },
+    {
+      "path": "baseline-paving-1440-source.json",
+      "bytes": 3239,
+      "sha256": "2d9c9773bafcff486b2cd06bf9eca0277b34d04176ab89f872b2d862071d7ea7"
+    },
+    {
+      "path": "baseline-paving-390-source.json",
+      "bytes": 3245,
+      "sha256": "113477f524a00678121374f6aa8f01a555cbae93032befcea8b1c0e06a2d9d5e"
+    },
+    {
+      "path": "baseline-pressure-1440-source.json",
+      "bytes": 3243,
+      "sha256": "318ffca0f0ea047b24797f02eae6869b0cb87fdddd902329a5016768a95c115c"
+    },
+    {
+      "path": "baseline-pressure-390-source.json",
+      "bytes": 3249,
+      "sha256": "a0f3e070d84b643e6e286194f0a34a70dee72f7f58fbcf4c4d6a2e68d962cd12"
+    },
+    {
+      "path": "baseline-results.json",
+      "bytes": 5493,
+      "sha256": "c69431d921444bf92319f4494aa2c670978a279351759a020d753a5170f05d15"
+    },
+    {
+      "path": "baseline-roofing-1440-source.json",
+      "bytes": 2371,
+      "sha256": "7eb5d0ec55dd8776f5256bd5badcbc827fa6aa43fd6ff7ac02eab678dbafd693"
+    },
+    {
+      "path": "baseline-roofing-390-source.json",
+      "bytes": 2370,
+      "sha256": "bc05a91abeaa4986396ca778bf6bf0cf222fc5665d9f518b36a64cf0bb1ae04b"
+    },
+    {
+      "path": "baseline-roofing-390.png",
+      "bytes": 285711,
+      "sha256": "bcd5bc09dd7664f24aad4af6c043c66e6502108399b15820763e371cf28cfbd2"
+    },
+    {
+      "path": "baseline-snow-1440-source.json",
+      "bytes": 3234,
+      "sha256": "7d83de81f990a593f0fb4c2a346d161cb223998829778194c453e22dacfb021b"
+    },
+    {
+      "path": "baseline-snow-390-source.json",
+      "bytes": 3240,
+      "sha256": "bda4571e6b7fb17331bd63af1c68b044b349393b677699f8bfa0f397538a1177"
+    },
+    {
+      "path": "baseline-snow-390.png",
+      "bytes": 288997,
+      "sha256": "1fa550469f47ade90d489a836198fe5e0d4e36015ebaf22c102140df0440047c"
+    },
+    {
+      "path": "initial-server.log",
+      "bytes": 8104,
+      "sha256": "34ebf0623e7dd96f991241530be712c6cd7b1add51cd13126d72607bf9fcdd8f"
+    },
+    {
+      "path": "job-evidence.json",
+      "bytes": 8374,
+      "sha256": "35a204c22a541d17912ca120cdbe1986ae24ff6819ac49c8b038a0eaea7e1740"
+    },
+    {
+      "path": "public-results.json",
+      "bytes": 502,
+      "sha256": "7af90e9670e99c6cc522767b024064f3843c16d3f9672737d27881b5067eb6c5"
+    },
+    {
+      "path": "signup-recovery-390.png",
+      "bytes": 154819,
+      "sha256": "8859d2afd31f3d66254c238a4f851c51cf5c90c18c537456f1ba7fea4bfa28b0"
+    }
+  ]
+}

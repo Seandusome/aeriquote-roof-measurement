@@ -1,0 +1,24 @@
+[
+  {
+    "stage": "login rejection and successful retry",
+    "width": 1440,
+    "uncaught": []
+  },
+  {
+    "stage": "signup network/invalid JSON/server failure then successful retry",
+    "width": 1440,
+    "uncaught": [],
+    "preserved": true
+  },
+  {
+    "stage": "login rejection and successful retry",
+    "width": 390,
+    "uncaught": []
+  },
+  {
+    "stage": "signup network/invalid JSON/server failure then successful retry",
+    "width": 390,
+    "uncaught": [],
+    "preserved": true
+  }
+]

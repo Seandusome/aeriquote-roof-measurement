@@ -1,0 +1,57 @@
+{
+  "run": 41355170665,
+  "head": "167a3ece1f48b73e1a15a2f727a4d7101de43e0e",
+  "jobs": [
+    {
+      "id": 124993566797,
+      "events": [
+        "2026-11-01T22:04:27.2563929Z PASS real Chromium refresh/navigation warnings; dismiss preserves exact draft/customer",
+        "2026-11-01T22:04:27.5556859Z PASS real workspace clears previous-business branding before profile hydration",
+        "2026-11-01T22:04:27.6582454Z PASS real Chromium expired session + wrong-business re-login retain draft, block report and write no foreign estimate; original account restored",
+        "2026-11-01T22:04:30.5119217Z CONFIRMED LIMITATION: forced tab close bypasses warning and unsaved geometry is not restored; explicit saved estimate survives",
+        "2026-11-01T22:04:30.6103662Z {\"industry\":\"snow\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-390-single.pdf\",\"/tmp/aq-browser-evidence/snow-390-expanded.pdf\"],\"captureChecks\":[],\"saved\":true,\"reopened\":true}"
+      ]
+    },
+    {
+      "id": 124993567005,
+      "events": [
+        "2026-11-01T22:04:28.0547947Z PASS saved-image failure, stale placeholder cleanup, interrupted capture, duplicate download single-flight and safe retry",
+        "2026-11-01T22:04:29.1426696Z {\"industry\":\"snow\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-390-single.pdf\",\"/tmp/aq-browser-evidence/snow-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}"
+      ]
+    },
+    {
+      "id": 124993567036,
+      "events": [
+        "2026-11-01T22:04:46.0928530Z [{\"stage\":\"login rejection and successful retry\",\"width\":1440,\"uncaught\":[]},{\"stage\":\"signup network/invalid JSON/server failure then successful retry\",\"width\":1440,\"uncaught\":[],\"preserved\":true},{\"stage\":\"login rejection and successful retry\",\"width\":390,\"uncaught\":[]},{\"stage\":\"signup network/invalid JSON/server failure then successful retry\",\"width\":390,\"uncaught\":[],\"preserved\":true}]"
+      ]
+    },
+    {
+      "id": 124993567129,
+      "events": [
+        "2026-11-01T22:04:29.0594154Z PASS browser aborted save preserves measurements and blocks report",
+        "2026-11-01T22:04:31.4153476Z {\"industry\":\"snow\",\"width\":1440,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-1440-single.pdf\",\"/tmp/aq-browser-evidence/snow-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:35.7217888Z {\"industry\":\"pressure\",\"width\":1440,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/pressure-1440-single.pdf\",\"/tmp/aq-browser-evidence/pressure-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:40.1016000Z {\"industry\":\"paving\",\"width\":1440,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/paving-1440-single.pdf\",\"/tmp/aq-browser-evidence/paving-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:44.3380743Z {\"industry\":\"landscaping\",\"width\":1440,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/landscaping-1440-single.pdf\",\"/tmp/aq-browser-evidence/landscaping-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:48.8270268Z {\"industry\":\"commercial\",\"width\":1440,\"total\":163.52,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/commercial-1440-single.pdf\",\"/tmp/aq-browser-evidence/commercial-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:52.2320619Z {\"industry\":\"roofing\",\"width\":1440,\"total\":79.3,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/roofing-1440-single.pdf\",\"/tmp/aq-browser-evidence/roofing-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:57.3141379Z {\"industry\":\"snow\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-390-single.pdf\",\"/tmp/aq-browser-evidence/snow-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:05:01.4070229Z {\"industry\":\"pressure\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/pressure-390-single.pdf\",\"/tmp/aq-browser-evidence/pressure-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:05:05.5726062Z {\"industry\":\"paving\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/paving-390-single.pdf\",\"/tmp/aq-browser-evidence/paving-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:05:09.7533716Z {\"industry\":\"landscaping\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/landscaping-390-single.pdf\",\"/tmp/aq-browser-evidence/landscaping-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:05:13.8568890Z {\"industry\":\"commercial\",\"width\":390,\"total\":163.52,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/commercial-390-single.pdf\",\"/tmp/aq-browser-evidence/commercial-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:05:17.2075151Z {\"industry\":\"roofing\",\"width\":390,\"total\":79.3,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/roofing-390-single.pdf\",\"/tmp/aq-browser-evidence/roofing-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":487.1875,\"drawHeight\":651}],\"saved\":true,\"reopened\":true}"
+      ]
+    },
+    {
+      "id": 124993567333,
+      "events": [
+        "2026-11-01T22:04:23.4018973Z PASS property API503, image decode/network failure and acceptance401 preserve old geometry/customer/usage and show retry; original quote remains usable",
+        "2026-11-01T22:04:23.4627881Z PASS browser aborted save preserves measurements and blocks report",
+        "2026-11-01T22:04:25.3913407Z {\"industry\":\"snow\",\"width\":1440,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-1440-single.pdf\",\"/tmp/aq-browser-evidence/snow-1440-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":1706,\"sourceHeight\":930,\"drawWidth\":1152,\"drawHeight\":627.984375}],\"saved\":true,\"reopened\":true}",
+        "2026-11-01T22:04:27.5193442Z PASS property API503, image decode/network failure and acceptance401 preserve old geometry/customer/usage and show retry; original quote remains usable",
+        "2026-11-01T22:04:29.3590590Z {\"industry\":\"snow\",\"width\":390,\"total\":153.18,\"overflow\":false,\"errors\":[],\"pdfs\":[\"/tmp/aq-browser-evidence/snow-390-single.pdf\",\"/tmp/aq-browser-evidence/snow-390-expanded.pdf\"],\"captureChecks\":[{\"sourceWidth\":696,\"sourceHeight\":930,\"drawWidth\":472.96875,\"drawHeight\":632}],\"saved\":true,\"reopened\":true}"
+      ]
+    }
+  ]
+}

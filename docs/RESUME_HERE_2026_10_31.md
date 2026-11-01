@@ -1,3 +1,14 @@
+# November 1 — browser exception/retry matrix executed and PASS
+
+Read [browser QA and startup diagnosis](QA_BROWSER_CRASH_RECOVERY_2026_11_01.md). Final Chromium41355170665 at167a3ece executed all5jobs PASS; fresh1440/390contexts cover signup/login failures and success, six-industry measurement/preview/reopen/PDF, API503/imagery failures/acceptance401, expired/wrong-account save, capture interruption and retry. Full recovery41355170615 +application41355170587 PASS, including PostgreSQL16/18. All12 source snapshots pass independent WGS84/Decimal checks.
+
+- Narrow reproduced signup-message defect fixed: browser network/JSON failures now explain retry and retained details. Recovery deployment dep-dbjrg1m7bikc738bl84g LIVE22:07:57UTC at167a3ece; running checkout, fix present, timeout overrideOff/default31days, diagnosticsOff and exact isolated QA DB all verified.
+- Original41354803554 never executed browser tests: artifact log shows Flask started; erroneous readiness probe hit nonexistent/health404. Changed to/dealer-login200. Subsequent public test's canonical URL expectation corrected. Failed attempts are not passes.
+- Known forced-tab-close limitation: never-saved in-memory draft is lost; saved estimates survive. Normal warning cancellation and caught-error recovery preserve work. No durable crash-draft restore claimed. Physical-phone/Safari/Messenger pending.
+- Natural timed-expiry recovery already passed and timeout restored (f30833ff report below). QA helper defaultOff; diagnostics disabled; auto-deploy Off; isolated QA DB unchanged. Main/production/customer data untouched.
+
+---
+
 # November 1 — natural timed session expiry recovery PASS
 
 Read [timed-expiry evidence](qa/timed-expiry-2026-11-01/progress.md). Real signed-cookie age validation, no logout/cookie deletion/clock mock: existing session200 at21:46:55; after deadline21:48:45, GET302 at21:49:04 and estimate POST401 at21:49:07. Unsaved DOM geometry/pricing unchanged; no database writes. Same-owner reauthentication saved exactly one revision; unchanged retry added nothing (estimates1, revisions19→20, receipts22→23). Exact stored customer note/fields/geometry/rates/total pass. Single1page and Expanded3pages visually checked, stress-fixture total$77,799.67 agrees with Decimal arithmetic.
