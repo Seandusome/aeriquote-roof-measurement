@@ -7,6 +7,17 @@ const anchor=" if(industry==='snow'&&width===1440){";assert(script.includes(anch
 script=script.replace(anchor,`
  await page.waitForFunction(()=>!!window.aqRecovery);
  assert.equal(await page.evaluate(()=>aqRecovery.flush()),true,'Initial recovery copy acknowledged');
+ const firstHeaders=await page.evaluate(()=>aqRecovery.headers());
+ const second=await context.newPage();second.on('dialog',d=>d.accept());await second.goto('http://127.0.0.1:8765/?industry='+industry);await second.waitForTimeout(1400);
+ await second.getByRole('button',{name:'Start a separate draft'}).click();
+ await second.evaluate(token=>{sessionToken=token;areaPoints=[L.latLng(52,-106),L.latLng(52,-105.9999),L.latLng(52.0001,-106)];areaMeasurementSaved=true;measurementViewMode='area';el('customerName').value='FICTIONAL SECOND TAB';},await page.evaluate(()=>sessionToken));
+ assert.equal(await second.evaluate(()=>aqRecovery.flush()),true);
+ const secondHeaders=await second.evaluate(()=>aqRecovery.headers());assert.notEqual(firstHeaders['X-AeriQuote-Draft'],secondHeaders['X-AeriQuote-Draft']);
+ const secondDraft=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+secondHeaders['X-AeriQuote-Draft'],{headers:secondHeaders})).json();assert.equal(secondDraft.workspace.values.customerName,'FICTIONAL SECOND TAB');
+ const firstDraft=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+firstHeaders['X-AeriQuote-Draft'],{headers:firstHeaders})).json();assert.notEqual(firstDraft.workspace.values.customerName,'FICTIONAL SECOND TAB');
+ assert.equal((await context.request.delete('http://127.0.0.1:8765/api/workspace-drafts/'+secondHeaders['X-AeriQuote-Draft'],{headers:secondHeaders})).status(),200);
+ await second.close();assert.equal((await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+firstHeaders['X-AeriQuote-Draft'],{headers:firstHeaders})).status(),200);
+ console.log('PASS separate actual tabs, distinct drafts and discard isolation');
  const original=await page.evaluate(()=>({quote:captureQuoteSnapshot(),pricing:priceCalc(),customer:el('customerName').value,email:el('customerEmail').value}));
  const countsBefore=await(await context.request.get('http://127.0.0.1:8765/api/estimates')).json();
  // An interrupted autosave must warn, retain RAM and leave the acknowledged draft intact.

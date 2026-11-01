@@ -2048,7 +2048,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
   clearTimeout(addressPreviewTimer);addressPreviewSeq++;
   payload.business_type=currentBusinessType();
-  const requestKey=typeof stableWorkspaceJSON==='function'?stableWorkspaceJSON(payload):JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
+  const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
@@ -2720,7 +2720,7 @@ async function performEstimateHistorySave(){
   let streetImageData=savedPropertyEditActive?savedStreetImageData:'';
   const imageChoice=(el('streetViewChoice')?.value||'auto');
   const payload=JSON.parse(JSON.stringify({customer_name:(el('customerName')?.value||'').trim(),customer_phone:(el('customerPhone')?.value||'').trim(),customer_email:(el('customerEmail')?.value||'').trim(),customer_notes:(el('customerNotes')?.value||'').trim(),extra_service_description:(el('extraServiceDescription')?.value||'').trim(),extra_service_amount:Math.max(0,Number(el('extraServiceAmount')?.value||0)),job_status:savedJobDetails?.job_status||'Estimate',scheduled_date:savedJobDetails?.scheduled_date||'',completion_date:savedJobDetails?.completion_date||'',amount_paid:Number(savedJobDetails?.amount_paid||0),address:(el('address')?.value||'').trim(),total_area:Number(calc.area||0),total_price:Number(calc.total||0),quote:snap,pricing:calc,measurement_mode:(snap.measurementMode||'auto'),linear_feet:Number(snap.linearFeet||0),area_sqft:Number(snap.areaSqFt||0),street_meta:(el('streetMeta')?.textContent||''),image_choice:imageChoice,street_image_data:streetImageData}));
-  const requestKey=JSON.stringify(payload);
+  const requestKey=typeof stableWorkspaceJSON==='function'?stableWorkspaceJSON(payload):JSON.stringify(payload);
   if(saveEstimateHistory.pending?.requestKey!==requestKey)saveEstimateHistory.pending={requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),payload:null};
   const operation=saveEstimateHistory.pending;if(!operation.workspaceStamp)operation.workspaceStamp=workspaceStamp;
   const imageSessionToken=sessionToken;
@@ -5000,7 +5000,8 @@ def workspace_draft_api(draft_id=None):
             row=drafts.load(con,dealer,user,draft_id)
             con.commit()
             return jsonify(draft_id=draft_id,version=row["version"],expires_at=row["expires_at"],workspace=json.loads(row["payload"]))
-        body=request.get_json(silent=True) or {}
+        body=request.get_json(silent=True)
+        if not isinstance(body,dict):return jsonify(error="Recovery workspace must be an object."),400
         # Only metadata from a previously accepted, owned imagery session is retained.
         token=body.get("workspace",{}).get("sessionToken") if isinstance(body.get("workspace"),dict) else None
         source=SESSIONS.get(token) if isinstance(token,str) else None
