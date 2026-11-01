@@ -3,7 +3,7 @@ const fs=require('fs'),assert=require('assert/strict');
 process.env.QA_BROWSER_WIDTHS='1440,390';process.env.QA_BROWSER_INDUSTRIES='snow,roofing';
 let script=fs.readFileSync('scripts/test_prelaunch_browser.cjs','utf8');
 script=script.replace('const page=await context.newPage();','let page=await context.newPage();');
-const anchor=" if(industry==='snow'&&width===1440){";assert(script.includes(anchor));
+const anchor=" if(industry==='snow'&&width===1440){const frozen";assert(script.includes(anchor));
 const preProperty=" await page.fill('#streetAddress','1 Fictional QA Street');";assert(script.includes(preProperty));
 script=script.replace(preProperty,`
  if(industry==='snow'&&width===1440){

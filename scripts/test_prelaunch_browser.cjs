@@ -19,7 +19,7 @@ for(const width of widths)for(const industry of industries){
  if(u.pathname.startsWith('/manual-report-map/')||u.pathname==='/saved-estimate-report-map')return r.fulfill({body:grid,contentType:'image/svg+xml',headers:{'X-AeriQuote-Map-View':JSON.stringify({latitude:52,longitude:-106,zoom:19,width:640,height:420})}});
  return r.continue();});
  await page.goto('http://127.0.0.1:8765/login');await page.fill('#loginEmail','qa-browser@example.invalid');await page.fill('#loginPassword','fictional-qa-password');await Promise.all([page.waitForURL(u=>u.pathname!='/login'),page.click('button')]);
- await page.goto('http://127.0.0.1:8765/?industry='+industry);await page.waitForFunction(()=>typeof map!=='undefined'&&typeof renderSummary==='function');await page.waitForTimeout(400);
+ await page.goto('http://127.0.0.1:8765/?industry='+industry);await page.waitForFunction(()=>typeof map!=='undefined'&&typeof renderSummary==='function');await page.waitForTimeout(400);await page.waitForFunction(()=>el('workspaceRecoveryStatus')?.textContent);if(await page.getByRole('button',{name:'Start a separate draft'}).count())await page.getByRole('button',{name:'Start a separate draft'}).click();
  // Selecting the current QA industry's profile is fixture setup, not a UI usability assertion.
  await page.evaluate(i=>{el('businessType').value=i;businessTypeChanged();el('jobPrice').value='.1';el('dealerCompany').value='FICTIONAL QA COMPANY';el('gst').value='5';el('pst').value='6';},industry);
  await page.fill('#streetAddress','1 Fictional QA Street');await page.fill('#cityTown','Saskatoon');await page.selectOption('#propertyProvince','SK');
@@ -39,7 +39,7 @@ for(const width of widths)for(const industry of industries){
  const before=await page.evaluate(()=>({snapshot:captureQuoteSnapshot(),pricing:priceCalc(),overflow:document.documentElement.scrollWidth>innerWidth}));
  assert.equal(await page.locator('#createEstimateBtn').isDisabled(),false,industry+' '+width+' '+await page.locator('#status').textContent());
  if(industry==='snow'&&width===1440){const frozen=JSON.stringify(before.snapshot);await page.route('**/api/estimates',r=>r.request().method()==='POST'?r.abort():r.continue());await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);assert.equal(await page.evaluate(()=>document.body.classList.contains('report-open')),false);assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),frozen);await page.unroute('**/api/estimates');console.log('PASS browser aborted save preserves measurements and blocks report');}
- await page.click('#createEstimateBtn');await page.waitForFunction(()=>document.body.classList.contains('report-open'),{timeout:10000});
+ await page.click('#createEstimateBtn');await page.waitForFunction(()=>document.body.classList.contains('report-open'),{timeout:10000}).catch(async e=>{console.log('CREATE DIAGNOSTIC',await page.evaluate(()=>({status:el('status')?.textContent,recovery:el('workspaceRecoveryStatus')?.textContent,choices:!!el('workspaceRecoveryChoices'),pending:!!saveEstimateHistory.pending,baseVersion:!!saveEstimateHistory.baseVersion})));throw e});
  await page.waitForFunction(()=>!estimateOpenInProgress);
  assert((await page.locator('#rPricing').textContent()).includes(await page.evaluate(()=>money(priceCalc().total))));
  console.log('report opened');const list=await (await context.request.get('http://127.0.0.1:8765/api/estimates')).json();const saved=list.find(x=>x.customer_name===`FICTIONAL QA ${industry} ${width}`);assert(saved,'save missing');

@@ -15,6 +15,7 @@
  const points=x=>(x||[]).map(p=>[p.lat??p[0],p.lng??p[1]]);
  const latlng=x=>(x||[]).map(p=>L.latLng(p));
  function capture(){
+  if(savedEstimateEditContext)return null;
   if(!sessionToken&&!touched)return null;
   if(!reportMeasurementCorrection&&saveEstimateHistory.cleanWorkspace&&saveEstimateHistory.cleanWorkspace===workspaceSaveFingerprint())return null;
   const previous=quoteSnapshot;let quote;
