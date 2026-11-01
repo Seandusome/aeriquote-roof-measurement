@@ -69,6 +69,9 @@
    redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
    // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.
    await loadStandardWideAerial();
+   // Aerial loading initializes its own source defaults; recovery owns the retained source and rates.
+   fields.forEach(k=>{const n=el(k);if(n&&k in w.values){if(n.type==='checkbox')n.checked=w.values[k];else n.value=w.values[k]}});
+   renderSummary();
    const sourceId=row.draft_id;newDraft();paused=false;
    say('Draft restored. Review your measurements, then create the estimate when ready.');
    if(!await flush())return false;
