@@ -11,7 +11,7 @@ script=script.replace(anchor,`
  const countsBefore=await(await context.request.get('http://127.0.0.1:8765/api/estimates')).json();
  // An interrupted autosave must warn, retain RAM and leave the acknowledged draft intact.
  await page.route('**/api/workspace-drafts/*',r=>r.request().method()==='PUT'?r.abort():r.continue());
- await page.fill('#customerNotes','FICTIONAL interrupted autosave');
+ await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL interrupted autosave');
  assert.equal(await page.evaluate(()=>aqRecovery.flush()),false);
  assert((await page.locator('#workspaceRecoveryStatus').textContent()).includes('not reached'));
  await page.unroute('**/api/workspace-drafts/*');assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);

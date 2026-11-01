@@ -56,6 +56,8 @@ with tempfile.TemporaryDirectory() as tmp:
  sh={**h,'X-AeriQuote-Draft':tab,'Idempotency-Key':'qa-operation-0001'}
  r=owner.post('/api/estimates',headers=sh,json=p);assert r.status_code==200,r.data
  assert owner.get('/api/workspace-drafts',headers=h).get_json()['drafts']==[]
+ state=owner.post('/api/workspace-drafts/'+tab+'/save-status',headers=h,json={'operation_id':'qa-operation-0001'}).get_json();assert state['saved'] and state['result']==r.get_json()
+ assert owner.post('/api/workspace-drafts/'+tab+'/save-status',headers=h,json={'operation_id':'wrong-operation'}).get_json()['saved'] is False
  assert owner.post('/api/estimates',headers=sh,json=p).get_json()==r.get_json()
  assert owner.put('/api/workspace-drafts/'+tab,headers=h,json={'version':1,'workspace':w}).status_code==409
  c=a.estimate_db();row=c.execute('SELECT payload,property_metadata FROM workspace_drafts').fetchone();assert row['payload'] is None and row['property_metadata'] is None

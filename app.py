@@ -2736,7 +2736,7 @@ async function performEstimateHistorySave(){
   if(!operation.payload)operation.payload=payload;
   const frozen=operation.payload,saveKey=JSON.stringify(frozen);
   if(saveKey===lastHistorySaveKey)return true;
-  if(typeof window!=='undefined'&&window.aqRecovery&&!await window.aqRecovery.flush())throw new Error('Recovery acknowledgement failed');
+  if(typeof window!=='undefined'&&window.aqRecovery&&!await window.aqRecovery.flush())throw window.aqRecovery.lastError()||new Error('Recovery acknowledgement failed');
   const headers={...(typeof window!=='undefined'&&window.aqRecovery?window.aqRecovery.headers():{}),'Content-Type':'application/json','Idempotency-Key':operation.id,'X-AeriQuote-Account':el('aqAccountId')?.dataset?.accountId||''};if(saveEstimateHistory.baseVersion)headers['If-Match']=saveEstimateHistory.baseVersion;
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
   try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}

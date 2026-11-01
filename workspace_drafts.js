@@ -6,7 +6,7 @@
  const identity=meta.dataset.principal,account=meta.dataset.accountId;
  const headers={'Content-Type':'application/json','X-AeriQuote-Account':account,'X-AeriQuote-Principal':identity};
  const uuid=()=>crypto.randomUUID();
- let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null;
+ let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null,lastError=null;
  const badge=document.createElement('div');badge.id='workspaceRecoveryStatus';badge.setAttribute('role','status');badge.style.cssText='padding:7px 12px;font-size:12px;background:#f0f5f3;color:#24483a';
  document.body.prepend(badge);
  const say=(message,warn=false)=>{badge.textContent=message;badge.style.background=warn?'#fff0d5':'#f0f5f3'};
@@ -22,24 +22,24 @@
   const values={};fields.forEach(k=>{const n=el(k);if(n)values[k]=n.type==='checkbox'?n.checked:n.value});
   const pending=saveEstimateHistory.pending?clone(saveEstimateHistory.pending):null;
   // The exact operation identifier survives; image bytes never enter draft storage.
-  if(pending){delete pending.requestKey;if(pending.payload?.street_image_data){pending.imageOmitted=true;pending.payload.street_image_data=''}}
-  return {schema:1,sessionToken,quote,values,state:{areaPoints:points(areaPoints),linearPoints:points(linearPoints),areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,tracePoints:points(tracePoints),garageMode,roofFixMode,outlineEditMode,outlinePoints:points(outlinePoints),adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,loadedAddressKey:loadProperty.loadedAddressKey,manualRoofEditIndex},reportCorrection:reportMeasurementCorrection?{mode:reportMeasurementCorrection.mode,index:reportMeasurementCorrection.index,points:points(reportMeasurementCorrection.points),uncertain:!!reportMeasurementCorrection.uncertain}:null,pending,baseVersion:saveEstimateHistory.baseVersion||null,lastHistorySaveKey:null};
+  if(pending){if(pending.requestKey){const k=JSON.parse(pending.requestKey);k.street_image_data='';pending.requestKey=JSON.stringify(k)}if(pending.payload?.street_image_data){pending.imageOmitted=true;pending.payload.street_image_data=''}}
+  return {schema:1,sessionToken,quote,values,streetMeta:el('streetMeta')?.textContent||'',state:{areaPoints:points(areaPoints),linearPoints:points(linearPoints),areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,tracePoints:points(tracePoints),garageMode,roofFixMode,outlineEditMode,outlinePoints:points(outlinePoints),adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,loadedAddressKey:loadProperty.loadedAddressKey,manualRoofEditIndex},reportCorrection:reportMeasurementCorrection?{mode:reportMeasurementCorrection.mode,index:reportMeasurementCorrection.index,points:points(reportMeasurementCorrection.points),uncertain:!!reportMeasurementCorrection.uncertain}:null,pending,baseVersion:saveEstimateHistory.baseVersion||null,lastHistorySaveKey:null};
  }
  async function request(path,options={}){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
-  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok)throw new Error(data.error||'Recovery request failed');return data}finally{clearTimeout(timer)}
+  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok){const e=new Error(data.error||'Recovery request failed');e.status=r.status;throw e}return data}finally{clearTimeout(timer)}
  }
  async function flush(){
   if(paused||ended)return false;
-  if(writing){await writing;return flush()}
+  if(writing){const ok=await writing;if(!ok)return false;return flush()}
   let workspace;try{workspace=capture()}catch(e){say('Changes have not reached recovery storage. Keep this tab open.',true);return false}
   if(!workspace)return true;
   const serialized=JSON.stringify(workspace);if(serialized===ack)return true;
   say('Changes have not reached the server yet. Keep this tab open.',true);
   const draftId=id,draftVersion=version;
   writing=(async()=>{
-   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;version=r.version;ack=serialized;say('Recovery copy saved for 24 hours.');return true}
-   catch(e){say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
+   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;version=r.version;ack=serialized;if(JSON.stringify(capture())===serialized)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
+   catch(e){lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
   try{return await writing}finally{writing=null}
  }
@@ -64,14 +64,15 @@
    }
    sessionToken=imagery.token;fallbackMode=true;removeStaleAerialLayers();
    loadProperty.loadedAddressKey=v.loadedAddressKey;
-   saveEstimateHistory.pending=w.pending;if(w.pending?.payload)saveEstimateHistory.pending.requestKey=JSON.stringify(w.pending.payload);saveEstimateHistory.baseVersion=w.baseVersion;saveEstimateHistory.cleanWorkspace=null;lastHistorySaveKey='';quoteSnapshot=null;
+   saveEstimateHistory.pending=w.pending;if(w.pending?.payload&&!w.pending.requestKey)saveEstimateHistory.pending.requestKey=JSON.stringify(w.pending.payload);if(el('streetMeta'))el('streetMeta').textContent=w.streetMeta||'';saveEstimateHistory.baseVersion=w.baseVersion;saveEstimateHistory.cleanWorkspace=null;lastHistorySaveKey='';quoteSnapshot=null;
    map.setView([imagery.center.latitude,imagery.center.longitude],18);setPropertyMarker(imagery.center.latitude,imagery.center.longitude);
    redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
    // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.
    await loadStandardWideAerial();
-   id=row.draft_id;version=d.version;ack='';paused=false;ended=false;
+   const sourceId=row.draft_id;newDraft();paused=false;
    say('Draft restored. Review your measurements, then create the estimate when ready.');
-   await flush();return true;
+   if(!await flush())return false;
+   await request('/'+sourceId,{method:'DELETE'});return true;
   }catch(e){say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false}
   finally{busy=false}
  }
@@ -93,7 +94,7 @@
    say('Choose Restore, Discard or start a separate draft.');
   }catch(e){paused=false;say('Recovery storage is unavailable. Changes have not reached the server. Keep this tab open.',true)}
  }
- window.aqRecovery={flush,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
+ window.aqRecovery={flush,lastError:()=>lastError,async confirmSave(operation_id){const d=await request('/'+id+'/save-status',{method:'POST',body:JSON.stringify({operation_id})});return d.saved?d.result:null},headers:()=>({...headers,'X-AeriQuote-Draft':id}),saved(){ended=true;ack='';newDraft();say('Estimate saved. Recovery copy deleted.');},capture};
  let debounce;
  document.addEventListener('input',()=>{if(paused)return;say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700)});
  setInterval(()=>{if(!paused&&!busy)flush()},1800);
