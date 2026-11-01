@@ -4,6 +4,17 @@ process.env.QA_BROWSER_WIDTHS='1440,390';process.env.QA_BROWSER_INDUSTRIES='snow
 let script=fs.readFileSync('scripts/test_prelaunch_browser.cjs','utf8');
 script=script.replace('const page=await context.newPage();','let page=await context.newPage();');
 const anchor=" if(industry==='snow'&&width===1440){";assert(script.includes(anchor));
+const preProperty=" await page.fill('#streetAddress','1 Fictional QA Street');";assert(script.includes(preProperty));
+script=script.replace(preProperty,`
+ if(industry==='snow'&&width===1440){
+  await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL before property');await page.waitForFunction(()=>!!window.aqRecovery);assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);
+  await page.reload();await page.waitForTimeout(1400);await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
+  await page.waitForFunction(()=>el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));
+  assert.equal(await page.evaluate(()=>sessionToken),null,'Restoring customer details alone must not load or charge a property');assert.equal(await page.locator('#customerNotes').inputValue(),'FICTIONAL before property');
+  console.log('PASS customer/pricing recovery before any property lookup');
+ }
+`+preProperty);
+
 script=script.replace(anchor,`
  await page.waitForFunction(()=>!!window.aqRecovery);
  assert.equal(await page.evaluate(()=>aqRecovery.flush()),true,'Initial recovery copy acknowledged');
