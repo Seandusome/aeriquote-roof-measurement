@@ -4,7 +4,8 @@ on:
     branches: [landscaping-multi-area-recovery-oct11]
     paths:
       - .github/workflows/qa-browser-crash-recovery.yml
-      - scripts/test_browser_public_errors.cjs
+      - scripts/test_*browser*.cjs
+      - app.py
       - site/trial-signup.html
   workflow_dispatch:
 permissions:
@@ -17,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public]
+        suite: [baseline, recovery, pdf-failure, public, property-failure]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -45,11 +46,12 @@ jobs:
           import time,urllib.request
           for _ in range(80):
               try:
-                  urllib.request.urlopen('http://127.0.0.1:8765/health',timeout=1)
+                  urllib.request.urlopen('http://127.0.0.1:8765/dealer-login',timeout=1)
                   break
               except OSError:
                   time.sleep(.25)
           else:
+              print(open('/tmp/qa-browser-server.log').read())
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
@@ -57,6 +59,7 @@ jobs:
             recovery) node scripts/test_browser_recovery.cjs ;;
             pdf-failure) node scripts/test_pdf_failure_browser.cjs ;;
             public) node scripts/test_browser_public_errors.cjs ;;
+            property-failure) node scripts/test_property_failure_browser.cjs ;;
           esac
       - uses: actions/upload-artifact@v4
         if: always()
