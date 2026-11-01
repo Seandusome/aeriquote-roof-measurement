@@ -1,3 +1,14 @@
+# November 1 — natural timed session expiry recovery PASS
+
+Read [timed-expiry evidence](qa/timed-expiry-2026-11-01/progress.md). Real signed-cookie age validation, no logout/cookie deletion/clock mock: existing session200 at21:46:55; after deadline21:48:45, GET302 at21:49:04 and estimate POST401 at21:49:07. Unsaved DOM geometry/pricing unchanged; no database writes. Same-owner reauthentication saved exactly one revision; unchanged retry added nothing (estimates1, revisions19→20, receipts22→23). Exact stored customer note/fields/geometry/rates/total pass. Single1page and Expanded3pages visually checked, stress-fixture total$77,799.67 agrees with Decimal arithmetic.
+
+- Instrumentation commit4da90f75 adds default-off QA-only Flask lifetime configuration guarded by exact recovery service AND isolated QA database. Full recovery41353462919 and application41353462905 PASS, including real elapsed expiry test and PostgreSQL16/18.
+- Temporary timeout DISABLED after recovery. Cleanup dep-dbjr93gae00c73f2k5sg LIVE4da90f75; runtime overrideFalse, normal lifetime2678400seconds restored. Auto-deploy Off, QA database unchanged; no production/main/customer activity.
+- Disposable real elapsed-expiry charged-account test consumes199→200 once; retries/wrong-account409 unchanged. Live charged-plan deductions not claimed.
+- Next batch requested: browser JavaScript/crash/failure recovery across signup/login/property/measurement/preview/PDF, fresh contexts and phone-sized layouts. Physical-phone touch stays separately pending. Closing/crashing an unsaved tab remains distinct from authentication expiry.
+
+---
+
 # November 1 — real401 recovery and same-account save PASS
 
 Read [expired-login recovery evidence](qa/expired-login-2026-11-01/progress.md). Unsaved Area2 geometry, custom rate, extra pricing and fictional customer/notes survived authentication loss in the original tab. Owner signed back in separately; account IDs matched. Same-owner retry saved exactly one revision: estimates1→1, revisions18→19, receipts21→22. Unchanged retry added nothing. Exact stored fields/quantities/rates/total passed. Actual Single1page /Expanded3pages visually reviewed; total$1,155.94 matches independent Decimal calculation.

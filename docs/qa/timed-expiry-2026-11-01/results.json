@@ -1,0 +1,66 @@
+{
+  "runtime_commit": "4da90f75a26eb69f219bf421e586e82ca811d359",
+  "qa_lifetime_seconds": 866,
+  "prior_login_utc": "2026-11-01T21:34:19Z",
+  "expected_deadline_utc": "2026-11-01T21:48:45Z",
+  "authenticated_GET_200_utc": "2026-11-01T21:46:55.678Z",
+  "expired_GET_302_utc": "2026-11-01T21:49:04.314Z",
+  "expired_estimate_POST_401_utc": "2026-11-01T21:49:07.046Z",
+  "live_counts": {
+    "columns": [
+      "estimates",
+      "revisions",
+      "receipts"
+    ],
+    "before": [
+      1,
+      19,
+      22
+    ],
+    "after_401": [
+      1,
+      19,
+      22
+    ],
+    "after_reauth_save": [
+      1,
+      20,
+      23
+    ],
+    "after_unchanged_retry": [
+      1,
+      20,
+      23
+    ]
+  },
+  "live_allowance_boundary": "Recovery QA bypass unchanged; charged recovery tested with real elapsed expiry on disposable SQLite only",
+  "charged_fixture": {
+    "used_before": 199,
+    "used_after": 200,
+    "repeat_and_wrong_account_no_change": true
+  },
+  "independent_pricing": {
+    "subtotal": "70089.79",
+    "tax5": "3504.49",
+    "tax6": "4205.39",
+    "total": "77799.67"
+  },
+  "pdfs": [
+    {
+      "file": "recovered-expanded.pdf",
+      "bytes": 1803221,
+      "pages": 3,
+      "sha256": "626d451c43e63b564626120165ab6ffd26383d5cfe8440ae00d5289b0fbcd6b0",
+      "git_blob": "bd7a9ed165520e1d94251ad8c9961605f5e5f62f",
+      "visual_review": "PASS"
+    },
+    {
+      "file": "recovered-single.pdf",
+      "bytes": 1139715,
+      "pages": 1,
+      "sha256": "3602f3e7fc6b126b54e4034ca41fa40b64af05387c01d5399535c2b228bc4a9e",
+      "git_blob": "c390d9f2403121e58fd54966cf801b42806931a0",
+      "visual_review": "PASS"
+    }
+  ]
+}
