@@ -61,7 +61,12 @@ script=script.replace(firstFlush,String.raw`
  const interruptedHeaders=await page.evaluate(()=>aqRecovery.headers());const acceptedDraft=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+interruptedHeaders['X-AeriQuote-Draft'],{headers:interruptedHeaders})).json();
  assert.equal(acceptedDraft.workspace.values.customerName,await page.locator('#customerName').inputValue());
  await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL EDIT AFTER ACCEPTED AUTOSAVE LOST ACK');
- await page.unroute('**/api/workspace-drafts/*');
+ // A background PUT may still be consuming the intentionally broken response.
+ // Stop injection, wait for in-flight route handlers, then require recovery of
+ // the newest exact server payload rather than racing that final failed PUT.
+ await page.unrouteAll({behavior:'wait'});
+ await page.waitForFunction(async()=>await aqRecovery.flush(),{timeout:10000});
+ const newestAck=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+interruptedHeaders['X-AeriQuote-Draft'],{headers:interruptedHeaders})).json();assert.equal(newestAck.workspace.values.customerNotes,'FICTIONAL EDIT AFTER ACCEPTED AUTOSAVE LOST ACK');
  console.log('PASS accepted autosave with malformed acknowledgement retains server copy and visible unsaved warning; identical retry recovers');
 `+firstFlush);
 const firstCreate=" await page.click('#createEstimateBtn');await page.waitForFunction(()=>document.body.classList.contains('report-open'),{timeout:10000})";assert(script.includes(firstCreate));
