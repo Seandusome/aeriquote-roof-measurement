@@ -6,6 +6,8 @@ on:
       - .github/workflows/qa-browser-crash-recovery.yml
       - scripts/test_*browser*.cjs
       - scripts/fresh_user_browser_server.py
+      - scripts/job_revisions_browser_server.py
+      - scripts/job_revision_checks.cjs
       - site/onboarding.js
       - app.py
       - workspace_drafts.py
@@ -22,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -43,7 +45,7 @@ jobs:
       - name: Disposable browser workflow with fictional providers
         shell: bash
         run: |
-          if [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
+          if [ '${{ matrix.suite }}' = 'job-revisions' ]; then task_server=scripts/job_revisions_browser_server.py; elif [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
           python "$task_server" > /tmp/qa-browser-server.log 2>&1 &
           task_server_pid=$!
           trap 'kill "$task_server_pid" || true' EXIT
@@ -60,6 +62,7 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
+            job-revisions) node scripts/test_job_revisions_browser.cjs ;;
             fresh-user) node scripts/test_fresh_user_browser.cjs ;;
             roof-exports) node scripts/test_manual_roofing_browser.cjs ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
