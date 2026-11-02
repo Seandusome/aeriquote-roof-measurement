@@ -1,0 +1,43 @@
+[
+  {
+    "trial": {
+      "complimentary": false,
+      "counts": {
+        "estimate_revisions": 0,
+        "estimate_save_receipts": 0,
+        "estimates": 0
+      },
+      "lookups": 3,
+      "paid": null,
+      "plan": {
+        "estimate_limit": 3,
+        "lookup_limit": 3,
+        "plan_code": "trial"
+      }
+    }
+  },
+  {
+    "paid_after_repeat_accept_and_cap": {
+      "complimentary": false,
+      "counts": {
+        "estimate_revisions": 0,
+        "estimate_save_receipts": 0,
+        "estimates": 0
+      },
+      "lookups": 25,
+      "paid": {
+        "basis": "account_anniversary_provisional",
+        "end": "2026-12-02T20:23:56+00:00",
+        "estimates": 0,
+        "limit": 25,
+        "lookups": 25,
+        "start": "2026-11-02T20:23:56+00:00"
+      },
+      "plan": {
+        "estimate_limit": 25,
+        "lookup_limit": 25,
+        "plan_code": "basic"
+      }
+    }
+  }
+]

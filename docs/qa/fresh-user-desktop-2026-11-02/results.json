@@ -1,0 +1,23 @@
+[
+  {
+    "industry": "paving",
+    "width": 1440,
+    "total": 153.18,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-browser-evidence/paving-1440-single.pdf",
+      "/tmp/aq-browser-evidence/paving-1440-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1706,
+        "sourceHeight": 930,
+        "drawWidth": 1152,
+        "drawHeight": 627.984375
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  }
+]

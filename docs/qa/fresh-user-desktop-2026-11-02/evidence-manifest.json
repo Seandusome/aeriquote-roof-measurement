@@ -1,0 +1,62 @@
+{
+  "application_commit": "3344821509fd3ef82c37cbacdfed04d1fbc88140",
+  "browser_run": 41518595902,
+  "artifact_id": 13176237237,
+  "files": [
+    {
+      "name": "browser-checks.txt",
+      "bytes": 811,
+      "sha256": "f2451c32875fc6405e53ceb1549e18fcfec40978ef512b5bdbf13d60b45cf035"
+    },
+    {
+      "name": "ci-results.json",
+      "bytes": 3146,
+      "sha256": "d879eb084b81b43abbca609194b25d92779e76135f87c678d9d808f4942fb9a0"
+    },
+    {
+      "name": "disposable-policy-checks.json",
+      "bytes": 905,
+      "sha256": "940f4b6b616be93d1dee77f578929a5b50c6a19dce4032fb3f5b55afbaf4aa7b"
+    },
+    {
+      "name": "independent-checks.txt",
+      "bytes": 179,
+      "sha256": "eb5c294f4c176192ecfdd274d9c30a6e28611bf6562f572f7f885aa5bdc1f444"
+    },
+    {
+      "name": "manual-pricing-check.txt",
+      "bytes": 115,
+      "sha256": "8e575d4b32bfc5688d345a13761a0199be1a4708db096e6473f9589dfe516027"
+    },
+    {
+      "name": "paving-1440-expanded.pdf",
+      "bytes": 987987,
+      "sha256": "59daefbb1f9024ad4782bbefac8fb834c142246d556fa8880389b86c9f980e95"
+    },
+    {
+      "name": "paving-1440-single.pdf",
+      "bytes": 590725,
+      "sha256": "b24181ea8a9962bb3c2e99f2bdc28344c5ff9f4b25a0a8facb772bfe3cc30e2a"
+    },
+    {
+      "name": "paving-1440-source.json",
+      "bytes": 3237,
+      "sha256": "564f740bcc99df00a5f32df63c72ac2a7acb9c79023392ebb9fcede31b97f54c"
+    },
+    {
+      "name": "paving-1440.png",
+      "bytes": 344917,
+      "sha256": "901112dc8fa1c05970d85675b542aa48024e45fcc9eea79884e965396f982d52"
+    },
+    {
+      "name": "qa-browser-server.log",
+      "bytes": 8920,
+      "sha256": "f57d63ba2b7fab2713b5ba57875230339b03fb5bd9480d9dc71279cd37e45109"
+    },
+    {
+      "name": "results.json",
+      "bytes": 458,
+      "sha256": "f88c677ee88b1c2d3a8bbb4f91039055611ce350edbf19dd176bfca6dc96acc2"
+    }
+  ]
+}

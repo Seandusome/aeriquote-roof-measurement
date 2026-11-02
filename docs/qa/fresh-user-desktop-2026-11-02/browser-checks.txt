@@ -1,0 +1,5 @@
+2026-11-02T20:23:45.2407941Z START paving 1440
+2026-11-02T20:23:46.6787585Z PASS actual signup and four-step manual-rate business setup; missing region preserves contact entry; normal trial starts unused
+2026-11-02T20:23:48.2095579Z PASS missing job rate and invalid tax block quote without losing geometry/customer or saving
+2026-11-02T20:23:49.1802902Z PASS normal trial3 cap; paid24→25 once; failed imagery and exhausted retries do not debit or add estimates
+2026-11-02T20:23:51.1975798Z {"industry":"paving","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/paving-1440-single.pdf","/tmp/aq-browser-evidence/paving-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}

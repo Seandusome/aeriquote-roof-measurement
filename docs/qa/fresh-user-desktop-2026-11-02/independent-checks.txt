@@ -1,0 +1,2 @@
+PASS independent WGS84 + Decimal paving-1440-source.json 153.18
+PASS 1 saved browser snapshots; WGS84 tolerance 0.6% reflects existing spherical measurements, not survey accuracy

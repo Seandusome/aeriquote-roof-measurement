@@ -1,3 +1,15 @@
+# November 2 — fresh-user manual-rate correction verified; NOT deployed
+
+Read [fresh-user desktop QA and evidence](QA_FRESH_USER_DESKTOP_2026_11_02.md). The containing documentation commit is the new checkpoint. Final tested source `3344821509fd3ef82c37cbacdfed04d1fbc88140`; live recovery remains `69ab066c67cb429d4e12c8dad2d902140fbbc405` / `dep-dbke60u1egvs73cafea0`, auto-deploy OFF. No deployment in this batch. Main/production/customer data and isolated QA PostgreSQL configuration unchanged.
+
+- Reproduced manual-rate onboarding silently enabling $0 quotes (Pressure instead substitutes default). Fix respects per-job manual selection, retains blank/unentered rates through area/linear transitions and next-property reset, and uses existing blocking instructions. Deliberately entered zero remains valid. Six-industry DOM guard regression PASS; no pricing/allowance policy change.
+- Actual fresh signup/business setup/first mixed Paving measurement/customer/save/history reopen/Single+Expanded PDFs PASS in disposable Chromium with normal trial, not QA bypass. Missing region/rate and invalid tax preserve work and prevent incomplete saves. Trial cap3 and paid24→25, failed imagery no-charge, retained previous measurements/customer, exhausted retries PASS. One estimate/zero revisions/one save receipt at first save. Policy-only repeat acceptance also idempotent.
+- Exact final source full recovery41518595807 (including PostgreSQL16/18), application41518595816 and all9browser jobs41518595902 PASS. Fixture boolean/receipt scope/dialog navigation corrections are documented; assertions/protections remain. No unresolved CI failure on final source.
+- Single1page/Expanded3pages rendered/visually checked; independent WGS84/Decimal PASS. Two659ft² areas@0.10 plus62.04996ft@0.10 yield138.00+6.90+8.28=CAD153.18. Fictional customer/company match. Evidence at qa/fresh-user-desktop-2026-11-02.
+- Pending: separately authorized recovery deployment/live check of this batch's fix, owner manual desktop review and physical-phone/Safari/Messenger. Synthetic fixture does not prove external provider uptime or payment integration. No new features/payment work. Stop for today.
+
+---
+
 # November 2 — 69ab066c LIVE; actual interrupted saves and recovered PDFs PASS
 
 Read [live deployment and evidence](QA_LIVE_INTERRUPTED_SAVES_2026_11_02.md). This supersedes the preceding deployment-pending note. The containing documentation commit is the new checkpoint; do not deploy it.
