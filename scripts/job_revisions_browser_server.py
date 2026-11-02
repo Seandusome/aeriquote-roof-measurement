@@ -10,7 +10,7 @@ con.execute("UPDATE account_allowances SET complimentary=0 WHERE dealer_id='qa-b
 con.commit();con.close()
 def fictional_property(d):
  response=fixture.fixture.fixture(d);body=response.get_json();body['formatted_address']=d.get('address') or '1 Fictional QA Street, Saskatoon, SK, Canada'
- a.SESSIONS[body['token']]['formatted_address']=body['formatted_address'];a.SESSIONS.persist(body['token'])
+ a.SESSIONS[body['token']]['formatted_address']=body['formatted_address']
  return a.jsonify(body)
 a.perform_property_lookup=fictional_property
 

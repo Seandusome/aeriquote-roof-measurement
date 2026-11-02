@@ -51,6 +51,7 @@ jobs:
       - run: node scripts/test_landscaping_controls.cjs
       - run: node scripts/test_warranty_shields.cjs
       - run: node scripts/test_surface_workspace.cjs
+      - run: node scripts/test_service_area_names.cjs
       - run: node scripts/test_industry_wording.cjs
       - run: node scripts/test_unit_address_ui.cjs
       - run: node scripts/test_phone_pdf.cjs
