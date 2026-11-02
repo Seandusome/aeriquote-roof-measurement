@@ -1,0 +1,1068 @@
+{
+  "industry": "landscaping",
+  "initial": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 6,
+      "estimate_save_receipts": 10,
+      "estimates": 4
+    },
+    "lookups": 4,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 4,
+      "limit": 25,
+      "lookups": 4,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "final": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 7,
+      "estimate_save_receipts": 11,
+      "estimates": 4
+    },
+    "lookups": 4,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 4,
+      "limit": 25,
+      "lookups": 4,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "original": {
+    "address": "1 Fictional landscaping QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 1318,
+    "completion_date": "",
+    "customer_email": "fictional-customer@example.invalid",
+    "customer_name": "FICTIONAL QA landscaping 1440",
+    "customer_notes": "",
+    "customer_phone": "555-0100",
+    "extra_service_amount": 0,
+    "extra_service_description": "",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 62.04996065170652,
+    "measurement_mode": "linear",
+    "pricing": {
+      "area": 1318,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 0,
+      "extraDescription": "",
+      "gst": 5,
+      "gstAmt": 6.9,
+      "measurementMode": "linear",
+      "mode": "regular",
+      "price": 0.1,
+      "pst": 6,
+      "pstAmt": 8.28,
+      "subtotal": 138,
+      "taxBase": 138,
+      "total": 153.18,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [
+        [
+          52.00008981593977,
+          -106.00011980332516
+        ],
+        [
+          52.00008981593977,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "businessType": "landscaping",
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "rate": 0.1,
+          "source": "manual",
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "points": [
+            [
+              52.00008981593977,
+              -106.00011980332516
+            ],
+            [
+              52.00008981593977,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "rate": 0.1,
+          "source": "manual",
+          "sqft": 659
+        }
+      ],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0.1,
+      "landscapingCombined": true,
+      "landscapingLinearRate": 0.1,
+      "linearFeet": 62.04996065170652,
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "manualPlanes": [],
+      "manualRoofWorkflow": false,
+      "measureSource": "google",
+      "measurementMode": "linear",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.1,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.1,
+      "roofScopeConfirmed": false,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 1318,
+    "total_price": 153.18
+  },
+  "updated": {
+    "address": "1 Fictional landscaping QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 1326,
+    "completion_date": "",
+    "customer_email": "revised-landscaping@example.invalid",
+    "customer_name": "FICTIONAL REVISED landscaping",
+    "customer_notes": "FICTIONAL RESTORED EDIT landscaping",
+    "customer_phone": "555-0199",
+    "extra_service_amount": 19.95,
+    "extra_service_description": "FICTIONAL revised service landscaping",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 78.31507941901087,
+    "measurement_mode": "linear",
+    "pricing": {
+      "area": 1326,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service landscaping",
+      "gst": 7.25,
+      "gstAmt": 25.32,
+      "measurementMode": "linear",
+      "mode": "regular",
+      "price": 0.31,
+      "pst": 2.5,
+      "pstAmt": 8.73,
+      "subtotal": 329.26,
+      "taxBase": 349.21,
+      "total": 383.26,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [
+        [
+          51.99975129212334,
+          -106.00012254874689
+        ],
+        [
+          51.99975129212334,
+          -106.00002062925262
+        ],
+        [
+          51.999830556465994,
+          -106.00002062925262
+        ],
+        [
+          51.999830556465994,
+          -106.00012254874689
+        ]
+      ],
+      "areaSqFt": 1326,
+      "businessType": "landscaping",
+      "commercialAreas": [
+        {
+          "name": "Service Area 2",
+          "points": [
+            [
+              52.00015091508757,
+              -106.00007963527565
+            ],
+            [
+              52.00015091508757,
+              -105.99997771578137
+            ],
+            [
+              52.00023017872263,
+              -105.99997771578137
+            ],
+            [
+              52.00023017872263,
+              -106.00007963527565
+            ]
+          ],
+          "rate": 0.17,
+          "source": "manual",
+          "sqft": 663
+        },
+        {
+          "name": "Service Area 3",
+          "points": [
+            [
+              51.99975129212334,
+              -106.00012254874689
+            ],
+            [
+              51.99975129212334,
+              -106.00002062925262
+            ],
+            [
+              51.999830556465994,
+              -106.00002062925262
+            ],
+            [
+              51.999830556465994,
+              -106.00012254874689
+            ]
+          ],
+          "rate": 0.29,
+          "source": "manual",
+          "sqft": 663
+        }
+      ],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0.1,
+      "landscapingCombined": true,
+      "landscapingLinearRate": 0.31,
+      "linearFeet": 78.31507941901087,
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99984897536756
+        ],
+        [
+          52.00014100712335,
+          -105.99984897536756
+        ],
+        [
+          52.00014100712335,
+          -105.99981142608019
+        ]
+      ],
+      "manualPlanes": [],
+      "manualRoofWorkflow": false,
+      "measureSource": "google",
+      "measurementMode": "linear",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.31,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.31,
+      "roofScopeConfirmed": false,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 1326,
+    "total_price": 383.26
+  },
+  "invalidResults": [
+    {
+      "kind": "missing-points",
+      "status": 400
+    },
+    {
+      "kind": "wrong-quantity",
+      "status": 400
+    },
+    {
+      "kind": "invalid-rate-or-pitch",
+      "status": 400
+    },
+    {
+      "kind": "missing-active-measurement",
+      "status": 400
+    }
+  ],
+  "projection": {
+    "adjustedArea": 0,
+    "areaPoints": [],
+    "areaSqFt": 1326,
+    "businessType": "landscaping",
+    "commercialAreas": [
+      {
+        "name": "Service Area 2",
+        "points": [
+          [
+            52.00015091508757,
+            -106.00007963527565
+          ],
+          [
+            52.00015091508757,
+            -105.99997771578137
+          ],
+          [
+            52.00023017872263,
+            -105.99997771578137
+          ],
+          [
+            52.00023017872263,
+            -106.00007963527565
+          ]
+        ],
+        "rate": 0.17,
+        "source": "manual",
+        "sqft": 663
+      },
+      {
+        "name": "Service Area 3",
+        "points": [
+          [
+            51.99975129212334,
+            -106.00012254874689
+          ],
+          [
+            51.99975129212334,
+            -106.00002062925262
+          ],
+          [
+            51.999830556465994,
+            -106.00002062925262
+          ],
+          [
+            51.999830556465994,
+            -106.00012254874689
+          ]
+        ],
+        "rate": 0.29,
+        "source": "manual",
+        "sqft": 663
+      }
+    ],
+    "commercialLinearRate": 0,
+    "commercialLinearSaved": false,
+    "dealerCountry": "CA",
+    "landscapingAreaRate": 0.1,
+    "landscapingCombined": true,
+    "landscapingLinearRate": 0.31,
+    "linearFeet": 78.31507941901087,
+    "linearPoints": [
+      [
+        51.99994945271682,
+        -105.99984897536756
+      ],
+      [
+        52.00014100712335,
+        -105.99984897536756
+      ],
+      [
+        52.00014100712335,
+        -105.99981142608019
+      ]
+    ],
+    "manualPlanes": [],
+    "manualRoofWorkflow": false,
+    "measureSource": "google",
+    "measurementMode": "linear",
+    "pavingAreaRate": 0,
+    "pavingCombined": false,
+    "pavingLinearRate": 0.31,
+    "pressureAreaRate": 0,
+    "pressureCombined": false,
+    "pressureLinearRate": 0.31,
+    "roofScopeConfirmed": false,
+    "showWarrantyShield": true,
+    "structures": [],
+    "warrantyBrand": "",
+    "savedPricing": {
+      "area": 1326,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service landscaping",
+      "gst": 7.25,
+      "gstAmt": 25.32,
+      "measurementMode": "linear",
+      "mode": "regular",
+      "price": 0.31,
+      "pst": 2.5,
+      "pstAmt": 8.73,
+      "subtotal": 329.26,
+      "taxBase": 349.21,
+      "total": 383.26,
+      "unit": "ft²"
+    }
+  },
+  "mapRequests": [
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00015091508757,
+              "lng": -106.00007963527565
+            },
+            {
+              "lat": 52.00015091508757,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -106.00007963527565
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00012254874689
+            },
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00012254874689
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99981142608019
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00015091508757,
+              "lng": -106.00007963527565
+            },
+            {
+              "lat": 52.00015091508757,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -106.00007963527565
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00012254874689
+            },
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00012254874689
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99981142608019
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00015091508757,
+              "lng": -106.00007963527565
+            },
+            {
+              "lat": 52.00015091508757,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -106.00007963527565
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00012254874689
+            },
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00012254874689
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99981142608019
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "staleOlderBlocked": true,
+  "competingCurrent": {
+    "address": "1 Fictional landscaping QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 1326,
+    "completion_date": "",
+    "customer_email": "revised-landscaping@example.invalid",
+    "customer_name": "FICTIONAL REVISED landscaping",
+    "customer_notes": "FICTIONAL COMPETING CURRENT EDIT landscaping",
+    "customer_phone": "555-0199",
+    "extra_service_amount": 19.95,
+    "extra_service_description": "FICTIONAL revised service landscaping",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 78.31507941901087,
+    "measurement_mode": "linear",
+    "pricing": {
+      "area": 1326,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service landscaping",
+      "gst": 7.25,
+      "gstAmt": 25.32,
+      "measurementMode": "linear",
+      "mode": "regular",
+      "price": 0.31,
+      "pst": 2.5,
+      "pstAmt": 8.73,
+      "subtotal": 329.26,
+      "taxBase": 349.21,
+      "total": 383.26,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [
+        [
+          51.99975129212334,
+          -106.00012254874689
+        ],
+        [
+          51.99975129212334,
+          -106.00002062925262
+        ],
+        [
+          51.999830556465994,
+          -106.00002062925262
+        ],
+        [
+          51.999830556465994,
+          -106.00012254874689
+        ]
+      ],
+      "areaSqFt": 1326,
+      "businessType": "landscaping",
+      "commercialAreas": [
+        {
+          "name": "Service Area 2",
+          "points": [
+            [
+              52.00015091508757,
+              -106.00007963527565
+            ],
+            [
+              52.00015091508757,
+              -105.99997771578137
+            ],
+            [
+              52.00023017872263,
+              -105.99997771578137
+            ],
+            [
+              52.00023017872263,
+              -106.00007963527565
+            ]
+          ],
+          "rate": 0.17,
+          "source": "manual",
+          "sqft": 663
+        },
+        {
+          "name": "Service Area 3",
+          "points": [
+            [
+              51.99975129212334,
+              -106.00012254874689
+            ],
+            [
+              51.99975129212334,
+              -106.00002062925262
+            ],
+            [
+              51.999830556465994,
+              -106.00002062925262
+            ],
+            [
+              51.999830556465994,
+              -106.00012254874689
+            ]
+          ],
+          "rate": 0.29,
+          "source": "manual",
+          "sqft": 663
+        }
+      ],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0.1,
+      "landscapingCombined": true,
+      "landscapingLinearRate": 0.31,
+      "linearFeet": 78.31507941901087,
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99984897536756
+        ],
+        [
+          52.00014100712335,
+          -105.99984897536756
+        ],
+        [
+          52.00014100712335,
+          -105.99981142608019
+        ]
+      ],
+      "manualPlanes": [],
+      "manualRoofWorkflow": false,
+      "measureSource": "google",
+      "measurementMode": "linear",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.31,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.31,
+      "roofScopeConfirmed": false,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 1326,
+    "total_price": 383.26
+  },
+  "afterCompeting": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 8,
+      "estimate_save_receipts": 12,
+      "estimates": 4
+    },
+    "lookups": 4,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 4,
+      "limit": 25,
+      "lookups": 4,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "olderUnchanged": true,
+  "lostResponseOneRevision": true,
+  "restoreExact": true
+}

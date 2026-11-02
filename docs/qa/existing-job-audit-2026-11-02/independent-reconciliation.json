@@ -1,0 +1,570 @@
+[
+  {
+    "source": "commercial-1440-source.json",
+    "industry": "commercial",
+    "customer": "FICTIONAL QA commercial 1440",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "linear",
+        "feet": 62.04996065170652,
+        "rate": 0.25,
+        "amount": "15.51"
+      }
+    ],
+    "subtotal": "147.31",
+    "extra": "0",
+    "tax_base": "147.31",
+    "gst": "7.37",
+    "pst": "8.84",
+    "total": "163.52",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "commercial-updated-source.json",
+    "industry": "commercial",
+    "customer": "FICTIONAL REVISED commercial",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 663,
+        "rate": 0.17,
+        "amount": "112.71"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 3",
+        "sqft": 663,
+        "rate": 0.29,
+        "amount": "192.27"
+      },
+      {
+        "kind": "linear",
+        "feet": 78.31507941901087,
+        "rate": 0.31,
+        "amount": "24.28"
+      }
+    ],
+    "subtotal": "329.26",
+    "extra": "19.95",
+    "tax_base": "349.21",
+    "gst": "25.32",
+    "pst": "8.73",
+    "total": "383.26",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "landscaping-1440-source.json",
+    "industry": "landscaping",
+    "customer": "FICTIONAL QA landscaping 1440",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "linear",
+        "feet": 62.04996065170652,
+        "rate": 0.1,
+        "amount": "6.20"
+      }
+    ],
+    "subtotal": "138.00",
+    "extra": "0",
+    "tax_base": "138.00",
+    "gst": "6.90",
+    "pst": "8.28",
+    "total": "153.18",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "landscaping-updated-source.json",
+    "industry": "landscaping",
+    "customer": "FICTIONAL REVISED landscaping",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 663,
+        "rate": 0.17,
+        "amount": "112.71"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 3",
+        "sqft": 663,
+        "rate": 0.29,
+        "amount": "192.27"
+      },
+      {
+        "kind": "linear",
+        "feet": 78.31507941901087,
+        "rate": 0.31,
+        "amount": "24.28"
+      }
+    ],
+    "subtotal": "329.26",
+    "extra": "19.95",
+    "tax_base": "349.21",
+    "gst": "25.32",
+    "pst": "8.73",
+    "total": "383.26",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "mixed-commercial-source.json",
+    "industry": "commercial",
+    "customer": "FICTIONAL MIXED Roof Garage commercial",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 629,
+        "rate": 0.21,
+        "amount": "132.09"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 628,
+        "rate": 0.25,
+        "amount": "157.00"
+      },
+      {
+        "kind": "linear",
+        "feet": 73.49612548101886,
+        "rate": 0.33,
+        "amount": "24.25"
+      }
+    ],
+    "subtotal": "313.34",
+    "extra": "7.95",
+    "tax_base": "321.29",
+    "gst": "23.29",
+    "pst": "8.03",
+    "total": "352.61",
+    "inactive_roof_sections": 3
+  },
+  {
+    "source": "mixed-landscaping-source.json",
+    "industry": "landscaping",
+    "customer": "FICTIONAL MIXED Roof Garage landscaping",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 629,
+        "rate": 0.23,
+        "amount": "144.67"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 628,
+        "rate": 0.27,
+        "amount": "169.56"
+      },
+      {
+        "kind": "linear",
+        "feet": 73.49612548101886,
+        "rate": 0.33,
+        "amount": "24.25"
+      }
+    ],
+    "subtotal": "338.48",
+    "extra": "8.95",
+    "tax_base": "347.43",
+    "gst": "25.19",
+    "pst": "8.69",
+    "total": "381.31",
+    "inactive_roof_sections": 3
+  },
+  {
+    "source": "mixed-paving-source.json",
+    "industry": "paving",
+    "customer": "FICTIONAL MIXED Roof Garage paving",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 629,
+        "rate": 0.25,
+        "amount": "157.25"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 628,
+        "rate": 0.29,
+        "amount": "182.12"
+      },
+      {
+        "kind": "linear",
+        "feet": 73.49612548101886,
+        "rate": 0.33,
+        "amount": "24.25"
+      }
+    ],
+    "subtotal": "363.62",
+    "extra": "9.95",
+    "tax_base": "373.57",
+    "gst": "27.08",
+    "pst": "9.34",
+    "total": "409.99",
+    "inactive_roof_sections": 3
+  },
+  {
+    "source": "mixed-pressure-source.json",
+    "industry": "pressure",
+    "customer": "FICTIONAL MIXED Roof Garage pressure",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 629,
+        "rate": 0.27,
+        "amount": "169.83"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 628,
+        "rate": 0.31,
+        "amount": "194.68"
+      },
+      {
+        "kind": "linear",
+        "feet": 73.49612548101886,
+        "rate": 0.33,
+        "amount": "24.25"
+      }
+    ],
+    "subtotal": "388.76",
+    "extra": "10.95",
+    "tax_base": "399.71",
+    "gst": "28.98",
+    "pst": "9.99",
+    "total": "438.68",
+    "inactive_roof_sections": 3
+  },
+  {
+    "source": "mixed-snow-source.json",
+    "industry": "snow",
+    "customer": "FICTIONAL MIXED Roof Garage snow",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 629,
+        "rate": 0.29,
+        "amount": "182.41"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 628,
+        "rate": 0.33,
+        "amount": "207.24"
+      },
+      {
+        "kind": "linear",
+        "feet": 73.49612548101886,
+        "rate": 0.33,
+        "amount": "24.25"
+      }
+    ],
+    "subtotal": "413.90",
+    "extra": "11.95",
+    "tax_base": "425.85",
+    "gst": "30.87",
+    "pst": "10.65",
+    "total": "467.37",
+    "inactive_roof_sections": 3
+  },
+  {
+    "source": "paving-1440-source.json",
+    "industry": "paving",
+    "customer": "FICTIONAL QA paving 1440",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "linear",
+        "feet": 62.04996065170652,
+        "rate": 0.1,
+        "amount": "6.20"
+      }
+    ],
+    "subtotal": "138.00",
+    "extra": "0",
+    "tax_base": "138.00",
+    "gst": "6.90",
+    "pst": "8.28",
+    "total": "153.18",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "paving-updated-source.json",
+    "industry": "paving",
+    "customer": "FICTIONAL REVISED paving",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 663,
+        "rate": 0.17,
+        "amount": "112.71"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 3",
+        "sqft": 663,
+        "rate": 0.29,
+        "amount": "192.27"
+      },
+      {
+        "kind": "linear",
+        "feet": 78.31507941901087,
+        "rate": 0.31,
+        "amount": "24.28"
+      }
+    ],
+    "subtotal": "329.26",
+    "extra": "19.95",
+    "tax_base": "349.21",
+    "gst": "25.32",
+    "pst": "8.73",
+    "total": "383.26",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "pressure-1440-source.json",
+    "industry": "pressure",
+    "customer": "FICTIONAL QA pressure 1440",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "linear",
+        "feet": 62.04996065170652,
+        "rate": 0.1,
+        "amount": "6.20"
+      }
+    ],
+    "subtotal": "138.00",
+    "extra": "0",
+    "tax_base": "138.00",
+    "gst": "6.90",
+    "pst": "8.28",
+    "total": "153.18",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "pressure-updated-source.json",
+    "industry": "pressure",
+    "customer": "FICTIONAL REVISED pressure",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 663,
+        "rate": 0.17,
+        "amount": "112.71"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 3",
+        "sqft": 663,
+        "rate": 0.29,
+        "amount": "192.27"
+      },
+      {
+        "kind": "linear",
+        "feet": 78.31507941901087,
+        "rate": 0.31,
+        "amount": "24.28"
+      }
+    ],
+    "subtotal": "329.26",
+    "extra": "19.95",
+    "tax_base": "349.21",
+    "gst": "25.32",
+    "pst": "8.73",
+    "total": "383.26",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "roofing-1440-source.json",
+    "industry": "roofing",
+    "customer": "FICTIONAL QA roofing 1440",
+    "active": [
+      {
+        "kind": "roof",
+        "sqft": 714.3700584439837,
+        "pitch": 22.62
+      },
+      {
+        "kind": "roof",
+        "sqft": 659.4179019812781,
+        "pitch": 0
+      },
+      {
+        "kind": "roof",
+        "sqft": 913.5145257194405,
+        "pitch": 45
+      }
+    ],
+    "subtotal": "228.73",
+    "extra": "0",
+    "tax_base": "228.73",
+    "gst": "11.44",
+    "pst": "13.72",
+    "total": "253.89",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "roofing-updated-source.json",
+    "industry": "roofing",
+    "customer": "FICTIONAL REVISED roofing",
+    "active": [
+      {
+        "kind": "roof",
+        "sqft": 824.2734391898192,
+        "pitch": 36.87
+      },
+      {
+        "kind": "roof",
+        "sqft": 913.5145257194405,
+        "pitch": 45
+      },
+      {
+        "kind": "roof",
+        "sqft": 741.7643605949821,
+        "pitch": 26.57
+      }
+    ],
+    "subtotal": "1066.21",
+    "extra": "19.95",
+    "tax_base": "1086.16",
+    "gst": "78.75",
+    "pst": "27.15",
+    "total": "1192.06",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "snow-1440-source.json",
+    "industry": "snow",
+    "customer": "FICTIONAL QA snow 1440",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 1",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 659,
+        "rate": 0.1,
+        "amount": "65.90"
+      },
+      {
+        "kind": "linear",
+        "feet": 62.04996065170652,
+        "rate": 0.1,
+        "amount": "6.20"
+      }
+    ],
+    "subtotal": "138.00",
+    "extra": "0",
+    "tax_base": "138.00",
+    "gst": "6.90",
+    "pst": "8.28",
+    "total": "153.18",
+    "inactive_roof_sections": 0
+  },
+  {
+    "source": "snow-updated-source.json",
+    "industry": "snow",
+    "customer": "FICTIONAL REVISED snow",
+    "active": [
+      {
+        "kind": "area",
+        "name": "Service Area 2",
+        "sqft": 663,
+        "rate": 0.17,
+        "amount": "112.71"
+      },
+      {
+        "kind": "area",
+        "name": "Service Area 3",
+        "sqft": 663,
+        "rate": 0.29,
+        "amount": "192.27"
+      },
+      {
+        "kind": "linear",
+        "feet": 78.31507941901087,
+        "rate": 0.31,
+        "amount": "24.28"
+      }
+    ],
+    "subtotal": "329.26",
+    "extra": "19.95",
+    "tax_base": "349.21",
+    "gst": "25.32",
+    "pst": "8.73",
+    "total": "383.26",
+    "inactive_roof_sections": 0
+  }
+]

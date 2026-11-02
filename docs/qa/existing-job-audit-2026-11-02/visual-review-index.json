@@ -1,0 +1,177 @@
+{
+  "source": "c7f2d013edf4425972c3fd8da48137a9b2d45882",
+  "groups": [
+    {
+      "group": "snow-1440",
+      "pages": [
+        "snow-1440-single-1.png",
+        "snow-1440-expanded-1.png",
+        "snow-1440-expanded-2.png"
+      ]
+    },
+    {
+      "group": "snow-updated",
+      "pages": [
+        "snow-updated-single-1.png",
+        "snow-updated-expanded-1.png",
+        "snow-updated-expanded-2.png"
+      ]
+    },
+    {
+      "group": "pressure-1440",
+      "pages": [
+        "pressure-1440-single-1.png",
+        "pressure-1440-expanded-1.png",
+        "pressure-1440-expanded-2.png",
+        "pressure-1440-expanded-3.png"
+      ]
+    },
+    {
+      "group": "pressure-updated",
+      "pages": [
+        "pressure-updated-single-1.png",
+        "pressure-updated-expanded-1.png",
+        "pressure-updated-expanded-2.png",
+        "pressure-updated-expanded-3.png"
+      ]
+    },
+    {
+      "group": "paving-1440",
+      "pages": [
+        "paving-1440-single-1.png",
+        "paving-1440-expanded-1.png",
+        "paving-1440-expanded-2.png",
+        "paving-1440-expanded-3.png"
+      ]
+    },
+    {
+      "group": "paving-updated",
+      "pages": [
+        "paving-updated-single-1.png",
+        "paving-updated-expanded-1.png",
+        "paving-updated-expanded-2.png",
+        "paving-updated-expanded-3.png"
+      ]
+    },
+    {
+      "group": "landscaping-1440",
+      "pages": [
+        "landscaping-1440-single-1.png",
+        "landscaping-1440-expanded-1.png",
+        "landscaping-1440-expanded-2.png",
+        "landscaping-1440-expanded-3.png"
+      ]
+    },
+    {
+      "group": "landscaping-updated",
+      "pages": [
+        "landscaping-updated-single-1.png",
+        "landscaping-updated-expanded-1.png",
+        "landscaping-updated-expanded-2.png",
+        "landscaping-updated-expanded-3.png"
+      ]
+    },
+    {
+      "group": "commercial-1440",
+      "pages": [
+        "commercial-1440-single-1.png",
+        "commercial-1440-expanded-1.png",
+        "commercial-1440-expanded-2.png",
+        "commercial-1440-expanded-3.png"
+      ]
+    },
+    {
+      "group": "commercial-updated",
+      "pages": [
+        "commercial-updated-single-1.png",
+        "commercial-updated-expanded-1.png",
+        "commercial-updated-expanded-2.png",
+        "commercial-updated-expanded-3.png"
+      ]
+    },
+    {
+      "group": "roofing-1440",
+      "pages": [
+        "roofing-1440-single-1.png",
+        "roofing-1440-expanded-1.png",
+        "roofing-1440-expanded-2.png"
+      ]
+    },
+    {
+      "group": "roofing-updated",
+      "pages": [
+        "roofing-updated-single-1.png",
+        "roofing-updated-expanded-1.png",
+        "roofing-updated-expanded-2.png"
+      ]
+    },
+    {
+      "group": "mixed-commercial",
+      "pages": [
+        "mixed-commercial-single-1.png",
+        "mixed-commercial-expanded-1.png",
+        "mixed-commercial-expanded-2.png",
+        "mixed-commercial-expanded-3.png"
+      ]
+    },
+    {
+      "group": "mixed-landscaping",
+      "pages": [
+        "mixed-landscaping-single-1.png",
+        "mixed-landscaping-expanded-1.png",
+        "mixed-landscaping-expanded-2.png",
+        "mixed-landscaping-expanded-3.png"
+      ]
+    },
+    {
+      "group": "mixed-paving",
+      "pages": [
+        "mixed-paving-single-1.png",
+        "mixed-paving-expanded-1.png",
+        "mixed-paving-expanded-2.png",
+        "mixed-paving-expanded-3.png"
+      ]
+    },
+    {
+      "group": "mixed-pressure",
+      "pages": [
+        "mixed-pressure-single-1.png",
+        "mixed-pressure-expanded-1.png",
+        "mixed-pressure-expanded-2.png",
+        "mixed-pressure-expanded-3.png"
+      ]
+    },
+    {
+      "group": "mixed-snow",
+      "pages": [
+        "mixed-snow-single-1.png",
+        "mixed-snow-expanded-1.png",
+        "mixed-snow-expanded-2.png"
+      ]
+    }
+  ],
+  "changed_since_previous_review": [
+    "mixed-paving-expanded-3.png",
+    "mixed-commercial-expanded-3.png",
+    "mixed-landscaping-expanded-1.png",
+    "mixed-landscaping-single-1.png",
+    "mixed-paving-expanded-1.png",
+    "mixed-snow-expanded-2.png",
+    "mixed-landscaping-expanded-3.png",
+    "mixed-pressure-expanded-1.png",
+    "mixed-snow-expanded-1.png",
+    "mixed-commercial-expanded-1.png",
+    "mixed-paving-single-1.png",
+    "mixed-commercial-single-1.png",
+    "mixed-snow-single-1.png",
+    "mixed-landscaping-expanded-2.png",
+    "mixed-commercial-expanded-2.png",
+    "mixed-pressure-expanded-2.png",
+    "mixed-paving-expanded-2.png",
+    "mixed-pressure-expanded-3.png",
+    "mixed-pressure-single-1.png"
+  ],
+  "all_pages_reviewed": true,
+  "raster_identical_pages": 44,
+  "changed_pages_reviewed_again": 19
+}

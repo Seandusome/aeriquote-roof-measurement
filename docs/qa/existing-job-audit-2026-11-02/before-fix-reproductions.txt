@@ -1,0 +1,29 @@
+BEFORE FIX: application 33448215 / checkpoint c4683d9e; test_service_area_names.cjs
+AssertionError [ERR_ASSERTION]: landscaping replacement/add must not duplicate generated service-area names
+
+1 !== 2
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_service_area_names.cjs:11:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 2,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+BEFORE FIX: application 33448215 / checkpoint c4683d9e; test_manual_roofing.cjs
+AssertionError [ERR_ASSERTION]: Cancel must re-enable saved roof-section controls without another input
+
+true !== false
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_manual_roofing.cjs:21:152
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

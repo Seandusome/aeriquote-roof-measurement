@@ -1,0 +1,18 @@
+PASS independent active quantities/WGS84/Decimal commercial-1440-source.json 163.52
+PASS independent active quantities/WGS84/Decimal commercial-updated-source.json 383.26
+PASS independent active quantities/WGS84/Decimal landscaping-1440-source.json 153.18
+PASS independent active quantities/WGS84/Decimal landscaping-updated-source.json 383.26
+PASS independent active quantities/WGS84/Decimal mixed-commercial-source.json 352.61
+PASS independent active quantities/WGS84/Decimal mixed-landscaping-source.json 381.31
+PASS independent active quantities/WGS84/Decimal mixed-paving-source.json 409.99
+PASS independent active quantities/WGS84/Decimal mixed-pressure-source.json 438.68
+PASS independent active quantities/WGS84/Decimal mixed-snow-source.json 467.37
+PASS independent active quantities/WGS84/Decimal paving-1440-source.json 153.18
+PASS independent active quantities/WGS84/Decimal paving-updated-source.json 383.26
+PASS independent active quantities/WGS84/Decimal pressure-1440-source.json 153.18
+PASS independent active quantities/WGS84/Decimal pressure-updated-source.json 383.26
+PASS independent active quantities/WGS84/Decimal roofing-1440-source.json 253.89
+PASS independent active quantities/WGS84/Decimal roofing-updated-source.json 1192.06
+PASS independent active quantities/WGS84/Decimal snow-1440-source.json 153.18
+PASS independent active quantities/WGS84/Decimal snow-updated-source.json 383.26
+PASS 17 snapshots; 0.6% geometry tolerance reflects spherical app measurements, not survey accuracy

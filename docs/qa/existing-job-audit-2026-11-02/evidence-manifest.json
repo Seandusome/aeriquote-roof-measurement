@@ -1,0 +1,472 @@
+{
+  "source": "c7f2d013edf4425972c3fd8da48137a9b2d45882",
+  "browser_run": 41524565651,
+  "artifacts": {
+    "job_revisions": 13179327091,
+    "drafts": 13178498313
+  },
+  "current_pdfs": 34,
+  "current_pages": 63,
+  "files": [
+    {
+      "name": "area-name-regression.txt",
+      "bytes": 206,
+      "sha256": "999293a19932bf9da17f27acd3adfb8bab0f92c138759d297b130b101bbec26a"
+    },
+    {
+      "name": "before/mixed-snow-single.pdf",
+      "bytes": 480908,
+      "sha256": "27d61b3ad6c2dee729d8dbf8fb601bebae980941a6b280eb31022df3a793721a"
+    },
+    {
+      "name": "before/mixed-snow-source.json",
+      "bytes": 5149,
+      "sha256": "c8094de0c57be06e5ce6df71122266ee026bc60cd0d28f50536166267a8ec17b"
+    },
+    {
+      "name": "before/terminology-reproduction.txt",
+      "bytes": 871,
+      "sha256": "d1c14d1a657f2bdc7e93524d6af3abbba4819461158c44928be68e81967ba387"
+    },
+    {
+      "name": "before-fix-reproductions.txt",
+      "bytes": 1011,
+      "sha256": "99a99ff12e8f2f73231cc1534a0210e385d2d939cf17137ea8f05b19246926e3"
+    },
+    {
+      "name": "browser-checks.txt",
+      "bytes": 5511,
+      "sha256": "945bf0819e256912897948d3738185012ea886c5fe2ea5881399aa6779fe1688"
+    },
+    {
+      "name": "ci-results.json",
+      "bytes": 3222,
+      "sha256": "29b5b1efc95b8c34ce7ea6bd2ae2f10311e4479dab36129180334305928f45f4"
+    },
+    {
+      "name": "commercial-1440-expanded.pdf",
+      "bytes": 1040665,
+      "sha256": "5001652749b048bd5e08dadb8b1df87bdb398612a9ad694d5d43dbf0a91fce97"
+    },
+    {
+      "name": "commercial-1440-single.pdf",
+      "bytes": 615225,
+      "sha256": "ef76bfbd0c2b3d71305064c99c698d94da0ccfa6072127fc96f7af3d0fb24ee6"
+    },
+    {
+      "name": "commercial-1440-source.json",
+      "bytes": 3266,
+      "sha256": "e3a0ae93de355355e7b7c561e4dcdd4e1bfd07071372cd5f0e03c5613ead4013"
+    },
+    {
+      "name": "commercial-1440.png",
+      "bytes": 373852,
+      "sha256": "51f6136cf3c7bef24aafec5b84b8d7278c478f1a38be0fd7286dea57eaa9a9f2"
+    },
+    {
+      "name": "commercial-edit-audit.json",
+      "bytes": 25600,
+      "sha256": "e4bd02ca2d697900ce728c97c44b03e044273044894b80afc71659747bc7b3fb"
+    },
+    {
+      "name": "commercial-updated-expanded.pdf",
+      "bytes": 1059224,
+      "sha256": "71927643ec05d76f9a1983637b6bb32df90deb176814bf72f473747cd28ae91c"
+    },
+    {
+      "name": "commercial-updated-single.pdf",
+      "bytes": 630899,
+      "sha256": "a0ded9305589a863a5821606eff12de00c6bc61eef1c4f0b69e9df74802593ba"
+    },
+    {
+      "name": "commercial-updated-source.json",
+      "bytes": 3464,
+      "sha256": "cb917346ee3c91c4d61e6a813eba410340fa49151ab6f957199109cc503992f5"
+    },
+    {
+      "name": "commercial-updated.png",
+      "bytes": 513829,
+      "sha256": "ad88b233f4d10a9ef02748d5612ef2b5542b017d4e20b27c99f6c079b67ef5a1"
+    },
+    {
+      "name": "deployment-state.json",
+      "bytes": 390,
+      "sha256": "6fe3ba1d2e3976dfb5a861dd2f7d7eef806ef849e43838ed7e1b302393a0f119"
+    },
+    {
+      "name": "draft-checks.txt",
+      "bytes": 2717,
+      "sha256": "43889b54839c2f3362758b7d946dc76b480f71b91cf96079bdafa7af6d66f37c"
+    },
+    {
+      "name": "drafts-roofing-1440-draft-http.json",
+      "bytes": 591,
+      "sha256": "2ff9c00073a876061a1ff87822de378a3cc36a47e9f67cf6f98524cf3ec19c0f"
+    },
+    {
+      "name": "drafts-roofing-390-draft-http.json",
+      "bytes": 591,
+      "sha256": "2ff9c00073a876061a1ff87822de378a3cc36a47e9f67cf6f98524cf3ec19c0f"
+    },
+    {
+      "name": "drafts-snow-1440-draft-http.json",
+      "bytes": 706,
+      "sha256": "945142a9133731d76dd62523e5364255a49234d5ae06d8da51db16f71da8bf8b"
+    },
+    {
+      "name": "drafts-snow-390-draft-http.json",
+      "bytes": 694,
+      "sha256": "1f201a55b4c8087213426a4289ba1d841c973997da2d54d21f978973599ce5ff"
+    },
+    {
+      "name": "independent-checks.txt",
+      "bytes": 1513,
+      "sha256": "7b85536ddc9a7d1e31905ed9a61f98a66fd7e626f65c9579f28fe413e11ea84c"
+    },
+    {
+      "name": "independent-reconciliation.json",
+      "bytes": 12203,
+      "sha256": "208d41777861730e8442a87ae579ce7497899276a21d8cd33044cf1aa5743e44"
+    },
+    {
+      "name": "landscaping-1440-expanded.pdf",
+      "bytes": 1029517,
+      "sha256": "b0cbb17b4d699e400fe0939b21f132bdf2630e9a304b8a3828b82fc2d9f36050"
+    },
+    {
+      "name": "landscaping-1440-single.pdf",
+      "bytes": 605247,
+      "sha256": "71aa8769e196bceed208aa92d20281334d0c4eb4549a79b86219385a125418ec"
+    },
+    {
+      "name": "landscaping-1440-source.json",
+      "bytes": 3261,
+      "sha256": "a08cc0cd127174bb33f9f55355d65c96c5c6f8077012bdd8ac78177597b599ab"
+    },
+    {
+      "name": "landscaping-1440.png",
+      "bytes": 360831,
+      "sha256": "511fd91a436e580dec9d3eb8f12b4d9f2244ce0258b401718d3949ac7269e213"
+    },
+    {
+      "name": "landscaping-edit-audit.json",
+      "bytes": 25620,
+      "sha256": "72ffac9bc9a9fce8b9fbf5cab50c6e65e23051aab680ea5648a574b89c733879"
+    },
+    {
+      "name": "landscaping-updated-expanded.pdf",
+      "bytes": 1049538,
+      "sha256": "a51856fe6c1957acc0a97a73f82d508ee0a4f9d270eddb1d26796a0f886c782d"
+    },
+    {
+      "name": "landscaping-updated-single.pdf",
+      "bytes": 621418,
+      "sha256": "ab3fb4d13f149cd9760cf5a8a2ac9ddf334c4f4f1f679f2c641d5b1e1e2853ea"
+    },
+    {
+      "name": "landscaping-updated-source.json",
+      "bytes": 3474,
+      "sha256": "15c8851bc3ad7b69601b808da8a415d871daa50d41d41f63d6a1e2c9630ed253"
+    },
+    {
+      "name": "landscaping-updated.png",
+      "bytes": 523594,
+      "sha256": "6822bf61dce080334f9961d8e3950651d94ae513fcdd253fa7f76cbc624a7b96"
+    },
+    {
+      "name": "mixed-commercial-expanded.pdf",
+      "bytes": 1063902,
+      "sha256": "63c0d2ca90643a85f56f0dcdc74a0a2bcd39eb57fe711bd23938c096374d4633"
+    },
+    {
+      "name": "mixed-commercial-single.pdf",
+      "bytes": 620579,
+      "sha256": "88de1f20b7f5cf3e398d212bad175a1e245c087dca8a527f5987f706743fa66d"
+    },
+    {
+      "name": "mixed-commercial-source.json",
+      "bytes": 5185,
+      "sha256": "6e92136d7b025d70880a8a5815e1d252df5d8a610025538f7d2a510a7a0cdee7"
+    },
+    {
+      "name": "mixed-history-audit.json",
+      "bytes": 41331,
+      "sha256": "ec9c2b17a757416c9f044edf41c5631ab54e9bdba127b85f66b42c8f6660d8fa"
+    },
+    {
+      "name": "mixed-landscaping-expanded.pdf",
+      "bytes": 1052714,
+      "sha256": "a286226b72f54f87bc373a4555e45c57274fdd32ebd9653ebc05566c72b36b82"
+    },
+    {
+      "name": "mixed-landscaping-single.pdf",
+      "bytes": 616722,
+      "sha256": "25c7cbee411c4594537b11cc81ac38a58b6a4abceb9cbd06069fd1099fcd3fcd"
+    },
+    {
+      "name": "mixed-landscaping-source.json",
+      "bytes": 5188,
+      "sha256": "065d8414c3de2e20fa1595433c5b7f570c639a683eebc3828a850ee56fa3f113"
+    },
+    {
+      "name": "mixed-paving-expanded.pdf",
+      "bytes": 1082706,
+      "sha256": "b7b8cc270494575fc11bb4bcb21bdd531790928d85cf76ab34f759fc6aa514fa"
+    },
+    {
+      "name": "mixed-paving-single.pdf",
+      "bytes": 639968,
+      "sha256": "67a2f9c9329fde67bfd550ab0a9e425b9606cb9f3e603e8785fe4eb756ceebbe"
+    },
+    {
+      "name": "mixed-paving-source.json",
+      "bytes": 5173,
+      "sha256": "3944283d1170def47a03e2cadc841a3d23f10e3b4147fb850c26e5f48599ef74"
+    },
+    {
+      "name": "mixed-pressure-expanded.pdf",
+      "bytes": 1062720,
+      "sha256": "331b62d6d89ff74bc0d9c4cc91cc30c72e474e78e5714aa139632245231f8857"
+    },
+    {
+      "name": "mixed-pressure-single.pdf",
+      "bytes": 628436,
+      "sha256": "42062c09de31b2df63aea4053346ae10cbad6ed77b37b75c3d05f9d60c8d7135"
+    },
+    {
+      "name": "mixed-pressure-source.json",
+      "bytes": 5181,
+      "sha256": "fb6f435719c03d54a4163a7087c2fda776c75333c163c90c98ea28009993f825"
+    },
+    {
+      "name": "mixed-snow-expanded.pdf",
+      "bytes": 729244,
+      "sha256": "3bfb411b14527bd77fe685ca524bdf91c9b6aed1a3f91a81c6525aeee0b8af13"
+    },
+    {
+      "name": "mixed-snow-single.pdf",
+      "bytes": 484567,
+      "sha256": "d3f5171dd8b0f59512e71dba5c948bcadb69d6b1ed270ca050dcbec6d553fd5e"
+    },
+    {
+      "name": "mixed-snow-source.json",
+      "bytes": 5167,
+      "sha256": "04231db89c69b548a3e4b0a80e89fee661e5c98f7f3c62702b3fcddff13ed61e"
+    },
+    {
+      "name": "paving-1440-expanded.pdf",
+      "bytes": 1057971,
+      "sha256": "962542ca3ce11ef2411ede30d277c4468208c457d5cdc456b6f14b7a223ea108"
+    },
+    {
+      "name": "paving-1440-single.pdf",
+      "bytes": 636691,
+      "sha256": "50283483daed05f48791522a0f0db72dfe41155490a031dd8cd06ddbd566db3c"
+    },
+    {
+      "name": "paving-1440-source.json",
+      "bytes": 3246,
+      "sha256": "c871402f8cfa94c9b5c88169847672ef0c61c1f7f4137868a624b70574f83778"
+    },
+    {
+      "name": "paving-1440.png",
+      "bytes": 377562,
+      "sha256": "7b218a095d7d5679582c7d130221d3a7d54df34bec3deb1a491bf3bd6de4de3b"
+    },
+    {
+      "name": "paving-edit-audit.json",
+      "bytes": 25517,
+      "sha256": "a0eb71fb78ead123ab170b4a60625431e8abbea53c3b1ae4b2d27b8f1f19bea7"
+    },
+    {
+      "name": "paving-updated-expanded.pdf",
+      "bytes": 1072756,
+      "sha256": "93f99bbdeb234d360c080d3ac5386c3347a2abc9dcc72e1f21bb625f4e7305fa"
+    },
+    {
+      "name": "paving-updated-single.pdf",
+      "bytes": 650834,
+      "sha256": "80654a20bcc9490b362cb4caf2f913d0354222e0f596d28899b7cfd026f03d30"
+    },
+    {
+      "name": "paving-updated-source.json",
+      "bytes": 3439,
+      "sha256": "18cf5296174b519a11ba4de98ab17d2258588761a5f5b6120e6094e52d25e277"
+    },
+    {
+      "name": "paving-updated.png",
+      "bytes": 521737,
+      "sha256": "c752ed0d89399ba2c3e8bf849aeecd51a2e5e33b327a0b2bcb856eee4a938480"
+    },
+    {
+      "name": "pdf-pages.json",
+      "bytes": 2249,
+      "sha256": "c195d5df073601a48274c83a6f7523b76e8e709f4e82f9617edafd2b1f08ceac"
+    },
+    {
+      "name": "pressure-1440-expanded.pdf",
+      "bytes": 1038433,
+      "sha256": "dfd850da480ef6182d2886b8e8b895da1226cdcb5419df979bd62e5add7b1d58"
+    },
+    {
+      "name": "pressure-1440-single.pdf",
+      "bytes": 619054,
+      "sha256": "b8411f5619ba8714095bdc1e08a9180b305e2598f37646e9693d235f76a94f86"
+    },
+    {
+      "name": "pressure-1440-source.json",
+      "bytes": 3252,
+      "sha256": "e848dc5d4ea4258f01f7a87eae68696ced045becbee9effe5211dbe938fd762e"
+    },
+    {
+      "name": "pressure-1440.png",
+      "bytes": 367813,
+      "sha256": "16e0973dd405847ed6c22c94e066dbd9d2934aa8a471377fccd276b0c367eee7"
+    },
+    {
+      "name": "pressure-edit-audit.json",
+      "bytes": 22687,
+      "sha256": "be3b60650f470a67512c419a33172c0949a749c9f633f8e416e5b77401bb3858"
+    },
+    {
+      "name": "pressure-updated-expanded.pdf",
+      "bytes": 1052796,
+      "sha256": "bc7bc2fdb4a68cce8ff1f642bd51bfffb24dba45bb070e4d3ab2e279ba0561ee"
+    },
+    {
+      "name": "pressure-updated-single.pdf",
+      "bytes": 633788,
+      "sha256": "af1097202fda1c8db54b9ca0f876a3977b9149d97a086e13f775e52e1822e393"
+    },
+    {
+      "name": "pressure-updated-source.json",
+      "bytes": 3453,
+      "sha256": "44849a9e9968ef898603007b3fa03a5975769b83f90f328ea3716bda77bfe2ea"
+    },
+    {
+      "name": "pressure-updated.png",
+      "bytes": 515491,
+      "sha256": "79fcf3c894324e44796e3948ab4c0a19da60df894a636b7de4e433646215fb40"
+    },
+    {
+      "name": "qa-browser-server.log",
+      "bytes": 96640,
+      "sha256": "ce804d0fe6e9cb931fad6542c21494f200aa01c911f1cf916b80b726417767d1"
+    },
+    {
+      "name": "results.json",
+      "bytes": 2768,
+      "sha256": "4a611039bbe651f9406bf3ec1c0d85d0be806019f94d71e4f9ebe533f1b7b13a"
+    },
+    {
+      "name": "roof-cancel-regression.txt",
+      "bytes": 217,
+      "sha256": "4ad05372662ddadcb319429818d615fcb583177487c51c4380cba1e2ed236443"
+    },
+    {
+      "name": "roofing-1440-expanded.pdf",
+      "bytes": 823246,
+      "sha256": "e3268b639281a0aac51608d869306ce68098bfece1fcb9c26c4301aa6cc236c3"
+    },
+    {
+      "name": "roofing-1440-single.pdf",
+      "bytes": 575741,
+      "sha256": "b927f81ae3ab3ab509f85b4838204bba75b0e7a2f394740ab12f01586e63c95f"
+    },
+    {
+      "name": "roofing-1440-source.json",
+      "bytes": 3570,
+      "sha256": "34227712577c810175404cefef6d4b32f07549102f2dd96de8aca6b7089ecfd2"
+    },
+    {
+      "name": "roofing-1440.png",
+      "bytes": 398324,
+      "sha256": "6b6260d9e6d8c98a89f9bb9a07e50af695a04837330acd4f45ef5d3ebf71eebe"
+    },
+    {
+      "name": "roofing-edit-audit.json",
+      "bytes": 27434,
+      "sha256": "a647b41304373f6d8022b7bfc6f474597b2b1ec7569ce1214dc7828db5353512"
+    },
+    {
+      "name": "roofing-updated-expanded.pdf",
+      "bytes": 837739,
+      "sha256": "e4cd9f3acca932964e878f7a90a05101080478103997c4431074000320dc966d"
+    },
+    {
+      "name": "roofing-updated-single.pdf",
+      "bytes": 588579,
+      "sha256": "9d63e11e1c0c934c401ec69345dee19b5eccc719514211aa2893bf30e4c10850"
+    },
+    {
+      "name": "roofing-updated-source.json",
+      "bytes": 3688,
+      "sha256": "fcc56fa2f67b0de25aa974ceb471fd4405e7f4df7fa29d1e0ab82ea96fc8348c"
+    },
+    {
+      "name": "roofing-updated.png",
+      "bytes": 584324,
+      "sha256": "5a17f38db6b5cfa05cf8bcdffda92f889a90250cea40438a88da3adf75d44647"
+    },
+    {
+      "name": "snow-1440-expanded.pdf",
+      "bytes": 708195,
+      "sha256": "305d07499930b4eb56f55ec3903c3ae42e5752d92ad9ac01e71c81fa82e334b5"
+    },
+    {
+      "name": "snow-1440-single.pdf",
+      "bytes": 469203,
+      "sha256": "872c358056174d4d8f7fe853923c8bc2947e7c0cbff573db321de0e71b924ead"
+    },
+    {
+      "name": "snow-1440-source.json",
+      "bytes": 3239,
+      "sha256": "f847a525a75a3433f1a1bda267cd5a7aa27629e419873983c9f3101cdc5258a8"
+    },
+    {
+      "name": "snow-1440.png",
+      "bytes": 304726,
+      "sha256": "f2468d6c58257bcd61f45f4f9d455d5d85b35415cb727345c386a7b1b19c6da4"
+    },
+    {
+      "name": "snow-edit-audit.json",
+      "bytes": 19733,
+      "sha256": "ca679d6b2e19fb6217f8fb145ed0306ab5e9baa77d23355607c296782582da9b"
+    },
+    {
+      "name": "snow-updated-expanded.pdf",
+      "bytes": 721828,
+      "sha256": "c7a3debd866edd6e351ba45928a44962d037bcc04b9616c6a0101cbce530f547"
+    },
+    {
+      "name": "snow-updated-single.pdf",
+      "bytes": 482198,
+      "sha256": "438aed212f988f8ed748572c5499e8e23df245751962f0960d98989f0b83c2e9"
+    },
+    {
+      "name": "snow-updated-source.json",
+      "bytes": 3424,
+      "sha256": "ea9800c50917b1d8e2773a9d46fc51e9ad68401df836c595cd49b3582c5b332f"
+    },
+    {
+      "name": "snow-updated.png",
+      "bytes": 467962,
+      "sha256": "b3d8f72fb7962ba39a0bdd0c9d3f4b296671e3987568956b8418579ae79024a9"
+    },
+    {
+      "name": "trial-cap-regression.txt",
+      "bytes": 415,
+      "sha256": "bdfb2bccec7673b40ed5a520126b66d3ffc18ba5d6032115d6bb3f1b6c828709"
+    },
+    {
+      "name": "user-text-regression.txt",
+      "bytes": 118,
+      "sha256": "96ba68257e28c8ab27dca26aba20dade86a8b45abbb4b6b4ce4eb8ea943c7125"
+    },
+    {
+      "name": "visual-review-index.json",
+      "bytes": 4667,
+      "sha256": "e8c5216000247fd25eff168c76b57b40b0ce4617cea81e2e16e170b13eeebad3"
+    }
+  ]
+}

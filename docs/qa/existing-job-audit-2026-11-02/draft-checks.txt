@@ -1,0 +1,15 @@
+2026-11-02T21:02:36.2903236Z PASS customer/pricing recovery before any property lookup
+2026-11-02T21:02:39.5334015Z PASS separate actual tabs, distinct drafts and discard isolation
+2026-11-02T21:02:43.3396583Z PASS actual tab closure/refresh, interrupted autosave warning/retry, exact restore without estimate creation snow 1440
+2026-11-02T21:02:43.4085687Z PASS committed save with lost response retains operation for receipt confirmation
+2026-11-02T21:02:45.7765164Z {"industry":"snow","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/snow-1440-single.pdf","/tmp/aq-browser-evidence/snow-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:02:49.5207686Z PASS separate actual tabs, distinct drafts and discard isolation
+2026-11-02T21:02:53.1471475Z PASS actual tab closure/refresh, interrupted autosave warning/retry, exact restore without estimate creation roofing 1440
+2026-11-02T21:02:55.1576930Z {"industry":"roofing","width":1440,"total":79.3,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:02:59.3877315Z PASS separate actual tabs, distinct drafts and discard isolation
+2026-11-02T21:03:03.0834631Z PASS deterministic Restore-cleanup race: early Create retains pending work, emits retry, sends no estimate POST; badge acknowledgement is not completion
+2026-11-02T21:03:03.1132968Z PASS actual tab closure/refresh, interrupted autosave warning/retry, exact restore without estimate creation snow 390
+2026-11-02T21:03:05.4247785Z {"industry":"snow","width":390,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/snow-390-single.pdf","/tmp/aq-browser-evidence/snow-390-expanded.pdf"],"captureChecks":[{"sourceWidth":696,"sourceHeight":930,"drawWidth":472.96875,"drawHeight":632}],"saved":true,"reopened":true}
+2026-11-02T21:03:09.0324662Z PASS separate actual tabs, distinct drafts and discard isolation
+2026-11-02T21:03:12.6269785Z PASS actual tab closure/refresh, interrupted autosave warning/retry, exact restore without estimate creation roofing 390
+2026-11-02T21:03:14.5018438Z {"industry":"roofing","width":390,"total":79.3,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-390-single.pdf","/tmp/aq-browser-evidence/roofing-390-expanded.pdf"],"captureChecks":[{"sourceWidth":696,"sourceHeight":930,"drawWidth":487.1875,"drawHeight":651}],"saved":true,"reopened":true}

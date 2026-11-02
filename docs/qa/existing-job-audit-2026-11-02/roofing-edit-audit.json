@@ -1,0 +1,1085 @@
+{
+  "industry": "roofing",
+  "initial": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 10,
+      "estimate_save_receipts": 16,
+      "estimates": 6
+    },
+    "lookups": 25,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 6,
+      "limit": 25,
+      "lookups": 25,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "final": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 11,
+      "estimate_save_receipts": 17,
+      "estimates": 6
+    },
+    "lookups": 25,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 6,
+      "limit": 25,
+      "lookups": 25,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "original": {
+    "address": "1 Fictional roofing QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 0,
+    "completion_date": "",
+    "customer_email": "fictional-customer@example.invalid",
+    "customer_name": "FICTIONAL QA roofing 1440",
+    "customer_notes": "",
+    "customer_phone": "555-0100",
+    "extra_service_amount": 0,
+    "extra_service_description": "",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 0,
+    "measurement_mode": "auto",
+    "pricing": {
+      "area": 2287.302486144702,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 0,
+      "extraDescription": "",
+      "gst": 5,
+      "gstAmt": 11.44,
+      "measurementMode": "auto",
+      "mode": "regular",
+      "price": 0.1,
+      "pst": 6,
+      "pstAmt": 13.72,
+      "subtotal": 228.73,
+      "taxBase": 228.73,
+      "total": 253.89,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [],
+      "areaSqFt": 0,
+      "businessType": "roofing",
+      "commercialAreas": [],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0,
+      "landscapingCombined": false,
+      "landscapingLinearRate": 0.1,
+      "linearFeet": 0,
+      "linearPoints": [],
+      "manualPlanes": [
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 22.62,
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 714.3700584439837
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 0,
+          "points": [
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99996960617575
+            },
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99996960617575
+            }
+          ],
+          "surface_sqft": 659.4179019812781
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 45,
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 913.5145257194405
+        }
+      ],
+      "manualRoofWorkflow": true,
+      "measureSource": "manual",
+      "measurementMode": "auto",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.1,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.1,
+      "roofScopeConfirmed": true,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 2287.302486144702,
+    "total_price": 253.89
+  },
+  "updated": {
+    "address": "1 Fictional roofing QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 0,
+    "completion_date": "",
+    "customer_email": "revised-roofing@example.invalid",
+    "customer_name": "FICTIONAL REVISED roofing",
+    "customer_notes": "FICTIONAL RESTORED EDIT roofing",
+    "customer_phone": "555-0199",
+    "extra_service_amount": 19.95,
+    "extra_service_description": "FICTIONAL revised service roofing",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 0,
+    "measurement_mode": "auto",
+    "pricing": {
+      "area": 2479.5523255042417,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service roofing",
+      "gst": 7.25,
+      "gstAmt": 78.75,
+      "measurementMode": "auto",
+      "mode": "regular",
+      "price": 0.43,
+      "pst": 2.5,
+      "pstAmt": 27.15,
+      "subtotal": 1066.21,
+      "taxBase": 1086.16,
+      "total": 1192.06,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [],
+      "areaSqFt": 0,
+      "businessType": "roofing",
+      "commercialAreas": [],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0,
+      "landscapingCombined": false,
+      "landscapingLinearRate": 0.1,
+      "linearFeet": 0,
+      "linearPoints": [],
+      "manualPlanes": [
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 36.87,
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 824.2734391898192
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 45,
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 913.5145257194405
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 26.57,
+          "points": [
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00012254804454
+            },
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00012254804454
+            }
+          ],
+          "surface_sqft": 741.7643605949821
+        }
+      ],
+      "manualRoofWorkflow": true,
+      "measureSource": "manual",
+      "measurementMode": "auto",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.1,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.1,
+      "roofScopeConfirmed": true,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 2479.5523255042417,
+    "total_price": 1192.06
+  },
+  "invalidResults": [
+    {
+      "kind": "missing-points",
+      "status": 400
+    },
+    {
+      "kind": "wrong-quantity",
+      "status": 400
+    },
+    {
+      "kind": "invalid-rate-or-pitch",
+      "status": 400
+    },
+    {
+      "kind": "missing-active-measurement",
+      "status": 400
+    }
+  ],
+  "projection": {
+    "adjustedArea": 0,
+    "areaPoints": [],
+    "areaSqFt": 0,
+    "businessType": "roofing",
+    "commercialAreas": [],
+    "commercialLinearRate": 0,
+    "commercialLinearSaved": false,
+    "dealerCountry": "CA",
+    "landscapingAreaRate": 0,
+    "landscapingCombined": false,
+    "landscapingLinearRate": 0.1,
+    "linearFeet": 0,
+    "linearPoints": [],
+    "manualPlanes": [
+      {
+        "manual_roof_qa": true,
+        "pitch_confirmed": true,
+        "pitch_degrees": 36.87,
+        "points": [
+          {
+            "lat": 51.99995071701987,
+            "lng": -106.00011980332516
+          },
+          {
+            "lat": 51.99995071701987,
+            "lng": -106.00002056592285
+          },
+          {
+            "lat": 52.00003163234103,
+            "lng": -106.00002056592285
+          },
+          {
+            "lat": 52.00003163234103,
+            "lng": -106.00011980332516
+          }
+        ],
+        "surface_sqft": 824.2734391898192
+      },
+      {
+        "manual_roof_qa": true,
+        "pitch_confirmed": true,
+        "pitch_degrees": 45,
+        "points": [
+          {
+            "lat": 52.000230281930385,
+            "lng": -106.00011980332516
+          },
+          {
+            "lat": 52.000230281930385,
+            "lng": -106.00002056592285
+          },
+          {
+            "lat": 52.0003095454249,
+            "lng": -106.00002056592285
+          },
+          {
+            "lat": 52.0003095454249,
+            "lng": -106.00011980332516
+          }
+        ],
+        "surface_sqft": 913.5145257194405
+      },
+      {
+        "manual_roof_qa": true,
+        "pitch_confirmed": true,
+        "pitch_degrees": 26.57,
+        "points": [
+          {
+            "lat": 51.99972177437653,
+            "lng": -106.00012254804454
+          },
+          {
+            "lat": 51.99972177437653,
+            "lng": -106.00002062855026
+          },
+          {
+            "lat": 51.999801038771444,
+            "lng": -106.00002062855026
+          },
+          {
+            "lat": 51.999801038771444,
+            "lng": -106.00012254804454
+          }
+        ],
+        "surface_sqft": 741.7643605949821
+      }
+    ],
+    "manualRoofWorkflow": true,
+    "measureSource": "manual",
+    "measurementMode": "auto",
+    "pavingAreaRate": 0,
+    "pavingCombined": false,
+    "pavingLinearRate": 0.1,
+    "pressureAreaRate": 0,
+    "pressureCombined": false,
+    "pressureLinearRate": 0.1,
+    "roofScopeConfirmed": true,
+    "showWarrantyShield": true,
+    "structures": [],
+    "warrantyBrand": "",
+    "savedPricing": {
+      "area": 2479.5523255042417,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service roofing",
+      "gst": 7.25,
+      "gstAmt": 78.75,
+      "measurementMode": "auto",
+      "mode": "regular",
+      "price": 0.43,
+      "pst": 2.5,
+      "pstAmt": 27.15,
+      "subtotal": 1066.21,
+      "taxBase": 1086.16,
+      "total": 1192.06,
+      "unit": "ft²"
+    }
+  },
+  "mapRequests": [
+    {
+      "roofs": [
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99996960617575
+            },
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99996960617575
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00015091508757,
+              "lng": -106.00007963527565
+            },
+            {
+              "lat": 52.00015091508757,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -106.00007963527565
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00012254874689
+            },
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00012254874689
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99981142608019
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00015091508757,
+              "lng": -106.00007963527565
+            },
+            {
+              "lat": 52.00015091508757,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -105.99997771578137
+            },
+            {
+              "lat": 52.00023017872263,
+              "lng": -106.00007963527565
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00012254874689
+            },
+            {
+              "lat": 51.99975129212334,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00002062925262
+            },
+            {
+              "lat": 51.999830556465994,
+              "lng": -106.00012254874689
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99984897536756
+            },
+            {
+              "lat": 52.00014100712335,
+              "lng": -105.99981142608019
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "area",
+          "points": [
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.00008981593977,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00017073100951,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "linear",
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -105.99989987178493
+            },
+            {
+              "lat": 52.00011953985993,
+              "lng": -105.99989987178493
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00012254804454
+            },
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00012254804454
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "roofs": [
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99996960617575
+            },
+            {
+              "lat": 51.999949555925234,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99987036877341
+            },
+            {
+              "lat": 52.00003047124848,
+              "lng": -105.99996960617575
+            }
+          ]
+        },
+        {
+          "kind": "manual",
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "staleOlderBlocked": true,
+  "competingCurrent": {
+    "address": "1 Fictional roofing QA Street, Saskatoon, SK, Canada",
+    "amount_paid": 0,
+    "area_sqft": 0,
+    "completion_date": "",
+    "customer_email": "revised-roofing@example.invalid",
+    "customer_name": "FICTIONAL REVISED roofing",
+    "customer_notes": "FICTIONAL COMPETING CURRENT EDIT roofing",
+    "customer_phone": "555-0199",
+    "extra_service_amount": 19.95,
+    "extra_service_description": "FICTIONAL revised service roofing",
+    "image_choice": "hide",
+    "job_status": "Estimate",
+    "linear_feet": 0,
+    "measurement_mode": "auto",
+    "pricing": {
+      "area": 2479.5523255042417,
+      "disc": 0,
+      "discount": 0,
+      "estimatePeriod": "one_time",
+      "extraAmount": 19.95,
+      "extraDescription": "FICTIONAL revised service roofing",
+      "gst": 7.25,
+      "gstAmt": 78.75,
+      "measurementMode": "auto",
+      "mode": "regular",
+      "price": 0.43,
+      "pst": 2.5,
+      "pstAmt": 27.15,
+      "subtotal": 1066.21,
+      "taxBase": 1086.16,
+      "total": 1192.06,
+      "unit": "ft²"
+    },
+    "quote": {
+      "adjustedArea": 0,
+      "areaPoints": [],
+      "areaSqFt": 0,
+      "businessType": "roofing",
+      "commercialAreas": [],
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "dealerCountry": "CA",
+      "landscapingAreaRate": 0,
+      "landscapingCombined": false,
+      "landscapingLinearRate": 0.1,
+      "linearFeet": 0,
+      "linearPoints": [],
+      "manualPlanes": [
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 36.87,
+          "points": [
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 51.99995071701987,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.00003163234103,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 824.2734391898192
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 45,
+          "points": [
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00011980332516
+            },
+            {
+              "lat": 52.000230281930385,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00002056592285
+            },
+            {
+              "lat": 52.0003095454249,
+              "lng": -106.00011980332516
+            }
+          ],
+          "surface_sqft": 913.5145257194405
+        },
+        {
+          "manual_roof_qa": true,
+          "pitch_confirmed": true,
+          "pitch_degrees": 26.57,
+          "points": [
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00012254804454
+            },
+            {
+              "lat": 51.99972177437653,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00002062855026
+            },
+            {
+              "lat": 51.999801038771444,
+              "lng": -106.00012254804454
+            }
+          ],
+          "surface_sqft": 741.7643605949821
+        }
+      ],
+      "manualRoofWorkflow": true,
+      "measureSource": "manual",
+      "measurementMode": "auto",
+      "pavingAreaRate": 0,
+      "pavingCombined": false,
+      "pavingLinearRate": 0.1,
+      "pressureAreaRate": 0,
+      "pressureCombined": false,
+      "pressureLinearRate": 0.1,
+      "roofScopeConfirmed": true,
+      "showWarrantyShield": true,
+      "structures": [],
+      "warrantyBrand": ""
+    },
+    "scheduled_date": "",
+    "street_image_data": "",
+    "street_meta": "Actual Street View",
+    "total_area": 2479.5523255042417,
+    "total_price": 1192.06
+  },
+  "afterCompeting": {
+    "complimentary": false,
+    "counts": {
+      "estimate_revisions": 12,
+      "estimate_save_receipts": 18,
+      "estimates": 6
+    },
+    "lookups": 25,
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-11-27T00:00:00+00:00",
+      "estimates": 6,
+      "limit": 25,
+      "lookups": 25,
+      "start": "2026-10-27T00:00:00+00:00"
+    },
+    "plan": {
+      "estimate_limit": 25,
+      "lookup_limit": 25,
+      "plan_code": "basic"
+    }
+  },
+  "olderUnchanged": true,
+  "lostResponseOneRevision": true,
+  "restoreExact": true
+}

@@ -1,0 +1,16 @@
+BEFORE FIX: source 0f3fd18c; stored address and description remained correct but report/PDF text changed.
+AssertionError [ERR_ASSERTION]: snow must preserve user-authored jsProperty
++ actual - expected
+
++ 'FICTIONAL Area areaing Additional Area Primary Service Area Additional Snow Services jsProperty'
+- 'FICTIONAL Roof roofing Garage Main House Additional Services / Repairs jsProperty'
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_user_text_integrity.cjs:13:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'FICTIONAL Area areaing Additional Area Primary Service Area Additional Snow Services jsProperty',
+  expected: 'FICTIONAL Roof roofing Garage Main House Additional Services / Repairs jsProperty',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

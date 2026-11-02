@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-11-02T21:03Z",
+  "no_deployment": true,
+  "recovery": {
+    "service": "srv-db5a2g5ckfvc739fui70",
+    "auto_deploy": "off",
+    "branch": "landscaping-multi-area-recovery-oct11",
+    "live_commit": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+    "deploy": "dep-dbke60u1egvs73cafea0",
+    "status": "live"
+  },
+  "main": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a"
+}

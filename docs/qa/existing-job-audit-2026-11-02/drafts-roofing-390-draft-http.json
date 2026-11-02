@@ -1,0 +1,38 @@
+[
+  {
+    "event": "response",
+    "family": "draft",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "event": "response",
+    "family": "draft",
+    "method": "POST",
+    "status": 200
+  },
+  {
+    "event": "response",
+    "family": "draft",
+    "method": "PUT",
+    "status": 200
+  },
+  {
+    "event": "response",
+    "family": "draft",
+    "method": "DELETE",
+    "status": 200
+  },
+  {
+    "event": "response",
+    "family": "draft",
+    "method": "PUT",
+    "status": 200
+  },
+  {
+    "event": "response",
+    "family": "estimate-save",
+    "method": "POST",
+    "status": 200
+  }
+]

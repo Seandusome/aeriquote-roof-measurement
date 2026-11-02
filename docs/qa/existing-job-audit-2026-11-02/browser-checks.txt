@@ -1,0 +1,32 @@
+2026-11-02T21:02:35.7832127Z PASS browser aborted save preserves measurements and blocks report
+2026-11-02T21:02:43.3365229Z PASS existing-job lifecycle snow Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:02:45.1463783Z {"industry":"snow","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/snow-1440-single.pdf","/tmp/aq-browser-evidence/snow-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:02:54.6983332Z PASS existing-job lifecycle pressure Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:02:56.9640069Z {"industry":"pressure","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/pressure-1440-single.pdf","/tmp/aq-browser-evidence/pressure-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:03:06.9110306Z PASS existing-job lifecycle paving Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:03:08.8631763Z {"industry":"paving","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/paving-1440-single.pdf","/tmp/aq-browser-evidence/paving-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:03:18.4769974Z PASS existing-job lifecycle landscaping Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:03:20.4082223Z {"industry":"landscaping","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/landscaping-1440-single.pdf","/tmp/aq-browser-evidence/landscaping-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:03:29.9772484Z PASS existing-job lifecycle commercial Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:03:31.8459443Z {"industry":"commercial","width":1440,"total":163.52,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/commercial-1440-single.pdf","/tmp/aq-browser-evidence/commercial-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:03:52.5546098Z PASS same-property mixed Roofing→five-surface-industry revisions, inactive roofs excluded from ten actual PDFs, out-of-order history immutable, no paid debit at cap
+2026-11-02T21:03:52.5548157Z PASS existing-job lifecycle roofing Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs
+2026-11-02T21:03:54.2869820Z {"industry":"roofing","width":1440,"total":253.89,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-02T21:03:54.3902470Z PASS independent active quantities/WGS84/Decimal commercial-1440-source.json 163.52
+2026-11-02T21:03:54.3903518Z PASS independent active quantities/WGS84/Decimal commercial-updated-source.json 383.26
+2026-11-02T21:03:54.3904185Z PASS independent active quantities/WGS84/Decimal landscaping-1440-source.json 153.18
+2026-11-02T21:03:54.3905095Z PASS independent active quantities/WGS84/Decimal landscaping-updated-source.json 383.26
+2026-11-02T21:03:54.3905745Z PASS independent active quantities/WGS84/Decimal mixed-commercial-source.json 352.61
+2026-11-02T21:03:54.3906380Z PASS independent active quantities/WGS84/Decimal mixed-landscaping-source.json 381.31
+2026-11-02T21:03:54.3906983Z PASS independent active quantities/WGS84/Decimal mixed-paving-source.json 409.99
+2026-11-02T21:03:54.3907583Z PASS independent active quantities/WGS84/Decimal mixed-pressure-source.json 438.68
+2026-11-02T21:03:54.3908164Z PASS independent active quantities/WGS84/Decimal mixed-snow-source.json 467.37
+2026-11-02T21:03:54.3908737Z PASS independent active quantities/WGS84/Decimal paving-1440-source.json 153.18
+2026-11-02T21:03:54.3909331Z PASS independent active quantities/WGS84/Decimal paving-updated-source.json 383.26
+2026-11-02T21:03:54.3910061Z PASS independent active quantities/WGS84/Decimal pressure-1440-source.json 153.18
+2026-11-02T21:03:54.3910667Z PASS independent active quantities/WGS84/Decimal pressure-updated-source.json 383.26
+2026-11-02T21:03:54.3911260Z PASS independent active quantities/WGS84/Decimal roofing-1440-source.json 253.89
+2026-11-02T21:03:54.3911844Z PASS independent active quantities/WGS84/Decimal roofing-updated-source.json 1192.06
+2026-11-02T21:03:54.3912432Z PASS independent active quantities/WGS84/Decimal snow-1440-source.json 153.18
+2026-11-02T21:03:54.3912997Z PASS independent active quantities/WGS84/Decimal snow-updated-source.json 383.26
+2026-11-02T21:03:54.3913657Z PASS 17 snapshots; 0.6% geometry tolerance reflects spherical app measurements, not survey accuracy

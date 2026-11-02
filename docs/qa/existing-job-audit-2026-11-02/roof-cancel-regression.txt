@@ -1,0 +1,1 @@
+PASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only

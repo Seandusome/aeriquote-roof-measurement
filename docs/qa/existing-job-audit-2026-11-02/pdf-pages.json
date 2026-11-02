@@ -1,0 +1,138 @@
+[
+  {
+    "file": "commercial-1440-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "commercial-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "commercial-updated-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "commercial-updated-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "landscaping-1440-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "landscaping-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "landscaping-updated-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "landscaping-updated-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "mixed-commercial-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "mixed-commercial-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "mixed-landscaping-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "mixed-landscaping-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "mixed-paving-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "mixed-paving-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "mixed-pressure-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "mixed-pressure-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "mixed-snow-expanded.pdf",
+    "pages": 2
+  },
+  {
+    "file": "mixed-snow-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "paving-1440-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "paving-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "paving-updated-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "paving-updated-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "pressure-1440-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "pressure-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "pressure-updated-expanded.pdf",
+    "pages": 3
+  },
+  {
+    "file": "pressure-updated-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "roofing-1440-expanded.pdf",
+    "pages": 2
+  },
+  {
+    "file": "roofing-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "roofing-updated-expanded.pdf",
+    "pages": 2
+  },
+  {
+    "file": "roofing-updated-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "snow-1440-expanded.pdf",
+    "pages": 2
+  },
+  {
+    "file": "snow-1440-single.pdf",
+    "pages": 1
+  },
+  {
+    "file": "snow-updated-expanded.pdf",
+    "pages": 2
+  },
+  {
+    "file": "snow-updated-single.pdf",
+    "pages": 1
+  }
+]
