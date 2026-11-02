@@ -1,0 +1,112 @@
+{
+  "customer_name": "FICTIONAL QA LIVE RECOVERY NOV2",
+  "customer_phone": "306-555-0182",
+  "customer_email": "nov2-live-qa@example.invalid",
+  "customer_notes": "FICTIONAL NOV2 AUTOSAVE NEWEST AFTER LOST ACK",
+  "extra_service_description": "FICTIONAL draft recovery extra service",
+  "extra_service_amount": 54.25,
+  "job_status": "Estimate",
+  "scheduled_date": "",
+  "completion_date": "",
+  "amount_paid": 0,
+  "address": "2301 Avenue C North, Saskatoon, SK, Canada",
+  "total_area": 7858,
+  "total_price": 1280.37,
+  "quote": {
+    "businessType": "paving",
+    "commercialAreas": [
+      {
+        "name": "Service Area 1",
+        "rate": 0.1,
+        "source": "manual",
+        "points": [
+          [
+            52.16219316112098,
+            -106.6760897515266
+          ],
+          [
+            52.16219316112098,
+            -106.67545209210746
+          ],
+          [
+            52.16207576175465,
+            -106.67545209210746
+          ],
+          [
+            52.16207576175465,
+            -106.6760897515266
+          ]
+        ],
+        "sqft": 6125
+      },
+      {
+        "name": "Service Area 2",
+        "points": [
+          [
+            52.16175125435327,
+            -106.67605238186192
+          ],
+          [
+            52.16175125435327,
+            -106.67582488120978
+          ],
+          [
+            52.16165817868,
+            -106.67582488120978
+          ],
+          [
+            52.16165817868,
+            -106.67605238186192
+          ]
+        ],
+        "rate": 0.27,
+        "source": "manual",
+        "sqft": 1733
+      }
+    ],
+    "linearPoints": [
+      [
+        52.16159069869516,
+        -106.67604661234887
+      ],
+      [
+        52.16159069869516,
+        -106.67530018782598
+      ],
+      [
+        52.16164887110198,
+        -106.67530018782598
+      ]
+    ],
+    "linearFeet": 188.2640110545814,
+    "commercialLinearRate": 0,
+    "pavingLinearRate": 0.1,
+    "pressureLinearRate": 0.1,
+    "landscapingLinearRate": 0.1
+  },
+  "pricing": {
+    "estimatePeriod": "one_time",
+    "area": 7858,
+    "price": 0.1,
+    "mode": "regular",
+    "disc": 0,
+    "subtotal": 1099.24,
+    "extraDescription": "FICTIONAL draft recovery extra service",
+    "extraAmount": 54.25,
+    "discount": 0,
+    "taxBase": 1153.49,
+    "gst": 5,
+    "pst": 6,
+    "gstAmt": 57.67,
+    "pstAmt": 69.21,
+    "total": 1280.37,
+    "measurementMode": "area",
+    "unit": "ft²"
+  },
+  "measurement_mode": "area",
+  "linear_feet": 188.2640110545814,
+  "area_sqft": 7858,
+  "street_meta": "Street View imagery: 2015-07",
+  "image_choice": "auto",
+  "source_quote_sha256": "4f173da161557629ff07b23373310fd3d8af661995ac2a0c334014dd711b8e78"
+}

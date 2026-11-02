@@ -1,0 +1,2 @@
+PASS independent WGS84 + Decimal recovered-source.json 1280.37
+PASS 1 saved browser snapshots; WGS84 tolerance 0.6% reflects existing spherical measurements, not survey accuracy

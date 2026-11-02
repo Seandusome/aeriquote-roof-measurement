@@ -1,0 +1,91 @@
+{
+  "application_commit": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+  "deploy": "dep-dbke60u1egvs73cafea0",
+  "live_at_utc": "2026-11-02T19:23:34Z",
+  "recovery_service": "srv-db5a2g5ckfvc739fui70",
+  "qa_database_host": "dpg-dbj4f7lg1s2s73eob8t0-a",
+  "qa_database_name": "aeriquote_recovery_qa",
+  "runtime_binding_verified": true,
+  "autodeploy": "off",
+  "baseline": {
+    "estimates": 1,
+    "revisions": 21,
+    "receipts": 24
+  },
+  "after_original_tab_save": {
+    "estimates": 1,
+    "revisions": 22,
+    "receipts": 25
+  },
+  "after_stale_second_tab": {
+    "estimates": 1,
+    "revisions": 22,
+    "receipts": 25
+  },
+  "after_delayed_commit": {
+    "estimates": 1,
+    "revisions": 23,
+    "receipts": 26
+  },
+  "after_timeout_retry": {
+    "estimates": 1,
+    "revisions": 23,
+    "receipts": 26
+  },
+  "after_autosave_close_restore": {
+    "estimates": 1,
+    "revisions": 23,
+    "receipts": 26
+  },
+  "final_after_restore_save_pdfs_history": {
+    "estimates": 1,
+    "revisions": 24,
+    "receipts": 27,
+    "active_drafts": 0,
+    "closed_drafts_with_payload_or_metadata": 0,
+    "month_usage_rows": [],
+    "test_lock_connections": 0,
+    "login_diagnostics_enabled": false,
+    "qa_timeout_override_enabled": false
+  },
+  "source_restore": {
+    "draft_id": "7f2ca044-c169-4181-88b2-3111d3f53116",
+    "copied_id": "36cfa71e-3cd3-49ed-832b-dba0c9dd029b",
+    "quote_sha256": "4f173da161557629ff07b23373310fd3d8af661995ac2a0c334014dd711b8e78",
+    "values_sha256": "25e3afcb2a6b2889922de8bd4424f8be4748f143deb023fa1f73d96baf117e75"
+  },
+  "interrupted_restore": {
+    "draft_id": "9ba5c0af-3136-4dfc-a923-d6e61f981219",
+    "version": 4,
+    "copied_id": "69bb75a9-25b8-4270-9d6d-8f64813f7454",
+    "quote_sha256": "4f173da161557629ff07b23373310fd3d8af661995ac2a0c334014dd711b8e78",
+    "values_sha256": "b1646d22b6684244a11a76e5a29771662f6a5bbf25d981687444da9d35149af6"
+  },
+  "save_delay": {
+    "lock_start_epoch": 1793648637.7142208,
+    "lock_end_epoch": 1793648687.7155564,
+    "browser_create_utc": "2026-11-02T19:44:09.206Z",
+    "browser_timeout_observed_utc": "2026-11-02T19:44:48.684Z",
+    "browser_retry_utc": "2026-11-02T19:45:22.018Z"
+  },
+  "autosave_delay": {
+    "lock_start_epoch": 1793648938.2721167,
+    "lock_end_epoch": 1793648993.273373,
+    "edit_utc": "2026-11-02T19:48:59.238Z",
+    "newest_edit_started_utc": "2026-11-02T19:49:52.091Z",
+    "initial_35_second_attempt": "not counted; tool latency left insufficient overlap"
+  },
+  "pdfs": {
+    "single_pages": 1,
+    "expanded_pages": 3,
+    "total": 1280.37,
+    "rendered_and_visually_inspected": true
+  },
+  "live_allowance_scope": "QA account bypass unchanged; monthly usage remains empty. Charged-plan exactly-once proof remains disposable PostgreSQL16/18 fixtures.",
+  "manual_desktop_review": "pending",
+  "physical_phone": "pending",
+  "browser_console": "Collected entries contain extension metadata transport errors only; no application exception observed.",
+  "main": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "production_deploy": "dep-db5b726k1f9s73e862ug",
+  "production_or_customer_data_modified": false
+}

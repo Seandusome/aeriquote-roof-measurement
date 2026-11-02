@@ -1,0 +1,14 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "deployment.json": "cf6dfd8fcaff3ce3d30e002922df994ef453d0ad2c7f986dbe1039301bef9505",
+    "final-report-viewport.jpg": "5297adc3c63255622326ff6ca3bb0f07ce90991a4d51ea1887a94b2b7f4ec162",
+    "independent-checks.txt": "eb56aea22bc1c609ecdd3ff02c986de411a9e74096b11ae9364b5149847f6589",
+    "recovered-expanded.pdf": "7449fd9fc9412ac7f1dc9332200c3eefe641170e56c374d99d3706eda807832f",
+    "recovered-single.pdf": "07c4084e635d30d1c090ee65b88dc8b661a8dead47154809baae88faed7f7890",
+    "recovered-source.json": "b8c6ab06ee7d83e32fd1fa76390ae384ab34a817c3ac2b7f7d81e596ec9c978a",
+    "save-timeout-warning.jpg": "5bb6710c5137af524ea24453aec07a42936d64ae7c6da55c26cf51de4556435c",
+    "stale-save-warning.jpg": "22a54bac697369b3816b348b1c6933776bf525ab6665c3b254c39f54b0de0017",
+    "verification.json": "e80f42bd3250ba943d212fe3572e0b25878665905dea0cb05de7659d520357c5"
+  }
+}

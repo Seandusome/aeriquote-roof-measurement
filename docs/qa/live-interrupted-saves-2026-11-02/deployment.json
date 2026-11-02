@@ -1,0 +1,21 @@
+{
+  "recovery_service": "srv-db5a2g5ckfvc739fui70",
+  "branch": "landscaping-multi-area-recovery-oct11",
+  "autoDeploy": "no",
+  "deployment": {
+    "commit": {
+      "createdAt": "2026-11-02T18:55:49Z",
+      "id": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+      "message": "Drain injected background failures before asserting exact autosave recovery"
+    },
+    "createdAt": "2026-11-02T19:22:43.639809Z",
+    "finishedAt": "2026-11-02T19:23:34.085719Z",
+    "id": "dep-dbke60u1egvs73cafea0",
+    "startedAt": "2026-11-02T19:22:43.605438Z",
+    "status": "live",
+    "trigger": "manual",
+    "updatedAt": "2026-11-02T19:23:55.894278Z"
+  },
+  "main_sha": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "production_deploy": "dep-db5b726k1f9s73e862ug"
+}

@@ -1,3 +1,16 @@
+# November 2 — 69ab066c LIVE; actual interrupted saves and recovered PDFs PASS
+
+Read [live deployment and evidence](QA_LIVE_INTERRUPTED_SAVES_2026_11_02.md). This supersedes the preceding deployment-pending note. The containing documentation commit is the new checkpoint; do not deploy it.
+
+- Exact application69ab066c67cb429d4e12c8dad2d902140fbbc405 deployed only to recovery, dep-dbke60u1egvs73cafea0 LIVE19:23:34UTC. Pre/post running-process assertions confirm exact isolated QA host/database. Auto-deploy OFF; diagnostics/QA timeout override OFF. Main/production/customer data untouched.
+- Actual live cross-tab Restore matches full quote/all field hashes; original consumed tab saves later edits once; stale second tab warns and retains its acknowledged work. Real50-second QA-row delay crosses normal30-second save timeout: eventual commit then receipt-confirming browser retry adds no extra revision/receipt. Live55-second draft-row delay crosses normal12-second autosave deadline; newest edits acknowledge, actual tab closure/Restore matches exact hashes, explicit save once. Temporary locks released; test connections0.
+- Counts1/21/24 baseline →1/22/25 original explicit save →1/23/26 delayed save →retry unchanged →1/24/27 recovered save. Both PDFs and fresh history reopen leave1/24/27 unchanged. Active drafts0; closed retained payloads0. QA bypass unchanged/month usage[]; paid-plan proof remains disposable PostgreSQL16/18, not a live paid debit.
+- Actual Single1page/Expanded3pages rendered and visually checked:6,125ft²@0.10 +1,733@0.27 +188.264ft@0.10 +extra54.25; tax base1,153.49 +57.67 +69.21 =1,280.37. Customer/geometry/pricing match; no inactive Roofing outlines. WGS84/Decimal independent checks pass. Street View assessment placeholder is expected under approved byte-exclusion policy.
+- Source69ab required recovery41505173423, application41505173311 and browser41505173632 all PASS, including PostgreSQL16/18 and8browser jobs; no application code changed this live batch. No new application defect reproduced. Browser extension metadata errors are tooling observations only; actual downloads completed.
+- Pending: owner manual desktop review and physical-phone/Safari/Messenger. Tab7 saved recovered report, tab6 post-save report, Render shelltab4 retained if available. Stop after saving this bounded batch; await the next instruction.
+
+---
+
 # November 2 — interrupted-save fixes and manual Roofing fixture diagnosis
 
 Read [the current QA report](QA_INTERRUPTED_SAVES_2026_11_02.md) first. Recovery source is69ab066c; the containing documentation commit is the new resume checkpoint. Recovery deployment remains0f065b9d /dep-dbjsosetlv9c73e6ck3g, auto-deploy OFF. Current source fixes are NOT deployed.
