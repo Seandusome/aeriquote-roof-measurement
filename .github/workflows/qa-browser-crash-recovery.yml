@@ -8,6 +8,8 @@ on:
       - scripts/fresh_user_browser_server.py
       - scripts/job_revisions_browser_server.py
       - scripts/job_revision_checks.cjs
+      - scripts/mixed_job_history_checks.cjs
+      - scripts/verify_job_revisions.py
       - scripts/test_existing_job_trial.py
       - site/onboarding.js
       - app.py
@@ -63,7 +65,10 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
-            job-revisions) node scripts/test_job_revisions_browser.cjs ;;
+            job-revisions)
+              node scripts/test_job_revisions_browser.cjs
+              python scripts/verify_job_revisions.py "$QA_BROWSER_OUTPUT"
+              ;;
             fresh-user) node scripts/test_fresh_user_browser.cjs ;;
             roof-exports) node scripts/test_manual_roofing_browser.cjs ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
