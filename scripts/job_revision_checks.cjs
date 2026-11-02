@@ -4,16 +4,21 @@ const assert=require('assert/strict'),fs=require('fs');
 module.exports=async function({page,context,industry,saved,payload,draw,pts,output,before,errors,seen}){
  const get=async path=>{const r=await context.request.get('http://127.0.0.1:8765'+path);assert.equal(r.status(),200);return r.json()};
  const versions=()=>get('/api/estimates/'+saved.id+'/versions'),state=()=>get('/__qa_fresh/state');
- const baseline=await versions(),paidStart=await state();assert.equal(paidStart.plan.plan_code,'basic');assert.equal(paidStart.complimentary,false);
+ const baseline=await versions();let paidStart=await state();
+ const mapRequests=[];const onMapRequest=r=>{if(new URL(r.url()).pathname==='/saved-estimate-report-map')mapRequests.push(r.postDataJSON())};page.on('request',onMapRequest);assert.equal(paidStart.plan.plan_code,'basic');assert.equal(paidStart.complimentary,false);
  assert.equal(paidStart.paid.lookups,seen.length+1);assert.equal(paidStart.paid.estimates,seen.length+1);
  const edit=async()=>{await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.getByRole('button',{name:'EDIT MEASUREMENTS / PRICE',exact:true}).click();await page.waitForFunction(()=>sessionToken&&!savedEstimateEditContext&&!document.body.classList.contains('report-open'));await page.evaluate(()=>map.setView([52,-106],19,{animate:false}));};
  await edit();assert.deepEqual((await versions()).current.payload,payload);assert.equal((await state()).paid.lookups,paidStart.paid.lookups,'Saved edit imagery rehydration must not debit');
- const geometry=()=>page.evaluate(()=>JSON.stringify({areas:commercialAreas,line:linearPoints,planes:manualPlanes}));
+ const geometry=()=>page.evaluate(()=>stableWorkspaceJSON({areas:commercialAreas,line:linearPoints,planes:manualPlanes}));
  const frozen=await geometry();
  // A new failure context: loading replacement imagery during a saved-job edit.
  const imagePattern=/\/(wide-aerial|fallback-map|exact-pin-map)\//;
  await page.route(imagePattern,r=>r.abort());await page.click('#propertyActionBtn');await page.waitForFunction(()=>!loadProperty.inFlight);await page.unroute(imagePattern);
  assert.equal(await geometry(),frozen);assert.equal((await state()).paid.lookups,paidStart.paid.lookups);assert(/retry|again/i.test(await page.locator('#status').textContent()));
+ if(industry==='roofing'){
+  for(let n=paidStart.paid.lookups;n<25;n++){const operation='audit-exhaust-'+n;const prepared=await context.request.post('http://127.0.0.1:8765/property',{headers:{'Idempotency-Key':operation},data:{key:'qa-placeholder',address:'1 Fictional QA Street',business_type:'roofing',prepare_only:true}});assert.equal(prepared.status(),200);const accepted=await context.request.post('http://127.0.0.1:8765/property/accept',{data:{operation_id:operation,token:(await prepared.json()).token}});assert.equal(accepted.status(),200)}
+  await page.click('#propertyActionBtn');await page.waitForFunction(()=>!loadProperty.inFlight);assert(/limit|allowance/i.test(await page.locator('#status').textContent()));assert.equal(await geometry(),frozen);paidStart=await state();assert.equal(paidStart.paid.lookups,25);
+ }
  if(industry!=='roofing'){
   const second=page.locator('.surface-saved-area').nth(1);await second.getByRole('button',{name:'REMEASURE AREA',exact:true}).click();
   await draw(pts.slice(0,2).map(([a,b])=>[a+.0002,b+.00004]));assert(await page.locator('#createEstimateBtn').isDisabled());await page.click('#areaCancelCorrectionBtn');assert.equal(await geometry(),frozen,'Incomplete replacement Cancel must preserve saved areas and line');
@@ -54,11 +59,14 @@ module.exports=async function({page,context,industry,saved,payload,draw,pts,outp
  // Switch by reopening other industry's current/old snapshots in reverse order.
  for(const other of seen.slice(-2).reverse())for(const version of [-1,0]){await page.evaluate(({id,version})=>openHistoricalEstimate(id,version),{id:other.id,version});assert.equal(await page.evaluate(()=>quoteSnapshot.businessType),other.industry);}
  await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);assert.equal(await page.locator('#rCustomerName').textContent(),final.current.payload.customer_name);
+ const expectedRoofs=industry==='roofing'?final.current.payload.quote.manualPlanes.map(p=>({kind:'manual',points:p.points.map(v=>({lat:v.lat??v[0],lng:v.lng??v[1]}))})):[...final.current.payload.quote.commercialAreas.map(a=>({kind:'area',points:a.points.map(v=>({lat:v[0],lng:v[1]}))})),{kind:'linear',points:final.current.payload.quote.linearPoints.map(v=>({lat:v[0],lng:v[1]}))}];assert.deepEqual(mapRequests.at(-1).roofs,expectedRoofs,'Actual report-map request includes every priced outline exactly');
  const pdfState=await page.evaluate(()=>JSON.stringify(quoteSnapshot));const projection=await page.evaluate(()=>activeSavedDiagramSnapshot(quoteSnapshot));
  if(industry==='roofing'){assert.equal(projection.manualPlanes.length,3);assert.equal(projection.commercialAreas.length,0);assert.equal(projection.linearPoints.length,0)}else{assert.equal(projection.commercialAreas.length,2);assert.equal(projection.linearPoints.length,3);assert.equal(projection.manualPlanes.length,0);assert.equal(projection.structures.length,0)}
  for(const layout of ['single','expanded']){await page.selectOption('#estimatePdfLayout',layout);const d=page.waitForEvent('download',{timeout:45000});await page.click('#downloadPdfBtn');await(await d).saveAs(output+'/'+industry+'-updated-'+layout+'.pdf');assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),pdfState)}
  await page.screenshot({path:output+'/'+industry+'-updated.png',fullPage:true});
  assert.deepEqual((await versions()).revisions[0].payload,payload);assert.deepEqual((await versions()).current.payload,final.current.payload);
- fs.writeFileSync(output+'/'+industry+'-edit-audit.json',JSON.stringify({industry,initial:paidStart,final:paidEnd,original:payload,updated:final.current.payload,projection,olderUnchanged:true,lostResponseOneRevision:true,restoreExact:true},null,2));
+ // Editing the older revision is a distinct stale case from simultaneous current tabs.
+ await page.evaluate(id=>openHistoricalEstimate(id,0),saved.id);await page.getByRole('button',{name:'EDIT MEASUREMENTS / PRICE',exact:true}).click();await page.waitForFunction(()=>sessionToken&&!savedEstimateEditContext&&!document.body.classList.contains('report-open'));await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL STALE OLDER '+industry);assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);assert.equal(await page.evaluate(()=>saveEstimateHistory.lastFailureStatus),409);assert.equal(await page.locator('#customerNotes').inputValue(),'FICTIONAL STALE OLDER '+industry);assert.deepEqual(await versions(),final);assert.equal((await state()).paid.estimates,paidEnd.paid.estimates);const staleHeaders=await page.evaluate(()=>aqRecovery.headers());assert.equal((await context.request.delete('http://127.0.0.1:8765/api/workspace-drafts/'+staleHeaders['X-AeriQuote-Draft'],{headers:staleHeaders})).status(),200);page.off('request',onMapRequest);
+ fs.writeFileSync(output+'/'+industry+'-edit-audit.json',JSON.stringify({industry,initial:paidStart,final:paidEnd,original:payload,updated:final.current.payload,projection,mapRequests,staleOlderBlocked:true,olderUnchanged:true,lostResponseOneRevision:true,restoreExact:true},null,2));
  seen.push({id:saved.id,industry});console.log('PASS existing-job lifecycle',industry,'Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs');
 };
