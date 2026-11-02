@@ -23,6 +23,9 @@ const point=" const before=await page.evaluate(";assert(script.includes(point));
  assert(/price|rate/i.test(await page.locator('#quotePricingError').textContent()));
  await page.fill('#jobPrice','.1');await page.locator('#jobPrice').blur();
  const rates=page.getByRole('spinbutton',{name:'Rate per square foot'});for(let n=0;n<await rates.count();n++){await rates.nth(n).fill('.1');await rates.nth(n).blur();}
+ const invalidFieldsBefore=await page.evaluate(()=>JSON.stringify({areas:commercialAreas,line:linearPoints,customer:el('customerName').value}));
+ await page.fill('#gst','101');await page.locator('#gst').blur();assert(await page.locator('#createEstimateBtn').isDisabled());assert(/0 to 100/.test(await page.locator('#quotePricingError').textContent()));assert.equal((await state()).counts.estimates,0);
+ await page.fill('#gst','5');await page.locator('#gst').blur();assert.equal(await page.evaluate(()=>JSON.stringify({areas:commercialAreas,line:linearPoints,customer:el('customerName').value})),invalidFieldsBefore);console.log('PASS missing job rate and invalid tax block quote without losing geometry/customer or saving');
 `+point);
 const after=" // A second page load simulates refresh; reopen the owned stored snapshot through the actual handler.";assert(script.includes(after));script=script.replace(after,String.raw`
  const firstState=await state();assert.equal(firstState.lookups,1);assert.equal(firstState.counts.estimates,1);assert.equal(firstState.counts.estimate_revisions,0);assert.equal(firstState.counts.estimate_save_receipts,1);
@@ -31,7 +34,7 @@ const after=" // A second page load simulates refresh; reopen the owned stored s
  await page.getByRole('button',{name:'Back to Dealer View',exact:true}).click();
  const snapshotBeforeLimits=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot()));
  for(let n=0;n<2;n++){const operation='fresh-trial-'+n;const prepared=await context.request.post('http://127.0.0.1:8765/property',{headers:{'Idempotency-Key':operation},data:{key:'qa-placeholder',address:'1 Fictional QA Street',business_type:'paving',prepare_only:true}});assert.equal(prepared.status(),200);const accepted=await context.request.post('http://127.0.0.1:8765/property/accept',{data:{operation_id:operation,token:(await prepared.json()).token}});assert.equal(accepted.status(),200);assert.equal((await state()).lookups,n+2);}
- await page.click('#propertyActionBtn');await page.waitForFunction(()=>!loadProperty.inFlight);assert.equal((await state()).lookups,3);assert((await page.locator('#status').textContent()).match(/allowance|trial|limit/i));assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),snapshotBeforeLimits);if(await page.locator('#trialLimitOverlay.open').count())await page.locator('#trialLimitOverlay button').click();
+ await page.click('#propertyActionBtn');await page.waitForFunction(()=>!loadProperty.inFlight);assert.equal((await state()).lookups,3);assert((await page.locator('#status').textContent()).match(/allowance|trial|limit/i));assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),snapshotBeforeLimits);if(await page.locator('#trialLimitOverlay.open').count())await page.locator('#trialLimitOverlay button').click();if(await page.locator('#historyModal.open').count())await page.locator('#historyModal').getByRole('button',{name:'CLOSE',exact:true}).click();
  assert.equal((await state()).counts.estimates,1);
  // Paid state is test-fixture-only; no payment flow or live account is changed.
  assert.equal((await context.request.post('http://127.0.0.1:8765/__qa_fresh/basic-boundary')).status(),200);
