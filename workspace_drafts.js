@@ -43,7 +43,7 @@
   const draftId=attempt.id,draftVersion=attempt.version;
   writing=(async()=>{
    try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace:attempt.workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=attempt.serialized;uncertainWrite=null;if(JSON.stringify(capture())===ack)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
-   catch(e){if(id===draftId)uncertainWrite=e.status>=400&&e.status<500?null:attempt;lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
+   catch(e){if(id===draftId&&!(e.status>=400&&e.status<500))uncertainWrite=attempt;lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
   let ok;try{ok=await writing}finally{writing=null}
   if(ok&&id===draftId&&JSON.stringify(capture())!==ack)return flush();

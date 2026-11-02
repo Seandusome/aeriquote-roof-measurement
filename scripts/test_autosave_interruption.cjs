@@ -3,10 +3,11 @@ const fs=require('fs'),assert=require('assert/strict'),{JSDOM}=require('jsdom'),
 const dom=new JSDOM('<meta id="aqAccountId" data-account-id="qa-owner" data-principal="owner:qa-owner">',{runScripts:'outside-only',url:'https://qa.example.invalid'}),w=dom.window;
 w.AbortController=AbortController;w.setInterval=()=>0;w.renderSummary=()=>{};
 w.qaWorkspace={schema:1,values:{customerName:'FICTIONAL FIRST ACK',customerNotes:'original'},pending:{id:'same-save-operation'},baseVersion:'original-base'};
-let row=null,drop=true,requests=[];
+let row=null,drop=true,requests=[],accountBlocked=false;
 w.fetch=async(url,o={})=>{
  if(url==='/api/workspace-drafts')return{ok:true,json:async()=>({drafts:[]})};
  const b=JSON.parse(o.body);requests.push(b);
+ if(accountBlocked)return{ok:false,status:409,json:async()=>({error:'Sign in to the original account'})};
  if(row&&b.version!==row.version){
   if(JSON.stringify(b.workspace)!==JSON.stringify(row.workspace)||b.version+1!==row.version)return{ok:false,status:409,json:async()=>({error:'Another tab changed this draft'})};
  }else row={version:b.version+1,workspace:b.workspace};
@@ -24,5 +25,8 @@ let source=fs.readFileSync(process.env.QA_DRAFT_CLIENT_SOURCE||'workspace_drafts
  const acknowledged=JSON.parse(JSON.stringify(w.qaWorkspace));drop=true;w.qaWorkspace={...w.qaWorkspace,values:{...w.qaWorkspace.values,customerNotes:'FICTIONAL UNCERTAIN EDIT THEN REVERT'}};
  assert.equal(await r.flush(),false);assert.equal(row.version,3);
  w.qaWorkspace=acknowledged;assert.equal(await r.flush(),true);assert.deepEqual(row.workspace,acknowledged,'Reverting locally to the last acknowledged state must still reconcile the intervening uncertain server write');assert.equal(row.version,4);
+ drop=true;w.qaWorkspace={...w.qaWorkspace,values:{...w.qaWorkspace.values,customerNotes:'FICTIONAL UNCERTAIN BEFORE ACCOUNT SWITCH'}};assert.equal(await r.flush(),false);
+ const beforeSwitch=JSON.parse(JSON.stringify(row));accountBlocked=true;w.qaWorkspace={...w.qaWorkspace,values:{...w.qaWorkspace.values,customerNotes:'FICTIONAL LATER EDIT WHILE ACCOUNT BLOCKED'}};assert.equal(await r.flush(),false);assert.deepEqual(row,beforeSwitch,'Wrong account must not change the acknowledged server copy');
+ accountBlocked=false;assert.equal(await r.flush(),true,'Returning to the correct account must retain the uncertain write identity');assert.equal(row.workspace.values.customerNotes,'FICTIONAL LATER EDIT WHILE ACCOUNT BLOCKED');
  dom.window.close();console.log('PASS: lost autosave response followed by later edits confirms exact uncertain write first, then acknowledges newest work without stale overwrite');
 })().catch(e=>{dom.window.close();console.error(e);process.exit(1)});
