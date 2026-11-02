@@ -30,8 +30,9 @@ def state():
  try:
   dealer=c.execute('SELECT plan_code,lookup_limit,estimate_limit FROM dealers WHERE id=?',(did,)).fetchone()
   usage=c.execute('SELECT property_lookups FROM dealer_usage WHERE dealer_id=?',(did,)).fetchone()
-  counts={t:c.execute('SELECT COUNT(*) AS n FROM '+t+' WHERE dealer_id=?',(did,)).fetchone()['n'] for t in ['estimates','estimate_revisions','estimate_save_receipts']}
-  return a.jsonify(plan=dict(dealer),lookups=usage['property_lookups'] if usage else 0,counts=counts,paid=paid_usage(c,did),complimentary=a.credit_settings(c,did)['complimentary'])
+  counts={t:c.execute('SELECT COUNT(*) AS n FROM '+t+' WHERE dealer_id=?',(did,)).fetchone()['n'] for t in ['estimates','estimate_revisions']}
+  counts['estimate_save_receipts']=c.execute("SELECT COUNT(*) AS n FROM estimate_save_receipts WHERE dealer_id=? AND operation_id NOT LIKE 'prepared:%' AND operation_id NOT LIKE 'lookup:%'",(did,)).fetchone()['n']
+  return a.jsonify(plan=dict(dealer),lookups=usage['property_lookups'] if usage else 0,counts=counts,paid=paid_usage(c,did),complimentary=bool(a.credit_settings(c,did)['complimentary']))
  finally:c.close()
 
 @a.app.post('/__qa_fresh/basic-boundary')

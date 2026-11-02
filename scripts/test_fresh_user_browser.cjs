@@ -28,8 +28,8 @@ const after=" // A second page load simulates refresh; reopen the owned stored s
  const firstState=await state();assert.equal(firstState.lookups,1);assert.equal(firstState.counts.estimates,1);assert.equal(firstState.counts.estimate_revisions,0);assert.equal(firstState.counts.estimate_save_receipts,1);
  // Distinct allowance case: three normal trial property acceptances, failed image
  // and exhausted fourth attempt retain the already-saved job and customer.
- const snapshotBeforeLimits=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot()));
  await page.getByRole('button',{name:'Back to Dealer View',exact:true}).click();
+ const snapshotBeforeLimits=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot()));
  for(let n=0;n<2;n++){const operation='fresh-trial-'+n;const prepared=await context.request.post('http://127.0.0.1:8765/property',{headers:{'Idempotency-Key':operation},data:{key:'qa-placeholder',address:'1 Fictional QA Street',business_type:'paving',prepare_only:true}});assert.equal(prepared.status(),200);const accepted=await context.request.post('http://127.0.0.1:8765/property/accept',{data:{operation_id:operation,token:(await prepared.json()).token}});assert.equal(accepted.status(),200);assert.equal((await state()).lookups,n+2);}
  await page.click('#propertyActionBtn');await page.waitForFunction(()=>!loadProperty.inFlight);assert.equal((await state()).lookups,3);assert((await page.locator('#status').textContent()).match(/allowance|trial|limit/i));assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),snapshotBeforeLimits);if(await page.locator('#trialLimitOverlay.open').count())await page.locator('#trialLimitOverlay button').click();
  assert.equal((await state()).counts.estimates,1);
