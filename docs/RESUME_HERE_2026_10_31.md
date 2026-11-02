@@ -1,3 +1,15 @@
+# November 2 — STATUS/PRESERVATION ONLY; STOPPED
+
+The conversation reloaded after the Stop control failed. The user explicitly prohibited resuming tests, fixes, workflows or deployments. This preservation note supersedes earlier continuation instructions. Await a fresh instruction before doing further application work.
+
+- Verified recovery checkpoint before this note: `851e668212c8213e98c5197ef6c91108241810d2`. Application source remains `c7f2d013edf4425972c3fd8da48137a9b2d45882`. Local and remote checkpoint trees match; working tree was clean. This turn changes only these resume notes and saves them in a documentation checkpoint with `[skip ci] [skip render]`.
+- Existing final-source workflows are completed SUCCESS: application41524565882, recovery41524565618 (including PostgreSQL16/18), browser41524565651 (10/10). No workflow was started or rerun during this status/preservation turn. No unresolved CI failure on the final source. The exact old untraced drafts failure request remains a historical evidence limitation; the controlled cleanup-race regression and complete final suites passed. See the audit report below.
+- Render still reports `69ab066c67cb429d4e12c8dad2d902140fbbc405` LIVE at `dep-dbke60u1egvs73cafea0`; auto-deploy OFF. No deployment occurred in the audit or this preservation turn. QA database connections/settings, main, production and customer data were not changed.
+- Next steps, ONLY after renewed authorization: (1) read `QA_EXISTING_JOB_AUDIT_2026_11_02.md` and review the saved fixes/evidence; (2) if explicitly authorized, reconfirm isolated QA configuration and deploy the tested application source only to recovery, keeping auto-deploy OFF, then verify live; (3) keep owner desktop review and physical-phone/Safari/Messenger testing pending; (4) prioritize the still-unverified long editing/Restore/PDF sequences under tax-included/discount pricing after the above. No new features or payment work.
+- STOP FOR TODAY. No pending local application work needs recovery; all application fixes and evidence were already checkpointed. The containing documentation commit is the latest preservation checkpoint.
+
+---
+
 # November 2 — existing-job audit complete; three fixes verified, NOT deployed
 
 Read [existing-job audit and evidence](QA_EXISTING_JOB_AUDIT_2026_11_02.md). The containing documentation commit is the new checkpoint. Final tested source `c7f2d013edf4425972c3fd8da48137a9b2d45882`; live recovery remains `69ab066c67cb429d4e12c8dad2d902140fbbc405` /`dep-dbke60u1egvs73cafea0`, auto-deploy OFF. No deployment, main/production/customer/account/connection/allowance change.
