@@ -8,7 +8,20 @@ const preProperty=" await page.fill('#streetAddress','1 Fictional QA Street');";
 script=script.replace(preProperty,`
  if(industry==='snow'&&width===1440){
   await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL before property');await page.waitForFunction(()=>!!window.aqRecovery);assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);
-  await page.reload();await page.waitForTimeout(1400);await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
+  await page.reload();await page.waitForTimeout(1400);
+ const draftHttp=[];const classify=url=>{const p=new URL(url).pathname;return p==='/api/estimates'?'estimate-save':p.endsWith('/save-status')?'save-status':p.startsWith('/api/workspace-drafts/')?'draft':null};
+ context.on('response',r=>{const family=classify(r.url());if(family)draftHttp.push({event:'response',family,method:r.request().method(),status:r.status()})});context.on('requestfailed',r=>{const family=classify(r.url());if(family)draftHttp.push({event:'failed',family,method:r.method(),reason:r.failure()?.errorText})});
+ let cleanupReached,cleanupRelease;const atCleanup=new Promise(r=>cleanupReached=r),holdCleanup=new Promise(r=>cleanupRelease=r);
+ if(industry==='snow'&&width===390)await page.route('**/api/workspace-drafts/*',async route=>{if(route.request().method()==='DELETE'){cleanupReached();await holdCleanup}return route.continue()});
+ await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
+ if(industry==='snow'&&width===390){
+  await Promise.race([atCleanup,new Promise((_,reject)=>setTimeout(()=>reject(Error('Restore cleanup not reached')),10000))]);
+  assert((await page.locator('#workspaceRecoveryStatus').textContent()).includes('saved for 24 hours'));assert(await page.locator('#workspaceRecoveryChoices').isVisible());
+  const earlySnapshot=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),httpStart=draftHttp.length;
+  await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);assert.equal(await page.evaluate(()=>document.body.classList.contains('report-open')),false);assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),earlySnapshot);assert((await page.locator('#status').textContent()).includes('retry'));assert(await page.evaluate(()=>!!saveEstimateHistory.pending));assert.equal(draftHttp.slice(httpStart).filter(r=>r.family==='estimate-save'&&r.method==='POST').length,0,'Create before Restore finishes must not send an estimate save');
+  console.log('PASS deterministic Restore-cleanup race: early Create retains pending work, emits retry, sends no estimate POST; badge acknowledgement is not completion');cleanupRelease();
+ }
+ await page.locator('#workspaceRecoveryChoices').waitFor({state:'hidden'});if(industry==='snow'&&width===390)await page.unroute('**/api/workspace-drafts/*');
   await page.waitForFunction(()=>el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));
   assert.equal(await page.evaluate(()=>sessionToken),null,'Restoring customer details alone must not load or charge a property');assert.equal(await page.locator('#customerNotes').inputValue(),'FICTIONAL before property');
   console.log('PASS customer/pricing recovery before any property lookup');
@@ -41,14 +54,27 @@ script=script.replace(anchor,`
  page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
  await page.goto('http://127.0.0.1:8765/?industry='+industry);await page.waitForTimeout(1400);
  await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
- await page.waitForFunction(()=>sessionToken&&el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));
+ await page.waitForFunction(()=>sessionToken&&el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));await page.locator('#workspaceRecoveryChoices').waitFor({state:'hidden'});
  const restored=await page.evaluate(()=>({quote:captureQuoteSnapshot(),pricing:priceCalc(),customer:el('customerName').value,email:el('customerEmail').value}));
  assert.deepEqual(restored,original,'Forced-close Restore must preserve exact geometry, pricing and customer');
  assert.equal(await page.locator('#customerNotes').inputValue(),'FICTIONAL interrupted autosave');
  assert.deepEqual(await(await context.request.get('http://127.0.0.1:8765/api/estimates')).json(),countsBefore,'Restore must create no estimate');
  // Refresh offers the same acknowledged workspace, without automatic save/PDF generation.
- await page.reload();await page.waitForTimeout(1400);await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
- await page.waitForFunction(()=>sessionToken&&el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));
+ await page.reload();await page.waitForTimeout(1400);
+ const draftHttp=[];const classify=url=>{const p=new URL(url).pathname;return p==='/api/estimates'?'estimate-save':p.endsWith('/save-status')?'save-status':p.startsWith('/api/workspace-drafts/')?'draft':null};
+ context.on('response',r=>{const family=classify(r.url());if(family)draftHttp.push({event:'response',family,method:r.request().method(),status:r.status()})});context.on('requestfailed',r=>{const family=classify(r.url());if(family)draftHttp.push({event:'failed',family,method:r.method(),reason:r.failure()?.errorText})});
+ let cleanupReached,cleanupRelease;const atCleanup=new Promise(r=>cleanupReached=r),holdCleanup=new Promise(r=>cleanupRelease=r);
+ if(industry==='snow'&&width===390)await page.route('**/api/workspace-drafts/*',async route=>{if(route.request().method()==='DELETE'){cleanupReached();await holdCleanup}return route.continue()});
+ await page.locator('#workspaceRecoveryChoices button').filter({hasText:/^Restore$/}).first().click();
+ if(industry==='snow'&&width===390){
+  await Promise.race([atCleanup,new Promise((_,reject)=>setTimeout(()=>reject(Error('Restore cleanup not reached')),10000))]);
+  assert((await page.locator('#workspaceRecoveryStatus').textContent()).includes('saved for 24 hours'));assert(await page.locator('#workspaceRecoveryChoices').isVisible());
+  const earlySnapshot=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),httpStart=draftHttp.length;
+  await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);assert.equal(await page.evaluate(()=>document.body.classList.contains('report-open')),false);assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),earlySnapshot);assert((await page.locator('#status').textContent()).includes('retry'));assert(await page.evaluate(()=>!!saveEstimateHistory.pending));assert.equal(draftHttp.slice(httpStart).filter(r=>r.family==='estimate-save'&&r.method==='POST').length,0,'Create before Restore finishes must not send an estimate save');
+  console.log('PASS deterministic Restore-cleanup race: early Create retains pending work, emits retry, sends no estimate POST; badge acknowledgement is not completion');cleanupRelease();
+ }
+ await page.locator('#workspaceRecoveryChoices').waitFor({state:'hidden'});if(industry==='snow'&&width===390)await page.unroute('**/api/workspace-drafts/*');
+ await page.waitForFunction(()=>sessionToken&&el('workspaceRecoveryStatus').textContent.includes('saved for 24 hours'));await page.locator('#workspaceRecoveryChoices').waitFor({state:'hidden'});
  assert.deepEqual(await page.evaluate(()=>captureQuoteSnapshot()),original.quote);
  console.log('PASS actual tab closure/refresh, interrupted autosave warning/retry, exact restore without estimate creation',industry,width);
  if(industry==='snow'&&width===1440){
@@ -65,4 +91,6 @@ script=script.replace(anchor,`
 
 `+anchor);
 script=script.replace("if(industry==='snow'&&width===1440){const frozen","if(false){const frozen");
+const diagnostic="console.log('CREATE DIAGNOSTIC',await page.evaluate(";assert(script.includes(diagnostic));script=script.replace(diagnostic,"fs.writeFileSync(output+'/'+industry+'-'+width+'-draft-http.json',JSON.stringify(draftHttp,null,2));console.log('DRAFT_HTTP',JSON.stringify(draftHttp));"+diagnostic);
+const finish=" await page.screenshot({path:";assert(script.includes(finish));script=script.replace(finish," fs.writeFileSync(output+'/'+industry+'-'+width+'-draft-http.json',JSON.stringify(draftHttp,null,2));\n"+finish);
 new Function('require',script)(require);
