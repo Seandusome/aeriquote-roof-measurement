@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/qa-browser-crash-recovery.yml
       - scripts/test_*browser*.cjs
+      - scripts/fresh_user_browser_server.py
+      - site/onboarding.js
       - app.py
       - workspace_drafts.py
       - workspace_drafts.js
@@ -20,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -41,7 +43,8 @@ jobs:
       - name: Disposable browser workflow with fictional providers
         shell: bash
         run: |
-          python scripts/prelaunch_browser_server.py > /tmp/qa-browser-server.log 2>&1 &
+          if [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
+          python "$task_server" > /tmp/qa-browser-server.log 2>&1 &
           task_server_pid=$!
           trap 'kill "$task_server_pid" || true' EXIT
           python - <<'PY'
@@ -57,6 +60,7 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
+            fresh-user) node scripts/test_fresh_user_browser.cjs ;;
             roof-exports) node scripts/test_manual_roofing_browser.cjs ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
             drafts) node scripts/test_workspace_drafts_browser.cjs ;;

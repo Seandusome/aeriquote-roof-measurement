@@ -73,6 +73,7 @@ jobs:
       - run: node scripts/test_help_center.cjs
       - run: node scripts/test_support_form.cjs
       - run: node scripts/test_onboarding_finish.cjs
+      - run: node scripts/test_manual_pricing_start.cjs
       - run: node scripts/test_signup_flow.cjs
       - run: python scripts/test_new_user_flow.py
       - run: python scripts/test_recovery_allowance.py
