@@ -1,0 +1,30 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "api-checks.txt": "bf943caf320908684cd4fe08ca51b7ff46014387c690a37a8ef4d77bb6b2cc20",
+    "browser/results.json": "45ed92fbc653ca57142d961cdebaaa74cdf3d540f90915694612bd717bbb6170",
+    "browser/snow-1440-expanded.pdf": "b27cf5c51302b705a62bf922bb3c5a042465ead31b55a5442fbd1913f36ae2c5",
+    "browser/snow-1440-single.pdf": "c56b40adaa4ba083388de8ea7ea9dc8b5f200d32ca8d8e69c2562b7b4d7e6a8e",
+    "browser/snow-1440-source.json": "21cfe1d3279cbfd8f8a9f43f63e296f224191e7a69b5c0f3e3c85cca2b5f6370",
+    "browser/snow-1440.png": "f3f61c30d7e1f30817b54e32ed64228599112bdbe6e37da4829244c038483f99",
+    "client-checks.txt": "299bef5712c66f33b52c5a1e527937a0dad2ccf4938b1a59eefe1c59a19b9cb4",
+    "manual-roofing-fixture-fixed.txt": "b0e10beeae2ddd9c5e01b85c92ab1d24f6fe0abd1d534a2eb69fe71c9f69a1e0",
+    "manual-roofing-fixture-reproduction.txt": "6c9d18399fbd3071ef4dee35b4ab946d13073799e3b64870d30823b528e9fff2",
+    "old-autosave-ack-reproduction.txt": "e7686f61c5bf774aa3fc0527e5e3aa227749316478bde18bcc49a95fd7bc5f8a",
+    "old-autosave-later-edit-reproduction.txt": "1c8718e78e253e9431d5c1efa6db886a0179d8dae7d97cb16563fd79ac81603d",
+    "old-save-reproduction.txt": "fe4a9b6e7b766a0ae20316118c0715ecfcf831c1ea882638378c32c7afe42863",
+    "pdf-independent-checks.txt": "1f773c3dc299da939a37e94636a1edc16ca158b63f830fa06ffe5a31d64dfa7c",
+    "provenance.json": "d811b5923c548fb55dedd669450d04ede287cc9fedcdeb2db1f55b026706eb18",
+    "restored/results.json": "dbf520ba8aad051ce18b66f9af763f00eee44f3f876e812a37591c3fab4dc070",
+    "restored/snow-1440-expanded.pdf": "e4ffd72e4859b6c53b6569e87228391e93d833496bf29146a333509c666dacbe",
+    "restored/snow-1440-single.pdf": "648397961368625fd95811d7c5168935755149ed3db2a107be21fd68839fea40",
+    "restored/snow-1440-source.json": "47dd3e7bed9ebe68fb697025d516651600b250b5cd73543532a2cd2b02f214fb",
+    "restored/snow-1440.png": "44e4d938a69dbeacc24f65497e28c125cddb3eeabd57e50f35a5566530d80c8b",
+    "roofing/results.json": "be202430b8a6f17bcbf7c8197f65b8d53879950f81ed4eff1cc8d86f8edf0132",
+    "roofing/roofing-1440-expanded.pdf": "853971268f0d6f5bf4473ddb32de4777dd94cd8abfd782851c7677c1fc7013bb",
+    "roofing/roofing-1440-single.pdf": "10a92be09ad9612b6314e50b8770e1108340bb46dc6f98f2b7d6741af0573c0a",
+    "roofing/roofing-1440-source.json": "48784abf694854f101912b68ee0abdca94f3349503fc58bb4d6518d1e5638e88",
+    "roofing/roofing-1440.png": "e6671790635eb6b78e66536d2fcde7316990256a3d45b312b2e61ba6cb213973",
+    "workflows.json": "b75a1fc03d0ebb89e49937efff3627fa02859f4e092a290faf38041721f061bc"
+  }
+}

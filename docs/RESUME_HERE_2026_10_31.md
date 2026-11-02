@@ -1,3 +1,15 @@
+# November 2 — interrupted-save fixes and manual Roofing fixture diagnosis
+
+Read [the current QA report](QA_INTERRUPTED_SAVES_2026_11_02.md) first. Recovery source is69ab066c; the containing documentation commit is the new resume checkpoint. Recovery deployment remains0f065b9d /dep-dbjsosetlv9c73e6ck3g, auto-deploy OFF. Current source fixes are NOT deployed.
+
+- Fixed reproduced response-integrity defects: malformed estimate-save responses no longer clear pending work; malformed autosave acknowledgements no longer claim durability; uncertain accepted autosaves are reconciled with their exact version/payload before newer edits (including local revert and temporary wrong-account rejection). Pending operation/base versions and account/stale guards remain intact. No new features or schema/pricing/allowance/integration changes.
+- User-reported41503616072 manual Roofing failure: Single did not reach save because an obsolete HTTP200 `{}` mock left the real report unprepared. Valid id/version mock plus stricter per-layout/report-ready assertions fixes the fixture. Original both-exporters assertion retained. No PDF runtime change. Actual Chromium roof-exports downloaded Single1page/Expanded2pages with three22.62/0/45degree sections, customer and253.89 total; independent WGS84/Decimal and visual inspection pass.
+- User-reported41504755573 draft-races failure was a test synchronization race against the last deliberately malformed background PUT. Injection now drains before recovery; exact newest server note is asserted. Latest browser41505173632 all8jobs PASS, including draft-races and roof-exports. Application41505173311 PASS. Full recovery41505173423 PASS, including PostgreSQL16/18, the manual-roofing assertion and every previously skipped downstream check. Final cleanup completed. All required workflows pass on69ab066c; no unresolved CI failures. Results are recorded in the QA report/evidence.
+- Mainc049a04b /productiondep-db5b726k1f9s73e862ug unchanged. QA PostgreSQL18 resource available, external allowlist remains empty. Prior browser sessions are absent and Render shell needs login, so internal runtime-to-database binding was NOT reverified. No deployment or live-data write was attempted. Do not deploy until that binding is verified again; do not open DB networking or ask the owner to test today.
+- Pending: recovery-only deployment/live verification after isolation check; owner manual desktop review; physical-phone/Safari/Messenger. Owner is unavailable for manual testing. Automated work used fictional loopback/disposable QA only. After saving this checkpoint, STOP. Continue only on new instruction; track CI failures directly.
+
+---
+
 # November 1 — desktop race fixes; end-of-day checkpoint
 
 Read [desktop closeout](QA_DESKTOP_CLOSEOUT_2026_11_01.md) and [tomorrow's short desktop checklist](QA_TOMORROW_DESKTOP_2026_11_02.md).

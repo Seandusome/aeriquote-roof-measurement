@@ -1,0 +1,3 @@
+PASS API: owner/business/employee isolation, foreign-origin rejection, expired imagery without lookup/charge, side-effect-free restore, atomic save deletion, replay exactly once, late autosave rejection
+PASS SQLite: retries, lost responses, stale editors, rollback/credits, 12 concurrent metadata edits, 8 concurrent estimates/lookups/employees, expired access and business isolation
+PASS old-tab account mismatch blocks estimate/profile writes before credits; original-login recovery, idempotency, expiry and rendered workspace identity

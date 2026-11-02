@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Later edits must recover after an accepted autosave loses its acknowledgement
+
+false !== true
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_autosave_interruption.cjs:22:9 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

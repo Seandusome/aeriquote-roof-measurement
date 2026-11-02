@@ -1,0 +1,17 @@
+REPORT_DIAGNOSTIC {"open":false,"status":"Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry."}
+PDF_FIXTURE_ERROR Cannot read properties of undefined (reading 'clientWidth')
+EXPORT_DIAGNOSTIC {"layout":"single","saves":0,"captures":1,"status":"PDF could not be created. Use PRINT ESTIMATE while this is corrected."}
+EXPORT_DIAGNOSTIC {"layout":"expanded","saves":1,"captures":3,"status":"Estimate PDF downloaded."}
+AssertionError [ERR_ASSERTION]: Both real exporter entry points reach PDF save
+
+1 !== 2
+
+    at eval (eval at <anonymous> ([stdin]:1:835), <anonymous>:46:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 2,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

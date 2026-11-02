@@ -1,0 +1,5 @@
+PASS: lost autosave response followed by later edits confirms exact uncertain write first, then acknowledges newest work without stale overwrite
+PASS: explicit save recovers from a consumed draft ID, background autosave never resurrects it, exact operation/base version retained, account and stale-edit conflicts stay blocked
+PASS: malformed/truncated/empty save acknowledgements retain pending work and exact retry operation; valid acknowledgement alone clears it
+PASS: single-flight create/lookup, stable retry identity, lost response, timeout, expired login, conflict message and existing workspace preservation
+PASS: unchanged-total edits persist, duplicate skips, job metadata preserved, failed save visible and retryable

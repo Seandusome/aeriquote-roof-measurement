@@ -1,0 +1,1637 @@
+[
+  {
+    "run": {
+      "id": 41505173311,
+      "name": "Validate AeriQuote application",
+      "head_sha": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/41505173311",
+      "updated_at": "2026-11-02T18:56:05Z"
+    },
+    "jobs": [
+      {
+        "id": 125482505232,
+        "name": "validate",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173311,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Verify deployable source and static assets",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Validate app.py syntax",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run": {
+      "id": 41505173632,
+      "name": "Isolated browser crash and recovery QA",
+      "head_sha": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/41505173632",
+      "updated_at": "2026-11-02T18:57:32Z"
+    },
+    "jobs": [
+      {
+        "id": 125482505903,
+        "name": "browser (drafts)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482505946,
+        "name": "browser (pdf-failure)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482505995,
+        "name": "browser (public)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482506150,
+        "name": "browser (property-failure)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482506176,
+        "name": "browser (recovery)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482506545,
+        "name": "browser (draft-races)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482506688,
+        "name": "browser (roof-exports)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 125482506739,
+        "name": "browser (baseline)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173632,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npx playwright install --with-deps chromium",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Disposable browser workflow with fictional providers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "run": {
+      "id": 41505173423,
+      "name": "Validate landscaping recovery",
+      "head_sha": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/41505173423",
+      "updated_at": "2026-11-02T19:02:20Z"
+    },
+    "jobs": [
+      {
+        "id": 125482504270,
+        "name": "postgres_integrity (18)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173423,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Initialize containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Real PostgreSQL concurrent requests and failure recovery",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Isolated workspace drafts and charged-save recovery",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Property imagery acceptance and exactly-once credits",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Paid subscription anniversary concurrency",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Password-reset login race and employee access lifecycle",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Cross-role signup identity concurrency",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Mixed roof source overlap and no-write rejection",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Secret-canary application, browser and actual Gunicorn logging regression",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Isolated operational privacy and support audit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Backup into new disposable database and previous-app compatibility drill",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          },
+          {
+            "name": "Stop containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 30
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 31
+          }
+        ]
+      },
+      {
+        "id": 125482504815,
+        "name": "recovery",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173423,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install Jinja2==3.1.6 Flask==3.1.2 shapely==2.1.2 geographiclib==2.1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run python scripts/check_release_files.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run python -m py_compile app.py property_address.py property_sessions.py activation_metrics.py account_recovery.py support_center.py storage_checks.py support_inbound.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run python scripts/test_database_initialization.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run python scripts/test_workspace_drafts.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Run python scripts/test_workspace_drafts_api.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Run python scripts/test_property_session_recovery.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Run python scripts/test_property_address.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Run python scripts/test_complex_roofs.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Run python scripts/test_activation_metrics.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Run python scripts/test_account_access.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Run python scripts/test_business_isolation.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Run python scripts/test_workspace_account_binding.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Run python scripts/test_account_credits.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Run python scripts/test_password_recovery.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          },
+          {
+            "name": "Run python scripts/test_login_diagnostics.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 20
+          },
+          {
+            "name": "Run python scripts/test_qa_session_expiry.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Run python scripts/test_security_lifecycle.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Run python scripts/test_login_identity_race.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          },
+          {
+            "name": "Run python scripts/test_public_routes.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24
+          },
+          {
+            "name": "Run python scripts/test_support_storage.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25
+          },
+          {
+            "name": "Run python scripts/test_support_workflow.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26
+          },
+          {
+            "name": "Run python scripts/test_support_replies.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27
+          },
+          {
+            "name": "Run python scripts/test_support_inbound.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Run python scripts/test_support_quote_display.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          },
+          {
+            "name": "Run node scripts/test_activation_controls.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 30
+          },
+          {
+            "name": "Run python scripts/check_landscaping_multi_area.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 31
+          },
+          {
+            "name": "Run node scripts/test_landscaping_engine.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 32
+          },
+          {
+            "name": "Run python scripts/test_landscaping_rendering.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 33
+          },
+          {
+            "name": "Run npm install --no-save --package-lock=false jsdom@30.1.2 leaflet@1.9.4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 34
+          },
+          {
+            "name": "Run node scripts/test_workspace_draft_save_retry.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 35
+          },
+          {
+            "name": "Run node scripts/test_autosave_interruption.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 36
+          },
+          {
+            "name": "Run node scripts/test_landscaping_controls.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 37
+          },
+          {
+            "name": "Run node scripts/test_warranty_shields.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 38
+          },
+          {
+            "name": "Run node scripts/test_surface_workspace.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 39
+          },
+          {
+            "name": "Run node scripts/test_industry_wording.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 40
+          },
+          {
+            "name": "Run node scripts/test_unit_address_ui.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 41
+          },
+          {
+            "name": "Run node scripts/test_phone_pdf.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 42
+          },
+          {
+            "name": "Run node scripts/test_browser_log_privacy.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 43
+          },
+          {
+            "name": "Run node scripts/test_expanded_pdf.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 44
+          },
+          {
+            "name": "Run node scripts/test_saved_editing.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 45
+          },
+          {
+            "name": "Run node scripts/test_saved_diagram_scope.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 46
+          },
+          {
+            "name": "Run node scripts/test_estimate_save_integrity.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 47
+          },
+          {
+            "name": "Run node scripts/test_profile_save.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 48
+          },
+          {
+            "name": "Run node scripts/test_profile_restore.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 49
+          },
+          {
+            "name": "Run node scripts/test_country_regions.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 50
+          },
+          {
+            "name": "Run node scripts/test_report_measurement_correction.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 51
+          },
+          {
+            "name": "Run node scripts/test_quote_pricing_validation.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 52
+          },
+          {
+            "name": "Run python scripts/test_estimate_pricing_api.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 53
+          },
+          {
+            "name": "Run python scripts/test_saved_editing_session.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 54
+          },
+          {
+            "name": "Run node scripts/test_price_rounding.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 55
+          },
+          {
+            "name": "Run node scripts/test_saved_money_guard.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 56
+          },
+          {
+            "name": "Run node scripts/test_measurement_edges.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 57
+          },
+          {
+            "name": "Run node scripts/test_public_ui.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 58
+          },
+          {
+            "name": "Run node scripts/test_help_center.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 59
+          },
+          {
+            "name": "Run node scripts/test_support_form.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 60
+          },
+          {
+            "name": "Run node scripts/test_onboarding_finish.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 61
+          },
+          {
+            "name": "Run node scripts/test_signup_flow.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 62
+          },
+          {
+            "name": "Run python scripts/test_new_user_flow.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 63
+          },
+          {
+            "name": "Run python scripts/test_recovery_allowance.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 64
+          },
+          {
+            "name": "Run node scripts/test_landscaping_engine.cjs paving",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 65
+          },
+          {
+            "name": "Run node scripts/test_landscaping_engine.cjs pressure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 66
+          },
+          {
+            "name": "Run node scripts/test_landscaping_engine.cjs snow",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 67
+          },
+          {
+            "name": "Run python scripts/test_geometry_integrity.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 68
+          },
+          {
+            "name": "Run python scripts/test_priced_roof_scope.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 69
+          },
+          {
+            "name": "Run python scripts/test_adversarial_oct31.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 70
+          },
+          {
+            "name": "Run python scripts/test_final_reliability.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 71
+          },
+          {
+            "name": "Run node scripts/test_geometry_client.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 72
+          },
+          {
+            "name": "Run python scripts/test_server_pricing.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 73
+          },
+          {
+            "name": "Run python scripts/test_automatic_roof_api.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 74
+          },
+          {
+            "name": "Run node scripts/test_roof_integrity.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 75
+          },
+          {
+            "name": "Run node scripts/test_priced_roof_scope.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 76
+          },
+          {
+            "name": "Run python scripts/test_qa_auth_flow.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 77
+          },
+          {
+            "name": "Run python scripts/test_failure_recovery.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 78
+          },
+          {
+            "name": "Run node scripts/test_failure_recovery.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 79
+          },
+          {
+            "name": "Run node scripts/test_save_acknowledgement.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 80
+          },
+          {
+            "name": "Run node scripts/test_property_loading.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 81
+          },
+          {
+            "name": "Run python scripts/test_property_acceptance.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 82
+          },
+          {
+            "name": "Run python scripts/test_subscription_periods.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 83
+          },
+          {
+            "name": "Run python scripts/test_profile_integrity.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 84
+          },
+          {
+            "name": "Run python scripts/test_manual_roofing.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 85
+          },
+          {
+            "name": "Run node scripts/test_manual_roofing.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 86
+          },
+          {
+            "name": "Run python scripts/test_vector_pdf.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 87
+          },
+          {
+            "name": "Run node scripts/test_vector_pdf.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 88
+          },
+          {
+            "name": "Run node scripts/test_vector_download.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 89
+          },
+          {
+            "name": "Run node scripts/test_vector_full_report.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 90
+          },
+          {
+            "name": "Run python scripts/test_api_cost_routing.py",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 91
+          },
+          {
+            "name": "Run node scripts/test_logo_cache.cjs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 92
+          },
+          {
+            "name": "Post Run actions/setup-node@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 182
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 183
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 184
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 185
+          }
+        ]
+      },
+      {
+        "id": 125482505092,
+        "name": "postgres_integrity (16)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41505173423,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Initialize containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements.txt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Real PostgreSQL concurrent requests and failure recovery",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Isolated workspace drafts and charged-save recovery",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Property imagery acceptance and exactly-once credits",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Paid subscription anniversary concurrency",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Password-reset login race and employee access lifecycle",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Cross-role signup identity concurrency",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Mixed roof source overlap and no-write rejection",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Secret-canary application, browser and actual Gunicorn logging regression",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Isolated operational privacy and support audit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Backup into new disposable database and previous-app compatibility drill",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/setup-python@v6",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28
+          },
+          {
+            "name": "Post Run actions/checkout@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          },
+          {
+            "name": "Stop containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 30
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 31
+          }
+        ]
+      }
+    ]
+  }
+]

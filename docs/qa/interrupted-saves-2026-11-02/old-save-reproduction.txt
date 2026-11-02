@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Unreadable/malformed 200 truncated must not mark work saved
+
+true !== false
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_save_acknowledgement.cjs:12:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

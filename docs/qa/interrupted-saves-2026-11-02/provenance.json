@@ -1,0 +1,39 @@
+{
+  "application_commit": "69ab066c67cb429d4e12c8dad2d902140fbbc405",
+  "application_tree": "517109d7ed6082ae8314868ae1e16b41ff0b9783",
+  "browser_run": 41505173632,
+  "race_pass_lines": [
+    "2026-11-02T18:56:36.4456687Z PASS accepted autosave with malformed acknowledgement retains server copy and visible unsaved warning; identical retry recovers",
+    "2026-11-02T18:56:38.1420674Z PASS actual delayed Restore cleanup retains both original newer acknowledgement and the copied older snapshot",
+    "2026-11-02T18:56:38.3369917Z PASS committed save with truncated HTTP200 blocks report, keeps exact work, confirms original receipt on retry without another revision",
+    "2026-11-02T18:56:38.3599693Z PASS explicit Create after a remotely closed recovery ID retains the exact later edit and saves successfully",
+    "2026-11-02T18:56:41.9592406Z PASS actual concurrent saved editors: first save succeeds once, stale second save409 retains its acknowledged workspace and original base version"
+  ],
+  "artifact_provenance": {
+    "browser": {
+      "run": 41504056554,
+      "artifact": 13169617801,
+      "commit": "522a0855e9c30fd55146db81f380357a0b8c9f0c"
+    },
+    "restored": {
+      "run": 41504056554,
+      "artifact": 13170706487,
+      "commit": "522a0855e9c30fd55146db81f380357a0b8c9f0c"
+    },
+    "roofing": {
+      "run": 41505173632,
+      "artifact": 13171075307,
+      "commit": "69ab066c67cb429d4e12c8dad2d902140fbbc405"
+    }
+  },
+  "recovery_live": "0f065b9de44b7ad8e9a90ad0c78ad73b43e515d6",
+  "deployment": "dep-dbjsosetlv9c73e6ck3g",
+  "autodeploy": "off",
+  "qa_database_resource": "dpg-dbj4f7lg1s2s73eob8t0-a",
+  "qa_network_allowlist": [],
+  "runtime_database_binding_reverified": false,
+  "reason": "Previous browser sessions absent; Render shell requires login. No deployment performed.",
+  "main": "c049a04b2ac5cc4df3d5c253fe9ca12f1d85806a",
+  "production_deployment": "dep-db5b726k1f9s73e862ug",
+  "live_data_modified": false
+}

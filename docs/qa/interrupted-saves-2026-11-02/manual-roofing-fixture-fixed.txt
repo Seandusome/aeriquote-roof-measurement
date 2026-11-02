@@ -1,0 +1,3 @@
+PASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only
+PASS real customer report from DOM/Leaflet manual sections reaches QA vector download with matching price, unchanged snapshot, and no provider paths
+PASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only

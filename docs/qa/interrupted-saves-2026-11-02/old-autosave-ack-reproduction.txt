@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Malformed autosave acknowledgement must not claim recovery is saved
+
+true !== false
+
+    at /workspace/scratch/5820ad902b8c/aeriquote/scripts/test_workspace_draft_save_retry.cjs:23:21 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
