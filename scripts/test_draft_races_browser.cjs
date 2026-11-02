@@ -60,6 +60,7 @@ script=script.replace(firstFlush,String.raw`
  assert((await page.locator('#workspaceRecoveryStatus').textContent()).includes('have not reached'));
  const interruptedHeaders=await page.evaluate(()=>aqRecovery.headers());const acceptedDraft=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+interruptedHeaders['X-AeriQuote-Draft'],{headers:interruptedHeaders})).json();
  assert.equal(acceptedDraft.workspace.values.customerName,await page.locator('#customerName').inputValue());
+ await page.fill('#customerNotes','FICTIONAL EDIT AFTER ACCEPTED AUTOSAVE LOST ACK');
  await page.unroute('**/api/workspace-drafts/*');
  console.log('PASS accepted autosave with malformed acknowledgement retains server copy and visible unsaved warning; identical retry recovers');
 `+firstFlush);

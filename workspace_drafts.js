@@ -6,7 +6,7 @@
  const identity=meta.dataset.principal,account=meta.dataset.accountId;
  const headers={'Content-Type':'application/json','X-AeriQuote-Account':account,'X-AeriQuote-Principal':identity};
  const uuid=()=>crypto.randomUUID();
- let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null,lastError=null,touched=false;
+ let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null,lastError=null,touched=false,uncertainWrite=null;
  const badge=document.createElement('div');badge.id='workspaceRecoveryStatus';badge.setAttribute('role','status');badge.style.cssText='padding:7px 12px;font-size:12px;background:#f0f5f3;color:#24483a';
  document.body.prepend(badge);
  const say=(message,warn=false)=>{badge.textContent=message;badge.style.background=warn?'#fff0d5':'#f0f5f3'};
@@ -35,16 +35,21 @@
   if(writing){const ok=await writing;if(!ok)return false;return flush()}
   let workspace;try{workspace=capture()}catch(e){say('Changes have not reached recovery storage. Keep this tab open.',true);return false}
   if(!workspace)return true;
-  const serialized=JSON.stringify(workspace);if(serialized===ack)return true;
+  const serialized=JSON.stringify(workspace);if(serialized===ack&&!uncertainWrite)return true;
   say('Changes have not reached the server yet. Keep this tab open.',true);
-  const draftId=id,draftVersion=version;
+  // Resolve an uncertain accepted write before attempting a newer payload.
+  // Reusing its exact version/body lets the server recognize a lost-ack retry.
+  const attempt=uncertainWrite?.id===id?uncertainWrite:{id,version,workspace:clone(workspace),serialized};
+  const draftId=attempt.id,draftVersion=attempt.version;
   writing=(async()=>{
-   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=serialized;if(JSON.stringify(capture())===serialized)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
-   catch(e){lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
+   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace:attempt.workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=attempt.serialized;uncertainWrite=null;if(JSON.stringify(capture())===ack)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
+   catch(e){if(id===draftId)uncertainWrite=e.status>=400&&e.status<500?null:attempt;lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
-  try{return await writing}finally{writing=null}
+  let ok;try{ok=await writing}finally{writing=null}
+  if(ok&&id===draftId&&JSON.stringify(capture())!==ack)return flush();
+  return ok;
  }
- function newDraft(){id=uuid();version=0;ack='';ended=false}
+ function newDraft(){id=uuid();version=0;ack='';ended=false;uncertainWrite=null}
  async function restore(row){
   busy=true;
   try{
