@@ -8,12 +8,12 @@ const c={AbortController,setTimeout,clearTimeout,el:id=>fields[id],quotePricingE
 vm.createContext(c);vm.runInContext(save,c);
 (async()=>{
  let release;
- c.fetch=async(url,o)=>{posts.push(o);await new Promise(r=>release=r);return{ok:true,json:async()=>({version:'saved-version'})}};
+ c.fetch=async(url,o)=>{posts.push(o);await new Promise(r=>release=r);return{ok:true,json:async()=>({id:'fixture-estimate',version:'saved-version'})}};
  const first=c.saveEstimateHistory(),second=c.saveEstimateHistory();release();assert.deepEqual(await Promise.all([first,second]),[true,true]);assert.equal(posts.length,1,'Rapid double click sends one POST');
  fields.customerName.value='QA TEST uncertain response';
  c.fetch=async(url,o)=>{posts.push(o);throw Error('Response lost after commit')};
  assert.equal(await c.saveEstimateHistory(),false);const uncertain=posts.at(-1);
- c.fetch=async(url,o)=>{posts.push(o);return{ok:true,json:async()=>({version:'new-version'})}};
+ c.fetch=async(url,o)=>{posts.push(o);return{ok:true,json:async()=>({id:'fixture-estimate',version:'new-version'})}};
  assert.equal(await c.saveEstimateHistory(),true);assert.equal(posts.at(-1).headers['Idempotency-Key'],uncertain.headers['Idempotency-Key']);assert.equal(posts.at(-1).body,uncertain.body);assert.equal(posts.at(-1).headers['If-Match'],'saved-version');
  fields.customerName.value='QA TEST expired';const before=c.lastHistorySaveKey;
  c.fetch=async()=>({ok:false,status:401,json:async()=>({error:'Login required'})});

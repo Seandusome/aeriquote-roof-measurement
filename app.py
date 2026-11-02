@@ -2742,7 +2742,7 @@ async function performEstimateHistorySave(){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);let r;
   try{r=await fetch('/api/estimates',{method:'POST',headers,body:JSON.stringify(frozen),signal:controller.signal})}finally{clearTimeout(timeout)}
   if(!r.ok){let message='';try{message=(await r.json()).error||''}catch(e){}const error=new Error(message||'save failed');error.status=r.status;throw error}
-  let result={};try{result=await r.json()}catch(e){}saveEstimateHistory.baseVersion=result.version||saveEstimateHistory.baseVersion;
+  const result=await r.json();if(!result||Array.isArray(result)||typeof result.id!=='string'||!result.id.trim()||typeof result.version!=='string'||!result.version.trim())throw new Error('Save acknowledgement unavailable');saveEstimateHistory.baseVersion=result.version;
   lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;if(typeof window!=='undefined'&&window.aqRecovery)window.aqRecovery.saved();return true;
  }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('AQ:estimate-save-failed');status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }

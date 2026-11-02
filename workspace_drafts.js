@@ -39,7 +39,7 @@
   say('Changes have not reached the server yet. Keep this tab open.',true);
   const draftId=id,draftVersion=version;
   writing=(async()=>{
-   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;version=r.version;ack=serialized;if(JSON.stringify(capture())===serialized)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
+   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=serialized;if(JSON.stringify(capture())===serialized)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
    catch(e){lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
   try{return await writing}finally{writing=null}

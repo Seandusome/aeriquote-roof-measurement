@@ -90,6 +90,7 @@ jobs:
       - run: python scripts/test_qa_auth_flow.py
       - run: python scripts/test_failure_recovery.py
       - run: node scripts/test_failure_recovery.cjs
+      - run: node scripts/test_save_acknowledgement.cjs
       - run: node scripts/test_property_loading.cjs
       - run: python scripts/test_property_acceptance.py
       - run: python scripts/test_subscription_periods.py

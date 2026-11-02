@@ -50,4 +50,37 @@ script=script.replace(after,String.raw`
  await context.request.delete('http://127.0.0.1:8765/api/workspace-drafts/'+staleHeaders['X-AeriQuote-Draft'],{headers:staleHeaders});for(const e of raceEditors)await e.close();
  console.log('PASS actual concurrent saved editors: first save succeeds once, stale second save409 retains its acknowledged workspace and original base version');
 `+after);
+
+// Different interruption: server accepts the PUT, but its successful response is
+// replaced with unreadable acknowledgement data. Never announce durability early.
+const firstFlush=" assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);";assert(script.includes(firstFlush));
+script=script.replace(firstFlush,String.raw`
+ await page.route('**/api/workspace-drafts/*',async route=>{if(route.request().method()!=='PUT')return route.continue();const accepted=await route.fetch();assert.equal(accepted.status(),200);return route.fulfill({status:200,contentType:'application/json',body:'{}'})});
+ assert.equal(await page.evaluate(()=>aqRecovery.flush()),false);
+ assert((await page.locator('#workspaceRecoveryStatus').textContent()).includes('have not reached'));
+ const interruptedHeaders=await page.evaluate(()=>aqRecovery.headers());const acceptedDraft=await(await context.request.get('http://127.0.0.1:8765/api/workspace-drafts/'+interruptedHeaders['X-AeriQuote-Draft'],{headers:interruptedHeaders})).json();
+ assert.equal(acceptedDraft.workspace.values.customerName,await page.locator('#customerName').inputValue());
+ await page.unroute('**/api/workspace-drafts/*');
+ console.log('PASS accepted autosave with malformed acknowledgement retains server copy and visible unsaved warning; identical retry recovers');
+`+firstFlush);
+const firstCreate=" await page.click('#createEstimateBtn');await page.waitForFunction(()=>document.body.classList.contains('report-open'),{timeout:10000})";assert(script.includes(firstCreate));
+script=script.replace(firstCreate,String.raw`
+ let acceptedSave,savePosts=0;
+ await page.route('**/api/estimates',async route=>{if(route.request().method()!=='POST')return route.continue();savePosts++;const response=await route.fetch();assert.equal(response.status(),200);acceptedSave=await response.json();return route.fulfill({status:200,contentType:'application/json',body:'{"id":'})});
+ const uncertainSnapshot=await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot()));
+ await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);
+ assert.equal(await page.evaluate(()=>document.body.classList.contains('report-open')),false);
+ assert.equal(await page.evaluate(()=>JSON.stringify(captureQuoteSnapshot())),uncertainSnapshot);
+ assert(await page.evaluate(()=>!!saveEstimateHistory.pending?.payload));assert((await page.locator('#status').textContent()).includes('retry'));
+ const acceptedVersions=await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+acceptedSave.id+'/versions')).json();
+ assert.equal(acceptedVersions.revisions.length,0);
+ await page.unroute('**/api/estimates');
+`+firstCreate);
+const reportOpened=" console.log('report opened');";assert(script.includes(reportOpened));
+script=script.replace(reportOpened,String.raw`
+ assert.equal(savePosts,1);const confirmedVersions=await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+acceptedSave.id+'/versions')).json();assert.equal(confirmedVersions.revisions.length,0);assert.equal(confirmedVersions.current.id,acceptedSave.id);
+ assert.equal(await page.evaluate(()=>saveEstimateHistory.pending),null);
+ console.log('PASS committed save with truncated HTTP200 blocks report, keeps exact work, confirms original receipt on retry without another revision');
+`+reportOpened);
 new Function('require',script)(require);
+
