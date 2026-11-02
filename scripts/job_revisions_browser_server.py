@@ -8,6 +8,12 @@ con=fixture.disposable_db()
 con.execute("UPDATE dealers SET plan_code='basic',lookup_limit=25,estimate_limit=25 WHERE id='qa-browser'")
 con.execute("UPDATE account_allowances SET complimentary=0 WHERE dealer_id='qa-browser'")
 con.commit();con.close()
+def fictional_property(d):
+ response=fixture.fixture.fixture(d);body=response.get_json();body['formatted_address']=d.get('address') or '1 Fictional QA Street, Saskatoon, SK, Canada'
+ a.SESSIONS[body['token']]['formatted_address']=body['formatted_address'];a.SESSIONS.persist(body['token'])
+ return a.jsonify(body)
+a.perform_property_lookup=fictional_property
+
 # Exercise the real report-map endpoints and their Static Maps path generation.
 # Only the external provider bytes are replaced; unexpected requests still fail.
 def synthetic_static_map(req,timeout=None):
