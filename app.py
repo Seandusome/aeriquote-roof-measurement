@@ -669,15 +669,18 @@ function translatePavingText(t){return translatePressureText(t).replace(/Gutters
 function translateLandscapingText(t){return translatePressureText(t).replace(/Driveways • patios • sidewalks • parking/g,'Lawns • sod • garden beds • patios').replace(/Gutters • fencing • curbing/g,'Edging • borders • retaining walls').replace(/Additional Cleaning Services/g,'Additional Landscaping Services').replace(/cleaning surface/gi,'landscaping area').replace(/cleaning surfaces/gi,'landscaping areas').replace(/cleaning/gi,'landscaping');}
 function applyBusinessTerminology(root=document.body){
  const mode=currentBusinessType();
+ // Translate interface copy only. These fields render immutable user/provider data.
+ const protectedContent='.expandedPdfExport,.pdf-export,#jsProperty,#rAddress,#rCustomerName,#rCustomerPhone,#rCustomerEmail,#rEstimateSubtitle,#rEstimateDealerSub,#rDealerCompany,#rDealerName,#rPhone,#rDealerEmail,#rDealerWebsite,#rDealerAddress,#rMarketingHeading,#rMarketingBenefits,#rMarketingWarranty,#rCtaHeading,#rCtaText,#historyResults,#rPricing,#rProperty,#summary,#googleMatch,#addressAutoStatus,#propertyVerify';
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
  nodes.forEach(n=>{
-   const p=n.parentElement;if(!p||['SCRIPT','STYLE','OPTION'].includes(p.tagName))return;
+   const p=n.parentElement;if(!p||['SCRIPT','STYLE','OPTION'].includes(p.tagName)||p.closest(protectedContent))return;
    if(!_aeriOriginalText.has(n))_aeriOriginalText.set(n,n.nodeValue);
    const base=_aeriOriginalText.get(n);
    n.nodeValue=mode==='snow'?translateSnowText(base):mode==='paving'?translatePavingText(base):mode==='landscaping'?translateLandscapingText(base):mode==='pressure'?translatePressureText(base):base;
  });
  document.querySelectorAll('[data-tip],[title],[aria-label]').forEach(node=>{
+  if(node.closest(protectedContent))return;
   let original=_aeriOriginalAttributes.get(node);if(!original){original={};for(const attr of ['data-tip','title','aria-label'])if(node.hasAttribute(attr))original[attr]=node.getAttribute(attr);_aeriOriginalAttributes.set(node,original)}
   for(const [attr,base] of Object.entries(original))node.setAttribute(attr,mode==='snow'?(attr==='data-tip'&&/pitch/i.test(base)?'Measure the snow-clearing service area or linear route, then save the measurement.':translateSnowText(base)):base);
  });
@@ -721,7 +724,7 @@ function applyBusinessTerminology(root=document.body){
  };
  if(snow){
    document.querySelectorAll('body *').forEach(x=>{
-     if(['SCRIPT','STYLE'].includes(x.tagName)||x.children.length)return;
+     if(['SCRIPT','STYLE'].includes(x.tagName)||x.children.length||x.closest(protectedContent))return;
      const tx=(x.textContent||'').trim();
      if(/^Main House$/i.test(tx))x.textContent='Primary Service Area';
      else if(/Main house and added areas can be edited separately/i.test(tx))x.textContent='Choose which service area outline to edit. Primary and additional service areas can be edited separately. Picture only — measurements and price stay unchanged.';
