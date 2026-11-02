@@ -78,6 +78,7 @@ jobs:
       - run: node scripts/test_signup_flow.cjs
       - run: python scripts/test_new_user_flow.py
       - run: python scripts/test_recovery_allowance.py
+      - run: python scripts/test_existing_job_trial.py
       - run: node scripts/test_landscaping_engine.cjs paving
       - run: node scripts/test_landscaping_engine.cjs pressure
       - run: node scripts/test_landscaping_engine.cjs snow

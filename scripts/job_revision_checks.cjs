@@ -65,8 +65,25 @@ module.exports=async function({page,context,industry,saved,payload,draw,pts,outp
  for(const layout of ['single','expanded']){await page.selectOption('#estimatePdfLayout',layout);const d=page.waitForEvent('download',{timeout:45000});await page.click('#downloadPdfBtn');await(await d).saveAs(output+'/'+industry+'-updated-'+layout+'.pdf');assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),pdfState)}
  await page.screenshot({path:output+'/'+industry+'-updated.png',fullPage:true});
  assert.deepEqual((await versions()).revisions[0].payload,payload);assert.deepEqual((await versions()).current.payload,final.current.payload);
+ const invalidResults=[];
+ for(const kind of ['missing-points','wrong-quantity','invalid-rate-or-pitch','missing-active-measurement']){
+  const invalid=JSON.parse(JSON.stringify(final.current.payload));const q=invalid.quote;
+  if(industry==='roofing'){
+   if(kind==='missing-points')q.manualPlanes[0].points=q.manualPlanes[0].points.slice(0,2);
+   if(kind==='wrong-quantity')q.manualPlanes[0].surface_sqft=1;
+   if(kind==='invalid-rate-or-pitch')q.manualPlanes[0].pitch_degrees=80;
+   if(kind==='missing-active-measurement')q.manualPlanes=[];
+  }else{
+   if(kind==='missing-points')q.commercialAreas[0].points=q.commercialAreas[0].points.slice(0,2);
+   if(kind==='wrong-quantity')q.commercialAreas[0].sqft+=1000;
+   if(kind==='invalid-rate-or-pitch')q.commercialAreas[0].rate=-1;
+   if(kind==='missing-active-measurement')q.linearPoints=[];
+  }
+  const rejected=await context.request.post('http://127.0.0.1:8765/api/estimates',{headers:{'Idempotency-Key':'audit-invalid-'+industry+'-'+kind},data:invalid});assert.equal(rejected.status(),400,industry+' '+kind);assert((await rejected.json()).error);invalidResults.push({kind,status:400});
+ }
+ assert.deepEqual(await versions(),final,'Invalid active geometry must not alter current or older revisions');assert.deepEqual(await state(),paidEnd,'Rejected malformed jobs do not charge an allowance or create receipts');
  // Editing the older revision is a distinct stale case from simultaneous current tabs.
  await page.evaluate(id=>openHistoricalEstimate(id,0),saved.id);await page.getByRole('button',{name:'EDIT MEASUREMENTS / PRICE',exact:true}).click();await page.waitForFunction(()=>sessionToken&&!savedEstimateEditContext&&!document.body.classList.contains('report-open'));if(industry==='roofing')await page.locator('#manualRoofScopeConfirmed').check();await page.click('#customerNotes');await page.fill('#customerNotes','FICTIONAL STALE OLDER '+industry);assert.equal(await page.evaluate(()=>aqRecovery.flush()),true);const staleBase=await page.evaluate(()=>saveEstimateHistory.baseVersion);const racePayload=JSON.parse(JSON.stringify(final.current.payload));racePayload.customer_notes='FICTIONAL COMPETING CURRENT EDIT '+industry;const competing=await context.request.post('http://127.0.0.1:8765/api/estimates',{headers:{'Idempotency-Key':'audit-competing-'+industry,'If-Match':staleBase},data:racePayload});assert.equal(competing.status(),200);const raceWinner=await versions();assert.equal(raceWinner.revisions.length,final.revisions.length+1);await page.click('#createEstimateBtn');await page.waitForFunction(()=>!estimateOpenInProgress);assert.equal(await page.evaluate(()=>saveEstimateHistory.lastFailureStatus),409);assert.equal(await page.locator('#customerNotes').inputValue(),'FICTIONAL STALE OLDER '+industry);assert.deepEqual(await versions(),raceWinner);assert.deepEqual(raceWinner.revisions[0].payload,payload);assert.equal((await state()).paid.estimates,paidEnd.paid.estimates);const staleHeaders=await page.evaluate(()=>aqRecovery.headers());assert.equal((await context.request.delete('http://127.0.0.1:8765/api/workspace-drafts/'+staleHeaders['X-AeriQuote-Draft'],{headers:staleHeaders})).status(),200);page.off('request',onMapRequest);
- fs.writeFileSync(output+'/'+industry+'-edit-audit.json',JSON.stringify({industry,initial:paidStart,final:paidEnd,original:payload,updated:final.current.payload,projection,mapRequests,staleOlderBlocked:true,competingCurrent:raceWinner.current.payload,afterCompeting:await state(),olderUnchanged:true,lostResponseOneRevision:true,restoreExact:true},null,2));
+ fs.writeFileSync(output+'/'+industry+'-edit-audit.json',JSON.stringify({industry,initial:paidStart,final:paidEnd,original:payload,updated:final.current.payload,invalidResults,projection,mapRequests,staleOlderBlocked:true,competingCurrent:raceWinner.current.payload,afterCompeting:await state(),olderUnchanged:true,lostResponseOneRevision:true,restoreExact:true},null,2));
  seen.push({id:saved.id,industry});console.log('PASS existing-job lifecycle',industry,'Cancel/add/replace/delete/restore/lost-response/immutable older revision/normal paid allowance/both updated PDFs');
 };
