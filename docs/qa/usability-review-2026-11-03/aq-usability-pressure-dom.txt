@@ -1,0 +1,233 @@
+- status: Recovery copy saved for 24 hours.
+- link "AeriQuote website":
+  - /url: /site/
+  - img "AeriQuote"
+- generic: PRESSURE WASHING MEASUREMENT & ESTIMATE SOFTWARE
+- button "EMPLOYEES"
+- link "VIEW PLANS / UPGRADE":
+  - /url: /site/pricing.html
+- button "HELP / FIRST ESTIMATE"
+- button "PREVIOUS ESTIMATES"
+- button "LOG OUT"
+- strong:
+  - generic: ✓
+  - text: Property
+- text: Enter address & load
+- strong:
+  - generic: ✓
+  - text: Measure
+- text: Choose measurement tools
+- strong:
+  - generic: ✓
+  - text: Price
+- text: Set this job's price
+- strong:
+  - generic: ✓
+  - text: Customer
+- text: Add customer details
+- strong:
+  - generic: "5"
+  - text: Estimate
+- text: Create customer estimate
+- heading "STEP 1 — Enter the property" [level=2]
+- button "Help with this step"
+- generic: Property Country
+- combobox "Property Country":
+  - option "Canada" [selected]
+  - option "United States"
+- generic: Property Address
+- textbox "Start typing the address — U.S. or Canada": "2301 Avenue C North #115"
+- generic: Saved property restored — measurements and rates retained.
+- textbox "City": Saskatoon
+- combobox "Property province or state":
+  - option "Choose province / territory"
+  - option "AB — Alberta"
+  - option "BC — British Columbia"
+  - option "MB — Manitoba"
+  - option "NB — New Brunswick"
+  - option "NL — Newfoundland and Labrador"
+  - option "NS — Nova Scotia"
+  - option "NT — Northwest Territories"
+  - option "NU — Nunavut"
+  - option "ON — Ontario"
+  - option "PE — Prince Edward Island"
+  - option "QC — Quebec"
+  - option "SK — Saskatchewan" [selected]
+  - option "YT — Yukon"
+- textbox "ZIP / Postal Code — filled by Google"
+- generic: ✓ Property address verified
+- generic "CAN'T LOCATE THE PROPERTY? USE DROPPED PIN / COORDINATES"
+- button "LOAD PROPERTY & START AREA MEASURE"
+- generic "⚙ DEALER PROFILE / BRANDING — set once, then leave closed" [active]
+- option "United States"
+- option "Canada" [selected]
+- option "Choose your province / territory"
+- option "AB — Alberta"
+- option "BC — British Columbia"
+- option "MB — Manitoba"
+- option "NB — New Brunswick"
+- option "NL — Newfoundland and Labrador"
+- option "NS — Nova Scotia"
+- option "NT — Northwest Territories"
+- option "NU — Nunavut"
+- option "ON — Ontario"
+- option "PE — Prince Edward Island"
+- option "QC — Quebec"
+- option "SK — Saskatchewan" [selected]
+- option "YT — Yukon"
+- option "Roofing"
+- option "Commercial Properties"
+- option "Snow Removal"
+- option "Pressure Washing" [selected]
+- option "Paving & Sealcoating"
+- option "Landscaping"
+- option "Regular Price + Tax" [selected]
+- option "Taxes Included Promotion"
+- option "Discount Promotion"
+- option "✓ Check" [selected]
+- option "★ Star"
+- option "$ Savings"
+- option "◆ Diamond"
+- option "● Dot"
+- option "W Warranty"
+- option "✓ Check" [selected]
+- option "★ Star"
+- option "$ Savings"
+- option "◆ Diamond"
+- option "● Dot"
+- option "W Warranty"
+- option "✓ Check"
+- option "★ Star"
+- option "$ Savings" [selected]
+- option "◆ Diamond"
+- option "● Dot"
+- option "W Warranty"
+- option "✓ Check"
+- option "★ Star"
+- option "$ Savings"
+- option "◆ Diamond" [selected]
+- option "● Dot"
+- option "W Warranty"
+- option "✓ Check" [selected]
+- option "★ Star"
+- option "$ Savings"
+- option "◆ Diamond"
+- option "● Dot"
+- option "W Warranty"
+- option "✓ Check"
+- option "★ Star"
+- option "$ Savings"
+- option "◆ Diamond"
+- option "● Dot" [selected]
+- option "W Warranty"
+- generic: "This session — property lookups: 1 • area measurements: 1 • linear measurements: 1 • estimates created: 2"
+- generic: Saved job ready to edit. Create the updated estimate to save your changes.
+- text: PROPERTY
+- generic: "2301 Avenue C North #115, Saskatoon, SK, Canada"
+- text: SURFACES
+- generic: "1"
+- text: TOTAL AREA
+- generic: 902 ft² • 30.0 linear ft
+- text: ESTIMATE
+- generic: $278.65
+- generic: STEP 2 — Measure the property
+- button "Help with this step"
+- generic: What do you need to measure?
+- generic: Use one tool or combine multiple measurements on the same property.
+- button "+ ADD AREA Driveways • patios • sidewalks • parking":
+  - generic: + ADD AREA
+  - generic: Driveways • patios • sidewalks • parking
+- button "+ LINEAR Gutters • fencing • cleaning runs":
+  - generic: + LINEAR
+  - generic: Gutters • fencing • cleaning runs
+- text: Saved areas — 902 ft²
+- text: Area name
+- textbox "Service area name": Service Area 1
+- strong: 902 ft²
+- text: Rate / sq. ft.
+- spinbutton "Rate per square foot": "0.27"
+- generic: $243.54
+- generic: ✓ Saved in this job
+- button "REMEASURE AREA"
+- button "EDIT OUTLINE"
+- button "REMOVE AREA"
+- generic: LINEAR MEASURE
+- generic: Measure gutters, fencing or other cleaning work priced by length.
+- generic: "Total: 30.0 ft"
+- button "EDIT LINE"
+- generic "More line options"
+- generic: ✓ Saved in this job. Edit Line moves the points. More line options lets you extend or remove the line.
+- img "Marker"
+- button "M1 • 22.6° • 8,053 ft²":
+  - generic: M1 • 22.6° • 8,053 ft²
+- button "93.6 ft":
+  - generic: 93.6 ft
+- button "93.6 ft":
+  - generic: 93.6 ft
+- button "79.2 ft":
+  - generic: 79.2 ft
+- button "79.2 ft":
+  - generic: 79.2 ft
+- button
+- button
+- button
+- button
+- generic: 30.0 ft
+- generic: 30.0 ft
+- generic: 30.0 ft
+- generic: 30.0 ft
+- button "902 ft²":
+  - generic: 902 ft²
+- button
+- button
+- button "30.0 ft":
+  - generic: 30.0 ft
+- button "Zoom in": +
+- button "Zoom out": −
+- generic: 5 m
+- generic: 30 ft
+- link "Leaflet":
+  - /url: https://leafletjs.com
+  - text: Leaflet
+- generic: STEP 3 — Review & price
+- button "Help with this step"
+- generic: "Street View imagery: 2015-07"
+- generic: Area Measurement
+- generic: 902 ft²
+- generic: ✓ SAVED
+- generic: This saved area is being used for the quote. Only the saved cleaning surface is included in this price.
+- heading "Price" [level=3]
+- generic: Service Area 1 — 902 ft² × $0.27/ft²
+- generic: $243.54
+- generic: Pressure Washing Linear — 30.0 ft × $0.25/ft
+- generic: $7.50
+- generic: Sales Tax (5%)
+- generic: $12.55
+- generic: Additional Tax (6%)
+- generic: $15.06
+- generic: Total
+- generic: $278.65
+- heading "STEP 4 — Customer" [level=2]
+- button "Help with this step"
+- generic: Customer Name
+- textbox "Customer name": <redacted>
+- generic: Customer Phone
+- textbox "Phone"
+- generic: Customer Email
+- textbox "Email": <redacted>
+- generic: Customer / Job Notes (optional)
+- textbox "Optional notes for this customer or job"
+- heading "STEP 5 — Create estimate" [level=2]
+- button "Help with this step"
+- generic: Additional Cleaning Services (optional)
+- 'textbox "Example: Additional patio, sidewalk or driveway cleaning"'
+- generic: Additional Cleaning Services Amount
+- spinbutton: "0.00"
+- generic: Added to the estimate and uses the same sales-tax setting as this job.
+- generic: Estimate images
+- combobox:
+  - option "Use Aerial + Google Street View"
+  - option "Use Aerial + Property Assessment Placeholder" [selected]
+  - option "Create Estimate Without Images"
+- button "CREATE CUSTOMER ESTIMATE"
+- status: ✓ Measurements saved in this job. Add customer details, then CREATE CUSTOMER ESTIMATE to save the completed estimate. Create it before leaving or refreshing.

@@ -1,3 +1,15 @@
+# November 3 — First-estimate usability REVIEW ONLY; PAUSED
+
+Resumed 754fe24e; live recovery verified efb2d29ba72306ef718c62f1de86070af1e33ef7 / dep-dbl3b5gae00c73cfdh50, auto-deploy OFF. No code, configuration, deployment or workflow changes. QA isolation preserved; main/production/customer data untouched.
+
+Read [first-estimate usability findings](QA_FIRST_ESTIMATE_USABILITY_2026_11_03.md). Roofing fresh property/draw/explicit pitch confirmation/customer/create/reopen/download completed. Other five industries compared using saved fictional QA geometry; each reached create/reopen/download. Screenshots, DOM snapshots and six PDFs saved. This was not six fresh onboardings or a new full PDF/allowance audit.
+
+Five recommendations: one current next action/blocker; drawing+save together with task-specific labels; one authoritative measurement summary; predictable rate editing in Price with dealer details secondary; direct reopen/download and clear draft-versus-estimate wording. No implementation authorized in this batch.
+
+Separate unverified Snow rate-field/preview discrepancy (input0.10 versus preview0.27); restored matching0.27 before saving. Next authorized diagnostic batch should establish input/change/blur evidence before deciding whether application defect. Do not treat as confirmed. Owner desktop and physical-phone review pending. Preserve two old untracked PDF copies. Latest checkpoint is the containing documentation commit. Pause for Sean's instruction.
+
+---
+
 # November 3 — Roofing confirmation fixed, verified and deployed to isolated recovery; PAUSED
 
 **Launch requirement — ease of use:** Next focused review must follow a new contractor through the complete first-estimate flow and identify unnecessary complexity before layout changes. Aim for one prominent next action, one clear blocking explanation, fewer repeated instructions/status messages, and secondary tools/dealer calculations shown only when needed. Preserve every measurement, pricing and confirmation safeguard; do not add controls to explain other controls. See [next usability review](QA_NEXT_USABILITY_REVIEW_2026_11_03.md). Record only for now: no new tests, layout changes or deployment. Preserve application checkpoint `f42e62b5` and the live source below.
