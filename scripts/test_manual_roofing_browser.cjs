@@ -11,7 +11,9 @@ script=script.replace(anchor,String.raw`
   assert.deepEqual(await page.evaluate(()=>manualPlanes.map(p=>p.pitch_degrees)),[22.62,0,45]);
   assert((await page.locator('#manualRoofSections').innerText()).includes('5/12 pitch'));
   assert((await page.locator('#manualRoofSections').innerText()).includes('0/12 (flat)'));
-  assert((await page.locator('#summary').innerText()).includes('Roof confirmation required'));
+  assert.equal(await page.locator('#roofNextTitle').innerText(),'Roof confirmation required');
+  assert.equal(await page.locator('#confirmRoofPitches').isVisible(),true);
+  assert.equal(await page.locator('#createEstimateBtn').isDisabled(),true);
   assert(!(await page.locator('#summary').innerText()).includes('pitch confirmed'));
   assert.equal(await page.locator('#manualRoofScopeConfirmed').isVisible(),false);
   assert.equal(await page.locator('#garageControls').isVisible(),false);
