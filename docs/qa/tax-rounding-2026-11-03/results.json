@@ -1,0 +1,44 @@
+[
+  {
+    "industry": "roofing",
+    "width": 1440,
+    "total": 407.69,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-rounding-final/roofing-1440-single.pdf",
+      "/tmp/aq-rounding-final/roofing-1440-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 1706,
+        "sourceHeight": 930,
+        "drawWidth": 1152,
+        "drawHeight": 627.984375
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 390,
+    "total": 407.71,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "/tmp/aq-rounding-final/roofing-390-single.pdf",
+      "/tmp/aq-rounding-final/roofing-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 487.1875,
+        "drawHeight": 651
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  }
+]

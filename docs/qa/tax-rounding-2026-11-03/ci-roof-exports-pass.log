@@ -1,0 +1,10 @@
+2026-11-03T21:56:26.8810629Z START roofing 1440
+2026-11-03T21:56:29.6989369Z report opened
+2026-11-03T21:56:31.5003326Z PASS actual Chromium Single and Expanded roofing downloads: three sections, explicit22.62/0/45pitch, unchanged saved geometry/pricing/customer
+2026-11-03T21:56:31.7199898Z {"industry":"roofing","width":1440,"total":253.89,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-03T21:56:32.2722292Z START roofing 1440
+2026-11-03T21:56:36.8245857Z report opened
+2026-11-03T21:56:39.3509342Z {"industry":"roofing","width":1440,"total":407.69,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-03T21:56:39.4203063Z START roofing 390
+2026-11-03T21:56:43.1526623Z report opened
+2026-11-03T21:56:45.5559790Z {"industry":"roofing","width":390,"total":407.71,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-390-single.pdf","/tmp/aq-browser-evidence/roofing-390-expanded.pdf"],"captureChecks":[{"sourceWidth":696,"sourceHeight":930,"drawWidth":487.1875,"drawHeight":651}],"saved":true,"reopened":true}

@@ -1,0 +1,154 @@
+[
+  {
+    "name": "01-before-property",
+    "title": "Load the property to start",
+    "explanation": "Enter the address, then select LOAD PROPERTY & TRACE ROOF.",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [],
+    "confirmationVisible": false
+  },
+  {
+    "name": "02-drawing",
+    "title": "Trace this roof section",
+    "explanation": "Trace the roof corners and select this section’s actual pitch beside Save. The default 5/12 is not confirmed.",
+    "confirmed": false,
+    "trace": true,
+    "pitch": "",
+    "planes": [],
+    "confirmationVisible": false
+  },
+  {
+    "name": "03-saved-unconfirmed",
+    "title": "Roof confirmation required",
+    "explanation": "Review each saved area and pitch above. Include every roof you are pricing, then confirm pitches and included roofs.",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "04-price-next",
+    "title": "Enter this job’s price",
+    "explanation": "Enter this job’s rate. Use 0 only for an intentionally free service.",
+    "confirmed": true,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": false
+  },
+  {
+    "name": "05-customer-next",
+    "title": "Add customer details",
+    "explanation": "Enter the customer name in Step 4.",
+    "confirmed": true,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": false
+  },
+  {
+    "name": "06-editing",
+    "title": "Select this section’s pitch",
+    "explanation": "Trace the roof corners and select this section’s actual pitch beside Save. The default 5/12 is not confirmed.",
+    "confirmed": false,
+    "trace": true,
+    "pitch": "",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": false
+  },
+  {
+    "name": "07-cancelled",
+    "title": "Roof confirmation required",
+    "explanation": "Review each saved area and pitch above. Include every roof you are pricing, then confirm pitches and included roofs.",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "36.87",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "08-two-sections",
+    "title": "Roof confirmation required",
+    "explanation": "Review each saved area and pitch above. Include every roof you are pricing, then confirm pitches and included roofs.",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "0",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      },
+      {
+        "area": 645.9799396278859,
+        "pitch": 0
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "09-create-next",
+    "title": "Create the customer estimate",
+    "explanation": "Review pricing and customer details, then create the estimate.",
+    "confirmed": true,
+    "trace": false,
+    "pitch": "45",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      },
+      {
+        "area": 645.9799396278859,
+        "pitch": 0
+      }
+    ],
+    "confirmationVisible": false
+  },
+  {
+    "name": "10-reopened",
+    "title": "Roof confirmation required",
+    "explanation": "Review each saved area and pitch above. Include every roof you are pricing, then confirm pitches and included roofs.",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.4012774923926,
+        "pitch": 22.62
+      },
+      {
+        "area": 645.9799396278859,
+        "pitch": 0
+      }
+    ],
+    "confirmationVisible": true
+  }
+]

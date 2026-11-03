@@ -54,3 +54,7 @@ Earlier source2aeb1ae/4555327 runs are superseded by this final source; the firs
 ## Next session — pause for visual review
 
 Review the before/after captures before further layout changes. Separately authorize a focused half-cent currency-rounding correction, preserving independent server validation, and retest the exact367.30/5% failure plus pricing regressions. Then complete the blocked phone-width save/reopen/both-PDF path and required workflows. Do not deploy this batch. Owner desktop review and physical-phone testing remain pending. Pause for Sean's instruction.
+
+## Later follow-up — rounding blocker resolved
+
+Source194c435b fixes the half-cent discrepancy using decimal ROUND_HALF_UP while preserving strict server validation and this Roofing usability work. Desktop/phone save/reopen and both PDFs now pass; required application/recovery/PG16/18 and browser10/10 workflows all pass. Live remains efb2d29b, undeployed. See [tax-rounding correction](QA_TAX_ROUNDING_2026_11_03.md). Earlier failure details remain the original regression evidence.

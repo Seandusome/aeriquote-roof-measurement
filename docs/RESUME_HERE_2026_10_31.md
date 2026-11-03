@@ -1,3 +1,17 @@
+# November 3 — Tax-rounding blocker FIXED; all required checks PASS; UNDEPLOYED; PAUSED
+
+Resumed47be65f9/f8c3d20a. Final tested application source **194c435b377dbcb23ad24a422c63763fcd931ed4**, app.py blob661a1f0b514e04c0a7b3b67945b7ec588ea449fe. Read [rounding fix and evidence](QA_TAX_ROUNDING_2026_11_03.md). Exact367.30×5% tax now rounds decimal half-up to18.37; subtotal367.30+GST18.37+additional22.04=407.71. Browser uses exact decimal/integer monetary arithmetic at the server's existing stages. Server validation/tolerances unchanged; original bad payload remains rejected. Roofing next-action/pitch-confirmation usability and measurement/Save/Cancel safeguards preserved.
+
+Passed1894 cross-language boundary cases,70 real-API matrix fixtures plus forgery/invalid checks, old-source regression red/new-source green, desktop1440 and phone390 save/reopen and both PDFs (four files/six pages) independently verified. Correct totals407.69desktop and407.71phone for their actual traced quantities. A browser fixture wait now observes completed workspace restoration before reopening; customer assertions/timeouts unchanged.
+
+Final-source workflows all completed SUCCESS: application41726151088; recovery41726151080 including PostgreSQL16/18 and backup/compatibility; browser41726151121 **10/10**. Previous9/10 report is superseded. No unresolved automated failures on final source; CI tracked directly.
+
+**No deployment.** Live recovery remains **efb2d29b / dep-dbl3b5gae00c73cfdh50**, auto-deployOFF. QA database binding unchanged; only fictional/disposable loopback jobs/providers used, no live account/job changed. Main, production and customer data untouched. Original two untracked PDF copies preserved. Latest checkpoint is containing documentation commit; application source is distinct above.
+
+Pause for Sean. Next session: visual review of saved Roofing usability before/after; deployment only if separately authorized after fresh QA-isolation verification. Owner manual desktop and physical-phone testing remain pending. Do not restart historical PDF/aerial or uncertain-draft investigations without new evidence/instruction.
+
+---
+
 # November 3 — Roofing next-action usability implemented; UNDEPLOYED; visual review pending
 
 Resumed68b612f6. Application source **f8c3d20a28aa51a33037e15ac09da11794e8ca00**, app.py blob982a6e705057595fba0ff7e8bf490482759452e9. Read [Roofing usability implementation and evidence](QA_ROOFING_NEXT_ACTION_2026_11_03.md). One current action/explanation; pitch beside Save; explicit final confirmation appears only after saved sections and finished drawing/editing; area/pitch list retained; next missing price/customer/Create stage highlighted. Legacy saved-structure summary/repair path retained. No Mapbox/PDF redesign, pricing/measurement/allowance policy or database changes.

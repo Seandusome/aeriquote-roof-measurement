@@ -1,0 +1,19 @@
+{
+  "original_subtotal": "367.30",
+  "original_binary_tax": "18.3649999999999984368",
+  "original_scaled_binary_tax": "1836.4999999999998",
+  "epsilon_scaled_still": "1836.4999999999998",
+  "old_client_gst": "18.36",
+  "server_exact_tax": "18.365",
+  "rounding": "decimal ROUND_HALF_UP to cents per priced line, discount, tax base and each tax",
+  "fixed_gst": "18.37",
+  "pst": "22.04",
+  "fixed_total": "407.71",
+  "server_validation_unchanged": true,
+  "validation_tolerances_unchanged": true,
+  "desktop_total": "407.69",
+  "phone_total": "407.71",
+  "cross_language_cases": 1894,
+  "actual_api_matrix_cases": 70,
+  "source": "194c435b377dbcb23ad24a422c63763fcd931ed4"
+}
