@@ -1,6 +1,6 @@
 // Real exporters on disposable loopback QA; currency stays whole while descriptions wrap.
 const fs=require('fs'),assert=require('assert/strict');
-process.env.QA_BROWSER_WIDTHS='1440';process.env.QA_BROWSER_INDUSTRIES='roofing';process.env.QA_BROWSER_IMAGES='hide';process.env.QA_BROWSER_ALL_PDFS='1';
+process.env.QA_BROWSER_WIDTHS=process.env.QA_AMOUNT_WIDTHS||'1440';process.env.QA_BROWSER_INDUSTRIES='roofing';process.env.QA_BROWSER_IMAGES='hide';process.env.QA_BROWSER_ALL_PDFS='1';
 let script=fs.readFileSync('scripts/test_prelaunch_browser.cjs','utf8');
 const scenario=process.env.QA_AMOUNT_SCENARIO||'original';assert(['original','large','pages'].includes(scenario));
 script=script.replaceAll('FICTIONAL QA ${industry} ${width}','FICTIONAL QA ${industry} ${width} '+scenario);
@@ -14,7 +14,7 @@ script=script.replace(capture,`  if(node.classList.contains('aq-expanded-page')|
    for(const row of node.querySelectorAll('.line')){const amount=row.lastElementChild;if(!amount||row.children.length!==2)continue;const r=document.createRange();r.selectNodeContents(amount);const boxes=[...r.getClientRects()].filter(b=>b.width>0&&b.height>0);const ys=new Set(boxes.map(b=>Math.round(b.top)));if(ys.size>1){console.error('AMOUNT_LAYOUT wrapped '+amount.textContent);throw Error('Currency amount wrapped: '+amount.textContent);}const a=amount.getBoundingClientRect(),p=row.getBoundingClientRect(),d=row.firstElementChild.getBoundingClientRect();if(a.right>p.right+1||d.right>a.left+1)throw Error('Price columns overlap/overflow');}
   }
 `+capture);
-if(process.env.QA_AMOUNT_REMOVE_FIX==='1')script=script.replace(' const captureChecks=[];',` await page.evaluate(()=>{for(const sheet of document.styleSheets){let rules;try{rules=sheet.cssRules}catch{continue}for(let i=rules.length-1;i>=0;i--)if(rules[i].selectorText?.startsWith('#rPricing > .line >'))sheet.deleteRule(i)}}); const captureChecks=[];`);
+if(process.env.QA_AMOUNT_REMOVE_FIX==='1')script=script.replace(' const captureChecks=[];',` await page.evaluate(()=>{for(const sheet of document.styleSheets){let rules;try{rules=sheet.cssRules}catch{continue}for(let i=rules.length-1;i>=0;i--)if(rules[i].selectorText?.startsWith('.reportPrice .line >'))sheet.deleteRule(i)}}); const captureChecks=[];`);
 const pdfAnchor=' const captureChecks=[];';assert(script.includes(pdfAnchor));
 script=script.replace(pdfAnchor,` if(${JSON.stringify(scenario)}==='pages')await page.evaluate(()=>{const pricing=el('rPricing'),extra=[...pricing.children].find(n=>n.textContent.includes('FICTIONAL QA additional service'));for(let i=0;i<15;i++){const row=document.createElement('div');row.className='pdf-qa-pagination-note';row.style.padding='12px 0';row.textContent='PAGE BREAK FIXTURE '+(i+1)+' - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.';pricing.insertBefore(row,extra)}});
 `+` const expectedPricingRows=await page.evaluate(()=>[...el('rPricing').children].map(n=>n.textContent));`+pdfAnchor);

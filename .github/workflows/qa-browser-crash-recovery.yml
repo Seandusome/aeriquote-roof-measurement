@@ -75,7 +75,7 @@ jobs:
               node scripts/test_manual_roofing_browser.cjs
               QA_ROOF_UX_WIDTHS=1440,390 node scripts/test_roofing_usability_browser.cjs
               for amount_case in original large pages; do
-                QA_AMOUNT_SCENARIO="$amount_case" QA_BROWSER_OUTPUT="/tmp/aq-browser-evidence/amount-$amount_case" node scripts/test_pdf_amount_layout.cjs
+                QA_AMOUNT_WIDTHS=1440,390 QA_AMOUNT_SCENARIO="$amount_case" QA_BROWSER_OUTPUT="/tmp/aq-browser-evidence/amount-$amount_case" node scripts/test_pdf_amount_layout.cjs
               done
               ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
