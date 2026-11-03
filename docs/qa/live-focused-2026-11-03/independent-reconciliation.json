@@ -1,0 +1,13 @@
+{
+  "independent_WGS84_areas_ft2": [
+    1735.4694966777047,
+    1220.2301572821093
+  ],
+  "independent_line_ft": 188.81574854092034,
+  "independent_roof_surface_ft2": 7360.523762772878,
+  "area_base": "869.85",
+  "area_total": "965.53",
+  "roof_base": "2038.31",
+  "roof_total": "2262.53",
+  "tolerance": "0.6% geodesic vs spherical; cents exact"
+}
