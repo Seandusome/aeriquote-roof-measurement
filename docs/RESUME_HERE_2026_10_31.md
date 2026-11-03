@@ -1,3 +1,15 @@
+# November 3 — Roofing confirmation fixed, verified and deployed to isolated recovery; PAUSED
+
+Latest checkpoint is the containing documentation commit. Read [Roofing confirmation evidence](QA_ROOF_CONFIRMATION_2026_11_03.md). Final source and live recovery application: **efb2d29ba72306ef718c62f1de86070af1e33ef7**; recovery deploy **dep-dbl3b5gae00c73cfdh50**. All required exact-source workflows PASS: application41702397105, recovery41702397163 including PostgreSQL16/18 and unchanged backup/previous-version drill, browser41702396986 (10/10).
+
+Prominent **Confirm pitches and included roofs** action replaces the visible checkbox; saved pitches use rise/run; unconfirmed estimates show **Roof confirmation required** with exact instructions. No default 5/12 is silently verified. Edit/Add/Delete invalidate confirmation immediately; Cancel preserves geometry and requests reconfirmation. Manual-only instructions no longer promise automatic main-house measurement. Actual live confirmation, edits, Cancel, add/delete, reopening and both PDFs passed. PDF total $2,262.53 independently reconciled.
+
+QA hostname/database verified immediately before deploy and from the final running instance: dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa (PostgreSQL18.6). Auto-deploy OFF. Main, production, customer data and connections untouched. Earlier incomplete-upload/previous-app CI failures are superseded by final passing checks; assertions unchanged. Two old untracked PDF copies preserved.
+
+**Pause until Sean instructs otherwise.** His desktop review and physical-phone testing remain pending, along with the previously separate fresh-property manual-rate sequence. Do not expand into old uncertain drafts or promotional sequences. QA app remains signed in as qa-browser-oct31-2026@example.invalid; Render email is sdusome@diitalk.com. Latest fictional job is FICTIONAL PITCH CONFIRMATION NOV3. Its reopened workspace was reconfirmed and autosave acknowledged; no additional estimate save was made after reopening.
+
+---
+
 # November 2 — STATUS/PRESERVATION ONLY; STOPPED
 
 The conversation reloaded after the Stop control failed. The user explicitly prohibited resuming tests, fixes, workflows or deployments. This preservation note supersedes earlier continuation instructions. Await a fresh instruction before doing further application work.

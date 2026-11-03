@@ -1,0 +1,15 @@
+{
+  "independent_roof_surface_ft2": 7360.523762772878,
+  "roof_base": "2038.31",
+  "roof_total": "2262.53",
+  "tolerance": "0.6% geodesic vs spherical; cents exact",
+  "saved_surface_ft2": 7348.380392728047,
+  "pitch_degrees": 22.62,
+  "pitch_rise_run": "5/12",
+  "rate": "0.27",
+  "roof_service": "1984.06",
+  "extra": "54.25",
+  "gst": "101.92",
+  "pst": "122.30",
+  "customer": "FICTIONAL PITCH CONFIRMATION NOV3"
+}
