@@ -1,0 +1,1066 @@
+[
+  {
+    "index": 0,
+    "value": "0.27",
+    "commit": "tab",
+    "display": "0.27",
+    "rate": 0.27,
+    "mode": "linear",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 250.03,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 250.03,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 12.5,
+      "pstAmt": 15,
+      "total": 277.53,
+      "measurementMode": "linear",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "linear",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          52.000089815939795,
+          -106.00011980332516
+        ],
+        [
+          52.000089815939795,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.27,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.1,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.1,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.1
+    },
+    "preview": "LINEAR MEASUREMENT\n62.0 linear ft\n✓ SAVED\nThis saved length is being used for the quote. Only the saved service measurements are included in this quote.\nPrice\nService Area 1 — 659 ft² × $0.27/ft²\n$177.93\nService Area 2 — 659 ft² × $0.10/ft²\n$65.90\nSnow Removal Linear — 62.0 ft × $0.10/ft\n$6.20\nSales Tax (5%)\n$12.50\nAdditional Tax (6%)\n$15.00\nTotal\n$277.53"
+  },
+  {
+    "index": 0,
+    "value": "0.10",
+    "commit": "tab",
+    "display": "0.1",
+    "rate": 0.1,
+    "mode": "linear",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 138,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 138,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 6.9,
+      "pstAmt": 8.28,
+      "total": 153.18,
+      "measurementMode": "linear",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "linear",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          52.000089815939795,
+          -106.00011980332516
+        ],
+        [
+          52.000089815939795,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.1,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.1,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.1
+    },
+    "preview": "LINEAR MEASUREMENT\n62.0 linear ft\n✓ SAVED\nThis saved length is being used for the quote. Only the saved service measurements are included in this quote.\nPrice\nService Area 1 — 659 ft² × $0.10/ft²\n$65.90\nService Area 2 — 659 ft² × $0.10/ft²\n$65.90\nSnow Removal Linear — 62.0 ft × $0.10/ft\n$6.20\nSales Tax (5%)\n$6.90\nAdditional Tax (6%)\n$8.28\nTotal\n$153.18"
+  },
+  {
+    "index": 1,
+    "value": "0.12",
+    "commit": "click",
+    "display": "0.12",
+    "rate": 0.12,
+    "mode": "linear",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 151.18,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 151.18,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 7.56,
+      "pstAmt": 9.07,
+      "total": 167.81,
+      "measurementMode": "linear",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "linear",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          52.000089815939795,
+          -106.00011980332516
+        ],
+        [
+          52.000089815939795,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00002056592285
+        ],
+        [
+          52.00017073100951,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.1,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.1,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.1
+    },
+    "preview": "LINEAR MEASUREMENT\n62.0 linear ft\n✓ SAVED\nThis saved length is being used for the quote. Only the saved service measurements are included in this quote.\nPrice\nService Area 1 — 659 ft² × $0.10/ft²\n$65.90\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.10/ft\n$6.20\nSales Tax (5%)\n$7.56\nAdditional Tax (6%)\n$9.07\nTotal\n$167.81"
+  },
+  {
+    "index": 0,
+    "value": "0.14",
+    "commit": "click",
+    "display": "0.14",
+    "rate": 0.14,
+    "mode": "area",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 186.85,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 186.85,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 9.34,
+      "pstAmt": 11.21,
+      "total": 207.4,
+      "measurementMode": "area",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "area",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          51.99994945271682,
+          -106.00011980332516
+        ],
+        [
+          51.99994945271682,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.14,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.25,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.25,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.25
+    },
+    "preview": "AREA MEASUREMENT\n1,318 ft²\n✓ SAVED\nThis saved area is being used for the quote. Area and linear measurements are saved with this quote.\nPrice\nService Area 1 — 659 ft² × $0.14/ft²\n$92.26\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.25/ft\n$15.51\nSales Tax (5%)\n$9.34\nAdditional Tax (6%)\n$11.21\nTotal\n$207.40"
+  },
+  {
+    "index": 0,
+    "value": "0.10",
+    "commit": "tab",
+    "display": "0.1",
+    "rate": 0.1,
+    "mode": "area",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 160.49,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 160.49,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 8.02,
+      "pstAmt": 9.63,
+      "total": 178.14,
+      "measurementMode": "area",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "area",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          51.99994945271682,
+          -106.00011980332516
+        ],
+        [
+          51.99994945271682,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.25,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.25,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.25
+    },
+    "preview": "AREA MEASUREMENT\n1,318 ft²\n✓ SAVED\nThis saved area is being used for the quote. Area and linear measurements are saved with this quote.\nPrice\nService Area 1 — 659 ft² × $0.10/ft²\n$65.90\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.25/ft\n$15.51\nSales Tax (5%)\n$8.02\nAdditional Tax (6%)\n$9.63\nTotal\n$178.14"
+  },
+  {
+    "index": 1,
+    "value": "0.12",
+    "commit": "click",
+    "display": "0.12",
+    "rate": 0.12,
+    "mode": "area",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 160.49,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 160.49,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 8.02,
+      "pstAmt": 9.63,
+      "total": 178.14,
+      "measurementMode": "area",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "area",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          51.99994945271682,
+          -106.00011980332516
+        ],
+        [
+          51.99994945271682,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.25,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.25,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.25
+    },
+    "preview": "AREA MEASUREMENT\n1,318 ft²\n✓ SAVED\nThis saved area is being used for the quote. Area and linear measurements are saved with this quote.\nPrice\nService Area 1 — 659 ft² × $0.10/ft²\n$65.90\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.25/ft\n$15.51\nSales Tax (5%)\n$8.02\nAdditional Tax (6%)\n$9.63\nTotal\n$178.14"
+  },
+  {
+    "index": 0,
+    "value": "0.00",
+    "commit": "tab",
+    "display": "0",
+    "rate": 0,
+    "mode": "area",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 94.59,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 94.59,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 4.73,
+      "pstAmt": 5.68,
+      "total": 105,
+      "measurementMode": "area",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "area",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          51.99994945271682,
+          -106.00011980332516
+        ],
+        [
+          51.99994945271682,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.25,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.25,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.25
+    },
+    "preview": "AREA MEASUREMENT\n1,318 ft²\n✓ SAVED\nThis saved area is being used for the quote. Area and linear measurements are saved with this quote.\nPrice\nService Area 1 — 659 ft² × $0.00/ft²\n$0.00\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.25/ft\n$15.51\nSales Tax (5%)\n$4.73\nAdditional Tax (6%)\n$5.68\nTotal\n$105.00"
+  },
+  {
+    "index": 0,
+    "value": "0.10",
+    "commit": "click",
+    "display": "0.1",
+    "rate": 0.1,
+    "mode": "area",
+    "jobPrice": "0.1",
+    "price": {
+      "estimatePeriod": "one_time",
+      "area": 1318,
+      "price": 0.1,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 160.49,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 160.49,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 8.02,
+      "pstAmt": 9.63,
+      "total": 178.14,
+      "measurementMode": "area",
+      "unit": "ft²"
+    },
+    "snapshot": {
+      "manualRoofWorkflow": false,
+      "roofScopeConfirmed": false,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [],
+      "measureSource": "google",
+      "adjustedArea": 0,
+      "measurementMode": "area",
+      "linearPoints": [
+        [
+          51.99994945271682,
+          -105.99989987178493
+        ],
+        [
+          52.00011953985993,
+          -105.99989987178493
+        ]
+      ],
+      "linearFeet": 62.04996065170652,
+      "areaPoints": [
+        [
+          51.99994945271682,
+          -106.00011980332516
+        ],
+        [
+          51.99994945271682,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00002056592285
+        ],
+        [
+          52.00003036804024,
+          -106.00011980332516
+        ]
+      ],
+      "areaSqFt": 1318,
+      "commercialAreas": [
+        {
+          "name": "Service Area 1",
+          "rate": 0.1,
+          "source": "manual",
+          "points": [
+            [
+              51.99994945271682,
+              -106.00011980332516
+            ],
+            [
+              51.99994945271682,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00002056592285
+            ],
+            [
+              52.00003036804024,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        },
+        {
+          "name": "Service Area 2",
+          "rate": 0.12,
+          "source": "manual",
+          "points": [
+            [
+              52.000089815939795,
+              -106.00011980332516
+            ],
+            [
+              52.000089815939795,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00002056592285
+            ],
+            [
+              52.00017073100951,
+              -106.00011980332516
+            ]
+          ],
+          "sqft": 659
+        }
+      ],
+      "businessType": "snow",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.25,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.25,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.25
+    },
+    "preview": "AREA MEASUREMENT\n1,318 ft²\n✓ SAVED\nThis saved area is being used for the quote. Area and linear measurements are saved with this quote.\nPrice\nService Area 1 — 659 ft² × $0.10/ft²\n$65.90\nService Area 2 — 659 ft² × $0.12/ft²\n$79.08\nSnow Removal Linear — 62.0 ft × $0.25/ft\n$15.51\nSales Tax (5%)\n$8.02\nAdditional Tax (6%)\n$9.63\nTotal\n$178.14"
+  }
+]

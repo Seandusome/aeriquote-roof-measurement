@@ -1,3 +1,11 @@
+# November 3 — Snow rate discrepancy diagnosed; PAUSED
+
+Resumed65512eed. Read [Snow rate diagnosis](QA_SNOW_RATE_DIAGNOSIS_2026_11_03.md). Cloud fill+Tab reproduced displayed/preview mismatch; genuine changed-value typing plus Tab/click-away works. Retyping the same fill-inserted value explains misleading prior follow-up. No user-input application defect reproduced; no app fix/deployment. Test must use keyboard and verify committed state rather than only DOM value.
+
+Focused disposable browser regression PASS: typed rates match active pricing, POST, saved/reopened estimate and Single/Expanded PDFs; independent totalCAD178.14. Blank/negative blocked; explicit zero valid; geometry/Cancel and aborted-save preservation pass. Added standalone test, no new workflow. Final application remains efb2d29b, auto-deployOFF; isolated QA unchanged; main/production/customer data untouched. Live fictional workspace returned to Commercial0.27/linear0.25 and278.65; no additional live revision created. Two old untracked PDFs preserved. Checkpoint is containing commit. Owner desktop and physical-phone review pending. Pause; no usability implementation authorized.
+
+---
+
 # November 3 — First-estimate usability REVIEW ONLY; PAUSED
 
 Resumed 754fe24e; live recovery verified efb2d29ba72306ef718c62f1de86070af1e33ef7 / dep-dbl3b5gae00c73cfdh50, auto-deploy OFF. No code, configuration, deployment or workflow changes. QA isolation preserved; main/production/customer data untouched.

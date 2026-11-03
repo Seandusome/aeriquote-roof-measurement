@@ -49,3 +49,7 @@ No fresh accounts, failed-load cases, session recovery, allowance enforcement, f
 ## Resume — pause
 
 Documentation-only checkpoint is the commit containing this report. Live stays efb2d29b; auto-deploy OFF. First next task, after authorization: validate the Snow rate-field/preview discrepancy in a tightly scoped QA reproduction. Then review the five recommendations before any layout implementation. Owner desktop review and physical-phone testing remain pending. Do not resume old uncertain drafts/promotional cases automatically. Two pre-existing untracked PDF copies remain untouched.
+
+## Follow-up diagnosis (later November 3)
+
+The separate Snow concern above was traced to the observed cloud fill/commit path. Ordinary typing with a genuinely changed value, Tab and clicking away passed; disposable active-state/save/reopen/both-PDF verification passed. No application change. See [focused diagnosis and limitations](QA_SNOW_RATE_DIAGNOSIS_2026_11_03.md). This follow-up supersedes the earlier unverified status without changing the original observations.

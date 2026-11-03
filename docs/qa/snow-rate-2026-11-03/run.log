@@ -1,0 +1,13 @@
+START snow 1440
+clicked property
+loaded Property aerial loaded — ready for Area measurement.
+drawn {
+  areas: 2,
+  points: 4,
+  line: 2,
+  manual: 0,
+  status: 'Outline correction cancelled; previous measurement restored.'
+}
+PASS browser aborted save preserves measurements and blocks report
+report opened
+{"industry":"snow","width":1440,"total":178.14,"overflow":false,"errors":[],"pdfs":["docs/qa/snow-rate-2026-11-03/snow-1440-single.pdf","docs/qa/snow-rate-2026-11-03/snow-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
