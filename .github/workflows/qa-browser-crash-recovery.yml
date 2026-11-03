@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/qa-browser-crash-recovery.yml
       - scripts/test_*browser*.cjs
+      - scripts/test_pdf_amount_layout.cjs
       - scripts/fresh_user_browser_server.py
       - scripts/job_revisions_browser_server.py
       - scripts/job_revision_checks.cjs
@@ -73,6 +74,9 @@ jobs:
             roof-exports)
               node scripts/test_manual_roofing_browser.cjs
               QA_ROOF_UX_WIDTHS=1440,390 node scripts/test_roofing_usability_browser.cjs
+              for amount_case in original large pages; do
+                QA_AMOUNT_SCENARIO="$amount_case" QA_BROWSER_OUTPUT="/tmp/aq-browser-evidence/amount-$amount_case" node scripts/test_pdf_amount_layout.cjs
+              done
               ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
             drafts) node scripts/test_workspace_drafts_browser.cjs ;;
