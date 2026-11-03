@@ -17,6 +17,7 @@ script=script.replace(anchor,String.raw`
   assert.equal(await page.locator('#garageControls').isVisible(),false);
   await page.click('#confirmRoofPitches');
   assert.equal(await page.locator('#confirmRoofPitches').getAttribute('aria-pressed'),'true');
+  await page.click('#traceBtn');assert(await page.locator('#createEstimateBtn').isDisabled());assert.equal(await page.locator('#confirmRoofPitches').getAttribute('aria-pressed'),'false');await page.click('#traceBtn');await page.click('#confirmRoofPitches');
   const confirmedGeometry=await page.evaluate(()=>JSON.stringify(manualPlanes));
   await page.locator('#manualRoofSections .structure').first().getByRole('button',{name:'EDIT',exact:true}).click();
   await page.selectOption('#pitchSel','36.87');await page.click('#traceBtn');
