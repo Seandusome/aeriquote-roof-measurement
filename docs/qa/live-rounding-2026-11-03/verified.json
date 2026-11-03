@@ -1,0 +1,21 @@
+{
+  "live_commit": "194c435b377dbcb23ad24a422c63763fcd931ed4",
+  "deploy": "dep-dbl5m4lbedkc73ekek60",
+  "database": "aeriquote_recovery_qa",
+  "instance": "t99jq",
+  "estimate_id": "5449ffd8-52ac-41db-81c2-9a8e924cc301",
+  "revision_count": 28,
+  "prior_revision_count": 27,
+  "area": "7348.380392728047",
+  "pitch_degrees": "22.62",
+  "rate": "0.01",
+  "roof_line": "73.48",
+  "extra": "293.82",
+  "tax_base": "367.30",
+  "gst": "18.37",
+  "pst": "22.04",
+  "total": "407.71",
+  "saved_scope_confirmed": true,
+  "reopened_customer": "FICTIONAL LIVE ROUNDING NOV3",
+  "live_case": "same exact monetary boundary, using existing fictional QA roof plus an extra; original disposable geometry not imported"
+}

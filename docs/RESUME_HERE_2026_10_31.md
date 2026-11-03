@@ -1,3 +1,15 @@
+# November 3 —194c435b DEPLOYED to isolated recovery; LIVE verification complete; PAUSED
+
+User authorized deployment of tested194c435b only. Exact live application **194c435b377dbcb23ad24a422c63763fcd931ed4**, deploy **dep-dbl5m4lbedkc73ekek60**, LIVE22:09:04UTC. Pre-deploy read-only DB assertion and post-deploy instance t99jq asserted exact QA host/database aeriquote_recovery_qa/PostgreSQL18.6 and running commit. Auto-deployOFF. Main/production/customer data and connections unchanged.
+
+Read [live deployment/verification/checklist](QA_LIVE_ROOFING_ROUNDING_2026_11_03.md). Live simplified Roofing controls, Edit/Cancel, Add/Cancel, explicit5/12 section Save and confirmation verified. Fictional estimate FICTIONAL LIVE ROUNDING NOV3:7348.380392728047ft²×0.01=73.48 +293.82 extra →367.30 base,18.37GST,22.04additional,total407.71. Preview, stored pricing, history reopen and inspected Single/Expanded PDFs agree. One revision27→28; saved geometry/pitch preserved. This reuses the saved QA roof, not the original disposable fixture geometry.
+
+Fresh minor follow-up: Expanded PDF wraps the last digit of293.82 with the long fictional extra description. Correct data/totals remain; no fix attempted. Do not reopen historical white-PDF/aerial issues. An extra reopened Expanded download could not be retained; original inspected Expanded and reopened Single are preserved.
+
+No code change/new workflow in deployment batch; exact-source application/recovery/PG16/18/browser10of10 remainPASS. Current browser QA session open on saved fictional job, unconfirmed after reopen/section Save for Sean's visual review. Prior QA drafts retained. Owner desktop and physical-phone review pending. Two original untracked PDF copies preserved. Latest checkpoint is containing documentation commit. Pause for review; no more tests/deployments.
+
+---
+
 # November 3 — Tax-rounding blocker FIXED; all required checks PASS; UNDEPLOYED; PAUSED
 
 Resumed47be65f9/f8c3d20a. Final tested application source **194c435b377dbcb23ad24a422c63763fcd931ed4**, app.py blob661a1f0b514e04c0a7b3b67945b7ec588ea449fe. Read [rounding fix and evidence](QA_TAX_ROUNDING_2026_11_03.md). Exact367.30×5% tax now rounds decimal half-up to18.37; subtotal367.30+GST18.37+additional22.04=407.71. Browser uses exact decimal/integer monetary arithmetic at the server's existing stages. Server validation/tolerances unchanged; original bad payload remains rejected. Roofing next-action/pitch-confirmation usability and measurement/Save/Cancel safeguards preserved.
