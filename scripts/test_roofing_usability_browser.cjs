@@ -54,7 +54,7 @@ const before=" const before=await page.evaluate";assert(script.includes(before))
 const reopen=" assert.equal(await page.evaluate(()=>quoteSnapshot.savedPricing.total),before.pricing.total);";assert(script.includes(reopen));
 script=script.replace(reopen,()=>reopen+String.raw`
  const frozenReopen=await page.evaluate(()=>JSON.stringify(quoteSnapshot));
- await page.click('#backToDealerBtn');await page.waitForFunction(()=>!document.body.classList.contains('report-open'));
+ await page.click('#backToDealerBtn');await page.waitForFunction(()=>sessionToken&&!savedEstimateEditContext&&savedPropertyEditActive&&!document.body.classList.contains('report-open'));
  await stage('10-reopened');assert.equal(await page.evaluate(()=>manualPlanes.length),2);assert.equal(await page.locator('#manualRoofScopeConfirmed').isChecked(),false);assert.equal(await page.locator('#createEstimateBtn').isDisabled(),true);await page.click('#confirmRoofPitches');
  await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.waitForFunction(()=>document.body.classList.contains('report-open'));
  assert.equal(await page.evaluate(()=>JSON.stringify(quoteSnapshot)),frozenReopen,'Workspace review must not mutate the stored estimate');
