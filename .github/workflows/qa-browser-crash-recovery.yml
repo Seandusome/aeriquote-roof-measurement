@@ -70,7 +70,10 @@ jobs:
               python scripts/verify_job_revisions.py "$QA_BROWSER_OUTPUT"
               ;;
             fresh-user) node scripts/test_fresh_user_browser.cjs ;;
-            roof-exports) node scripts/test_manual_roofing_browser.cjs ;;
+            roof-exports)
+              node scripts/test_manual_roofing_browser.cjs
+              QA_ROOF_UX_WIDTHS=1440,390 node scripts/test_roofing_usability_browser.cjs
+              ;;
             draft-races) node scripts/test_draft_races_browser.cjs ;;
             drafts) node scripts/test_workspace_drafts_browser.cjs ;;
             baseline) node scripts/test_prelaunch_browser.cjs ;;
