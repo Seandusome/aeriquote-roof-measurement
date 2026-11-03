@@ -15,17 +15,19 @@ function trace(points,pitch='22.62'){
 const roof=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]];
 trace(roof);assert.equal(w.eval('manualPlanes.length'),1);assert(w.eval('manualPlanes[0].pitch_confirmed'));
 const first=w.eval('JSON.stringify(manualPlanes[0])');
-trace(roof.map(([lat,lng])=>[lat,lng+.0001]),'0');assert.equal(w.eval('manualPlanes.length'),2,'Adjacent facets allowed: '+w.document.body.textContent.slice(-700));
+assert.equal(btn('manualRoofScopeConfirmed').hidden,true);assert.equal(btn('confirmRoofPitches').textContent,'Confirm pitches and included roofs');assert(btn('manualRoofSections').textContent.includes('5/12 pitch'));assert.equal(btn('garageControls').style.display,'none');assert(!btn('garageGuide').textContent.includes('automatically'));assert(btn('summary').textContent.includes('Roof confirmation required'));assert(!btn('summary').textContent.includes('pitch confirmed'));btn('confirmRoofPitches').click();assert.equal(btn('confirmRoofPitches').getAttribute('aria-pressed'),'true');assert(btn('summary').textContent.includes('5/12 pitch confirmed'));
+
+trace(roof.map(([lat,lng])=>[lat,lng+.0001]),'0');assert.equal(btn('manualRoofScopeConfirmed').checked,false,'Adding a roof invalidates confirmation');assert(btn('manualRoofSections').textContent.includes('0/12 (flat)'));btn('confirmRoofPitches').click();assert.equal(w.eval('manualPlanes.length'),2,'Adjacent facets allowed: '+w.document.body.textContent.slice(-700));
 trace(roof.map(([lat,lng])=>[lat+.001,lng]),'45');assert.equal(w.eval('manualPlanes.length'),3,'Detached garage');
 w.eval('beginManualRoofSection()');for(const [lat,lng] of roof)w.eval(`addTracePoint(L.latLng(${lat},${lng}))`);btn('pitchSel').value='22.62';w.eval('pitchChanged();finishTrace()');assert.equal(w.eval('manualPlanes.length'),3,'Overlap rejected');w.eval('cancelCurrentTrace();renderSummary()');
 w.eval('editManualRoofSection(0)');assert.equal(w.eval('manualRoofEditIndex'),0);assert.equal(btn('pitchSel').value,'');btn('traceBtn').click();assert.equal(btn('manualRoofSections').querySelector('button').disabled,false,'Cancel must re-enable saved roof-section controls without another input');assert.equal(w.eval('JSON.stringify(manualPlanes[0])'),first,'Cancel preserves geometry/pitch');
-w.eval('editManualRoofSection(0)');btn('pitchSel').value='0';w.eval('pitchChanged();finishTrace()');assert.equal(w.eval('manualPlanes.length'),3,'Edit replaces one section');assert.equal(w.eval('manualPlanes[0].pitch_degrees'),0);
-w.eval('deleteManualRoofSection(1)');assert.equal(w.eval('manualPlanes.length'),2);assert.equal(w.eval('manualPlanes[1].pitch_degrees'),45,'Delete preserves garage');
-assert(w.eval('quotePricingError()').includes('Confirm'));btn('manualRoofScopeConfirmed').checked=true;btn('manualRoofScopeConfirmed').dispatchEvent(new w.Event('change'));assert.equal(w.eval('quotePricingError()'),'');
+btn('confirmRoofPitches').click();w.eval('editManualRoofSection(0)');assert.equal(btn('manualRoofScopeConfirmed').checked,false,'Editing requires confirmation again');btn('pitchSel').value='0';w.eval('pitchChanged();finishTrace()');assert.equal(w.eval('manualPlanes.length'),3,'Edit replaces one section');assert.equal(w.eval('manualPlanes[0].pitch_degrees'),0);
+btn('confirmRoofPitches').click();w.eval('deleteManualRoofSection(1)');assert.equal(btn('manualRoofScopeConfirmed').checked,false,'Deleting requires confirmation again');assert.equal(w.eval('manualPlanes.length'),2);assert.equal(w.eval('manualPlanes[1].pitch_degrees'),45,'Delete preserves garage');
+assert(w.eval('quotePricingError()').includes('Confirm'));btn('confirmRoofPitches').click();assert.equal(w.eval('quotePricingError()'),'');
 const snap=w.eval('captureQuoteSnapshot()');assert(snap.manualRoofWorkflow&&snap.roofScopeConfirmed);assert.equal(snap.manualPlanes.length,2);
 const area=w.eval('priceCalc().area');w.eval('map.setZoom(21);map.panTo([52.00005,-106])');assert.equal(w.eval('priceCalc().area'),area);
 w.eval('beginManualRoofSection()');assert(w.eval('quotePricingError()').includes('Save or cancel'));w.eval('cancelCurrentTrace();renderSummary()');
-btn('manualRoofScopeConfirmed').checked=true;btn('manualRoofScopeConfirmed').dispatchEvent(new w.Event('change'));
+btn('confirmRoofPitches').click();
 w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/jpeg;base64,QA';
 await w.eval('showCustomerEstimate()');
 assert(w.document.body.classList.contains('report-open'),'Valid save acknowledgement opens the real customer report before export');assert.equal(w.eval('saveEstimateHistory.pending'),null,'Report fixture has an acknowledged save');

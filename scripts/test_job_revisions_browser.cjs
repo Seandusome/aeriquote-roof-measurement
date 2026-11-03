@@ -6,7 +6,7 @@ script=script.replace('const results=[];','const results=[],auditSeen=[];');
 const mapRoute=script.split('\n').find(line=>line.includes("u.pathname.startsWith('/manual-report-map/')"));assert(mapRoute);
 script=script.replace(mapRoute," if(u.pathname.startsWith('/manual-report-map/')||u.pathname==='/saved-estimate-report-map')return r.continue();");
 script=script.replace("await page.fill('#streetAddress','1 Fictional QA Street')","await page.fill('#streetAddress','1 Fictional '+industry+' QA Street')");
-const roof="  await page.click('#manualRoofScopeConfirmed');";assert(script.includes(roof));
+const roof="  await page.click('#confirmRoofPitches');";assert(script.includes(roof));
 script=script.replace(roof,String.raw`
   await page.click('#traceBtn');await draw(pts.map(([lat,lng])=>[lat,lng+.00015]));await page.selectOption('#pitchSel','0');await page.click('#finishTrace');
   await page.click('#traceBtn');await draw(pts.map(([lat,lng])=>[lat+.00028,lng]));await page.selectOption('#pitchSel','45');await page.click('#finishTrace');

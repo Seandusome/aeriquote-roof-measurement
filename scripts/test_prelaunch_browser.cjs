@@ -30,7 +30,7 @@ for(const width of widths)for(const industry of industries){
  console.log('loaded',await page.locator('#status').textContent());const pts=process.env.QA_COMPLEX_SHAPES==='1'?[[51.99995,-106.00012],[51.99995,-106.00002],[51.99998,-106.00002],[51.99998,-106.00007],[52.00003,-106.00007],[52.00003,-106.00012]]:[[51.99995,-106.00012],[51.99995,-106.00002],[52.00003,-106.00002],[52.00003,-106.00012]];
  if(industry==='roofing'){
   if(!await page.evaluate(()=>traceMode))await page.click('#toolAreaBtn');await draw(pts);await page.selectOption('#pitchSel','22.62');await page.evaluate(()=>pitchChanged());await page.evaluate(()=>finishTrace());
-  await page.click('#manualRoofScopeConfirmed');
+  await page.click('#confirmRoofPitches');
  }else{
   await draw(pts);await page.click('#areaStartBtn');await page.click('#toolAreaBtn');await draw(pts.map(([lat,lng])=>[lat+.00014,lng]));await page.click('#areaStartBtn');
   await page.click('#toolAreaBtn');await page.click('#toolLinearBtn');await draw(process.env.QA_COMPLEX_SHAPES==='1'?[[51.99995,-105.9999],[52.00002,-105.9999],[52.00002,-105.99986],[52.00012,-105.99986]]:[[51.99995,-105.9999],[52.00012,-105.9999]]);await page.click('#linearStartBtn');
