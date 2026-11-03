@@ -1,0 +1,13 @@
+START roofing 1440
+clicked property
+loaded Trace each roof section, confirm its pitch, then review the estimate.
+drawn {
+  areas: 0,
+  points: 0,
+  line: 0,
+  manual: 3,
+  status: 'Manual trace cancelled.'
+}
+report opened
+PASS actual Chromium Single and Expanded roofing downloads: three sections, explicit22.62/0/45pitch, unchanged saved geometry/pricing/customer
+{"industry":"roofing","width":1440,"total":253.89,"overflow":false,"errors":[],"pdfs":["/tmp/aq-roof-legacy-exports/roofing-1440-single.pdf","/tmp/aq-roof-legacy-exports/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}

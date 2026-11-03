@@ -1,0 +1,102 @@
+{
+  "source": "f8c3d20a28aa51a33037e15ac09da11794e8ca00",
+  "application": {
+    "run": 41723463942,
+    "result": "success"
+  },
+  "41723463840": [
+    {
+      "id": 126221984947,
+      "name": "recovery",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985518,
+      "name": "postgres_integrity (16)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985537,
+      "name": "postgres_integrity (18)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    }
+  ],
+  "41723463808": [
+    {
+      "id": 126221985665,
+      "name": "browser (recovery)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985841,
+      "name": "browser (baseline)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985846,
+      "name": "browser (public)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985948,
+      "name": "browser (drafts)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221985977,
+      "name": "browser (roof-exports)",
+      "status": "completed",
+      "conclusion": "failure",
+      "current": []
+    },
+    {
+      "id": 126221985991,
+      "name": "browser (job-revisions)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221986029,
+      "name": "browser (fresh-user)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221986063,
+      "name": "browser (draft-races)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221986115,
+      "name": "browser (pdf-failure)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    },
+    {
+      "id": 126221986120,
+      "name": "browser (property-failure)",
+      "status": "completed",
+      "conclusion": "success",
+      "current": []
+    }
+  ]
+}

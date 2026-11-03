@@ -1,0 +1,12 @@
+2026-11-03T21:39:16.4564263Z START roofing 1440
+2026-11-03T21:39:21.0496474Z PASS actual Chromium Single and Expanded roofing downloads: three sections, explicit22.62/0/45pitch, unchanged saved geometry/pricing/customer
+2026-11-03T21:39:21.2843619Z {"industry":"roofing","width":1440,"total":253.89,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-03T21:39:21.9365648Z START roofing 1440
+2026-11-03T21:39:29.4118003Z {"industry":"roofing","width":1440,"total":407.69,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/roofing-1440-single.pdf","/tmp/aq-browser-evidence/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-03T21:39:29.4618294Z START roofing 390
+2026-11-03T21:39:43.2295470Z CREATE DIAGNOSTIC {
+2026-11-03T21:39:43.2296310Z page.waitForFunction: Timeout 10000ms exceeded.
+2026-11-03T21:39:43.2338807Z   status: 'Estimate not saved. Estimate gstAmt does not match independently calculated measurements, rates and taxes. Recreate the estimate. Your measurements are still here.',
+2026-11-03T21:39:43.2340131Z   recovery: 'Recovery copy saved for 24 hours.',
+2026-11-03T21:39:43.2340940Z   pending: true,
+2026-11-03T21:39:43.2550482Z ##[error]Process completed with exit code 1.

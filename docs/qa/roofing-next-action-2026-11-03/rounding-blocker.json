@@ -1,0 +1,10 @@
+{
+  "subtotal": "367.3",
+  "browserGST": 18.36,
+  "independentGST": "18.37",
+  "expectedTotal": "407.71",
+  "priceCalcUnchanged": true,
+  "priceCalcSHA256": "ee6b61c092df33d406983c937f7a38dc9f133a10abca4bfd63dad5b8179db72b",
+  "serverRejected": true,
+  "scope": "Existing arithmetic edge; preserved and not fixed in Roofing usability batch"
+}

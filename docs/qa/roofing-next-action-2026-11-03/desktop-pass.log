@@ -1,0 +1,12 @@
+START roofing 1440
+clicked property
+loaded Trace each roof section, confirm its pitch, then review the estimate.
+drawn {
+  areas: 0,
+  points: 0,
+  line: 0,
+  manual: 2,
+  status: '✓ MANUAL ROOF SAVED — 2,274 ft² total. Add another roof if needed.'
+}
+report opened
+{"industry":"roofing","width":1440,"total":407.69,"overflow":false,"errors":[],"pdfs":["/tmp/aq-roof-ux-desktop-final/roofing-1440-single.pdf","/tmp/aq-roof-ux-desktop-final/roofing-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}

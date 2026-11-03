@@ -1,3 +1,15 @@
+# November 3 — Roofing next-action usability implemented; UNDEPLOYED; visual review pending
+
+Resumed68b612f6. Application source **f8c3d20a28aa51a33037e15ac09da11794e8ca00**, app.py blob982a6e705057595fba0ff7e8bf490482759452e9. Read [Roofing usability implementation and evidence](QA_ROOFING_NEXT_ACTION_2026_11_03.md). One current action/explanation; pitch beside Save; explicit final confirmation appears only after saved sections and finished drawing/editing; area/pitch list retained; next missing price/customer/Create stage highlighted. Legacy saved-structure summary/repair path retained. No Mapbox/PDF redesign, pricing/measurement/allowance policy or database changes.
+
+Passed locally: manual Roofing Python + DOM/Leaflet safeguards; six-industry pricing guards; actual desktop trace/save/confirm/edit/Cancel/add/delete/reopen; Single+Expanded PDFs independently407.69; three-section old exporter regression253.89. Phone-width UI reaches Create but a real existing half-cent GST bug blocks its save: subtotal367.30 sendsGST18.36; server expects18.37 and rejects, preserving measurements/draft. priceCalc unchanged from68b612f6. No assertion weakened or fixture changed to avoid it. **Not ready to deploy until this separate pricing blocker is resolved and required workflows pass.** Final-source application41723463942 PASS; recovery41723463840 PASS including PG16/18; browser41723463808 **9/10 PASS, roof-exports FAIL on exact390-width GST case**. All workflows completed; no checks still running. Do not assume all pass.
+
+Live recovery stays **efb2d29b / dep-dbl3b5gae00c73cfdh50**, auto-deployOFF, isolated QA databaseunchanged. No deployment; main/production/customer data untouched. No live QA job/account edited in this batch. Two old untracked PDF copies preserved. Checkpoint is containing documentation commit; application source above is distinct.
+
+Pause for Sean's visual review. Next authorized work should fix the exact half-cent rounding discrepancy, retain independent server validation, retest pricing matrix and blocked phone save/reopen/bothPDFs, then rerun required workflows. No further layout scope expansion. Owner manual desktop and physical-phone testing remain pending.
+
+---
+
 # November 3 — Snow rate discrepancy diagnosed; PAUSED
 
 Resumed65512eed. Read [Snow rate diagnosis](QA_SNOW_RATE_DIAGNOSIS_2026_11_03.md). Cloud fill+Tab reproduced displayed/preview mismatch; genuine changed-value typing plus Tab/click-away works. Retyping the same fill-inserted value explains misleading prior follow-up. No user-input application defect reproduced; no app fix/deployment. Test must use keyboard and verify committed state rather than only DOM value.

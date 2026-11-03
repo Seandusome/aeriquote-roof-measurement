@@ -1,0 +1,120 @@
+[
+  {
+    "customer_name": "FICTIONAL QA roofing 390",
+    "customer_phone": "555-0100",
+    "customer_email": "fictional-customer@example.invalid",
+    "customer_notes": "",
+    "extra_service_description": "",
+    "extra_service_amount": 0,
+    "job_status": "Estimate",
+    "scheduled_date": "",
+    "completion_date": "",
+    "amount_paid": 0,
+    "address": "1 Fictional QA Street, Saskatoon, SK, Canada",
+    "total_area": 1360.3812171202785,
+    "total_price": 407.7,
+    "quote": {
+      "manualRoofWorkflow": true,
+      "roofScopeConfirmed": true,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [
+        {
+          "points": [
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00011974573138
+            },
+            {
+              "lat": 51.99994945271682,
+              "lng": -106.00002050399782
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00002050399782
+            },
+            {
+              "lat": 52.00003036804024,
+              "lng": -106.00011974573138
+            }
+          ],
+          "pitch_degrees": 22.62,
+          "surface_sqft": 714.4012774923926,
+          "pitch_confirmed": true,
+          "manual_roof_qa": true
+        },
+        {
+          "points": [
+            {
+              "lat": 52.00024999460946,
+              "lng": -106.00011974573138
+            },
+            {
+              "lat": 52.00024999460946,
+              "lng": -106.00002050399782
+            },
+            {
+              "lat": 52.000329258069065,
+              "lng": -106.00002050399782
+            },
+            {
+              "lat": 52.000329258069065,
+              "lng": -106.00011974573138
+            }
+          ],
+          "pitch_degrees": 0,
+          "surface_sqft": 645.9799396278859,
+          "pitch_confirmed": true,
+          "manual_roof_qa": true
+        }
+      ],
+      "measureSource": "manual",
+      "adjustedArea": 0,
+      "measurementMode": "auto",
+      "linearPoints": [],
+      "linearFeet": 0,
+      "areaPoints": [],
+      "areaSqFt": 0,
+      "commercialAreas": [],
+      "businessType": "roofing",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.27,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.27,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.27
+    },
+    "pricing": {
+      "estimatePeriod": "one_time",
+      "area": 1360.3812171202785,
+      "price": 0.27,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 367.3,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 367.3,
+      "gst": 5,
+      "pst": 6,
+      "gstAmt": 18.36,
+      "pstAmt": 22.04,
+      "total": 407.7,
+      "measurementMode": "auto",
+      "unit": "ft²"
+    },
+    "measurement_mode": "auto",
+    "linear_feet": 0,
+    "area_sqft": 0,
+    "street_meta": "Actual Street View",
+    "image_choice": "hide",
+    "street_image_data": ""
+  }
+]

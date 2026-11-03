@@ -1,0 +1,100 @@
+[
+  {
+    "name": "01-before-property",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [],
+    "confirmationVisible": true
+  },
+  {
+    "name": "02-drawing",
+    "confirmed": false,
+    "trace": true,
+    "pitch": "",
+    "planes": [],
+    "confirmationVisible": true
+  },
+  {
+    "name": "03-saved-unconfirmed",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "04-price-next",
+    "confirmed": true,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "05-customer-next",
+    "confirmed": true,
+    "trace": false,
+    "pitch": "22.62",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "06-editing",
+    "confirmed": false,
+    "trace": true,
+    "pitch": "",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "07-cancelled",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "36.87",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      }
+    ],
+    "confirmationVisible": true
+  },
+  {
+    "name": "08-two-sections",
+    "confirmed": false,
+    "trace": false,
+    "pitch": "0",
+    "planes": [
+      {
+        "area": 714.3700724070719,
+        "pitch": 22.62
+      },
+      {
+        "area": 645.9517231179831,
+        "pitch": 0
+      }
+    ],
+    "confirmationVisible": true
+  }
+]

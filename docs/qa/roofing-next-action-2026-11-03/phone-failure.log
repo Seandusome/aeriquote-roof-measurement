@@ -1,0 +1,21 @@
+START roofing 390
+clicked property
+loaded Trace each roof section, confirm its pitch, then review the estimate.
+drawn {
+  areas: 0,
+  points: 0,
+  line: 0,
+  manual: 2,
+  status: '✓ MANUAL ROOF SAVED — 2,274 ft² total. Add another roof if needed.'
+}
+CREATE DIAGNOSTIC {
+  status: 'Estimate not saved. Estimate gstAmt does not match independently calculated measurements, rates and taxes. Recreate the estimate. Your measurements are still here.',
+  recovery: 'Recovery copy saved for 24 hours.',
+  choices: false,
+  pending: true,
+  baseVersion: false
+}
+page.waitForFunction: Timeout 10000ms exceeded.
+    at eval (<anonymous>:87:52) {
+  name: 'TimeoutError'
+}
