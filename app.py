@@ -1706,7 +1706,7 @@ function syncManualRoofQa(){
  if(el('garageControls'))el('garageControls').style.display='none';
  if(el('garageGuide'))el('garageGuide').textContent='Load the property, then trace the main house and any other included roofs.';
  if(el('manualRoofWarning'))el('manualRoofWarning').textContent='Trace each roof section with its actual pitch. Include the main house and any garages or other roofs you are quoting.';
- if(el('manualRoofHelp')&&traceMode)el('manualRoofHelp').textContent='Trace one roof section with a single pitch. Confirm its pitch before saving. Add other slopes and garages separately.';
+ if(el('manualRoofHelp'))el('manualRoofHelp').textContent=traceMode?'Trace one roof section with a single pitch. Confirm its pitch before saving. Add other slopes and garages separately.':'Use ADD ROOF SECTION / GARAGE to trace the main house and other included roofs. Select each section’s actual pitch before saving.';
  if(el('traceBtn'))el('traceBtn').textContent=traceMode?'CANCEL SECTION':'ADD ROOF SECTION / GARAGE';
  let panel=el('manualRoofSections');if(!panel){panel=document.createElement('div');panel.id='manualRoofSections';details.after(panel)}
  const confirmed=!!el('manualRoofScopeConfirmed')?.checked;

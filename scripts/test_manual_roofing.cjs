@@ -5,7 +5,7 @@ const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs'),assert=requ
 
 
 w.eval("resetMeasurementForNewProperty();el('businessType').value='roofing';businessTypeChanged();sessionToken='manual-qa';fallbackMode=true;manualOverrideMode=true;structures=[];measurementViewMode='auto';el('jobPrice').value='.2';el('gst').value='5';el('pst').value='6';renderSummary()");
-w.eval('applyBusinessTerminology()');assert(w.document.querySelector('.measure-intro span').textContent.includes('Confirm pitch'));assert.equal(btn('toolAreaBtn').querySelector('b').textContent,'TRACE ROOF');assert(w.eval('manualRoofQa()'));assert.equal(btn('toolAutoBtn').style.display,'none');
+w.eval('applyBusinessTerminology()');assert(w.document.querySelector('.measure-intro span').textContent.includes('Confirm pitch'));assert.equal(btn('toolAreaBtn').querySelector('b').textContent,'TRACE ROOF');assert(w.eval('manualRoofQa()'));assert(btn('manualRoofHelp').textContent.includes('actual pitch'));assert(!btn('manualRoofHelp').textContent.includes('Google'));assert.equal(btn('toolAutoBtn').style.display,'none');
 function trace(points,pitch='22.62'){
  w.eval('beginManualRoofSection()');for(const [lat,lng] of points)w.eval(`addTracePoint(L.latLng(${lat},${lng}))`);
  w.eval('finishTrace()'); // Blank pitch must block saving.
@@ -15,7 +15,7 @@ function trace(points,pitch='22.62'){
 const roof=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]];
 trace(roof);assert.equal(w.eval('manualPlanes.length'),1);assert(w.eval('manualPlanes[0].pitch_confirmed'));
 const first=w.eval('JSON.stringify(manualPlanes[0])');
-assert.equal(btn('manualRoofScopeConfirmed').hidden,true);assert.equal(btn('confirmRoofPitches').textContent,'Confirm pitches and included roofs');assert(btn('manualRoofSections').textContent.includes('5/12 pitch'));assert.equal(btn('garageControls').style.display,'none');assert(!btn('garageGuide').textContent.includes('automatically'));assert(btn('summary').textContent.includes('Roof confirmation required'));assert(!btn('summary').textContent.includes('pitch confirmed'));btn('confirmRoofPitches').click();assert.equal(btn('confirmRoofPitches').getAttribute('aria-pressed'),'true');assert(btn('summary').textContent.includes('5/12 pitch confirmed'));
+assert.equal(btn('manualRoofScopeConfirmed').hidden,true);assert.equal(btn('confirmRoofPitches').textContent,'Confirm pitches and included roofs');assert(btn('manualRoofSections').textContent.includes('5/12 pitch'));assert.equal(btn('garageControls').style.display,'none');assert(!btn('garageGuide').textContent.includes('automatically'));assert(!btn('manualRoofHelp').textContent.includes('Google'));assert(btn('summary').textContent.includes('Roof confirmation required'));assert(!btn('summary').textContent.includes('pitch confirmed'));btn('confirmRoofPitches').click();assert.equal(btn('confirmRoofPitches').getAttribute('aria-pressed'),'true');assert(btn('summary').textContent.includes('5/12 pitch confirmed'));
 
 trace(roof.map(([lat,lng])=>[lat,lng+.0001]),'0');assert.equal(btn('manualRoofScopeConfirmed').checked,false,'Adding a roof invalidates confirmation');assert(btn('manualRoofSections').textContent.includes('0/12 (flat)'));btn('confirmRoofPitches').click();assert.equal(w.eval('manualPlanes.length'),2,'Adjacent facets allowed: '+w.document.body.textContent.slice(-700));
 trace(roof.map(([lat,lng])=>[lat+.001,lng]),'45');assert.equal(w.eval('manualPlanes.length'),3,'Detached garage');
