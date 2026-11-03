@@ -1713,10 +1713,20 @@ function deleteManualRoofSection(index){
  manualPlanes.splice(index,1);manualRoofInvalidateScope();redrawManualDisplayLayers();renderSummary();
 }
 function syncRoofNextAction(){
- const guided=manualRoofQa()&&(measurementViewMode==='auto'||!sessionToken);
+ const guided=manualRoofQa()&&!structures.length&&(measurementViewMode==='auto'||!sessionToken);
  document.body.classList.toggle('roof-guided',guided);
  document.querySelectorAll('.roof-next-action').forEach(n=>n.classList.remove('roof-next-action'));
- if(!guided){if(el('manualRoofSections'))el('manualRoofSections').style.display='none';return;}
+ if(!guided){
+  const panel=el('manualRoofSections');if(panel)panel.style.display=manualRoofQa()&&measurementViewMode==='auto'?'':'none';
+  if(manualRoofQa()&&structures.length&&el('roofNextTitle')){
+   const confirmed=!!el('manualRoofScopeConfirmed')?.checked;
+   el('roofNextTitle').textContent=confirmed?'Pitches and included roofs confirmed':'Roof confirmation required';
+   el('roofNextExplanation').textContent='Review the saved roof measurements and any repair instructions in Property Summary before confirming.';
+   el('confirmRoofPitches').style.display=manualPlanes.length&&!traceMode&&!confirmed?'':'none';
+   el('roofConfirmedState').style.display=confirmed?'':'none';
+  }
+  return;
+ }
  if(el('manualRoofSections'))el('manualRoofSections').style.display='';
  document.body.classList.toggle('roof-drawing',traceMode);document.body.classList.toggle('roof-idle',!traceMode);
  const card=el('roofNextStep');if(!card)return;

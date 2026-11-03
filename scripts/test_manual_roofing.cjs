@@ -45,6 +45,7 @@ w.html2canvas=async node=>{captures++;assert(node.textContent.includes(w.eval('m
 w.jspdf={jsPDF:class{constructor(){this.internal={pageSize:{getWidth:()=>297,getHeight:()=>210}}}addImage(){}addPage(){}save(name){exports.push(name)}}};
 for(const layout of ['single','expanded']){const before=exports.length;btn('estimatePdfLayout').value=layout;await w.eval('downloadEstimatePDF()');assert.equal(exports.length,before+1,layout+' exporter must reach PDF save: '+btn('status').textContent);assert.equal(w.eval('JSON.stringify(quoteSnapshot)'),frozen,'PDF never mutates roof sections/pitch/pricing')}
 assert.equal(exports.length,2,'Both real exporter entry points reach PDF save');assert(captures>=2);
+w.eval('structures=[{}];syncRoofNextAction()');assert.equal(w.document.body.classList.contains('roof-guided'),false,'Legacy saved structures retain their existing visible summary/repair path');assert(btn('roofNextTitle').textContent);w.eval('structures=[];renderSummary()');
 w.eval("el('businessType').value='snow';businessTypeChanged();renderSummary()");assert.equal(btn('manualRoofSections'),null,'QA section controls disappear outside Roofing');assert.equal(btn('toolAreaBtn').disabled,false);
 assert.equal(errors.length,0,JSON.stringify(errors));
 console.log('PASS actual DOM/Leaflet manual sections: explicit pitch, shared edges, garage, overlap rejection, individual edit/cancel/delete, scope confirmation, draft blocking, snapshot and zoom invariance; emulated browser only');
