@@ -1,0 +1,176 @@
+[
+  {
+    "industry": "roofing",
+    "width": 1440,
+    "total": 1110000079.29,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "docs/qa/pdf-amount-layout-2026-11-03/pages/roofing-1440-single.pdf",
+      "docs/qa/pdf-amount-layout-2026-11-03/pages/roofing-1440-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "layout": "single",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "PAGE BREAK FIXTURE 1 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 2 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 3 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 4 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 5 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 6 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 7 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 8 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 9 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 10 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 11 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 12 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 13 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 14 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 15 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "FICTIONAL QA additional service for exact tax-boundary verification$999,999,999.99",
+          "Subtotal Before Tax$1,000,000,071.43",
+          "Sales Tax (5%)$50,000,003.57",
+          "Additional Tax (6%)$60,000,004.29",
+          "TOTAL (CAD)$1,110,000,079.29"
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": []
+      },
+      {
+        "sourceWidth": 1706,
+        "sourceHeight": 930,
+        "drawWidth": 1152,
+        "drawHeight": 627.984375
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "PAGE BREAK FIXTURE 1 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 2 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 3 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 4 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 5 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 6 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges."
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "PAGE BREAK FIXTURE 7 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 8 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 9 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 10 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 11 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 12 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 13 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges."
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "PAGE BREAK FIXTURE 14 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 15 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "FICTIONAL QA additional service for exact tax-boundary verification$999,999,999.99",
+          "Subtotal Before Tax$1,000,000,071.43",
+          "Sales Tax (5%)$50,000,003.57",
+          "Additional Tax (6%)$60,000,004.29",
+          "TOTAL (CAD)$1,110,000,079.29"
+        ]
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 390,
+    "total": 1110000079.29,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "docs/qa/pdf-amount-layout-2026-11-03/pages/roofing-390-single.pdf",
+      "docs/qa/pdf-amount-layout-2026-11-03/pages/roofing-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "layout": "single",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "PAGE BREAK FIXTURE 1 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 2 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 3 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 4 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 5 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 6 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 7 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 8 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 9 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 10 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 11 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 12 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 13 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 14 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 15 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "FICTIONAL QA additional service for exact tax-boundary verification$999,999,999.99",
+          "Subtotal Before Tax$1,000,000,071.43",
+          "Sales Tax (5%)$50,000,003.57",
+          "Additional Tax (6%)$60,000,004.29",
+          "TOTAL (CAD)$1,110,000,079.29"
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": []
+      },
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 487.1875,
+        "drawHeight": 651
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "PAGE BREAK FIXTURE 1 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 2 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 3 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 4 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 5 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 6 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges."
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "PAGE BREAK FIXTURE 7 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 8 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 9 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 10 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 11 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 12 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 13 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges."
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "PAGE BREAK FIXTURE 14 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "PAGE BREAK FIXTURE 15 - Nonbillable document note for pagination only. Complete customer instructions are preserved; no additional charges.",
+          "FICTIONAL QA additional service for exact tax-boundary verification$999,999,999.99",
+          "Subtotal Before Tax$1,000,000,071.43",
+          "Sales Tax (5%)$50,000,003.57",
+          "Additional Tax (6%)$60,000,004.29",
+          "TOTAL (CAD)$1,110,000,079.29"
+        ]
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  }
+]

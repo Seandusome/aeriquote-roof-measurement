@@ -1,0 +1,8 @@
+Final source 1cd73b65e973cfd135da9f7cabbc6f4510fe68c3
+PASS original/large/pages: real Chromium save/reopen, Single+Expanded; every complete pricing row and amount preserved in order; no wrapped/overlapping amount; no JavaScript errors.
+PASS independent WGS84 + Decimal on all six saved source payloads.
+PASS test_expanded_pdf.cjs, test_phone_pdf.cjs, test_manual_roofing.cjs, test_price_rounding.cjs; Python compile.
+PASS visual inspection: all 22 pages rendered at 1300px and reviewed via contact sheets, critical price/continuation pages also at full size.
+Intentional red control: removing the two new CSS rules reproduces AMOUNT_LAYOUT wrapped $293.82 and export fails. Original saved live Expanded page also reviewed.
+Single remains fit-to-one-page; dense pagination fixture is necessarily reduced, with full content/totals visible. Expanded continues to four pages with intact rows.
+No deployment, live database access or live job/account changes in this batch. Render live194c435b/dep-dbl5m4lbedkc73ekek60 and auto-deployOFF read-only rechecked.

@@ -1,0 +1,96 @@
+[
+  {
+    "industry": "roofing",
+    "width": 1440,
+    "total": 405.44,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "docs/qa/pdf-amount-layout-2026-11-03/original/roofing-1440-single.pdf",
+      "docs/qa/pdf-amount-layout-2026-11-03/original/roofing-1440-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "layout": "single",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "FICTIONAL QA additional service for exact tax-boundary verification$293.82",
+          "Subtotal Before Tax$365.26",
+          "Sales Tax (5%)$18.26",
+          "Additional Tax (6%)$21.92",
+          "TOTAL (CAD)$405.44"
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": []
+      },
+      {
+        "sourceWidth": 1706,
+        "sourceHeight": 930,
+        "drawWidth": 1152,
+        "drawHeight": 627.984375
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "FICTIONAL QA additional service for exact tax-boundary verification$293.82",
+          "Subtotal Before Tax$365.26",
+          "Sales Tax (5%)$18.26",
+          "Additional Tax (6%)$21.92",
+          "TOTAL (CAD)$405.44"
+        ]
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  },
+  {
+    "industry": "roofing",
+    "width": 390,
+    "total": 405.44,
+    "overflow": false,
+    "errors": [],
+    "pdfs": [
+      "docs/qa/pdf-amount-layout-2026-11-03/original/roofing-390-single.pdf",
+      "docs/qa/pdf-amount-layout-2026-11-03/original/roofing-390-expanded.pdf"
+    ],
+    "captureChecks": [
+      {
+        "layout": "single",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "FICTIONAL QA additional service for exact tax-boundary verification$293.82",
+          "Subtotal Before Tax$365.26",
+          "Sales Tax (5%)$18.26",
+          "Additional Tax (6%)$21.92",
+          "TOTAL (CAD)$405.44"
+        ]
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": []
+      },
+      {
+        "sourceWidth": 696,
+        "sourceHeight": 930,
+        "drawWidth": 487.1875,
+        "drawHeight": 651
+      },
+      {
+        "layout": "expanded",
+        "pricingRows": [
+          "Roofing Service — Manual Measurement$71.44",
+          "FICTIONAL QA additional service for exact tax-boundary verification$293.82",
+          "Subtotal Before Tax$365.26",
+          "Sales Tax (5%)$18.26",
+          "Additional Tax (6%)$21.92",
+          "TOTAL (CAD)$405.44"
+        ]
+      }
+    ],
+    "saved": true,
+    "reopened": true
+  }
+]

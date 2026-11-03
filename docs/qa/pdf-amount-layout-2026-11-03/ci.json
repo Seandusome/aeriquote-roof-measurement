@@ -1,0 +1,22 @@
+{
+  "source": "1cd73b65e973cfd135da9f7cabbc6f4510fe68c3",
+  "application": {
+    "run": 41732984453,
+    "conclusion": "success"
+  },
+  "recovery": {
+    "run": 41732984504,
+    "conclusion": "success",
+    "postgres16": "success",
+    "postgres18": "success"
+  },
+  "browser": {
+    "run": 41732984587,
+    "conclusion": "success",
+    "jobsPassed": 10,
+    "jobsTotal": 10
+  },
+  "live": "194c435b377dbcb23ad24a422c63763fcd931ed4",
+  "deployed": false,
+  "autoDeploy": "off"
+}

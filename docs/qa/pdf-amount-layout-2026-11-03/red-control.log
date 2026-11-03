@@ -1,0 +1,20 @@
+START roofing 1440
+clicked property
+loaded Trace each roof section, confirm its pitch, then review the estimate.
+drawn {
+  areas: 0,
+  points: 0,
+  line: 0,
+  manual: 1,
+  status: '✓ MANUAL ROOF SAVED — 714 ft² total. Add another roof if needed.'
+}
+report opened
+AMOUNT_LAYOUT wrapped $293.82
+EXPORT STATUS PDF could not be created. Use PRINT ESTIMATE while this is corrected.
+page.waitForEvent: Timeout 45000ms exceeded while waiting for event "download"
+=========================== logs ===========================
+waiting for event "download"
+============================================================
+    at eval (<anonymous>:80:189) {
+  name: 'TimeoutError'
+}

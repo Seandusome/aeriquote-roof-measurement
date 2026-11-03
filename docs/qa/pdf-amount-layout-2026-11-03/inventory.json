@@ -1,0 +1,74 @@
+[
+  {
+    "case": "original",
+    "width": 1440,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "original",
+    "width": 1440,
+    "layout": "expanded",
+    "pages": 2
+  },
+  {
+    "case": "original",
+    "width": 390,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "original",
+    "width": 390,
+    "layout": "expanded",
+    "pages": 2
+  },
+  {
+    "case": "large",
+    "width": 1440,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "large",
+    "width": 1440,
+    "layout": "expanded",
+    "pages": 2
+  },
+  {
+    "case": "large",
+    "width": 390,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "large",
+    "width": 390,
+    "layout": "expanded",
+    "pages": 2
+  },
+  {
+    "case": "pages",
+    "width": 1440,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "pages",
+    "width": 1440,
+    "layout": "expanded",
+    "pages": 4
+  },
+  {
+    "case": "pages",
+    "width": 390,
+    "layout": "single",
+    "pages": 1
+  },
+  {
+    "case": "pages",
+    "width": 390,
+    "layout": "expanded",
+    "pages": 4
+  }
+]

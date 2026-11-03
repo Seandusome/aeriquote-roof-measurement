@@ -1,3 +1,15 @@
+# November 3 — PDF amount wrapping FIXED; UNDEPLOYED; PAUSED
+
+Resumed00e6db5e. Application **1cd73b65e973cfd135da9f7cabbc6f4510fe68c3**. Read [PDF amount wrapping fix and evidence](QA_PDF_AMOUNT_WRAP_2026_11_03.md). Two scoped CSS rules preserve a nonshrinking, no-wrap, right-aligned amount column while descriptions wrap. No pricing/rounding/measurement/validation change. Removing the two rules reproduces `$293.82` digit wrapping; new three-case real-browser regression and existing assertions pass locally.
+
+Twelve Single/Expanded PDFs (22 rendered pages) inspected: recorded description, very long description, large amount999,999,999.99 and multi-page continuation. Full description/amount order and no overlap/wrap asserted. Real disposable save/reopen and independent WGS84+Decimal match. Pagination stress adds explicitly nonbillable export-only notes, never extra charges. Single's existing fit-to-one-page shrinks dense output; Expanded continues legibly across4pages. See report for exact evidence and limitations.
+
+Final-source workflows completed SUCCESS: application **41732984453**, recovery **41732984504** including PostgreSQL16/18, browser **41732984587 (10/10 jobs)** including the new three-case desktop/phone PDF regression. No unresolved automated failures. The red control is an intentional negative test, not a failing CI job.
+
+**No deployment.** Live remains **194c435b / dep-dbl5m4lbedkc73ekek60**, auto-deployOFF freshly read-only verified. No live QA DB/account/job changes; hosted QA isolation intact. Main/production/customer data untouched. Two original untracked PDF copies preserved. Checkpoint is containing documentation commit. Owner desktop/physical-phone review pending. Pause for Sean; no further work/deploy without instruction.
+
+---
+
 # November 3 —194c435b DEPLOYED to isolated recovery; LIVE verification complete; PAUSED
 
 User authorized deployment of tested194c435b only. Exact live application **194c435b377dbcb23ad24a422c63763fcd931ed4**, deploy **dep-dbl5m4lbedkc73ekek60**, LIVE22:09:04UTC. Pre-deploy read-only DB assertion and post-deploy instance t99jq asserted exact QA host/database aeriquote_recovery_qa/PostgreSQL18.6 and running commit. Auto-deployOFF. Main/production/customer data and connections unchanged.
