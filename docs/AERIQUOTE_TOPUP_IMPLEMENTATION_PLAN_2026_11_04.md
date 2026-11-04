@@ -1,6 +1,6 @@
 # Proposed 25-measurement / US$25 top-up — implementation plan
 
-**Stages1–2 records and disposable simulations implemented but undeployed; provider/checkout/history UI remain future work.** Sean authorized the payment-free source-lot/reconciliation stage after this plan was recorded. Source3544d880 adds legacy administrative openings, grant/debit movements and disposable simulated purchases. Read [implementation and QA evidence](QA_EXTRA_LEDGER_2026_11_04.md). No checkout, gateway connection, charge, refund or real balance change. Live recovery remains194c435b. This is not an activated payment-backed purchase system.
+**Stages1–2 records and disposable simulations implemented but undeployed; provider/live checkout remain future work; owner purchase/history UI is now disposable-QA-only.** Sean authorized the payment-free source-lot/reconciliation stage after this plan was recorded. Source3544d880 adds legacy administrative openings, grant/debit movements and disposable simulated purchases. Read [implementation and QA evidence](QA_EXTRA_LEDGER_2026_11_04.md). No checkout, gateway connection, charge, refund or real balance change. Live recovery remains194c435b. This is not an activated payment-backed purchase system.
 
 ## Confirmed pricing and entitlement decisions — November 4
 
@@ -19,6 +19,10 @@
 - Spending purchased extras requires an active paid or complimentary subscription. Cancellation holds the purchased balance without deleting it; reactivation restores use. Purchased extras never expire.
 - Refunds initially require an authorized manual review and apply only to attributable unused purchased units. No automatic refunds, negative balances, unrelated-lot deductions or money movement.
 - Payment-free stage2 now implements disposable order/event and refund-decision simulations plus a database writer fence. This supersedes the earlier unapproved-policy caveats in stage1 notes. See [stage2 evidence and controlled cutover](QA_PAYMENT_FREE_EVENTS_2026_11_04.md). No hosted activation or deployment.
+
+## Disposable owner purchase UI — implemented, undeployed
+
+Source1972004b adds owner-only `/qa/purchases` with prominent simulation labeling, USD25/25-unit pack, configured tax/total, monthly/granted/purchased balances, active-subscription/nonexpiry explanation and business-isolated purchase history. Pending/failure/retry/success controls use the tested event ledger, never a browser success flag. One pending order per business, stable identities and locked transactions handle double clicks, refresh/replay and lost responses. No hosted activation/provider/charge. Read [screen implementation, screenshots and QA](QA_SIMULATED_PURCHASE_SCREEN_2026_11_04.md). This supersedes the earlier statement that all owner history UI remained unimplemented; live payment/receipt history integration still remains future.
 
 ## Four small implementation stages
 

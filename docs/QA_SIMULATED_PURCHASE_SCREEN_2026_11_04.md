@@ -1,0 +1,43 @@
+# Owner-only purchase screen and history — disposable QA only
+
+## Scope and versions
+
+Resumed checkpoint8f0f2fab / tested sourcef4dcdf99. Current final candidate **1972004bdf74e4b9c0bc414f18d010336c46e927**. Recovery remains **194c435b377dbcb23ad24a422c63763fcd931ed4 / dep-dbl5m4lbedkc73ekek60**, auto-deployOFF freshly verified. No deployment or hosted database access, schema/backfill/order/balance changes. Main/production/customer data untouched. Existing four untracked copies preserved.
+
+## Screen and state flow
+
+New `/qa/purchases` is a separate owner-only screen. It requires explicit AERIQUOTE_QA_PURCHASES=1, a loopback request host, no Render service/hostname environment, and the existing disposable DB guard (temporary SQLite or localhost aeriquote_qa PostgreSQL). It is unavailable by default and unavailable on hosted recovery even if someone accidentally enables the flag. Normal login/auth-version/account isolation run first; employees cannot view or mutate it. No link or control was added to the measuring workflow.
+
+The screen shows monthly measurements remaining, granted measurements and purchased measurements separately; consumption order monthly→granted→purchased; employees share their business pool. Pack25 measurements, estimates included, US$25 before configured applicable tax. Canadian location/rates come from the server's versioned QA policy and business profile; missing/changed config blocks starting. Current USfixture is zero tax; future configurable tax wording follows the actual configured amount. Currency/subtotal/tax/total are immutable per order. No browser-supplied price, quantity, currency or business selection is trusted.
+
+Purchased extras never expire. Active paid/complimentary required to use them; missing/canceled subscription holds balances without deleting them. Clear active/held wording uses the same explicit evidence as existing spending. No subscription synchronization/provider API was introduced.
+
+One primary start action creates a pending order and stable first attempt, with **zero balance increase**. Pending orders expose explicitly simulated success/failure actions. Failure grants nothing and offers Retry on the same order, using a stable next-attempt identity. Success goes through the existing order/event processor; unique order fulfillment and event identities prevent repeated grants. Only one pending order per business is allowed, including competing forms from separate tabs. Browser refresh uses GET after303, never a new purchase. Form replay reuses immutable business-bound signed intent, not a fresh order.
+
+History shows UTC date/time, quantity, USD amount, tax, total, included estimates and current order status: Pending, Failed, Simulated success or Refund simulated. It shows the order's immutable terms, not newly configured prices/taxes. History is business-scoped; employees and foreign businesses cannot read/act on it. Same-origin checks, CSRF, stale-business form rejection and private/no-store responses protect the screen. No private financial content is put in public static assets.
+
+All controls are clearly marked **SIMULATION MODE · QA ONLY**; no payment details are requested. There is no checkout, provider, card data, real charge/refund or hosted fulfillment. The simulation fixture seeds only fictional businesses, active-subscription evidence and three granted units in a temporary database; these are not real balance changes.
+
+## Validation
+
+SQLite HTTP PASS: read-only GET, no pending/failed debit or grant, configured Canadian tax USD2.75/total27.75 and USzero/total25.00, ownership, employee/business isolation, CSRF/origin/hosted/flag guards, tax change/missing-config rejection, active/held/canceled wording and no-store headers. Eight concurrent identical starts create one order; a different stale-tab intent resolves to the existing pending purchase; eight retries create only one next attempt; eight confirmations plus old start/retry/success/failure replay fulfill exactly once. Injected failure after the grant but before event acknowledgment produces500 with complete HTTP transaction rollback; retry grants once. Independent history/bank reconciliation: one order, one fulfillment, granted3+purchased25=28 in each underlying channel. Old account-credit/public-route regressions PASS locally.
+
+PostgreSQL16/18 HTTP and existing state-machine PASS on final source1972004b. The new screen tests actually executed on both versions, including eight concurrent HTTP starts/retries/confirmations, interrupted acknowledgment rollback and strict isolation. Each independently reconciled one order/one fulfillment and bank28=granted3+purchased25 in both channels. Safe excerpts: [PostgreSQL](qa/simulated-purchases-2026-11-04/postgres-results.log), [SQLite](qa/simulated-purchases-2026-11-04/sqlite-results.log).
+
+Real Chromium browser checks: desktop1440 and phone-sized390/320; ordinary real login, visible forms, two rapid submissions, pending/failure/retry, refresh, repeated success, lost success response followed by reopening/replay, Canadian tax and isolated USzero business, overflow and uncaught error assertions. PASS on final source1972004b, purchases job126896400841 in workflow41921947939. Zero uncaught errors/overflow. Thirteen final PNGs retained under [evidence folder](qa/simulated-purchases-2026-11-04/), including desktop/390/320 start/pending/failed/success and USzero; [structured results](qa/simulated-purchases-2026-11-04/browser-results.json), [CI excerpt](qa/simulated-purchases-2026-11-04/browser-results.log). Visually inspected final desktop,390 and320 success captures; clear labels, no clipped amounts or horizontal scrolling. The fixture deliberately performs three distinct purchases on one fictional business, one per width: purchased25→50→75; repeated success within each case does not add units. UI access is simulation-only, not a live recovery link. Phone-sized automation is not physical-phone touch testing.
+
+### Initial CI failures and fixes
+
+- Browser41920775075 on27af6fe3: purchase UI checks reached desktop success; an unrelated L-is-not-defined error came from the login redirect loading the measuring page with blocked external map scripts. The disposable fixture now changes the successful real-login redirect to `/qa/purchases`; credential/auth verification still executes. Error assertion retained.
+- Browser41921116115 on6cff3baa: desktop passed; phone lost-response confirmation reached server, but the test started its recovery navigation before Chromium finished committing the expected internal network-error page. The readiness test now waits for that navigation's load event before reopening. It still aborts a successfully committed response and requires exactly one grant on refresh/replay. No timeout increase or safeguard/assertion removal.
+- Superseded source82cbf2c0 retained the second fixture issue. Browser41921497419 on2f3074b8 then passed desktop and the full390px lost-response/replay sequence, but320px failed the horizontal-overflow assertion. This was a real new-screen layout defect: three balance columns and compact history did not fit the narrow layout. Added a ≤360px layout with stacked balance rows and two history columns; no hiding/clipping or overflow assertion bypass. Final-source results below supersede these runs. Do not rerun historic failed sources.
+
+## Final required workflows
+
+Exact source1972004b: application **41921947886 SUCCESS**; recovery **41921948000 SUCCESS**, including all SQLite checks and PostgreSQL16/18 integrity, order/event, new HTTP purchase-screen and backup/previous-app compatibility drills; browser **41921947939 SUCCESS (11/11 jobs)**, including the new purchases suite. All required jobs executed and passed on the final source; no unresolved automated failure. CI tracked directly. [Final workflow summaries](qa/simulated-purchases-2026-11-04/final-workflows.json).
+
+## Remaining limits / next task
+
+No provider or payment authenticity/merchant/mode adapter, live checkout, real refunds, hosted purchase permission, actual paid-status synchronization or deployment. Tax fixture values exercise configurable arithmetic; this does not activate a hosted Canadian tax setup. The controlled writer cutover/rollback procedure from QA_PAYMENT_FREE_EVENTS_2026_11_04.md remains mandatory before a future separately approved deployment. Never drop the ledger fence or run old writers against activated purchase history.
+
+Owner visual desktop review and physical-phone testing remain pending. Dense Single PDF readability is unchanged/pending. Review these screenshots and the simple purchase states next; provider sandbox integration requires its own scoped instruction. Stop after checkpoint.

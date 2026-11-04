@@ -1,0 +1,5 @@
+# Exact source1972004bdf74e4b9c0bc414f18d010336c46e927
+PASS purchase GET is read-only; Canadian configurable tax/USzero; owner, employee, business, CSRF, origin and hosted/disposable guards
+PASS HTTP pending/failure/retry/success; 8-way repeated starts/retries/confirmation; refresh and old form replay; exactly one pack and atomic interrupted-response rollback
+PASS history and three source balances; subscription hold/active/canceled; no real money or hosted balance changes
+{"backend": "sqlite", "orders": 1, "fulfillments": 1, "bank": {"lookup_bonus": 28, "estimate_bonus": 28}, "real_money_moved": false}

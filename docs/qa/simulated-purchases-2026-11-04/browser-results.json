@@ -1,0 +1,35 @@
+[
+  {
+    "width": 1440,
+    "pending_no_grant": true,
+    "failed_no_grant": true,
+    "retry_same_order": true,
+    "duplicate_refresh_success_once": true,
+    "lost_response": false,
+    "initial": 0,
+    "purchased": 25,
+    "uncaught_errors": 0
+  },
+  {
+    "width": 390,
+    "pending_no_grant": true,
+    "failed_no_grant": true,
+    "retry_same_order": true,
+    "duplicate_refresh_success_once": true,
+    "lost_response": true,
+    "initial": 25,
+    "purchased": 50,
+    "uncaught_errors": 0
+  },
+  {
+    "width": 320,
+    "pending_no_grant": true,
+    "failed_no_grant": true,
+    "retry_same_order": true,
+    "duplicate_refresh_success_once": true,
+    "lost_response": false,
+    "initial": 50,
+    "purchased": 75,
+    "uncaught_errors": 0
+  }
+]
