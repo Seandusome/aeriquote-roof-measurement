@@ -55,6 +55,7 @@ jobs:
       - run: node scripts/test_industry_wording.cjs
       - run: node scripts/test_user_text_integrity.cjs
       - run: node scripts/test_unit_address_ui.cjs
+      - run: node scripts/test_single_pdf_readability.cjs
       - run: node scripts/test_phone_pdf.cjs
       - run: node scripts/test_browser_log_privacy.cjs
       - run: node scripts/test_expanded_pdf.cjs

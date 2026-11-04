@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions, purchases, topup-journey]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions, purchases, topup-journey, single-readability]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -74,6 +74,12 @@ jobs:
           PY
           case '${{ matrix.suite }}' in
             purchases) node scripts/test_purchase_screen_browser.cjs ;;
+            single-readability)
+              for density in ordinary dense; do
+                QA_DENSITY_CASE="$density" QA_BROWSER_OUTPUT="/tmp/aq-browser-evidence/$density" node scripts/test_single_readability_browser.cjs
+                python scripts/verify_prelaunch_browser.py "/tmp/aq-browser-evidence/$density"
+              done
+              ;;
             topup-journey)
               node scripts/test_topup_journey_browser.cjs
               python scripts/verify_prelaunch_browser.py "$QA_BROWSER_OUTPUT"

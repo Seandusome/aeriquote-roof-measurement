@@ -501,6 +501,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
  </div></div>
  <div class="reportFoot">Remote aerial measurements are used for estimating. Final property conditions and measurements should be confirmed before work begins.</div>
  <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="printEstimate()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
+ <p id="pdfLayoutHelp" class="pdfLayoutHelp" role="status" style="display:none;color:#664500;background:#fff7e6;padding:10px;border-radius:8px"></p>
 </div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -3252,8 +3253,25 @@ async function buildExpandedEstimatePDF(report){
  }finally{root.remove()}
 }
 
+function singlePageReadability(report){
+ // Measure the same export layout before rasterizing; 72 points per printed inch.
+ // Footer, branding and aerial labels keep their existing styling. Financial,
+ // measurement and primary customer text must stay at least 7 printed points.
+ const box=report.getBoundingClientRect(),width=Math.max(box.width||0,report.scrollWidth||0),height=Math.max(box.height||0,report.scrollHeight||0),view=report.ownerDocument.defaultView;
+ const nodes=[...report.querySelectorAll('.reportPrice .line,.reportPrice .line *,.reportBody .structure,.reportBody .structure *,.reportBody .metric,.reportMeta > div > div:not(.small)')];
+ const fonts=nodes.filter(n=>n.textContent.trim()&&n.getClientRects().length).map(n=>parseFloat(view.getComputedStyle(n).fontSize)).filter(n=>Number.isFinite(n)&&n>0);
+ if(!width||!height||!fonts.length)return{measured:false,readable:true}; // Layout-free DOM test doubles cannot supply print dimensions.
+ const fontPx=Math.min(...fonts),points=fontPx*Math.min(10.64/width,8.14/height)*72;
+ return{measured:true,width,height,fontPx,points,minimumPoints:7,readable:points>=7};
+}
+function assertSinglePageLegible(report){
+ const fit=singlePageReadability(report);
+ if(fit.measured&&!fit.readable){const error=new Error('This estimate has too much detail for a readable Single page. Expanded PDF is selected. Click DOWNLOAD ESTIMATE PDF to keep all details readable. Your saved estimate is unchanged.');error.code='SINGLE_PAGE_DENSE';throw error}
+}
+
 async function captureSinglePageEstimate(report){
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,onclone:(doc,copy)=>{
+  assertSinglePageLegible(copy);
   // html2canvas ignores object-fit. Fit the original pixels inside the same photo box,
   // only in its export clone: no live layout, map, source URL or quote data changes.
   const source=report.querySelector('#rStreet'),image=copy.querySelector('.reportStreet');
@@ -3275,7 +3293,7 @@ async function captureSinglePageEstimate(report){
  const copy=report.cloneNode(true);copy.classList.add('pdf-export');
  Object.assign(copy.style,{position:'absolute',left:'-20000px',top:'0',width:'1320px',maxWidth:'none',margin:'0'});
  if(mapPixels){const host=copy.querySelector('#customerMap');host.replaceChildren(mapPixels);Object.assign(host.style,{height:'430px',position:'relative',display:'flex',alignItems:'center',justifyContent:'center'});}
- copy.querySelectorAll('.reportActions,#reportOutlineControls,.reportDrawLayer').forEach(n=>n.remove());
+ copy.querySelectorAll('.reportActions,#reportOutlineControls,.reportDrawLayer,.pdfLayoutHelp').forEach(n=>n.remove());
  copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
  document.body.appendChild(copy);
  try{
@@ -3329,6 +3347,7 @@ async function downloadEstimatePDF(){
  if(pdfInProgress)return;
  if(el('estimatePdfLayout')?.value==='vector')return await downloadVectorDiagramPDF(report);
  if(typeof html2canvas==='undefined'||!window.jspdf){status('PDF tools did not load. Check the internet connection, then reopen the estimate.','error');return}
+ if(el('pdfLayoutHelp')){el('pdfLayoutHelp').textContent='';el('pdfLayoutHelp').style.display='none'}
  pdfInProgress=true;
  const src=(el('measureSource')&&el('measureSource').value)||'google';
  const oldText=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='CREATING PDF…'}
@@ -3408,7 +3427,7 @@ async function downloadEstimatePDF(){
   }
   const raw=(el('address')?.value||'Customer').split(',')[0].trim()||'Customer';const safe=raw.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
   pdf.save(`AeriQuote_Estimate_${safe||'Customer'}.pdf`);status('Estimate PDF downloaded.','ok');
- }catch(e){console.error('AQ:pdf-generation-failed');status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}
+ }catch(e){if(e.code==='SINGLE_PAGE_DENSE'){if(el('estimatePdfLayout'))el('estimatePdfLayout').value='expanded';const help=el('pdfLayoutHelp');if(help){help.textContent=e.message;help.style.display='block'}status(e.message,'warn')}else{console.error('AQ:pdf-generation-failed');status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}}
  finally{
    pdfInProgress=false;if(btn){btn.disabled=!!reportOutlineEditMode;btn.textContent=oldText||'DOWNLOAD ESTIMATE PDF'}
  }

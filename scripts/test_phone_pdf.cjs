@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {JSDOM}=require('jsdom');
 const app=fs.readFileSync('app.py','utf8');
-const helper=app.slice(app.indexOf('async function captureSinglePageEstimate('),app.indexOf('async function downloadEstimatePDF('));
+const helper=app.slice(app.indexOf('function singlePageReadability('),app.indexOf('async function downloadEstimatePDF('));
 async function run(width,fail=false,saved=false){
  const dom=new JSDOM('<body><div class="report"><div id="customerMap"><span>approved aerial</span></div><div class="reportActions">buttons</div><div id="reportOutlineControls">edit</div><div id="rPricing">unchanged total</div></div></body>');
  const doc=dom.window.document,report=doc.querySelector('.report');report.getBoundingClientRect=()=>({width});
