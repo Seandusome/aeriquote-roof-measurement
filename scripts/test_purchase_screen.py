@@ -46,7 +46,7 @@ with tempfile.TemporaryDirectory() as td:
    r=cl.get('/qa/purchases');assert r.status_code==200,r.status_code;assert r.headers['Cache-Control']=='private, no-store';return r.get_data(as_text=True)
   def form(cl,action):return next(x for x in Forms(page(cl)).forms if x.get('action')==action)
   def bank(did='screen-ca'):return query('SELECT lookup_bonus,estimate_bonus FROM account_allowances WHERE dealer_id=?',(did,))[0]
-  cl=client();before=bank();html=page(cl);assert 'SIMULATION MODE' in html and 'US$27.75' in html and 'US$2.75' in html
+  cl=client();before=bank();html=page(cl);assert 'SIMULATION MODE' in html and 'data-balance="bonus"' in html and 'Configured applicable Canadian tax.' not in html and 'US$27.75' in html and 'US$2.75' in html
   assert bank()==before and not query('SELECT * FROM topup_order_terms');us=page(client('screen-us'));assert 'US$25.00' in us and 'No tax under the current US billing policy' in us
   assert client(employee=True).get('/qa/purchases').status_code==403
   assert a.app.test_client().get('/qa/purchases').status_code==302
@@ -99,6 +99,51 @@ with tempfile.TemporaryDirectory() as td:
   # Active / held wording follows the same eligibility evidence used by actual spending.
   tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','active'));assert 'Your subscription is active.' in page(cl)
   tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','canceled'));assert 'Purchased extras are held' in page(cl) and bank()['lookup_bonus']==28
+  # Complete paid-plan journey through real property/save APIs after monthly+bonus exhaustion.
+  from unittest.mock import patch as mockpatch
+  from qa_estimate_fixture import price_fixture
+  from measurement_integrity import polygon_sqft
+  import copy
+  for channel in ('lookups','estimates'):
+   for n in range(28):assert tx('screen-ca',lambda db:c.consume(db,'screen-ca',channel,0,25,operation_id='journey-exhaust-'+channel+'-'+str(n)))[0]
+  def remaining():return tx('screen-ca',lambda db:l.reconciliation(db,'screen-ca'))
+  assert remaining()['bank']=={'lookups':25,'estimates':25} and remaining()['sources']['granted']=={'lookups':0,'estimates':0}
+  tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','active'))
+  employee=client(employee=True)
+  def provider(data):
+   if 'FAIL' in data['address']:return a.jsonify(error='Fictional provider unavailable'),503
+   token=a.create_session('FICTIONAL-NO-PROVIDER',52,-106,mode='manual_static')
+   return a.jsonify(token=token,fallback=True,center={'latitude':52,'longitude':-106},formatted_address=data['address'])
+  with mockpatch.object(a,'perform_property_lookup',side_effect=provider):
+   for prepare in (False,True):
+    assert employee.post('/property',json={'address':'FICTIONAL FAIL','key':'qa','prepare_only':prepare},headers={'Idempotency-Key':'journey-fail-'+str(prepare)}).status_code==503
+   assert remaining()['bank']=={'lookups':25,'estimates':25}
+   r=employee.post('/property',json={'address':'1 FICTIONAL TOPUP STREET','key':'qa','prepare_only':True},headers={'Idempotency-Key':'journey-property'});assert r.status_code==200
+   accepted={'operation_id':'journey-property','token':r.json['token']}
+   assert remaining()['bank']['lookups']==25
+   assert client('screen-us').post('/property/accept',json=accepted).status_code==404
+   for actor in (employee,cl,employee,cl):assert actor.post('/property/accept',json=accepted).status_code==200
+   assert remaining()['bank']=={'lookups':24,'estimates':25}
+   ring=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]
+   payload=price_fixture({'address':'1 FICTIONAL TOPUP STREET','customer_name':'FICTIONAL TOPUP CUSTOMER','quote':{'commercialAreas':[{'name':'Yard','points':ring,'sqft':round(polygon_sqft(ring)),'rate':.23}]},'pricing':{'price':.23,'gst':5,'pst':6}})
+   saved=employee.post('/api/estimates',json=payload,headers={'Idempotency-Key':'journey-save'});assert saved.status_code==200,saved.data
+   for actor in (cl,employee,cl):assert actor.post('/api/estimates',json=payload,headers={'Idempotency-Key':'journey-save'}).json==saved.json
+   assert remaining()['bank']=={'lookups':24,'estimates':24}
+   revised=copy.deepcopy(payload);revised['customer_name']='FICTIONAL TOPUP REVISED';revised['quote']['commercialAreas'][0]['rate']=.37;price_fixture(revised)
+   change=cl.post('/api/estimates',json=revised,headers={'Idempotency-Key':'journey-revision','If-Match':saved.json['version']});assert change.status_code==200
+   assert employee.post('/api/estimates',json=revised,headers={'Idempotency-Key':'journey-revision','If-Match':saved.json['version']}).json==change.json
+   for actor in (cl,employee):assert actor.get('/api/estimates/'+saved.json['id']).json['payload']==revised
+   versions=cl.get('/api/estimates/'+saved.json['id']+'/versions').json;assert len(versions['revisions'])==1 and versions['revisions'][0]['payload']==payload
+   assert client('screen-us').get('/api/estimates/'+saved.json['id']).status_code==404
+   assert remaining()['bank']=={'lookups':24,'estimates':24}
+   tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','canceled'))
+   blocked=employee.post('/property',json={'address':'2 FICTIONAL TOPUP STREET','key':'qa','prepare_only':True},headers={'Idempotency-Key':'journey-canceled'});assert blocked.status_code==403
+   assert remaining()['bank']=={'lookups':24,'estimates':24}
+   tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','active'))
+   restored=employee.post('/property',json={'address':'2 FICTIONAL TOPUP STREET','key':'qa','prepare_only':True},headers={'Idempotency-Key':'journey-reactivated'});assert restored.status_code==200
+   assert remaining()['bank']=={'lookups':24,'estimates':24} # Prepared only: deliberately do not spend another unit.
+  assert query("SELECT channel,COUNT(*) AS n FROM extra_movements m JOIN extra_source_lots lot USING(dealer_id,lot_id) WHERE m.dealer_id='screen-ca' AND lot.origin='purchased' AND delta<0 GROUP BY channel ORDER BY channel")==[{'channel':'estimates','n':1},{'channel':'lookups','n':1}]
+  print('PASS complete paid topup API journey: monthly+bonus exhausted, employee accepted one property, one included estimate, owner retry/revision/reopen free, failure free, cancellation holds24/reactivation restores access, cross-business denied')
   print('PASS purchase GET is read-only; Canadian configurable tax/USzero; owner, employee, business, CSRF, origin and hosted/disposable guards')
   print('PASS HTTP pending/failure/retry/success; 8-way repeated starts/retries/confirmation; refresh and old form replay; exactly one pack and atomic interrupted-response rollback')
   print('PASS history and three source balances; subscription hold/active/canceled; no real money or hosted balance changes')

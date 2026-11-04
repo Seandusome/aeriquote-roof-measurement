@@ -19,6 +19,7 @@ on:
       - payment_free_orders.py
       - qa_purchase_screen.py
       - scripts/purchase_screen_qa_server.py
+      - scripts/topup_journey_qa_server.py
       - allowance_writer_guard.py
       - workspace_drafts.py
       - workspace_drafts.js
@@ -34,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions, purchases]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions, purchases, topup-journey]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -55,7 +56,7 @@ jobs:
       - name: Disposable browser workflow with fictional providers
         shell: bash
         run: |
-          if [ '${{ matrix.suite }}' = 'purchases' ]; then task_server=scripts/purchase_screen_qa_server.py; elif [ '${{ matrix.suite }}' = 'job-revisions' ]; then task_server=scripts/job_revisions_browser_server.py; elif [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
+          if [ '${{ matrix.suite }}' = 'topup-journey' ]; then task_server=scripts/topup_journey_qa_server.py; elif [ '${{ matrix.suite }}' = 'purchases' ]; then task_server=scripts/purchase_screen_qa_server.py; elif [ '${{ matrix.suite }}' = 'job-revisions' ]; then task_server=scripts/job_revisions_browser_server.py; elif [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
           python "$task_server" > /tmp/qa-browser-server.log 2>&1 &
           task_server_pid=$!
           trap 'kill "$task_server_pid" || true' EXIT
@@ -73,6 +74,10 @@ jobs:
           PY
           case '${{ matrix.suite }}' in
             purchases) node scripts/test_purchase_screen_browser.cjs ;;
+            topup-journey)
+              node scripts/test_topup_journey_browser.cjs
+              python scripts/verify_prelaunch_browser.py "$QA_BROWSER_OUTPUT"
+              ;;
             job-revisions)
               node scripts/test_job_revisions_browser.cjs
               python scripts/verify_job_revisions.py "$QA_BROWSER_OUTPUT"
