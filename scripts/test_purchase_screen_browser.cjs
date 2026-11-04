@@ -23,7 +23,8 @@ try{for(const width of [1440,390,320]){
  if(width===390){
   // Server commits success, browser loses the response. Reload/replay must show one grant.
   await page.route('**/qa/purchases',async r=>{if(r.request().method()==='POST'){const response=await r.fetch({maxRedirects:0});assert.equal(response.status(),303);return r.abort('failed')}return r.continue()});
-  await success.click();await page.waitForURL(u=>u.href.startsWith('chrome-error:')||u.pathname==='/qa/purchases').catch(()=>{});await page.unroute('**/qa/purchases');await page.goto(base+'/qa/purchases');
+  const failedNavigationLoaded=page.waitForEvent('load');
+  await success.click({noWaitAfter:true});await failedNavigationLoaded;await page.unroute('**/qa/purchases');await page.goto(base+'/qa/purchases');
  }else await success.click();
  await page.locator(`.order[data-order="${oid}"] .status`).filter({hasText:'Simulated success'}).waitFor();assert.equal(await purchased(),initial+25);
  for(let i=0;i<3;i++){const r=await context.request.post(base+'/qa/purchases',{form:data,maxRedirects:0});assert.equal(r.status(),303);}
