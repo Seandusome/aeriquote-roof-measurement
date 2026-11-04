@@ -79,7 +79,8 @@ def reconciliation(con,did):
   units=int(row['units']);totals[row['channel']]+=units;origins[row['origin']][row['channel']]=units
  negative=con.execute('SELECT lot_id,channel FROM extra_movements WHERE dealer_id=? GROUP BY lot_id,channel HAVING SUM(delta)<0',(did,)).fetchall()
  opened=bool(con.execute('SELECT dealer_id FROM extra_bank_openings WHERE dealer_id=?',(did,)).fetchone())
- return dict(opened=opened,bank=bank,ledger=totals,sources=origins,balanced=opened and bank==totals and not negative)
+ unbacked=[r['lot_id'] for r in con.execute("SELECT l.lot_id FROM extra_source_lots l WHERE l.dealer_id=? AND l.origin='purchased' AND NOT EXISTS(SELECT 1 FROM extra_simulated_orders o WHERE o.dealer_id=l.dealer_id AND o.lot_id=l.lot_id)",(did,)).fetchall()]
+ return dict(opened=opened,bank=bank,ledger=totals,sources=origins,unbacked_purchases=unbacked,balanced=opened and bank==totals and not negative and not unbacked)
 
 def _assert_balanced(con,did):
  if not reconciliation(con,did)['balanced']:raise LedgerError('Extra allowance ledger does not match its bank. Reconciliation required.')
@@ -134,6 +135,7 @@ def fulfill_simulated_pack(con,did,order_id,*,country,region='',tax_policy):
  lot,created=_grant(con,did,25,'simulated-purchase:'+order_id,'purchased','simulated_purchase')
  if not created:raise LedgerError('Simulated purchase lot lacks its order record.')
  con.execute("INSERT INTO extra_simulated_orders(dealer_id,order_id,lot_id,quantity,currency,subtotal_cents,tax_cents,total_cents,tax_snapshot,payload_hash,created_at) VALUES(?,?,?,25,'USD',2500,?,?,?,?,?)",(did,order_id,lot,tax,2500+tax,snapshot,digest,stamp()))
+ _assert_balanced(con,did)
  return dict(con.execute('SELECT * FROM extra_simulated_orders WHERE dealer_id=? AND order_id=?',(did,order_id)).fetchone()),True
 
 def deduct_extra(con,did,channel,operation=None):

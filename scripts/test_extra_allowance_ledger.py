@@ -157,6 +157,10 @@ with tempfile.TemporaryDirectory() as td:
   drift=owner('drift',1,1);mutate(drift,lambda db:l.ensure_opening(db,drift))
   mutate(drift,lambda db:db.execute('UPDATE account_allowances SET lookup_bonus=2 WHERE dealer_id=?',(drift,)))
   assert not read(drift)['balanced'];rejects(lambda:mutate(drift,lambda db:l.deduct_extra(db,drift,'lookups')))
+  orphan=owner('orphan')
+  mutate(orphan,lambda db:l._grant(db,orphan,25,'fictional-orphan','purchased','simulated_purchase'))
+  assert not read(orphan)['balanced'] and len(read(orphan)['unbacked_purchases'])==1,'Independent reconciliation must detect an unbacked purchased lot even when arithmetic agrees'
+  rejects(lambda:mutate(orphan,lambda db:l.deduct_extra(db,orphan,'lookups')))
   for table in ['extra_movements','extra_source_lots','extra_bank_openings','extra_simulated_orders']:
    db=a.estimate_db()
    try:
@@ -168,5 +172,5 @@ with tempfile.TemporaryDirectory() as td:
   class Raw:info=Info()
   class Hosted:postgres=True;con=Raw()
   rejects(lambda:l.fulfill_simulated_pack(Hosted(),'not-real','blocked',country='US',tax_policy=tax))
-  print('PASS immutable history, independent bank drift detection/fail-closed, hosted simulation guard; no refund or production eligibility activated')
+  print('PASS immutable history, independent bank drift and unbacked purchase detection/fail-closed, hosted simulation guard; no refund or production eligibility activated')
   print(json.dumps({'backend':'postgres' if pg else 'sqlite','purchase':read(purchase),'other':read(other),'actual_payments':False},sort_keys=True))

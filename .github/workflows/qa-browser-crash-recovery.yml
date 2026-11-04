@@ -14,6 +14,8 @@ on:
       - scripts/test_existing_job_trial.py
       - site/onboarding.js
       - app.py
+      - account_credits.py
+      - extra_allowance_ledger.py
       - workspace_drafts.py
       - workspace_drafts.js
       - site/trial-signup.html
