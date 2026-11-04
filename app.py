@@ -2980,6 +2980,7 @@ function estimateActionMessage(message){
  box.textContent=message;box.hidden=!message;
 }
 async function showCustomerEstimate(historicalMode=false,historicalDate='',correctionRefresh=false){
+ if(el('pdfLayoutHelp')){el('pdfLayoutHelp').textContent='';el('pdfLayoutHelp').style.display='none'}
  if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
  if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
@@ -3271,6 +3272,8 @@ function assertSinglePageLegible(report){
 
 async function captureSinglePageEstimate(report){
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,onclone:(doc,copy)=>{
+  // Remove only spare vertical price-row padding in the export clone; keep type size and all content.
+  copy.querySelectorAll('.reportPrice .line').forEach(n=>{n.style.paddingTop='4px';n.style.paddingBottom='4px'});
   assertSinglePageLegible(copy);
   // html2canvas ignores object-fit. Fit the original pixels inside the same photo box,
   // only in its export clone: no live layout, map, source URL or quote data changes.
@@ -3427,7 +3430,7 @@ async function downloadEstimatePDF(){
   }
   const raw=(el('address')?.value||'Customer').split(',')[0].trim()||'Customer';const safe=raw.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'');
   pdf.save(`AeriQuote_Estimate_${safe||'Customer'}.pdf`);status('Estimate PDF downloaded.','ok');
- }catch(e){if(e.code==='SINGLE_PAGE_DENSE'){if(el('estimatePdfLayout'))el('estimatePdfLayout').value='expanded';const help=el('pdfLayoutHelp');if(help){help.textContent=e.message;help.style.display='block'}status(e.message,'warn')}else{console.error('AQ:pdf-generation-failed');status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}}
+ }catch(e){if(e.code==='SINGLE_PAGE_DENSE'){if(el('estimatePdfLayout'))el('estimatePdfLayout').value='expanded';const help=el('pdfLayoutHelp');if(help){help.textContent=e.message;help.style.display='block';help.scrollIntoView({block:'nearest'})}status(e.message,'warn')}else{console.error('AQ:pdf-generation-failed');status('PDF could not be created. Use PRINT ESTIMATE while this is corrected.','error')}}
  finally{
    pdfInProgress=false;if(btn){btn.disabled=!!reportOutlineEditMode;btn.textContent=oldText||'DOWNLOAD ESTIMATE PDF'}
  }
