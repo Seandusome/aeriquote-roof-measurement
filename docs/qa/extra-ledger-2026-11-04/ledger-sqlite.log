@@ -1,0 +1,9 @@
+[2026-11-04 14:11:01,585] ERROR in app: event=runtime_event id=f88701537264489cbbef54032c317309 exception=RuntimeError frames=runtime:1511,runtime:919,runtime:917,runtime:902,app:5214,runtime:148 [details redacted]
+PASS legacy opening exactly once, existing balances unchanged/granted, concurrent duplicate administrative grants once, mismatched reference rejected, rollback
+PASS simulated pack25 with estimates, USD25 subtotal, configurable Canada tax/US zero, per-business order idempotency, mismatch/unknown-tax rejection, fulfillment rollback
+PASS monthly first, purchased eligibility unapproved by default, included-estimate channel, rollback, renewal and nonexpiry
+PASS configurable mixed-source priority (no assumed approval), last purchased unit race exactly once, nonnegative source-lot reconciliation
+PASS owner/employee save retries one ledger debit/one estimate, free reopening, other-business isolation
+PASS lookup operation trace once across owner/employee retries; interrupted save rolls back movement/bank/receipt, retry once; cross-business lot write denied
+PASS immutable history, independent bank drift and unbacked purchase detection/fail-closed, hosted simulation guard; no refund or production eligibility activated
+{"actual_payments": false, "backend": "sqlite", "other": {"balanced": true, "bank": {"estimates": 25, "lookups": 25}, "ledger": {"estimates": 25, "lookups": 25}, "opened": true, "sources": {"granted": {"estimates": 0, "lookups": 0}, "purchased": {"estimates": 25, "lookups": 25}}, "unbacked_purchases": []}, "purchase": {"balanced": true, "bank": {"estimates": 22, "lookups": 23}, "ledger": {"estimates": 22, "lookups": 23}, "opened": true, "sources": {"granted": {"estimates": 0, "lookups": 0}, "purchased": {"estimates": 22, "lookups": 23}}, "unbacked_purchases": []}}

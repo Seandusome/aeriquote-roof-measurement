@@ -1,3 +1,17 @@
+# November 4 — Payment-free source ledger IMPLEMENTED; UNDEPLOYED; PAUSED
+
+Resumed27c8d2a4. Final source **3544d880342ab0143f37a9a8bac75820dd62dc4c**. Read [source ledger implementation/QA](QA_EXTRA_LEDGER_2026_11_04.md). New business-scoped source lots and append-only movements preserve existing extras as one-time administrative openings (no balance change/reclassification); new grants/debits retain source/operation references and reconcile independently with old bank counters. Monthly-first use and transaction/receipt/employee safeguards retained. Simulated pack25 with estimates/USD25 subtotal, versioned configurable taxes, immutable currency/subtotal/tax/total, no expiry. Hosted simulation writes are rejected.
+
+No production purchase eligibility/refund policy is approved or enabled. Internal disposable configuration only; mixed eligible sources without an explicit priority refuse extra spending. No checkout, provider, charges, refunds, real balance changes or deployment. Live **194c435b / dep-dbl5m4lbedkc73ekek60**, auto-deployOFF; QA binding unchanged. Main/production/customer data untouched. Four original untracked copies preserved.
+
+SQLite new/old regression suites PASS. New tests cover duplicate grants/fulfillment, rollback, renewal, ten-year carry-forward, last-unit concurrency, actual owner/employee lookup/save idempotency, isolation, immutable history, drift/orphan detection. Backup drill independently restores ledger+bank at snapshot time while source retains later grants.
+
+Exact final source **3544d880**: application **41913755304 SUCCESS**, recovery **41913755397 SUCCESS** including PostgreSQL16/18 ledger and backup/restore checks, browser **41913755807 SUCCESS (10/10 jobs)**. All required workflows completed; no unresolved automated failure. CI was tracked directly. The intentionally injected interrupted-save500 in the unit log is a passed rollback test, not a CI failure.
+
+**Cutover caveat:** old-version writers do not maintain ledger history. Before future deployment define a controlled writer cutover/rollback; do not auto-rebase a mismatched bank. Prior-version drill proves reads only. No hosted opening/backfill was run. Subscription eligibility, refund terms and mixed-source priority remain decisions. Future payment events/checkout/history UI remain unimplemented. Dense Single readability, manual desktop and physical-phone review remain pending. Next: policy/cutover review, then payment-free event-state simulations. Checkpoint is containing documentation commit. Pause for Sean; no more work/deployment without instruction.
+
+---
+
 # November 4 — Top-up pricing decisions confirmed; documentation only; PAUSED
 
 Sean confirmed: **all AeriQuote prices USD**; pack **25 extra measurements with estimates included for US$25**; Canadian customers add applicable tax; US customers no tax under current billing policy. Tax handling stays configurable. Every order must retain currency, subtotal, tax and total; preserve its jurisdiction/rule snapshot. Purchased extras carry forward without expiry and monthly renewal cannot erase them.

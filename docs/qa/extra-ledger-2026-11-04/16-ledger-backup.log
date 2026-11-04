@@ -1,0 +1,8 @@
+2026-11-04T21:12:51.6046409Z PASS legacy opening exactly once, existing balances unchanged/granted, concurrent duplicate administrative grants once, mismatched reference rejected, rollback
+2026-11-04T21:12:51.6048735Z PASS simulated pack25 with estimates, USD25 subtotal, configurable Canada tax/US zero, per-business order idempotency, mismatch/unknown-tax rejection, fulfillment rollback
+2026-11-04T21:12:51.6050527Z PASS monthly first, purchased eligibility unapproved by default, included-estimate channel, rollback, renewal and nonexpiry
+2026-11-04T21:12:51.6052093Z PASS configurable mixed-source priority (no assumed approval), last purchased unit race exactly once, nonnegative source-lot reconciliation
+2026-11-04T21:12:51.6053782Z PASS owner/employee save retries one ledger debit/one estimate, free reopening, other-business isolation
+2026-11-04T21:12:51.6055439Z PASS lookup operation trace once across owner/employee retries; interrupted save rolls back movement/bank/receipt, retry once; cross-business lot write denied
+2026-11-04T21:12:51.6057467Z PASS immutable history, independent bank drift and unbacked purchase detection/fail-closed, hosted simulation guard; no refund or production eligibility activated
+2026-11-04T21:13:03.7378304Z {"result": "PASS", "backend": "PostgreSQL", "prior_recovery_revision_reads_newer_estimates": true, "restore_target_new_and_empty": true, "source_newer_estimates_preserved": true, "backup_does_not_contain_post_backup_writes": true, "extra_ledger_and_bank_restore_together": true, "live_pitr_or_render_rollback_tested": false}

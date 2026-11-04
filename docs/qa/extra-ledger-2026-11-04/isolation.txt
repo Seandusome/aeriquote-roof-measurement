@@ -1,0 +1,5 @@
+Recovery service srv-db5a2g5ckfvc739fui70 / landscaping-multi-area-recovery-oct11; autoDeploy no/off, unchanged updatedAt2026-11-03T22:09:04Z.
+Live194c435b / dep-dbl5m4lbedkc73ekek60; no deployment in this batch.
+Dedicated hosted QA binding verified earlier November4: dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa / PostgreSQL18.6. No hosted DB writes or business data queries in this batch.
+New tests use temporary SQLite and guarded localhost aeriquote_qa PG16/18 only. Simulated fulfillment is denied on hosted PostgreSQL/non-temporary SQLite. No providers, checkout, charges or refunds.
+Four original untracked copies preserved. Main/production/customer data unchanged.

@@ -1,6 +1,6 @@
 # Proposed 25-measurement / US$25 top-up — implementation plan
 
-**Planning only. Pricing decisions confirmed below; implementation and payment activation remain unauthorized.** No checkout, gateway connection, charge, refund, live balance change or new entitlement was implemented. Existing app source remains1cd73b65. The current bank contains administrative extra measurements/estimates; it is not a payment-backed purchase system.
+**Stage1 implemented but undeployed; later stages remain planning only.** Sean authorized the payment-free source-lot/reconciliation stage after this plan was recorded. Source3544d880 adds legacy administrative openings, grant/debit movements and disposable simulated purchases. Read [implementation and QA evidence](QA_EXTRA_LEDGER_2026_11_04.md). No checkout, gateway connection, charge, refund or real balance change. Live recovery remains194c435b. This is not an activated payment-backed purchase system.
 
 ## Confirmed pricing and entitlement decisions — November 4
 
@@ -11,7 +11,7 @@
 - Keep tax handling configurable by customer jurisdiction and effective policy; do not hard-code a permanent US exemption or a single Canadian rate.
 - Each order records **currency, subtotal, tax and total**. For this pack the subtotal is USD25.00; total equals subtotal plus the applicable configured tax. Retain the order's tax jurisdiction/rule snapshot so later configuration changes do not rewrite history.
 - Purchased extras **carry forward without expiry**. Monthly renewal must never erase them.
-- These decisions authorize documentation only. Checkout, payment connections and live payments remain inactive.
+- The pricing clarification itself authorized documentation only; the subsequent stage1 request separately authorized the payment-free records layer. Checkout, payment connections and live payments remain inactive.
 
 ## Remaining decisions before implementation
 
@@ -22,6 +22,8 @@
 ## Four small implementation stages
 
 ### 1. Record entitlements before connecting payments
+
+**Stage1 status:** opening/granted/simulated-purchase lots, deductions, independent reconciliation and immutable history are implemented but undeployed. Refund revocations and reconciliation adjustments below remain future policy-controlled work; no such behavior was enabled. Purchased use is simulation-only. A controlled writer cutover/rollback plan is required before deployment.
 
 Add an append-only, business-scoped allowance ledger and source lots. Distinguish legacy/admin grants, purchase fulfillment, consumption, refund revocation and reconciliation adjustments. Preserve the current measurement and estimate safeguards while honoring the confirmed pack:25 extra measurements with associated estimates included. Do not spend another purchased measurement simply to save, retry, revise or reopen its estimate. Preserve existing save/lookup operation IDs and owner-row locking.
 
