@@ -1,3 +1,13 @@
+# November 4 — Top-up pricing decisions confirmed; documentation only; PAUSED
+
+Sean confirmed: **all AeriQuote prices USD**; pack **25 extra measurements with estimates included for US$25**; Canadian customers add applicable tax; US customers no tax under current billing policy. Tax handling stays configurable. Every order must retain currency, subtotal, tax and total; preserve its jurisdiction/rule snapshot. Purchased extras carry forward without expiry and monthly renewal cannot erase them.
+
+Updated [top-up plan](AERIQUOTE_TOPUP_IMPLEMENTATION_PLAN_2026_11_04.md) and [audit's next-step section](QA_ALLOWANCE_AUDIT_2026_11_04.md). These confirmations supersede the currency/pack/tax questions in the earlier audit entry below. Eligibility, refund terms and admin-extra/purchased-extra priority remain product decisions. No checkout, payments, application code, real balances, database connections or deployment changes authorized or made. No tests/workflows required for this documentation-only correction.
+
+Application remains **1cd73b65**, test/CI source **21637666**, live recovery **194c435b / dep-dbl5m4lbedkc73ekek60**, auto-deployOFF. Main, production and customer data untouched. Pre-existing untracked copies preserved. Canonical checkpoint is containing documentation commit. Pause for next instruction.
+
+---
+
 # November 4 — Allowance readiness audit PASS locally/PG16/18; no application change; UNDEPLOYED
 
 Resumedcaa6bb59/application1cd73b65. New test/CI source **2163766624a2ca0471af609ad780c39a5ceeb1de**. Read [allowance audit and PDF review](QA_ALLOWANCE_AUDIT_2026_11_04.md) and [proposed top-up plan](AERIQUOTE_TOPUP_IMPLEMENTATION_PLAN_2026_11_04.md).
