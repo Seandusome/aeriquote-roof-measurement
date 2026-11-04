@@ -4404,6 +4404,9 @@ def require_dealer_login():
 
 app.before_request(allowance_maintenance_gate)
 
+from qa_purchase_screen import register as register_qa_purchase_screen
+register_qa_purchase_screen(app, estimate_db, is_employee)
+
 @app.get("/logout")
 def logout():
     session.clear()

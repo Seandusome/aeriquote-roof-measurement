@@ -17,6 +17,8 @@ on:
       - account_credits.py
       - extra_allowance_ledger.py
       - payment_free_orders.py
+      - qa_purchase_screen.py
+      - scripts/purchase_screen_qa_server.py
       - allowance_writer_guard.py
       - workspace_drafts.py
       - workspace_drafts.js
@@ -32,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions]
+        suite: [baseline, recovery, pdf-failure, public, property-failure, drafts, draft-races, roof-exports, fresh-user, job-revisions, purchases]
     env:
       DATABASE_URL: ''
       QA_BROWSER_WIDTHS: 1440,390
@@ -53,15 +55,15 @@ jobs:
       - name: Disposable browser workflow with fictional providers
         shell: bash
         run: |
-          if [ '${{ matrix.suite }}' = 'job-revisions' ]; then task_server=scripts/job_revisions_browser_server.py; elif [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
+          if [ '${{ matrix.suite }}' = 'purchases' ]; then task_server=scripts/purchase_screen_qa_server.py; elif [ '${{ matrix.suite }}' = 'job-revisions' ]; then task_server=scripts/job_revisions_browser_server.py; elif [ '${{ matrix.suite }}' = 'fresh-user' ]; then task_server=scripts/fresh_user_browser_server.py; else task_server=scripts/prelaunch_browser_server.py; fi
           python "$task_server" > /tmp/qa-browser-server.log 2>&1 &
           task_server_pid=$!
           trap 'kill "$task_server_pid" || true' EXIT
-          python - <<'PY'
-          import time,urllib.request
+          QA_SERVER_PORT=$([ '${{ matrix.suite }}' = 'purchases' ] && echo 8766 || echo 8765) python - <<'PY'
+          import os,time,urllib.request
           for _ in range(80):
               try:
-                  urllib.request.urlopen('http://127.0.0.1:8765/dealer-login',timeout=1)
+                  urllib.request.urlopen('http://127.0.0.1:'+os.environ['QA_SERVER_PORT']+'/dealer-login',timeout=1)
                   break
               except OSError:
                   time.sleep(.25)
@@ -70,6 +72,7 @@ jobs:
               raise RuntimeError('Disposable QA server did not start')
           PY
           case '${{ matrix.suite }}' in
+            purchases) node scripts/test_purchase_screen_browser.cjs ;;
             job-revisions)
               node scripts/test_job_revisions_browser.cjs
               python scripts/verify_job_revisions.py "$QA_BROWSER_OUTPUT"

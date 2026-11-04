@@ -105,6 +105,7 @@ jobs:
       - name: Fetch pinned pre-ledger writer for guarded cutover probe
         run: git fetch --no-tags --depth=1 origin 194c435b377dbcb23ad24a422c63763fcd931ed4
       - run: python scripts/test_payment_free_orders.py
+      - run: python scripts/test_purchase_screen.py
       - run: python scripts/test_profile_integrity.py
       - run: python scripts/test_manual_roofing.py
       - run: node scripts/test_manual_roofing.cjs
@@ -159,6 +160,8 @@ jobs:
         run: git fetch --no-tags --depth=1 origin 194c435b377dbcb23ad24a422c63763fcd931ed4
       - name: Payment-free event processing and actual older writer cutover guard
         run: python scripts/test_payment_free_orders.py --postgres
+      - name: Owner-only simulated purchase forms, duplicate HTTP confirmations and isolation
+        run: python scripts/test_purchase_screen.py --postgres
       - name: Password-reset login race and employee access lifecycle
         run: python scripts/test_security_lifecycle.py --postgres
       - name: Cross-role signup identity concurrency
