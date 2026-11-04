@@ -101,6 +101,7 @@ jobs:
       - run: python scripts/test_property_acceptance.py
       - run: python scripts/test_subscription_periods.py
       - run: python scripts/test_allowance_carryforward.py
+      - run: python scripts/test_extra_allowance_ledger.py
       - run: python scripts/test_profile_integrity.py
       - run: python scripts/test_manual_roofing.py
       - run: node scripts/test_manual_roofing.cjs
@@ -149,6 +150,8 @@ jobs:
         run: python scripts/test_subscription_periods.py --postgres
       - name: Monthly-first extra-bank carry-forward and concurrent allowance audit
         run: python scripts/test_allowance_carryforward.py --postgres
+      - name: Source-lot migration, simulated fulfillment and immutable reconciliation
+        run: python scripts/test_extra_allowance_ledger.py --postgres
       - name: Password-reset login race and employee access lifecycle
         run: python scripts/test_security_lifecycle.py --postgres
       - name: Cross-role signup identity concurrency

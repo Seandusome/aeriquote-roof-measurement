@@ -4323,7 +4323,7 @@ def is_recovery_test_service():
     return (os.environ.get("RENDER_SERVICE_ID", "") == "srv-db5a2g5ckfvc739fui70"
             or os.environ.get("RENDER_EXTERNAL_HOSTNAME", "") == "aeriquote-commercial-test.onrender.com")
 
-def consume_property_lookup(dealer_id, connection=None):
+def consume_property_lookup(dealer_id, connection=None, operation_id=None):
     con=connection or estimate_db()
     try:
         d=lock_account(con,dealer_id) if connection is None else con.execute("SELECT * FROM dealers WHERE id=?",(dealer_id,)).fetchone()
@@ -4333,7 +4333,7 @@ def consume_property_lookup(dealer_id, connection=None):
         used=int(u["property_lookups"] if u else 0);limit=int(d["lookup_limit"] or 0)
         if is_head_office() or ((is_recovery_test_service() or not DATABASE_URL) and not cfg["complimentary"] and d["plan_code"] not in SUBSCRIPTION_LIMITS):
             return True,used,limit
-        allowed,used,limit=consume_credit(con,dealer_id,"lookups",used,limit)
+        allowed,used,limit=consume_credit(con,dealer_id,"lookups",used,limit,operation_id=operation_id)
         if allowed:
             con.execute("INSERT INTO dealer_usage(dealer_id,property_lookups) VALUES(?,1) ON CONFLICT(dealer_id) DO UPDATE SET property_lookups=dealer_usage.property_lookups+1",(dealer_id,))
             if connection is None:con.commit()
@@ -4682,7 +4682,7 @@ def property_data():
                 return jsonify(prepared)
             # Check current allowance without spending it while images are pending.
             con.execute("SAVEPOINT image_allowance")
-            allowed,used,limit=consume_property_lookup(dealer_id,con)
+            allowed,used,limit=consume_property_lookup(dealer_id,con,operation_id="lookup:"+operation if operation else None)
             con.execute("ROLLBACK TO SAVEPOINT image_allowance");con.execute("RELEASE SAVEPOINT image_allowance")
             if not allowed:
                 row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(dealer_id,)).fetchone()
@@ -4698,7 +4698,7 @@ def property_data():
             if old:
                 if old["payload_hash"]!=digest:return jsonify(error="This lookup identifier was used for a different property."),409
                 return jsonify(json.loads(old["response_json"]))
-        allowed,used,limit=consume_property_lookup(dealer_id,con)
+        allowed,used,limit=consume_property_lookup(dealer_id,con,operation_id="lookup:"+operation if operation else None)
         if not allowed:
             row=con.execute("SELECT plan_code FROM dealers WHERE id=?",(dealer_id,)).fetchone()
             if row and str(row["plan_code"] or "").lower()=="trial":return jsonify(error="Free trial complete.",code="trial_limit_reached",user_error="You’ve used all 3 free property measurements included with your AeriQuote trial."),403
@@ -4725,7 +4725,7 @@ def accept_property():
         receipt=con.execute("SELECT response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"lookup:"+operation)).fetchone()
         if receipt:return jsonify(ok=True)
         if not SESSIONS.get(token):return jsonify(error="Property preparation expired. Retry Load Property."),410
-        allowed,used,limit=consume_property_lookup(dealer_id,con)
+        allowed,used,limit=consume_property_lookup(dealer_id,con,operation_id="lookup:"+operation if operation else None)
         if not allowed:return jsonify(error="Property lookup allowance reached. Existing work is unchanged."),403
         con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"lookup:"+operation,pending["payload_hash"],pending["response_json"]))
         con.commit();return jsonify(ok=True)
@@ -5199,7 +5199,7 @@ def estimate_history_api():
                 if not is_head_office() and (paid_plan or cfg["complimentary"] or not is_recovery_test_service()):
                     estimate_limit=int(dealer_row["estimate_limit"] or 0) if dealer_row else 0
                     estimate_used=int(con.execute("SELECT COUNT(*) AS estimate_count FROM estimates WHERE dealer_id=?",(dealer_id,)).fetchone()["estimate_count"])
-                    allowed,_,_=consume_credit(con,dealer_id,"estimates",estimate_used,estimate_limit)
+                    allowed,_,_=consume_credit(con,dealer_id,"estimates",estimate_used,estimate_limit,operation_id="save:"+operation if operation else None)
                     if not allowed:
                         return jsonify(error="Estimate allowance reached.",user_error="Your estimate allowance is used. Contact AeriQuote support for extra credits."),403
 

@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import uuid, secrets, hmac, calendar
+import extra_allowance_ledger as extra_ledger
 from flask import request, session, Response, redirect, render_template_string
 
 BRANDS = {'': 'No dealer brand', 'shingle_guard': 'Shingle Guard', 'shinglextra': 'ShingleXtra'}
@@ -52,6 +53,7 @@ def paid_usage(con,did,now=None,initialize=False):
     return dict(start=start,end=end,lookups=int(row['lookups']),estimates=int(row['estimates']),limit=SUBSCRIPTION_LIMITS[dealer['plan_code']],basis=cfg['basis'] if cfg else 'account_anniversary_provisional')
 
 def init_credit_db(con):
+    extra_ledger.init_db(con)
     con.execute("CREATE TABLE IF NOT EXISTS account_billing_migration (id TEXT PRIMARY KEY, started_at TEXT NOT NULL)")
     con.execute("INSERT INTO account_billing_migration(id,started_at) VALUES('monthly-v1',?) ON CONFLICT(id) DO NOTHING",(datetime.now(timezone.utc).isoformat(),))
     con.execute("CREATE TABLE IF NOT EXISTS account_billing_periods (dealer_id TEXT PRIMARY KEY, anchor_at TEXT NOT NULL, seed_period TEXT NOT NULL, basis TEXT NOT NULL)")
@@ -87,8 +89,9 @@ def lock_account(con, did):
     con.execute('BEGIN IMMEDIATE')
     return con.execute('SELECT * FROM dealers WHERE id=?', (did,)).fetchone()
 
-def consume(con, did, kind, normal_used, normal_limit, now=None):
+def consume(con, did, kind, normal_used, normal_limit, now=None, operation_id=None):
     """Caller holds owner lock. Returns allowed, used, limit; commits with caller."""
+    if kind not in {'lookups','estimates'}: raise ValueError('Unknown allowance channel.')
     cfg = settings(con, did)
     bonus_col = 'lookup_bonus' if kind == 'lookups' else 'estimate_bonus'
     used, limit = normal_used, normal_limit
@@ -102,7 +105,8 @@ def consume(con, did, kind, normal_used, normal_limit, now=None):
     if (paid is not None or limit > 0) and used >= limit:
         if int(cfg[bonus_col]) <= 0:
             return False, used, limit
-        con.execute(f'UPDATE account_allowances SET {bonus_col}={bonus_col}-1 WHERE dealer_id=?', (did,))
+        if not extra_ledger.deduct_extra(con,did,kind,operation_id):
+            return False, used, limit
     if cfg['complimentary']:
         con.execute(f'UPDATE account_month_usage SET {kind}={kind}+1 WHERE dealer_id=? AND period=?', (did, month_key(now)))
     if paid:con.execute(f'UPDATE account_subscription_usage SET {kind}={kind}+1 WHERE dealer_id=? AND period_start=?',(did,paid['start']))
@@ -142,7 +146,7 @@ def register_credits(app, db, is_head_office):
                         con.execute('INSERT INTO account_allowances(dealer_id) VALUES(?) ON CONFLICT(dealer_id) DO NOTHING', (did,))
                         before = settings(con, did)
                         if action=='grant':
-                            con.execute('UPDATE account_allowances SET lookup_bonus=lookup_bonus+?,estimate_bonus=estimate_bonus+? WHERE dealer_id=?', (amount, amount, did))
+                            extra_ledger.grant_administrative(con,did,amount,operation)
                             details = f'Added {amount} measurements and {amount} estimates. Extra credits carry forward.'
                         elif action in {'disable','reactivate'}:
                             status='disabled' if action=='disable' else 'active'
