@@ -43,7 +43,7 @@ with tempfile.TemporaryDirectory() as td:
    with cl.session_transaction() as s:s.update(dealer_id=did,account_type='employee' if employee else 'owner',employee_id='screen-emp' if employee else '',auth_version=0)
    return cl
   def page(cl):
-   r=cl.get('/qa/purchases');assert r.status_code==200,r.status_code;return r.get_data(as_text=True)
+   r=cl.get('/qa/purchases');assert r.status_code==200,r.status_code;assert r.headers['Cache-Control']=='private, no-store';return r.get_data(as_text=True)
   def form(cl,action):return next(x for x in Forms(page(cl)).forms if x.get('action')==action)
   def bank(did='screen-ca'):return query('SELECT lookup_bonus,estimate_bonus FROM account_allowances WHERE dealer_id=?',(did,))[0]
   cl=client();before=bank();html=page(cl);assert 'SIMULATION MODE' in html and 'US$27.75' in html and 'US$2.75' in html
@@ -93,6 +93,8 @@ with tempfile.TemporaryDirectory() as td:
   fresh=form(cl,'start')
   with patch.dict(os.environ,{'AERIQUOTE_QA_TOPUP_TAX_POLICY':json.dumps({'version':'changed','rates_bps':{'CA:SK':1200}})}):assert cl.post('/qa/purchases',data=fresh).status_code==409
   with patch.dict(os.environ,{'AERIQUOTE_QA_TOPUP_TAX_POLICY':'{}'}):assert 'No purchase can be started' in page(cl)
+  with patch.dict(os.environ,{'AERIQUOTE_QA_TOPUP_TAX_POLICY':json.dumps({'version':'future-config-test','rates_bps':{'US':500}})}):
+   text=page(foreign);assert 'Configured US tax.' in text and 'US$26.25' in text and 'No tax under the current US billing policy' not in text
   assert tx('screen-ca',lambda db:l.reconciliation(db,'screen-ca'))['balanced']
   # Active / held wording follows the same eligibility evidence used by actual spending.
   tx('screen-ca',lambda db:p.set_subscription(db,'screen-ca','active'));assert 'Your subscription is active.' in page(cl)

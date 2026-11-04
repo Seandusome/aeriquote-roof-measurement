@@ -19,6 +19,10 @@ TEMPLATE='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta nam
 def money(cents):return 'US$'+format(int(cents)/100,',.2f')
 def register(app,db,is_employee):
  signer=URLSafeSerializer(app.secret_key,salt='qa-purchase-intent-v1')
+ @app.after_request
+ def private_purchase_response(response):
+  if request.path=='/qa/purchases':response.headers['Cache-Control']='private, no-store'
+  return response
  def gated_db():
   # Check environment before opening a DB: never initialize a hosted database here.
   if os.environ.get('AERIQUOTE_QA_PURCHASES')!='1' or os.environ.get('RENDER_SERVICE_ID') or os.environ.get('RENDER_EXTERNAL_HOSTNAME') or request.host.split(':')[0] not in ('127.0.0.1','localhost'):abort(404)
@@ -88,7 +92,7 @@ def register(app,db,is_employee):
    for row in con.execute('SELECT t.*,s.state FROM topup_order_terms t JOIN topup_order_state s ON s.dealer_id=t.dealer_id AND s.order_id=t.order_id WHERE t.dealer_id=? ORDER BY t.created_at DESC,t.order_id DESC',(did,)).fetchall():
     item=dict(row);attempts=con.execute('SELECT attempt_id FROM topup_attempts WHERE dealer_id=? AND order_id=? ORDER BY attempt_id',(did,item['order_id'])).fetchall();item['attempt_id']=item['order_id']+':'+str(len(attempts));item['retry_id']=item['order_id']+':'+str(len(attempts)+1)
     item['label']={'pending':'Pending','fulfilled':'Simulated success','failed':'Failed','refunded_simulation':'Refund simulated'}.get(item['state'],'Manual review');item['css']='success' if item['state']=='fulfilled' else 'failed' if item['state']=='failed' else '';history.append(item)
-   return render_template_string(TEMPLATE,balances=[('Monthly',monthly,'Remaining this billing month'),('Granted',granted,'Extra measurements granted'),('Purchased',purchased,'Purchased extras · no expiry')],business=did,csrf=csrf,intent=intent,pending=any(o['state']=='pending' for o in history),quote=quote,quote_error=quote_error,money=money,history=history,message=message,error=error,jurisdiction=('Canada · '+region if country=='CA' else 'United States'),tax_note=('Configured applicable Canadian tax.' if country=='CA' else 'No tax under the current US billing policy.'),eligibility=('Your subscription is active.' if eligible else 'Purchased extras are held until your subscription is active.'))
+   return render_template_string(TEMPLATE,balances=[('Monthly',monthly,'Remaining this billing month'),('Granted',granted,'Extra measurements granted'),('Purchased',purchased,'Purchased extras · no expiry')],business=did,csrf=csrf,intent=intent,pending=any(o['state']=='pending' for o in history),quote=quote,quote_error=quote_error,money=money,history=history,message=message,error=error,jurisdiction=('Canada · '+region if country=='CA' else 'United States'),tax_note=('Configured applicable Canadian tax.' if country=='CA' else ('No tax under the current US billing policy.' if quote and quote['tax_cents']==0 else 'Configured US tax.')),eligibility=('Your subscription is active.' if eligible else 'Purchased extras are held until your subscription is active.'))
   except (ledger.LedgerError,ValueError) as e:
    con.con.rollback();return render_template_string('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><h1>Purchase not completed</h1><p role="alert">{{error}}</p><p>Your balance was not changed.</p><a href="/qa/purchases">Return to simulated purchases</a>',error=str(e)),409
   finally:con.close()
