@@ -24,7 +24,7 @@ const loaded=" console.log('loaded',";assert(script.includes(loaded));script=scr
 `+loaded);
 const saved=" fs.writeFileSync(`${output}/${industry}-${width}-source.json`,JSON.stringify(payload,null,2));";assert(script.includes(saved));script=script.replace(saved,()=>saved+String.raw`
  let shared=await mark('employee-estimate-saved');assert.deepEqual(shared.ledger.bank,{lookups:24,estimates:24});assert.equal(shared.counts.estimates,1);
- const request=saveRequests.at(-1);assert(request.headers['idempotency-key']);for(let i=0;i<3;i++){const replay=await context.request.post(base+'/api/estimates',{data:request.data,headers:{'Idempotency-Key':request.headers['idempotency-key']}});assert.equal(replay.status(),200);assert.equal((await replay.json()).id,saved.id)}
+ const request=saveRequests.at(-1);let savedVersion;assert(request.headers['idempotency-key']);for(let i=0;i<3;i++){const replay=await context.request.post(base+'/api/estimates',{data:request.data,headers:{'Idempotency-Key':request.headers['idempotency-key']}});assert.equal(replay.status(),200);const replayed=await replay.json();assert.equal(replayed.id,saved.id);savedVersion=replayed.version;assert(savedVersion)}
  assert.deepEqual((await mark('save-retries-free')).ledger.bank,{lookups:24,estimates:24});
  await page.goto(base+'/logout');await login('purchase-ca@example.invalid');assert.equal((await state()).employee,false);
  for(let i=0;i<3;i++)assert.equal((await context.request.post(base+'/property/accept',{data:acceptRequests[0]})).status(),200);
@@ -33,8 +33,8 @@ const saved=" fs.writeFileSync(`${output}/${industry}-${width}-source.json`,JSON
 const finish=' await page.screenshot({path:';assert(script.includes(finish));script=script.replace(finish,()=>String.raw`
  assert.deepEqual((await mark('owner-reopened-and-both-pdfs-downloaded')).ledger.bank,{lookups:24,estimates:24});
  const changed=JSON.parse(JSON.stringify(payload));changed.customer_name='FICTIONAL TOPUP REVISED';
- const revision=await context.request.post(base+'/api/estimates',{data:changed,headers:{'Idempotency-Key':'topup-revision','If-Match':saved.version}});assert.equal(revision.status(),200);const revised=await revision.json();
- const retry=await context.request.post(base+'/api/estimates',{data:changed,headers:{'Idempotency-Key':'topup-revision','If-Match':saved.version}});assert.equal(retry.status(),200);assert.deepEqual(await retry.json(),revised);
+ const revision=await context.request.post(base+'/api/estimates',{data:changed,headers:{'Idempotency-Key':'topup-revision','If-Match':savedVersion}});assert.equal(revision.status(),200);const revised=await revision.json();
+ const retry=await context.request.post(base+'/api/estimates',{data:changed,headers:{'Idempotency-Key':'topup-revision','If-Match':savedVersion}});assert.equal(retry.status(),200);assert.deepEqual(await retry.json(),revised);
  const old=await (await context.request.get(base+'/api/estimates/'+saved.id+'/versions')).json();assert.equal(old.revisions.length,1);assert.deepEqual(old.revisions[0].payload,payload);
  await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.waitForFunction(()=>document.body.classList.contains('report-open')&&!estimateOpenInProgress);assert.equal(await page.locator('#rCustomerName').textContent(),changed.customer_name);
  for(const layout of ['single','expanded']){await page.selectOption('#estimatePdfLayout',layout);const download=page.waitForEvent('download',{timeout:45000});await page.click('#downloadPdfBtn');await(await download).saveAs(output+'/topup-revised-'+layout+'.pdf')}
