@@ -212,14 +212,14 @@ HTML = r"""<!doctype html>
 .report.pdf-export{padding:14px;max-width:1320px}
 .report.pdf-export .reportHead{grid-template-columns:240px 1fr 190px;gap:12px;padding-bottom:8px}
 .report.pdf-export .reportHead .logo{width:220px}.report.pdf-export .reportHead .shield{width:170px}.report.pdf-export .reportHead h1{font-size:29px}
-.report.pdf-export .reportMeta{margin:8px 0;gap:8px}.report.pdf-export .reportMeta div{padding:6px 8px;font-size:15px}
+.report.pdf-export .reportMeta{margin:8px 0;gap:8px}.report.pdf-export .reportMeta div{padding:6px 8px;font-size:16px}
 .report.pdf-export .reportGrid{gap:12px}.report.pdf-export .customerMap{height:430px}.report.pdf-export .reportDrawLayer{height:430px}
 .report.pdf-export .reportStreet{height:205px}.report.pdf-export .reportTitle{padding:8px 10px;font-size:15px}
 .report.pdf-export .reportBody{padding:10px;font-size:15px;line-height:1.25}.report.pdf-export .small{font-size:13.5px!important;line-height:1.3}
-.report.pdf-export .structure,.report.pdf-export .metric{font-size:14.5px;line-height:1.25}
+.report.pdf-export .structure,.report.pdf-export .metric{font-size:16px;line-height:1.25}
 .report.pdf-export .benefit{padding:7px 0;font-size:14px;line-height:1.25}.report.pdf-export .benefitIcon{width:30px;height:30px}
 .report.pdf-export .cta{padding:11px;margin-top:9px;font-size:13.5px;line-height:1.28}.report.pdf-export .cta strong{font-size:19px}
-.report.pdf-export .reportPrice{margin-top:9px}.report.pdf-export .reportPrice .rphead,.report.pdf-export .reportPrice .rpbody{padding:8px 10px;font-size:14.5px;line-height:1.25}
+.report.pdf-export .reportPrice{margin-top:9px}.report.pdf-export .reportPrice .rphead,.report.pdf-export .reportPrice .rpbody{padding:8px 10px;font-size:16px;line-height:1.25}
 .report.pdf-export .reportFoot{font-size:11.5px;line-height:1.3;margin-top:7px}
 .report.pdf-export #reportOutlineControls,.report.pdf-export .reportActions{display:none!important}
 @media(max-width:980px){.main,.grid2,.grid3,.reportGrid,.reportHead,.reportMeta{grid-template-columns:1fr}#map{height:600px}.reportHead h1{text-align:left}}
@@ -3258,7 +3258,7 @@ function singlePageReadability(report){
  // Footer, branding and aerial labels keep their existing styling. Financial,
  // measurement and primary customer text must stay at least 7 printed points.
  const box=report.getBoundingClientRect(),width=Math.max(box.width||0,report.scrollWidth||0),height=Math.max(box.height||0,report.scrollHeight||0),view=report.ownerDocument.defaultView;
- const nodes=[...report.querySelectorAll('.reportPrice .line,.reportPrice .line *,.reportBody .structure,.reportBody .structure *,.reportBody .metric,.reportMeta > div > div:not(.small)')];
+ const nodes=[...report.querySelectorAll('.reportPrice .line,.reportPrice .line *,.reportBody .structure,.reportBody .metric,.reportMeta > div > div:not(.small)')];
  const fonts=nodes.filter(n=>n.textContent.trim()&&n.getClientRects().length).map(n=>parseFloat(view.getComputedStyle(n).fontSize)).filter(n=>Number.isFinite(n)&&n>0);
  if(!width||!height||!fonts.length)return{measured:false,readable:true}; // Layout-free DOM test doubles cannot supply print dimensions.
  const fontPx=Math.min(...fonts),points=fontPx*Math.min(10.64/width,8.14/height)*72;
