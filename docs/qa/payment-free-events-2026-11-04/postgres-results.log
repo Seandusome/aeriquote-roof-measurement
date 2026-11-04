@@ -1,0 +1,18 @@
+# PostgreSQL 16/18 order/event evidence
+# Exact source f4dcdf99143497e4299604ed4dc3d1bec867cecf; workflow41918696965
+
+# job126885133448
+2026-11-04T21:44:24.6938905Z PASS owner-only orders, immutable USD/tax terms, failed/retried attempts, duplicate/concurrent notifications, out-of-order pending/failure, cross-business isolation
+2026-11-04T21:44:24.6941740Z PASS second successful attempt flagged for manual review, rollback after fulfillment leaves no partial event/lot/bank, retry fulfills once
+2026-11-04T21:44:24.6943671Z PASS monthly then granted then purchased FIFO, reversed notification arrival, active paid/complimentary eligibility, cancellation holds units and reactivation restores use
+2026-11-04T21:44:24.6945756Z PASS manual reviewer authorization, decline, attributable unused-unit bounds, duplicate decisions, refund-before-fulfillment, partial tax rounding, no resurrection or money movement
+2026-11-04T21:44:24.6948602Z PASS controlled pause/drain/cutover, authenticated maintenance503 with reads available, actual old194c435b reader works/writer rejected in ledger and paused modes, compatible writer succeeds, paused rollback/resume and no unfenced downgrade
+2026-11-04T21:44:24.6953375Z {"backend": "postgres", "balances_reconcile": true, "real_money_moved": false, "writer_mode": "ledger"}
+
+# job126885132997
+2026-11-04T21:44:22.3339382Z PASS owner-only orders, immutable USD/tax terms, failed/retried attempts, duplicate/concurrent notifications, out-of-order pending/failure, cross-business isolation
+2026-11-04T21:44:22.3341164Z PASS second successful attempt flagged for manual review, rollback after fulfillment leaves no partial event/lot/bank, retry fulfills once
+2026-11-04T21:44:22.3342806Z PASS monthly then granted then purchased FIFO, reversed notification arrival, active paid/complimentary eligibility, cancellation holds units and reactivation restores use
+2026-11-04T21:44:22.3344733Z PASS manual reviewer authorization, decline, attributable unused-unit bounds, duplicate decisions, refund-before-fulfillment, partial tax rounding, no resurrection or money movement
+2026-11-04T21:44:22.3347084Z PASS controlled pause/drain/cutover, authenticated maintenance503 with reads available, actual old194c435b reader works/writer rejected in ledger and paused modes, compatible writer succeeds, paused rollback/resume and no unfenced downgrade
+2026-11-04T21:44:22.3349220Z {"backend": "postgres", "balances_reconcile": true, "real_money_moved": false, "writer_mode": "ledger"}

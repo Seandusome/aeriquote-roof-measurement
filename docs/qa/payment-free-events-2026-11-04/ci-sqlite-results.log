@@ -1,0 +1,7 @@
+# Exact source f4dcdf99143497e4299604ed4dc3d1bec867cecf; workflow41918696965; job126885133609
+2026-11-04T21:47:14.2284663Z PASS owner-only orders, immutable USD/tax terms, failed/retried attempts, duplicate/concurrent notifications, out-of-order pending/failure, cross-business isolation
+2026-11-04T21:47:14.2286735Z PASS second successful attempt flagged for manual review, rollback after fulfillment leaves no partial event/lot/bank, retry fulfills once
+2026-11-04T21:47:14.2288792Z PASS monthly then granted then purchased FIFO, reversed notification arrival, active paid/complimentary eligibility, cancellation holds units and reactivation restores use
+2026-11-04T21:47:14.2291362Z PASS manual reviewer authorization, decline, attributable unused-unit bounds, duplicate decisions, refund-before-fulfillment, partial tax rounding, no resurrection or money movement
+2026-11-04T21:47:14.2294198Z PASS controlled pause/drain/cutover, authenticated maintenance503 with reads available, actual old194c435b reader works/writer rejected in ledger and paused modes, compatible writer succeeds, paused rollback/resume and no unfenced downgrade
+2026-11-04T21:47:14.2296287Z {"backend": "sqlite", "balances_reconcile": true, "real_money_moved": false, "writer_mode": "ledger"}

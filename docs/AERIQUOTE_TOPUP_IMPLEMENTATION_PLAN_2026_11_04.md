@@ -1,6 +1,6 @@
 # Proposed 25-measurement / US$25 top-up — implementation plan
 
-**Stage1 implemented but undeployed; later stages remain planning only.** Sean authorized the payment-free source-lot/reconciliation stage after this plan was recorded. Source3544d880 adds legacy administrative openings, grant/debit movements and disposable simulated purchases. Read [implementation and QA evidence](QA_EXTRA_LEDGER_2026_11_04.md). No checkout, gateway connection, charge, refund or real balance change. Live recovery remains194c435b. This is not an activated payment-backed purchase system.
+**Stages1–2 records and disposable simulations implemented but undeployed; provider/checkout/history UI remain future work.** Sean authorized the payment-free source-lot/reconciliation stage after this plan was recorded. Source3544d880 adds legacy administrative openings, grant/debit movements and disposable simulated purchases. Read [implementation and QA evidence](QA_EXTRA_LEDGER_2026_11_04.md). No checkout, gateway connection, charge, refund or real balance change. Live recovery remains194c435b. This is not an activated payment-backed purchase system.
 
 ## Confirmed pricing and entitlement decisions — November 4
 
@@ -13,17 +13,18 @@
 - Purchased extras **carry forward without expiry**. Monthly renewal must never erase them.
 - The pricing clarification itself authorized documentation only; the subsequent stage1 request separately authorized the payment-free records layer. Checkout, payment connections and live payments remain inactive.
 
-## Remaining decisions before implementation
+## Approved eligibility, spending and refund policies — November 4
 
-1. Purchase eligibility after trial expiry/cancellation, and who may buy. Recommend business owners only initially; employees continue sharing the business pool. Purchased balances never expire or disappear on cancellation/disable; separately define when an active account may spend them.
-2. Refund terms, partial refunds and already-used units. Recommend refunds only against attributable unused units initially, with manual review for used units/disputes. Never silently make a monthly or extra balance negative, erase prior work or revoke an unrelated grant.
-3. Priority between existing administrative extras and purchased extras. Recommend monthly first, then existing free/admin extras, then purchased lots in purchase order. All extra balances carry forward; only monthly availability renews. This ordering remains a recommendation, not an approved change.
+- Spend monthly allowances first, then granted extras, then purchased extras in purchase order. Employee use shares the business pool; only the active owner may purchase.
+- Spending purchased extras requires an active paid or complimentary subscription. Cancellation holds the purchased balance without deleting it; reactivation restores use. Purchased extras never expire.
+- Refunds initially require an authorized manual review and apply only to attributable unused purchased units. No automatic refunds, negative balances, unrelated-lot deductions or money movement.
+- Payment-free stage2 now implements disposable order/event and refund-decision simulations plus a database writer fence. This supersedes the earlier unapproved-policy caveats in stage1 notes. See [stage2 evidence and controlled cutover](QA_PAYMENT_FREE_EVENTS_2026_11_04.md). No hosted activation or deployment.
 
 ## Four small implementation stages
 
 ### 1. Record entitlements before connecting payments
 
-**Stage1 status:** opening/granted/simulated-purchase lots, deductions, independent reconciliation and immutable history are implemented but undeployed. Refund revocations and reconciliation adjustments below remain future policy-controlled work; no such behavior was enabled. Purchased use is simulation-only. A controlled writer cutover/rollback plan is required before deployment.
+**Stage1 status:** opening/granted/simulated-purchase lots, deductions, independent reconciliation and immutable history are implemented but undeployed. Stage2 adds typed manual-refund simulation links and the approved spending policy, without payment movement. Simulated order/refund mutators reject hosted databases. The tested controlled cutover/rollback procedure below is mandatory before any separately authorized deployment.
 
 Add an append-only, business-scoped allowance ledger and source lots. Distinguish legacy/admin grants, purchase fulfillment, consumption, refund revocation and reconciliation adjustments. Preserve the current measurement and estimate safeguards while honoring the confirmed pack:25 extra measurements with associated estimates included. Do not spend another purchased measurement simply to save, retry, revise or reopen its estimate. Preserve existing save/lookup operation IDs and owner-row locking.
 

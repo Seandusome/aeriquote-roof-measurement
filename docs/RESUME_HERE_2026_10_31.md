@@ -1,3 +1,19 @@
+# November 4 — Payment-free order/event stage; UNDEPLOYED; PAUSED
+
+Resumed **067ddb3a / 3544d880**. Stage2 source **f4dcdf99143497e4299604ed4dc3d1bec867cecf**. Read [order/event tests, manual refunds and controlled cutover](QA_PAYMENT_FREE_EVENTS_2026_11_04.md) and [updated top-up plan](AERIQUOTE_TOPUP_IMPLEMENTATION_PLAN_2026_11_04.md). This entry supersedes earlier unapproved-policy caveats: Sean approved monthly→granted→purchased FIFO; owners buy/employees share; active paid or complimentary required to spend purchases; cancellation holds nonexpiring balances; manual attributable-unused refunds only.
+
+Implemented immutable USD25/25-unit order terms and tax snapshots, attempts/events, absorbing success, event+order deduplication, one fulfillment under rollback/retry/concurrency, second-success review flags, explicit paid/complimentary spending policy and manual refund-decision/revocation simulations. Refunds never move money. Order/event/refund/subscription-simulation mutations reject hosted DBs; no provider/checkout/card/payment endpoints/history UI. Current USzero and configured Canadian applicable-tax policies retained.
+
+Prepared/tested legacy→paused→ledger cutover with DB guards and one-way fence. Actual old deployed194c435b app can read but cannot execute an untracked grant in ledger or paused mode. Current paused financial POST503, unauth401, reads200; compatible writer succeeds. Rollback keeps writes paused or uses compatible code; no unfenced downgrade or silent ledger rebase. No hosted mode migration/backfill or real balance changes.
+
+Final-source CI: application **41918696439 SUCCESS**, recovery **41918696965 SUCCESS** including PostgreSQL16/18, browser **41918695898 SUCCESS (10/10 jobs)**. All required workflows completed on exact sourcef4dcdf99; no unresolved automated failure. SQLite new/old regressions and PostgreSQL16/18 order/event, cutover, existing integrity and backup drills PASS. Evidence excerpts under docs/qa/payment-free-events-2026-11-04/. Do not interpret expected injected/old-writer500 as a test failure.
+
+Recovery remains **194c435b377dbcb23ad24a422c63763fcd931ed4 / dep-dbl5m4lbedkc73ekek60**; auto-deployOFF freshly connector-verified. QA binding unchanged: dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa PostgreSQL18.6; no hosted DB access in this batch. Main/production/customer data untouched. Four original untracked copies preserved. Canonical checkpoint is containing docs commit; local commit metadata differs, source blobs verified against GitHub.
+
+Next: review stage2 state-machine and cutover evidence before separately approving a provider sandbox/integration stage. Provider authenticity/merchant/mode checks, subscription-state synchronization, external charge reconciliation/refunds and owner history UI remain future. Live activation/deployment is NOT approved. Owner desktop/physical-phone review and dense Single PDF readability remain pending. Pause after checkpoint; do not continue testing or deploy without Sean's instruction.
+
+---
+
 # November 4 — Payment-free source ledger IMPLEMENTED; UNDEPLOYED; PAUSED
 
 Resumed27c8d2a4. Final source **3544d880342ab0143f37a9a8bac75820dd62dc4c**. Read [source ledger implementation/QA](QA_EXTRA_LEDGER_2026_11_04.md). New business-scoped source lots and append-only movements preserve existing extras as one-time administrative openings (no balance change/reclassification); new grants/debits retain source/operation references and reconcile independently with old bank counters. Monthly-first use and transaction/receipt/employee safeguards retained. Simulated pack25 with estimates/USD25 subtotal, versioned configurable taxes, immutable currency/subtotal/tax/total, no expiry. Hosted simulation writes are rejected.
