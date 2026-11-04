@@ -10,7 +10,7 @@ try{for(const width of [1440,390,320]){
  await Promise.all([page.waitForURL(u=>!u.pathname.includes('login')),page.locator('button').first().click()]);await page.goto(base+'/qa/purchases');
  const purchased=async()=>Number(await page.locator('[data-balance=purchased]').textContent());const initial=await purchased();assert.equal(await page.locator('[data-balance=granted]').textContent(),'3');
  assert.equal(await page.locator('#tax').textContent(),'US$2.75');assert.equal(await page.locator('#total').textContent(),'US$27.75');
- const capture=async name=>{assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'No horizontal overflow at '+width+' '+name);await page.screenshot({path:`${output}/${width}-${name}.png`,fullPage:true});};
+ const capture=async name=>{await page.screenshot({path:`${output}/${width}-${name}.png`,fullPage:true});const overflow=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,elements:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth).map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right,text:e.textContent.slice(0,80)}))}));if(overflow.overflow)console.log(JSON.stringify(overflow));assert.equal(overflow.overflow,false,'No horizontal overflow at '+width+' '+name);};
  await capture('01-start');
  // Two submissions of the exact visible form exercise real browser cancellation/double click.
  await page.locator('#startPurchase').evaluate(button=>{button.form.requestSubmit();button.form.requestSubmit()});
