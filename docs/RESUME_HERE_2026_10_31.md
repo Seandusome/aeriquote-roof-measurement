@@ -1,3 +1,19 @@
+# November 4 — Complete top-up → measurement → save/PDF journey PASS; UNDEPLOYED; PAUSED
+
+Resumed **95864e93 / 1972004b**. Final tested source **c033b5744f291c26c1d3bed20f1a3f149597bdcd**. Read [complete journey/evidence/limits](QA_TOPUP_COMPLETE_JOURNEY_2026_11_04.md). Customer label Granted→**Bonus** and repeated configured-Canadian-tax sentence removed; numeric tax/total and simulation/nonexpiry/subscription labels retained. Internal ledger origin granted is unchanged; no balance reclassification, financial or PDF logic change. No financial defect reproduced.
+
+Normal Basic paid policy, no complimentary/recovery bypass: exhausted monthly25+Bonus3 via real consumption in both channels; owner simulated one25-pack; employee loaded/traced two areas+linear and saved one job; owner replayed accepted/save receipts, reopened, downloaded Single/Expanded, saved/retried one guarded customer revision, reopened and downloaded both revised PDFs. **Final purchased measurement balance24**, with one lookups debit and one included-estimate debit. No second measurement from retries, revision, reopen or four PDF downloads. Exactly1 fulfillment,1 estimate,1 revision. Failed prepared/direct loads503 consume nothing; other business404 and its own Bonus3/purchased0 unchanged.
+
+Cancellation preserves24 and blocks a new preparation403; reactivation restores preparation200. This last prepared property is deliberately not accepted, avoiding an intentional second charge. Prior consumption suite separately covers spending after reactivation. Four PDFs/six page renders inspected, totals153.18 and original/revised customer details match independent WGS84/Decimal arithmetic. See saved12-stage JSON and artifacts under docs/qa/topup-journey-2026-11-04/.
+
+Exact final sourcec033b574: application **41924392656 SUCCESS**; recovery **41924392724 SUCCESS** including SQLite and PostgreSQL16/18; browser **41924392757 SUCCESS (12/12 jobs)** including the complete top-up journey. Every required workflow completed on the final source; no unresolved automated failure. CI tracked directly. [Workflow summaries](qa/topup-journey-2026-11-04/final-workflows.json).
+
+Recovery remains **194c435b377dbcb23ad24a422c63763fcd931ed4 / dep-dbl5m4lbedkc73ekek60**; auto-deployOFF freshly verified. QA binding unchanged dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa; no hosted DB access/balance/schema/order changes. Main/production/customer data untouched. Four original untracked copies preserved. Canonical checkpoint is containing docs/evidence commit; local metadata hashes differ, source blobs verified against GitHub.
+
+Limits: provider, paid-status synchronization, real money, checkout and hosted deployment remain unimplemented/unapproved. Fictional imagery only, not real-world measurement accuracy. Full new journey desktop1440; purchase UI still passes1440/390/320. Sean's desktop review and physical-phone touch testing remain pending. Dense Single readability unchanged. Next: Sean reviews evidence, then chooses next scoped task; no automatic provider integration or deployment. Controlled writer cutover/rollback remains mandatory before a separately authorized deployment. **Pause after checkpoint; no further work without instruction.**
+
+---
+
 # November 4 — Owner purchase/history screen in disposable QA; UNDEPLOYED; PAUSED
 
 Resumed **8f0f2fab / f4dcdf99**. Final tested source **1972004bdf74e4b9c0bc414f18d010336c46e927**. Read [screen, evidence and results](QA_SIMULATED_PURCHASE_SCREEN_2026_11_04.md) and [updated top-up plan](AERIQUOTE_TOPUP_IMPLEMENTATION_PLAN_2026_11_04.md). A separate `/qa/purchases` owner screen has explicit simulation labeling,25 measurements/estimates included forUS$25, configured CA tax/current USzero, three balance sources, nonexpiry/subscription explanation and business-scoped history. It is opt-in, loopback/disposable-only and blocked on hosted Render. No measuring navigation change/provider/checkout/real charge/refund.

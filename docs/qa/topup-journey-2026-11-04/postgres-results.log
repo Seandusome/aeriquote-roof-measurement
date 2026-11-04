@@ -1,0 +1,15 @@
+# Exact sourcec033b5744f291c26c1d3bed20f1a3f149597bdcd; workflow41924392724
+
+# job126904848660
+2026-11-04T22:21:44.9503195Z PASS complete paid topup API journey: monthly+bonus exhausted, employee accepted one property, one included estimate, owner retry/revision/reopen free, failure free, cancellation holds24/reactivation restores access, cross-business denied
+2026-11-04T22:21:44.9504814Z PASS purchase GET is read-only; Canadian configurable tax/USzero; owner, employee, business, CSRF, origin and hosted/disposable guards
+2026-11-04T22:21:44.9505999Z PASS HTTP pending/failure/retry/success; 8-way repeated starts/retries/confirmation; refresh and old form replay; exactly one pack and atomic interrupted-response rollback
+2026-11-04T22:21:44.9507112Z PASS history and three source balances; subscription hold/active/canceled; no real money or hosted balance changes
+2026-11-04T22:21:44.9508038Z {"backend": "postgres", "orders": 1, "fulfillments": 1, "bank": {"lookup_bonus": 24, "estimate_bonus": 24}, "real_money_moved": false}
+
+# job126904848361
+2026-11-04T22:21:31.5140793Z PASS complete paid topup API journey: monthly+bonus exhausted, employee accepted one property, one included estimate, owner retry/revision/reopen free, failure free, cancellation holds24/reactivation restores access, cross-business denied
+2026-11-04T22:21:31.5141947Z PASS purchase GET is read-only; Canadian configurable tax/USzero; owner, employee, business, CSRF, origin and hosted/disposable guards
+2026-11-04T22:21:31.5142773Z PASS HTTP pending/failure/retry/success; 8-way repeated starts/retries/confirmation; refresh and old form replay; exactly one pack and atomic interrupted-response rollback
+2026-11-04T22:21:31.5143550Z PASS history and three source balances; subscription hold/active/canceled; no real money or hosted balance changes
+2026-11-04T22:21:31.5144218Z {"backend": "postgres", "orders": 1, "fulfillments": 1, "bank": {"lookup_bonus": 24, "estimate_bonus": 24}, "real_money_moved": false}

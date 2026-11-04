@@ -1,0 +1,6 @@
+# Exact sourcec033b5744f291c26c1d3bed20f1a3f149597bdcd; workflow41924392757; job126904849027
+2026-11-04T22:21:26.2274533Z PASS full topup browser journey: exhausted monthly/bonus, confirmed pack25, employee measures/saves, owner retries/reopens/revises and four PDF downloads; exactly1 purchased measurement and included estimate, final24; failed loads free; cancellation holds/reactivation access; other business denied
+2026-11-04T22:21:26.4054467Z {"industry":"landscaping","width":1440,"total":153.18,"overflow":false,"errors":[],"pdfs":["/tmp/aq-browser-evidence/landscaping-1440-single.pdf","/tmp/aq-browser-evidence/landscaping-1440-expanded.pdf"],"captureChecks":[{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375},{"sourceWidth":1706,"sourceHeight":930,"drawWidth":1152,"drawHeight":627.984375}],"saved":true,"reopened":true}
+2026-11-04T22:21:26.5004396Z PASS independent WGS84 + Decimal landscaping-1440-source.json 153.18
+2026-11-04T22:21:26.5005150Z PASS independent WGS84 + Decimal topup-revised-source.json 153.18
+2026-11-04T22:21:26.5006090Z PASS 2 saved browser snapshots; WGS84 tolerance 0.6% reflects existing spherical measurements, not survey accuracy

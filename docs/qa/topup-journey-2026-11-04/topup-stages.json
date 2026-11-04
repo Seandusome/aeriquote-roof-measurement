@@ -1,0 +1,601 @@
+[
+  {
+    "label": "monthly-and-bonus-exhausted",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 0,
+      "topup_fulfillments": 0,
+      "topup_order_terms": 0
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 0,
+        "lookups": 0
+      },
+      "ledger": {
+        "estimates": 0,
+        "lookups": 0
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 0,
+          "lookups": 0
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 28,
+      "limit": 25,
+      "lookups": 28,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": []
+  },
+  {
+    "label": "pending-no-grant",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 0,
+      "topup_fulfillments": 0,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 0,
+        "lookups": 0
+      },
+      "ledger": {
+        "estimates": 0,
+        "lookups": 0
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 0,
+          "lookups": 0
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 28,
+      "limit": 25,
+      "lookups": 28,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": []
+  },
+  {
+    "label": "confirmed-pack",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 0,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 25,
+        "lookups": 25
+      },
+      "ledger": {
+        "estimates": 25,
+        "lookups": 25
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 25,
+          "lookups": 25
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 28,
+      "limit": 25,
+      "lookups": 28,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": []
+  },
+  {
+    "label": "failed-loads-free",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 0,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 25,
+        "lookups": 25
+      },
+      "ledger": {
+        "estimates": 25,
+        "lookups": 25
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 25,
+          "lookups": 25
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 28,
+      "limit": 25,
+      "lookups": 28,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": []
+  },
+  {
+    "label": "employee-property-accepted",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 0,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": true,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 25,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 25,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 25,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 28,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "employee-estimate-saved",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": true,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "save-retries-free",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": true,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "owner-replays-employee-acceptance",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "owner-reopened-and-both-pdfs-downloaded",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 0,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "revision-retry-reopen-and-both-pdfs-free",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 1,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "canceled-balance-retained",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 1,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  },
+  {
+    "label": "reactivation-allows-prepare-without-second-debit",
+    "business": "purchase-ca",
+    "counts": {
+      "estimate_revisions": 1,
+      "estimates": 1,
+      "topup_fulfillments": 1,
+      "topup_order_terms": 1
+    },
+    "employee": false,
+    "ledger": {
+      "balanced": true,
+      "bank": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "ledger": {
+        "estimates": 24,
+        "lookups": 24
+      },
+      "opened": true,
+      "sources": {
+        "granted": {
+          "estimates": 0,
+          "lookups": 0
+        },
+        "purchased": {
+          "estimates": 24,
+          "lookups": 24
+        }
+      },
+      "unbacked_purchases": []
+    },
+    "paid": {
+      "basis": "account_anniversary_provisional",
+      "end": "2026-12-01T00:00:00+00:00",
+      "estimates": 29,
+      "limit": 25,
+      "lookups": 29,
+      "start": "2026-11-01T00:00:00+00:00"
+    },
+    "purchased_debits": [
+      {
+        "channel": "estimates",
+        "delta": -1,
+        "operation_ref": "save:0f1e4d47-8361-4ecc-81a9-ca1fc7bce793"
+      },
+      {
+        "channel": "lookups",
+        "delta": -1,
+        "operation_ref": "lookup:29168643-ebdc-404a-ab12-70cc9cfa8d4e"
+      }
+    ]
+  }
+]

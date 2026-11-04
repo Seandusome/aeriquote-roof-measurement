@@ -24,6 +24,8 @@
 
 Source1972004b adds owner-only `/qa/purchases` with prominent simulation labeling, USD25/25-unit pack, configured tax/total, monthly/granted/purchased balances, active-subscription/nonexpiry explanation and business-isolated purchase history. Pending/failure/retry/success controls use the tested event ledger, never a browser success flag. One pending order per business, stable identities and locked transactions handle double clicks, refresh/replay and lost responses. No hosted activation/provider/charge. Read [screen implementation, screenshots and QA](QA_SIMULATED_PURCHASE_SCREEN_2026_11_04.md). This supersedes the earlier statement that all owner history UI remained unimplemented; live payment/receipt history integration still remains future.
 
+Completed follow-up sourcec033b574 verifies the full disposable owner purchase → employee measurement/save → owner reopen/revision/Single+Expanded PDF journey. Purchased measurements25→24 exactly once; failed loads, retries, free revisions/downloads, isolation and cancellation/reactivation PASS on SQLite/PostgreSQL16/18 and real Chromium. Customer wording now **Bonus**; immutable ledger source remains granted. Read [complete journey](QA_TOPUP_COMPLETE_JOURNEY_2026_11_04.md). No financial defect or deployment.
+
 ## Four small implementation stages
 
 ### 1. Record entitlements before connecting payments

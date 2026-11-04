@@ -1,0 +1,6 @@
+# App source unchanged from local run to final sourcec033b574; UI wording only plus test version-header correction
+PASS complete paid topup API journey: monthly+bonus exhausted, employee accepted one property, one included estimate, owner retry/revision/reopen free, failure free, cancellation holds24/reactivation restores access, cross-business denied
+PASS purchase GET is read-only; Canadian configurable tax/USzero; owner, employee, business, CSRF, origin and hosted/disposable guards
+PASS HTTP pending/failure/retry/success; 8-way repeated starts/retries/confirmation; refresh and old form replay; exactly one pack and atomic interrupted-response rollback
+PASS history and three source balances; subscription hold/active/canceled; no real money or hosted balance changes
+{"backend": "sqlite", "orders": 1, "fulfillments": 1, "bank": {"lookup_bonus": 24, "estimate_bonus": 24}, "real_money_moved": false}

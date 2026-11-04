@@ -1,0 +1,30 @@
+{
+  "source": "c033b5744f291c26c1d3bed20f1a3f149597bdcd",
+  "checks": [
+    {
+      "source": "landscaping-1440-source.json",
+      "customer": "FICTIONAL QA landscaping 1440",
+      "area_charges": "131.80",
+      "linear_charge": "6.20",
+      "subtotal": "138.00",
+      "tax5": "6.90",
+      "tax6": "8.28",
+      "total": "153.18"
+    },
+    {
+      "source": "topup-revised-source.json",
+      "customer": "FICTIONAL TOPUP REVISED",
+      "area_charges": "131.80",
+      "linear_charge": "6.20",
+      "subtotal": "138.00",
+      "tax5": "6.90",
+      "tax6": "8.28",
+      "total": "153.18"
+    }
+  ],
+  "rendered_pages_inspected": 6,
+  "pdfs": 4,
+  "purchase_currency": "USD",
+  "fictional_service_quote_currency": "CAD",
+  "visual_review": "Both original and revised Single/Expanded preserve measurements, customer details, amounts and totals. All six final page renders valid and inspected."
+}
