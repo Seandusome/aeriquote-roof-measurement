@@ -50,7 +50,7 @@ with tempfile.TemporaryDirectory() as td:
   assert bank()==before and not query('SELECT * FROM topup_order_terms');us=page(client('screen-us'));assert 'US$25.00' in us and 'No tax under the current US billing policy' in us
   assert client(employee=True).get('/qa/purchases').status_code==403
   assert a.app.test_client().get('/qa/purchases').status_code==302
-  start=form(cl,'start');assert cl.post('/qa/purchases',data={**start,'csrf':'wrong'}).status_code==403
+  start=form(cl,'start');other_tab=form(cl,'start');assert cl.post('/qa/purchases',data={**start,'csrf':'wrong'}).status_code==403
   assert cl.post('/qa/purchases',data=start,headers={'Origin':'https://foreign.invalid'}).status_code==403
   cl.set_cookie('session',cl.get_cookie('session').value,domain='hosted.invalid')
   assert cl.post('/qa/purchases',data=start,headers={'Host':'hosted.invalid'}).status_code==404
@@ -63,6 +63,8 @@ with tempfile.TemporaryDirectory() as td:
    with other.session_transaction() as s:s.clear();s.update(session_state)
    return other.post('/qa/purchases',data=data).status_code
   with ThreadPoolExecutor(max_workers=8) as pool:assert list(pool.map(lambda _:replay(start),range(8)))==[303]*8
+  assert len(query('SELECT * FROM topup_order_terms'))==1 and bank()==before
+  assert cl.post('/qa/purchases',data=other_tab).status_code==303
   assert len(query('SELECT * FROM topup_order_terms'))==1 and bank()==before
   for _ in range(3):page(cl)
   assert len(query('SELECT * FROM topup_order_terms'))==1 and bank()==before
