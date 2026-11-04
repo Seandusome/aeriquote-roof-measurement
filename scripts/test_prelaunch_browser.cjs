@@ -7,6 +7,7 @@ assert(widths.every(w=>[320,390,768,1440].includes(w)));assert(industries.every(
 (async()=>{const browser=await chromium.launch({headless:true,args:['--no-sandbox']});const results=[];
 for(const width of widths)for(const industry of industries){
  const context=await browser.newContext({viewport:{width,height:1000},acceptDownloads:true});const page=await context.newPage();const errors=[];console.log('START',industry,width);page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+ page.on('console',m=>{if(m.text().startsWith('SINGLE_FIT '))console.log(m.text())});await page.addInitScript(()=>window.addEventListener('DOMContentLoaded',()=>{if(typeof assertSinglePageLegible==='function'){const check=assertSinglePageLegible;window.assertSinglePageLegible=r=>{console.info('SINGLE_FIT '+JSON.stringify(singlePageReadability(r)));return check(r)}}}));
  await context.route('**/*',async r=>{const u=new URL(r.request().url());let f;
  if(u.hostname==='unpkg.com'){if(u.pathname.includes('leaflet.js'))f=deps+'/leaflet/dist/leaflet.js';else if(u.pathname.includes('leaflet.css'))f=deps+'/leaflet/dist/leaflet.css';else return r.fulfill({body:''});}
  if(u.hostname==='cdnjs.cloudflare.com')f=u.pathname.includes('html2canvas')?deps+'/html2canvas/dist/html2canvas.min.js':deps+'/jspdf/dist/jspdf.umd.min.js';

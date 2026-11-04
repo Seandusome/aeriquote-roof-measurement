@@ -243,7 +243,7 @@ HTML = r"""<!doctype html>
  .cta{padding:.06in;margin-top:.05in;font-size:8pt}.cta strong{font-size:11pt}
  .reportPrice{margin-top:.05in}.reportPrice .rphead,.reportPrice .rpbody{padding:.05in .07in;font-size:8pt}
  .reportFoot{font-size:6.5pt;margin-top:.03in}
- .reportActions{display:none}.estimateOutlineBar{display:none!important}
+ .reportActions,.pdfLayoutHelp{display:none!important}.estimateOutlineBar{display:none!important}
  .reportPanel,.reportPrice,.cta{break-inside:avoid;page-break-inside:avoid}
 }
 
