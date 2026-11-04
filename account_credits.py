@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import uuid, secrets, hmac, calendar
 import extra_allowance_ledger as extra_ledger
+import payment_free_orders
+import allowance_writer_guard
 from flask import request, session, Response, redirect, render_template_string
 
 BRANDS = {'': 'No dealer brand', 'shingle_guard': 'Shingle Guard', 'shinglextra': 'ShingleXtra'}
@@ -54,6 +56,7 @@ def paid_usage(con,did,now=None,initialize=False):
 
 def init_credit_db(con):
     extra_ledger.init_db(con)
+    payment_free_orders.init_db(con)
     con.execute("CREATE TABLE IF NOT EXISTS account_billing_migration (id TEXT PRIMARY KEY, started_at TEXT NOT NULL)")
     con.execute("INSERT INTO account_billing_migration(id,started_at) VALUES('monthly-v1',?) ON CONFLICT(id) DO NOTHING",(datetime.now(timezone.utc).isoformat(),))
     con.execute("CREATE TABLE IF NOT EXISTS account_billing_periods (dealer_id TEXT PRIMARY KEY, anchor_at TEXT NOT NULL, seed_period TEXT NOT NULL, basis TEXT NOT NULL)")
@@ -78,6 +81,8 @@ def init_credit_db(con):
       created_at TEXT NOT NULL, action TEXT NOT NULL, amount INTEGER NOT NULL,
       reason TEXT NOT NULL, details TEXT NOT NULL)""")
 
+    allowance_writer_guard.init_db(con)
+
 def settings(con, did):
     row = con.execute('SELECT * FROM account_allowances WHERE dealer_id=?', (did,)).fetchone()
     return dict(row) if row else dict(dealer_id=did, complimentary=0, brand='', lookup_bonus=0, estimate_bonus=0)
@@ -91,6 +96,7 @@ def lock_account(con, did):
 
 def consume(con, did, kind, normal_used, normal_limit, now=None, operation_id=None):
     """Caller holds owner lock. Returns allowed, used, limit; commits with caller."""
+    allowance_writer_guard.assert_writable(con)
     if kind not in {'lookups','estimates'}: raise ValueError('Unknown allowance channel.')
     cfg = settings(con, did)
     bonus_col = 'lookup_bonus' if kind == 'lookups' else 'estimate_bonus'

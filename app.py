@@ -4323,6 +4323,15 @@ def is_recovery_test_service():
     return (os.environ.get("RENDER_SERVICE_ID", "") == "srv-db5a2g5ckfvc739fui70"
             or os.environ.get("RENDER_EXTERNAL_HOSTNAME", "") == "aeriquote-commercial-test.onrender.com")
 
+def allowance_maintenance_gate():
+    # Draft autosaves and reads remain available during a controlled writer pause.
+    if request.method=='POST' and request.path in {'/property','/property/accept','/api/estimates','/head-office/credits'}:
+        con=estimate_db()
+        try:
+            if con.execute('SELECT mode FROM allowance_writer_control WHERE id=1').fetchone()['mode']=='paused':
+                return jsonify(error='Allowance maintenance is in progress. Your work is unchanged. Retry after maintenance.'),503
+        finally:con.close()
+
 def consume_property_lookup(dealer_id, connection=None, operation_id=None):
     con=connection or estimate_db()
     try:
@@ -4392,6 +4401,8 @@ def require_dealer_login():
     if expected_account and expected_account!=str(session.get("dealer_id") or ""):
         return jsonify(error="This page belongs to another business. Keep it open, sign in to the original business in another tab, then retry. Your unsaved entries are still here."),409
 
+
+app.before_request(allowance_maintenance_gate)
 
 @app.get("/logout")
 def logout():

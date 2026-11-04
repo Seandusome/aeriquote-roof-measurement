@@ -16,6 +16,8 @@ on:
       - app.py
       - account_credits.py
       - extra_allowance_ledger.py
+      - payment_free_orders.py
+      - allowance_writer_guard.py
       - workspace_drafts.py
       - workspace_drafts.js
       - site/trial-signup.html

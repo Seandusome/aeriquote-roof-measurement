@@ -57,7 +57,9 @@ def _bank(con,did):
 
 def _entry(con,did,lot,channel,delta,reason,operation):
  if not con.execute('SELECT lot_id FROM extra_source_lots WHERE dealer_id=? AND lot_id=?',(did,lot)).fetchone():raise LedgerError('Extra lot belongs to another business or does not exist.')
- con.execute('INSERT INTO extra_movements(dealer_id,entry_id,lot_id,channel,delta,reason,operation_ref,created_at) VALUES(?,?,?,?,?,?,?,?)',(did,uuid.uuid4().hex,lot,channel,delta,reason,operation,stamp()))
+ entry_id=uuid.uuid4().hex
+ con.execute('INSERT INTO extra_movements(dealer_id,entry_id,lot_id,channel,delta,reason,operation_ref,created_at) VALUES(?,?,?,?,?,?,?,?)',(did,entry_id,lot,channel,delta,reason,operation,stamp()))
+ return entry_id
 
 def ensure_opening(con,did):
  """Snapshot remaining extras once; never infer purchases or rewrite old grants."""
@@ -85,7 +87,7 @@ def reconciliation(con,did):
 def _assert_balanced(con,did):
  if not reconciliation(con,did)['balanced']:raise LedgerError('Extra allowance ledger does not match its bank. Reconciliation required.')
 
-def _grant(con,did,units,source_ref,origin,reason):
+def _grant(con,did,units,source_ref,origin,reason,created_at=None):
  if type(units) is not int or not 1<=units<=10000:raise LedgerError('Invalid extra units.')
  ref(source_ref);ensure_opening(con,did);_assert_balanced(con,did)
  old=con.execute('SELECT lot_id,origin FROM extra_source_lots WHERE dealer_id=? AND source_ref=?',(did,source_ref)).fetchone()
@@ -94,7 +96,7 @@ def _grant(con,did,units,source_ref,origin,reason):
   if old['origin']!=origin or {r['channel']:int(r['units']) for r in rows}!={c:units for c in CHANNELS}:raise LedgerError('Extra grant reference reused with different details.')
   return old['lot_id'],False
  lot=uuid.uuid4().hex
- con.execute('INSERT INTO extra_source_lots(dealer_id,lot_id,origin,source_ref,created_at) VALUES(?,?,?,?,?)',(did,lot,origin,source_ref,stamp()))
+ con.execute('INSERT INTO extra_source_lots(dealer_id,lot_id,origin,source_ref,created_at) VALUES(?,?,?,?,?)',(did,lot,origin,source_ref,created_at or stamp()))
  for channel in CHANNELS:_entry(con,did,lot,channel,units,reason,source_ref)
  con.execute('INSERT INTO account_allowances(dealer_id) VALUES(?) ON CONFLICT(dealer_id) DO NOTHING',(did,))
  con.execute('UPDATE account_allowances SET lookup_bonus=lookup_bonus+?,estimate_bonus=estimate_bonus+? WHERE dealer_id=?',(units,units,did))
@@ -116,7 +118,7 @@ def configure_simulation(con,did,*,spend_order=None,refund_policy=None,eligibili
  if eligibility not in (None,'simulation_only'):raise LedgerError('Unapproved purchase eligibility.')
  con.execute('INSERT INTO extra_policies(dealer_id,spend_order,purchase_eligibility,refund_policy) VALUES(?,?,?,?) ON CONFLICT(dealer_id) DO UPDATE SET spend_order=excluded.spend_order,purchase_eligibility=excluded.purchase_eligibility,refund_policy=excluded.refund_policy',(did,spend_order,eligibility,json.dumps(refund_policy) if refund_policy is not None else None))
 
-def fulfill_simulated_pack(con,did,order_id,*,country,region='',tax_policy):
+def fulfill_simulated_pack(con,did,order_id,*,country,region='',tax_policy,purchased_at=None):
  """No payment claim: explicit simulated order, unavailable on hosted/real DBs."""
  _disposable(con);ref(order_id)
  if not isinstance(tax_policy,dict) or not isinstance(tax_policy.get('rates_bps'),dict) or not tax_policy.get('version'):raise LedgerError('Versioned tax configuration required.')
@@ -132,7 +134,7 @@ def fulfill_simulated_pack(con,did,order_id,*,country,region='',tax_policy):
  if old:
   if old['payload_hash']!=digest:raise LedgerError('Simulated order reference reused with different details.')
   _assert_balanced(con,did);return dict(old),False
- lot,created=_grant(con,did,25,'simulated-purchase:'+order_id,'purchased','simulated_purchase')
+ lot,created=_grant(con,did,25,'simulated-purchase:'+order_id,'purchased','simulated_purchase',created_at=purchased_at)
  if not created:raise LedgerError('Simulated purchase lot lacks its order record.')
  con.execute("INSERT INTO extra_simulated_orders(dealer_id,order_id,lot_id,quantity,currency,subtotal_cents,tax_cents,total_cents,tax_snapshot,payload_hash,created_at) VALUES(?,?,?,25,'USD',2500,?,?,?,?,?)",(did,order_id,lot,tax,2500+tax,snapshot,digest,stamp()))
  _assert_balanced(con,did)
@@ -146,12 +148,19 @@ def deduct_extra(con,did,channel,operation=None):
  candidates=[]
  for row in con.execute('SELECT l.lot_id,l.origin,l.created_at,SUM(m.delta) AS units FROM extra_source_lots l JOIN extra_movements m ON m.dealer_id=l.dealer_id AND m.lot_id=l.lot_id WHERE l.dealer_id=? AND m.channel=? GROUP BY l.lot_id,l.origin,l.created_at HAVING SUM(m.delta)>0 ORDER BY l.created_at,l.lot_id',(did,channel)).fetchall():
   if row['origin']=='purchased':
-   if not policy or policy['purchase_eligibility']!='simulation_only':continue
-   _disposable(con)
+   if policy and policy['purchase_eligibility']=='simulation_only':_disposable(con)
+   else:
+    dealer=con.execute('SELECT status,plan_code FROM dealers WHERE id=?',(did,)).fetchone()
+    cfg=con.execute('SELECT complimentary FROM account_allowances WHERE dealer_id=?',(did,)).fetchone()
+    subscription=con.execute('SELECT status FROM extra_subscription_state WHERE dealer_id=?',(did,)).fetchone()
+    from account_credits import SUBSCRIPTION_LIMITS
+    if not dealer or dealer['status']!='active' or not ((cfg and cfg['complimentary']) or (dealer['plan_code'] in SUBSCRIPTION_LIMITS and subscription and subscription['status']=='active')):continue
   candidates.append(row)
  if not candidates:return False
- origins={r['origin'] for r in candidates};order=policy['spend_order'] if policy else None
- if len(origins)>1 and not order:return False # no assumed admin/purchase priority
+ origins={r['origin'] for r in candidates}
+ legacy_fixture=policy and policy['purchase_eligibility']=='simulation_only'
+ order=policy['spend_order'] if legacy_fixture else 'granted_first'
+ if len(origins)>1 and not order:return False # legacy counterfactual fixture only
  if order in ('granted_first','purchased_first'):
   first='granted' if order=='granted_first' else 'purchased';candidates.sort(key=lambda r:r['origin']!=first)
  chosen=candidates[0];operation=ref(operation) if operation else 'unkeyed:'+uuid.uuid4().hex
