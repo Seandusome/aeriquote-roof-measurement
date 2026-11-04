@@ -15,6 +15,12 @@ def seed():
  for did in ['purchase-ca','purchase-us']:
   db=a.estimate_db();c.lock_account(db,did);l.grant_administrative(db,did,3,'fixture-grant');p.set_subscription(db,did,'active');db.commit();db.close()
 seed()
+# Keep this scoped UI fixture on its screen after real credential verification.
+# Loading the unrelated measuring page would require external map assets.
+@a.app.after_request
+def purchase_landing(response):
+ if a.request.path in ('/dealer-login','/login') and response.status_code in (302,303) and response.headers.get('Location')=='/':response.headers['Location']='/qa/purchases'
+ return response
 a.is_recovery_test_service=lambda:False;a.is_head_office=lambda:False
 # A forgotten provider call must fail, never reach imagery/payment services.
 a.req_json=lambda *args,**kwargs:(_ for _ in ()).throw(AssertionError('External service disabled in disposable purchase QA'))
