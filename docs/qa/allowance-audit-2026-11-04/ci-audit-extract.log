@@ -1,0 +1,27 @@
+JOB 126846982859 postgres_integrity (18) SUCCESS
+2026-11-04T20:34:51.7391935Z PASS monthly-first, rollback, renewal and ten-year carry-forward: basic
+2026-11-04T20:34:51.7393147Z PASS monthly-first, rollback, renewal and ten-year carry-forward: pro
+2026-11-04T20:34:51.7394319Z PASS monthly-first, rollback, renewal and ten-year carry-forward: business
+2026-11-04T20:34:51.7395403Z PASS monthly-first, rollback, renewal and ten-year carry-forward: complimentary
+2026-11-04T20:34:51.7396443Z PASS eight concurrent distinct uses: final monthly + final extra exactly once each
+2026-11-04T20:34:51.7397839Z PASS real property routes: failures/abandoned imagery free; owner/employee replay once; last-bank concurrency; business isolation
+2026-11-04T20:34:51.7399975Z PASS saves: eight owner/employee retries once, free unchanged saves/revisions/reopens, stale/invalid blocked, cross-business and disabled-employee isolation, tamper rejection
+2026-11-04T20:34:51.7402603Z {"backend": "postgres", "other": {"estimate_bonus": 2, "estimates": 25, "lookup_bonus": 1, "lookups": 26, "revisions": 0, "saved": 0}, "owner": {"estimate_bonus": 1, "estimates": 26, "lookup_bonus": 0, "lookups": 27, "revisions": 1, "saved": 1}, "payments": "not implemented or exercised"}
+JOB 126846983464 recovery SUCCESS
+2026-11-04T20:36:32.3226845Z PASS monthly-first, rollback, renewal and ten-year carry-forward: basic
+2026-11-04T20:36:32.3227438Z PASS monthly-first, rollback, renewal and ten-year carry-forward: pro
+2026-11-04T20:36:32.3227866Z PASS monthly-first, rollback, renewal and ten-year carry-forward: business
+2026-11-04T20:36:32.3228268Z PASS monthly-first, rollback, renewal and ten-year carry-forward: complimentary
+2026-11-04T20:36:32.3228696Z PASS eight concurrent distinct uses: final monthly + final extra exactly once each
+2026-11-04T20:36:32.3229277Z PASS real property routes: failures/abandoned imagery free; owner/employee replay once; last-bank concurrency; business isolation
+2026-11-04T20:36:32.3230071Z PASS saves: eight owner/employee retries once, free unchanged saves/revisions/reopens, stale/invalid blocked, cross-business and disabled-employee isolation, tamper rejection
+2026-11-04T20:36:32.3231197Z {"backend": "sqlite", "other": {"estimate_bonus": 2, "estimates": 25, "lookup_bonus": 1, "lookups": 26, "revisions": 0, "saved": 0}, "owner": {"estimate_bonus": 1, "estimates": 26, "lookup_bonus": 0, "lookups": 27, "revisions": 1, "saved": 1}, "payments": "not implemented or exercised"}
+JOB 126846983533 postgres_integrity (16) SUCCESS
+2026-11-04T20:34:52.8758777Z PASS monthly-first, rollback, renewal and ten-year carry-forward: basic
+2026-11-04T20:34:52.8759268Z PASS monthly-first, rollback, renewal and ten-year carry-forward: pro
+2026-11-04T20:34:52.8759655Z PASS monthly-first, rollback, renewal and ten-year carry-forward: business
+2026-11-04T20:34:52.8760046Z PASS monthly-first, rollback, renewal and ten-year carry-forward: complimentary
+2026-11-04T20:34:52.8760697Z PASS eight concurrent distinct uses: final monthly + final extra exactly once each
+2026-11-04T20:34:52.8761582Z PASS real property routes: failures/abandoned imagery free; owner/employee replay once; last-bank concurrency; business isolation
+2026-11-04T20:34:52.8762741Z PASS saves: eight owner/employee retries once, free unchanged saves/revisions/reopens, stale/invalid blocked, cross-business and disabled-employee isolation, tamper rejection
+2026-11-04T20:34:52.8764403Z {"backend": "postgres", "other": {"estimate_bonus": 2, "estimates": 25, "lookup_bonus": 1, "lookups": 26, "revisions": 0, "saved": 0}, "owner": {"estimate_bonus": 1, "estimates": 26, "lookup_bonus": 0, "lookups": 27, "revisions": 1, "saved": 1}, "payments": "not implemented or exercised"}

@@ -1,0 +1,8 @@
+PASS monthly-first, rollback, renewal and ten-year carry-forward: basic
+PASS monthly-first, rollback, renewal and ten-year carry-forward: pro
+PASS monthly-first, rollback, renewal and ten-year carry-forward: business
+PASS monthly-first, rollback, renewal and ten-year carry-forward: complimentary
+PASS eight concurrent distinct uses: final monthly + final extra exactly once each
+PASS real property routes: failures/abandoned imagery free; owner/employee replay once; last-bank concurrency; business isolation
+PASS saves: eight owner/employee retries once, free unchanged saves/revisions/reopens, stale/invalid blocked, cross-business and disabled-employee isolation, tamper rejection
+{"backend": "sqlite", "other": {"estimate_bonus": 2, "estimates": 25, "lookup_bonus": 1, "lookups": 26, "revisions": 0, "saved": 0}, "owner": {"estimate_bonus": 1, "estimates": 26, "lookup_bonus": 0, "lookups": 27, "revisions": 1, "saved": 1}, "payments": "not implemented or exercised"}

@@ -1,0 +1,116 @@
+[
+  {
+    "case": "original",
+    "width": 1440,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      586.52,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      2638
+    ],
+    "pointsPerCssPixel": 0.4443,
+    "estimatedPricingBodyPoints": 7.11,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  },
+  {
+    "case": "original",
+    "width": 390,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      643.62,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      2404
+    ],
+    "pointsPerCssPixel": 0.4876,
+    "estimatedPricingBodyPoints": 7.07,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  },
+  {
+    "case": "large",
+    "width": 1440,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      586.52,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      2638
+    ],
+    "pointsPerCssPixel": 0.4443,
+    "estimatedPricingBodyPoints": 7.11,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  },
+  {
+    "case": "large",
+    "width": 390,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      643.62,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      2404
+    ],
+    "pointsPerCssPixel": 0.4876,
+    "estimatedPricingBodyPoints": 7.07,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  },
+  {
+    "case": "pages",
+    "width": 1440,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      356.84,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      4336
+    ],
+    "pointsPerCssPixel": 0.2703,
+    "estimatedPricingBodyPoints": 4.33,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  },
+  {
+    "case": "pages",
+    "width": 390,
+    "pagePoints": [
+      792.0,
+      612.0
+    ],
+    "imagePoints": [
+      377.56,
+      586.08
+    ],
+    "imagePixels": [
+      2640,
+      4098
+    ],
+    "pointsPerCssPixel": 0.286,
+    "estimatedPricingBodyPoints": 4.15,
+    "note": "Sizing inference from scale2 exporter; raster PDF has no selectable text/font metadata."
+  }
+]

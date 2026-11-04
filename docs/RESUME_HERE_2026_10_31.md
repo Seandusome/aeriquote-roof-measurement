@@ -1,3 +1,19 @@
+# November 4 — Allowance readiness audit PASS locally/PG16/18; no application change; UNDEPLOYED
+
+Resumedcaa6bb59/application1cd73b65. New test/CI source **2163766624a2ca0471af609ad780c39a5ceeb1de**. Read [allowance audit and PDF review](QA_ALLOWANCE_AUDIT_2026_11_04.md) and [proposed top-up plan](AERIQUOTE_TOPUP_IMPLEMENTATION_PLAN_2026_11_04.md).
+
+Live remains **194c435b / dep-dbl5m4lbedkc73ekek60**, auto-deployOFF. Fresh signed-in recovery Shell asserted actual commit plus QA DATABASE_URL host dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa before a read-only database/version query (PostgreSQL18.6). No credentials, real balances, hosted business data, connections or settings changed. Main/production/customer data untouched.
+
+Existing bank monthly-first/carry-forward behavior passes: Basic25/Pro75/Business200/complimentary200, both channels; renewal/ten-year advance preserves extras; provider failure and abandoned imagery free; owner/employee replay/concurrency once; distinct last-unit races bounded; unchanged saves/revisions/reopening free; stale/invalid/unauthorized writes denied without debits; normal trial caps retained. New disposable regression added to SQLite and PG16/18 CI. No application defect reproduced, no financial policy changed. **Actual purchase/refund/payment-event lifecycle does not exist yet.** Existing bank is administrative grants, not purchased-payment evidence.
+
+Saved wrapping fix remains undeployed and exact-source checks PASS. Dense Single stress output has approx4.2–4.3pt pricing text because it scales to one page; Expanded remains readable across4pages. Record readability decision; no PDF redesign today. Owner desktop/physical-phone review pending.
+
+Final audit source21637666: application **41907790323 SUCCESS**; recovery **41907790368 SUCCESS**, including the new carry-forward/concurrency audit on SQLite and PostgreSQL16/18. Every new audit step executed and passed. App.py is unchanged from1cd73b65, whose required browser41732984587 remains10/10PASS; browser CI was not retriggered by this Python-test/workflow-only change. No unresolved CI failure.
+
+Currency, tax presentation, paired estimate entitlement, eligibility and refund policy remain decisions for the proposed25/$25 pack. Recommended next engineering task: isolated payment-free source ledger/reconciliation before processor integration; do not implement without Sean's next instruction. Four pre-existing untracked recovery/asset copies preserved. Canonical checkpoint is containing documentation commit. Pause; no deployment, checkout, charge, refund or real balance change.
+
+---
+
 # November 3 — PDF amount wrapping FIXED; UNDEPLOYED; PAUSED
 
 Resumed00e6db5e. Application **1cd73b65e973cfd135da9f7cabbc6f4510fe68c3**. Read [PDF amount wrapping fix and evidence](QA_PDF_AMOUNT_WRAP_2026_11_03.md). Two scoped CSS rules preserve a nonshrinking, no-wrap, right-aligned amount column while descriptions wrap. No pricing/rounding/measurement/validation change. Removing the two rules reproduces `$293.82` digit wrapping; new three-case real-browser regression and existing assertions pass locally.

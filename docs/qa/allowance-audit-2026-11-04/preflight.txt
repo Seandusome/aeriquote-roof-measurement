@@ -1,0 +1,12 @@
+2026-11-04 read-only verification
+GitHub recovery HEAD before audit caa6bb5914d68b3b4f321f16425a20d96c11eb73
+Application source 1cd73b65e973cfd135da9f7cabbc6f4510fe68c3; app.py blob f51edd16cc0163dbfdb669ffd8e7e8ac5da7765f matches local
+Exact-source prior application41732984453/recovery41732984504/browser41732984587 all SUCCESS (browser10/10)
+Render recovery srv-db5a2g5ckfvc739fui70, branch landscaping-multi-area-recovery-oct11, autoDeploy no/off
+Live 194c435b377dbcb23ad24a422c63763fcd931ed4 / dep-dbl5m4lbedkc73ekek60
+Render dashboard sign-in restored by Sean. No credentials read or changed.
+Instance t99jq runtime asserted exact live commit plus DATABASE_URL parsed host dpg-dbj4f7lg1s2s73eob8t0-a and database aeriquote_recovery_qa BEFORE connecting.
+SET TRANSACTION READ ONLY; SELECT current_database(),version() returned aeriquote_recovery_qa / PostgreSQL18.6.
+No hosted application data or balances queried/changed; no environment, connection or deployment changes.
+Dedicated Render PostgreSQL metadata independently reports available version18, name aeriquote-recovery-qa, database aeriquote_recovery_qa, Ohio.
+New testing: fictional accounts, temporary SQLite; PostgreSQL16/18 CI uses localhost aeriquote_qa only. Commercial providers mocked; no external imagery or payment calls.

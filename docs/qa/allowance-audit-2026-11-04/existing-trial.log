@@ -1,0 +1,2 @@
+PASS normal trial: provider503 no debit; three lookups/estimates exhaust caps; repeated acceptance and save idempotent; existing edit at cap once; stale409 and invalid geometry400 preserve history/allowances
+{"complimentary": false, "counts": {"estimate_revisions": 1, "estimate_save_receipts": 4, "estimates": 3}, "lookups": 3, "paid": null, "plan": {"estimate_limit": 3, "lookup_limit": 3, "plan_code": "trial"}}
