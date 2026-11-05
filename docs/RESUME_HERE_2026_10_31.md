@@ -1,3 +1,17 @@
+# November 5 — New QA owner signed in; employee credential creation handoff PENDING
+
+User completed the prepared signup normally in browser. Actual submitted/created owner email is **bob@gmail.com**, not the proposed qa-hosted-owner-nov05-2026@example.invalid (which still has no match). Do not silently substitute the proposed email in authentication or notes.
+
+Verified exact isolated recovery DB mapping before read-only query. Company-profile match identifies new owner **cdb6392e-04d6-4c7a-a586-c1b7c3262b0f**, email **bob@gmail.com**, name **QA TEST Hosted Access Owner**, active trial, company **QA TEST FICTIONAL HOSTED ACCESS NOV05**. This newly created QA-labelled business is the target; do not confuse it with the original sdusome@diitalk.com account. No existing email or password was changed. The first overly narrow prepared-email assertion failed because no such email had been created; diagnostic query established actual identity. No application defect indicated.
+
+Normal browser signup reached roofing setup, showing QA owner/company labels. Navigated existing authenticated session to /dealer-employees, which showed Manage Employees and no employees. Prepared employee name **QA TEST FICTIONAL Hosted Access Employee**. Employee email/password remain blank for user entry; planned email **qa-hosted-employee-nov05-2026@example.invalid**. User performs CREATE EMPLOYEE with private password entry; browserAuth is not used for account creation. No password values read/logged/saved.
+
+Employee is not yet created, and pending hosted employee checks remain unexecuted. Next inspect completed employee state and exact actual email in same isolated DB. Record starting active owner/employee, trial limits/allowances and data fingerprints. Use normal secure authentication for subsequent sign-ins; never inject sessions. Existing signups can establish initial normal authenticated owner session, but controlled re-login checks still needed.
+
+Existing QA Head Office role unchanged. Recovery auto-deploy directly verified OFF in preceding preparation. Bindings/main/production/original account unchanged. No runtime code changes, deployment, payment/Spexi/clock/billing-date work or local-test reruns. Containing documentation commit is interim checkpoint; continue hosted assignment after employee credential-creation handoff.
+
+---
+
 # November 5 — Hosted QA credential setup prepared; owner signup handoff PENDING
 
 Resumed daed21f5. Sean now explicitly permits creating one clearly fictional owner/employee pair in isolated recovery if existing usable credentials are unavailable. No existing hosted owner/employee credentials available. No passwords may appear in chat/logs/repository. Use normal authentication only.
