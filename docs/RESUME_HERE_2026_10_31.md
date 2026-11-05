@@ -1,3 +1,17 @@
+# November 5 — Hosted employee normal login and stale-session blocking PASS; disabled-login handoff PENDING
+
+User completed manual normal sign-in. Fresh measuring workspace loaded; DOM meta aqAccountId verified account cdb6392e-04d6-4c7a-a586-c1b7c3262b0f and data-principal **employee:effbf718-947e-4077-9c80-dcd2f7178498**. /api/account/profile confirmed exact QA TEST FICTIONAL HOSTED ACCESS NOV05 business, owner bob@gmail.com, active trial3/3, bonus0/0, complimentary0. This is verified hosted normal employee authentication for **qa-staff@example.invalid**; no injection/bypass.
+
+Strictly scoped admin SQL changed this employee active→disabled, with revocation and audit **qa_employee_disable d523acb0-d70a-4f5e-b5e0-4f502d128614**. Exact service/DB/owner/employee identities and absence of owner Head Office role asserted. Existing authenticated profile page reload returned **Account access disabled. Please log in again.** Stale previously rendered owner ACTIVATE form submitted without valid session redirected to /dealer-login; SQL confirms employee remains disabled. No accidental access restoration.
+
+Post-rejection fingerprints match initial empty business data:0 estimates/revisions/allowances/monthly/subscription/dealer_usage/drafts/property_sessions/save_receipts. Owner remains active trial,3/3 limits. Sole original QA Head Office role unchanged. No provider/measurement/save activity.
+
+**Temporary state for next controlled test:** owner active; employee intentionally DISABLED. Normal login page staffLoginTab9 open. User must manually clear email, enter **qa-staff@example.invalid** and its private employee password, click LOG IN, and report done even when generic rejection appears. Expected disabled-login rejection; not password diagnosis. Inspect actual result, then promptly restore employee active with scoped audited update. Need subsequent normal-login success after reactivation and owner-disable/reenable-preserves-employee restriction checks; these remain pending. Final restore both to starting active status, retain audit and revocation versions. Do not change original account, roles, bindings or credentials.
+
+Earlier generic rejection remains inconclusive due unverified email. Do not confuse it with verified disabled-login acceptance. Secure email prompt had filled real sdusome@diitalk.com; manual handoff avoids repeating wrong autofill. No deployment/payment/Spexi/local-test reruns. Auto-deploy OFF as directly verified earlier. Containing commit is interim handoff checkpoint; task not complete.
+
+---
+
 # November 5 — QA pair CREATED; verified employee email; normal employee sign-in handoff PENDING
 
 New pair in isolated recovery:
