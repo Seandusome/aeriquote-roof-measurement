@@ -24,12 +24,14 @@ def password_hash(password, salt=None):
     digest=hashlib.pbkdf2_hmac("sha256",str(password).encode(),salt.encode(),200000)
     return salt+"$"+digest.hex()
 
-def password_ok(password, stored):
+def password_ok(password, stored, diagnostic_error=None):
     try:
         salt,expected=stored.split("$",1)
         actual=password_hash(password,salt).split("$",1)[1]
         return hmac.compare_digest(actual,expected)
-    except Exception:return False
+    except Exception:
+        if diagnostic_error is not None: diagnostic_error()
+        return False
 SESSIONS = {}
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GOOGLE_MAPS_API_KEY", "")
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", "")
@@ -2044,20 +2046,65 @@ LOGIN_HTML=r"""<!doctype html><html><head><meta charset="utf-8"><title>AeriQuote
 def dealer_login():
     if request.method=="POST":
         email=str(request.form.get("email") or "").strip().lower(); password=str(request.form.get("password") or "")
-        con=estimate_db()
-        try: row=con.execute("SELECT * FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
-        finally: con.close()
-        if row and str(row["status"]).lower()=="active" and password_ok(password,row["password_hash"]):
-            session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner"
-            return redirect("/")
-        con=estimate_db()
+        # Temporary, default-off diagnostics: exact original service/account only.
+        # A short expiry also shuts logging off if operator cleanup is delayed.
         try:
-            emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id WHERE LOWER(e.email)=?",(email,)).fetchone()
-        finally: con.close()
-        if emp and str(emp["status"]).lower()=="active" and str(emp["dealer_status"]).lower()=="active" and password_ok(password,emp["password_hash"]):
-            session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee"
-            return redirect("/")
-        return render_template_string(LOGIN_HTML,error="Email or password is incorrect.")
+            diagnostic_until=float(os.environ.get("AERIQUOTE_ORIGINAL_LOGIN_DIAGNOSTIC_UNTIL","0"))
+        except (ValueError,TypeError):
+            diagnostic_until=0
+        diagnostic_id=uuid.uuid4().hex if (
+            os.environ.get("RENDER_SERVICE_ID")=="srv-db01g1p42hec73ehu1lg"
+            and email=="sdusome@diitalk.com"
+            and time.time()<diagnostic_until<=time.time()+1800
+        ) else None
+        def diagnostic(stage):
+            if diagnostic_id: app.logger.warning("AQ_LOGIN_DIAGNOSTIC %s %s",stage,diagnostic_id)
+        def login_response(response,stage):
+            diagnostic(stage)
+            return response
+        diagnostic("received")
+        try:
+            con=estimate_db()
+            try: row=con.execute("SELECT * FROM dealers WHERE LOWER(email)=?",(email,)).fetchone()
+            finally: con.close()
+        except Exception:
+            diagnostic("owner_lookup_error")
+            raise
+        diagnostic("owner_found" if row else "owner_missing")
+        owner_active=bool(row and str(row["status"]).lower()=="active")
+        if row: diagnostic("owner_active" if owner_active else "owner_inactive")
+        owner_verified=owner_active and password_ok(password,row["password_hash"],lambda:diagnostic("owner_verifier_error"))
+        if owner_active: diagnostic("owner_verifier_pass" if owner_verified else "owner_verifier_fail")
+        if owner_verified:
+            try:
+                session.clear();session["dealer_id"]=row["id"];session["dealer_name"]=row["dealer_name"];session["account_type"]="owner"
+            except Exception:
+                diagnostic("session_error")
+                raise
+            diagnostic("session_created")
+            return login_response(redirect('/'),"response_redirect")
+        try:
+            con=estimate_db()
+            try:
+                emp=con.execute("SELECT e.*,d.dealer_name,d.status AS dealer_status FROM dealer_employees e JOIN dealers d ON d.id=e.dealer_id WHERE LOWER(e.email)=?",(email,)).fetchone()
+            finally: con.close()
+        except Exception:
+            diagnostic("employee_lookup_error")
+            raise
+        diagnostic("employee_found" if emp else "employee_missing")
+        employee_active=bool(emp and str(emp["status"]).lower()=="active" and str(emp["dealer_status"]).lower()=="active")
+        if emp: diagnostic("employee_active" if employee_active else "employee_inactive")
+        employee_verified=employee_active and password_ok(password,emp["password_hash"],lambda:diagnostic("employee_verifier_error"))
+        if employee_active: diagnostic("employee_verifier_pass" if employee_verified else "employee_verifier_fail")
+        if employee_verified:
+            try:
+                session.clear();session["dealer_id"]=emp["dealer_id"];session["dealer_name"]=emp["dealer_name"];session["employee_id"]=emp["id"];session["employee_name"]=emp["employee_name"];session["account_type"]="employee"
+            except Exception:
+                diagnostic("session_error")
+                raise
+            diagnostic("session_created")
+            return login_response(redirect('/'),"response_redirect")
+        return login_response(render_template_string(LOGIN_HTML,error="Email or password is incorrect."),"response_rejected")
     return render_template_string(LOGIN_HTML,error=None)
 
 @app.get("/dealer-logout")
