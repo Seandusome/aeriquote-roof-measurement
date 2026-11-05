@@ -1,3 +1,30 @@
+# November 5 — PDF readability resolution verified from existing CI; PAUSED
+
+Resumed checkpoint **85e731fd**. No new application/test changes or workflow runs were necessary. This entry supersedes the November 4 diagnostic's incomplete CI inventory, while retaining its exact-source caveat.
+
+## Resolution and proof
+
+- Failed browser run [41928348039](https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/41928348039) used source210ed412. Its 6.951282431430689pt Single export correctly failed the unchanged7pt floor; the old mixed-history test incorrectly waited for a download.
+- **8f7a06fe** corrected only that export expectation: verify measured fit, no blocked Single download, visible unchanged-estimate guidance and Expanded selection, then actually download Expanded. Diff inspection confirms all surrounding geometry, customer, pricing, totals, revision, history and allowance assertions were retained.
+- Final application source **7a467e1d** also keeps dense Expanded measurement quantities whole beside long descriptions.
+- Existing browser run [41929129629](https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/41929129629), on exact source7a467e1d, completed **13/13 jobs successfully**. GitHub jobs and decoded logs inspected November5; no rerun started.
+- Job-revisions126921231927: same6.951pt rejection appears four times, followed by successful mixed-history completion, all six industry lifecycles and independent WGS84/Decimal reconciliation of17 snapshots. Expanded save/download remains in the executed test; blocked dense Single files are intentionally absent. The older log's phrase “ten actual PDFs” is inaccurate for these blocks; later26e3ebbc corrects the wording.
+- Single-readability126921231647: ordinary desktop1440 and phone390 passed at7.045/7.401pt. Dense cases at4.380/4.376pt were blocked; executed assertions verify zero Single downloads, visible guidance, selected Expanded, usable download button, unchanged quote snapshot, exact map/overlay restoration and byte-for-byte JSON-equivalent saved payload after export. Expanded exports completed; tests also reject wrapped/overlapping measurement quantities. Independent totals167.56 ordinary and600.68 dense passed.
+- Full topup126921231872: monthly/Bonus exhaustion, simulated25 pack, employee measurement/save, owner retry/reopen/revision and four PDF downloads passed; purchased balance24, exactly one purchased measurement plus its included estimate, failed loads free, isolation and cancellation/reactivation checks passed. Independent original/revised total153.18. Completed top-up implementation/evidence retained unchanged this session.
+- Existing application41929129544 and recovery41929129584 workflows on7a467e1d are both successful. No additional tests were run merely to duplicate this evidence.
+
+## Exact checkpoint distinction
+
+Checkpoint85e731fd contains application code identical to tested7a467e1d. GitHub compare shows only diagnostic documentation and test-only strengthening26e3ebbc after that source: explicit minimumPoints7, readable/points agreement and complete explanation text. Those extra assertions previously passed syntax checking but have not themselves been browser-executed. This is a pending test-only validation detail, not an unresolved application timeout or evidence that the already passed source failed. Preserve those assertions and the7pt threshold. Do not claim exact HEAD browser coverage.
+
+## Scope and next session
+
+This session changed documentation only. No Spexi, payment integration, hosted QA database, balance, customer data, deployment, main or production changes. No CI dispatch/retry. Auto-deploy settings untouched: Render connector reports no selected workspace, so current OFF was not independently reverified; last recorded OFF remains historical evidence only. No workspace was silently selected.
+
+No additional correction needed for run41928348039. Next targeted verification, if needed in a separately scoped session, is execution of the strengthened test-only assertions; do not repeat completed top-up testing without a specific new reason. Physical-device and real-world accuracy limitations remain as previously documented. Pause after this documentation checkpoint.
+
+---
+
 # November 4 — Complete top-up → measurement → save/PDF journey PASS; UNDEPLOYED; PAUSED
 
 Resumed **95864e93 / 1972004b**. Final tested source **c033b5744f291c26c1d3bed20f1a3f149597bdcd**. Read [complete journey/evidence/limits](QA_TOPUP_COMPLETE_JOURNEY_2026_11_04.md). Customer label Granted→**Bonus** and repeated configured-Canadian-tax sentence removed; numeric tax/total and simulation/nonexpiry/subscription labels retained. Internal ledger origin granted is unchanged; no balance reclassification, financial or PDF logic change. No financial defect reproduced.
