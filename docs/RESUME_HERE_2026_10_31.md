@@ -1,3 +1,15 @@
+# November 5 — Remaining employee cases LOCAL PASS; hosted credential limit recorded; PAUSED
+
+Resumed **8afeeda8**. Read [remaining employee-access report](QA_EMPLOYEE_ACCESS_REMAINING_2026_11_05.md), report commit afe769ca. Focused reproduction retained under docs/qa/employee-access-2026-11-05/ (copy into scripts/ of isolated deployed194c435b checkout to run).
+
+**Hosted scope read-only:** exact recovery service and isolated database asserted. Existing fictional snow owner qa-isolation-snow-basic-aa5b2061-0@example.invalid and employee qa-isolation-employee-aa5b2061@example.invalid remained active; owner Basic, no allowance/month rows, effective bonus0/0 and complimentary off. Five estimates/two revisions, subscription counters, five audit rows and sole QA Head Office role were fingerprinted before/after and matched exactly. No settings changed; no restoration required. Existing audit retained. **Hosted owner/employee credentials unavailable; no sign-in attempts, prompts, password changes or bypass. Hosted employee login/session/toggle cases remain pending.**
+
+**New local PASS, deployed source matched:** normal password authentication for every fixture client; individually disabled employee cannot sign in or use existing sessions; individual activation permits fresh login while old session remains revoked; disabled business blocks active employees; re-enabled owner preserves individually disabled employee while independently active employee regains fresh-login access. Four separate pre-existing sessions test initial read/save/property/draft401 rejections. No provider calls; exact saved estimates/revisions, measurement geometry, drafts, save receipts, bonuses/monthly/subscription/billing/usage values unchanged after rejections. Final local business data/settings restored; two expected audit rows retained until disposable SQLite teardown; QA Head Office role unchanged. No runtime defect found or app code fix.
+
+Recovery auto-deploy directly verified **OFF** (no/off). Database bindings unchanged. No production/main/customer/real-account writes, deployment, payments, Spexi or clock/billing-date changes. Reused previous monthly-rollover PASS; no full audit, top-up or PDF rerun. Completed work preserved. Containing documentation commit is checkpoint; pause. Do not claim hosted employee normal-auth acceptance completed; require existing fictional credentials securely available for that future work.
+
+---
+
 # November 5 — Head Office controls checked; QA settings RESTORED; PAUSED
 
 Resumed **06aeb288**. Read [Head Office control report](QA_HEAD_OFFICE_CONTROLS_2026_11_05.md) for starting/final values, evidence and live/local boundaries. Normal hosted sign-in used only **qa-browser-oct31-2026@example.invalid**; original **sdusome@diitalk.com** remains in the original database and was not used/changed.
