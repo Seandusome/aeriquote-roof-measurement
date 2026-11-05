@@ -1,3 +1,28 @@
+# November 5 — Strengthened PDF browser assertions PASS; launch checklist saved; PAUSED
+
+Resumed **9a720bd4**. Tested source **d3bab94afcd499627f4c8be020c3aec06b070bf1** adds only a focused CI workflow. No application changes, new product features, Spexi work, Stripe integration, deployment, customer-data or hosted-balance changes.
+
+## Results
+
+- Focused [browser42088238763](https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/42088238763), job127459046056: **SUCCESS**. Executed the unchanged job-revisions suite to reach the pending mixed-history assertions. The13-job browser audit and full top-up journey were not restarted.
+- Same6.951282431430689pt Single rejection exercised four times. Passed explicit7pt minimum and readable/points agreement, zero blocked Single downloads, full explanation text, Expanded selection and actual Expanded downloads.
+- Existing geometry, pricing, customer, active diagram scope, totals, revisions, immutable older history, stale-save and no-extra-debit checks passed. Independent WGS84/Decimal reconciliation: **17/17 snapshots**.
+- Artifact [13442709714](https://github.com/Seandusome/aeriquote-roof-measurement/actions/runs/42088238763/artifacts/13442709714): actual PDFs/screenshots/source JSON/fixture logs retained14 days. Automated execution closes the prior test-only assertion gap; no new manual visual/physical-device approval is claimed.
+- Standard repository push rules automatically triggered application42088238447 and recovery42088238497. Both completed **SUCCESS**, including recovery and PostgreSQL16/18 jobs. No manually requested full browser rerun; these existing automatic validations also passed on d3bab94a.
+- Application equivalent to7a467e1d; unchanged-area evidence from41929129629 (13/13) and completed top-up journey retained. Strengthened26e3ebbc assertions now browser-executed. All measurement/pricing/revision/PDF assertions preserved; no threshold reduction.
+
+## Launch checklist and limits
+
+Read [LAUNCH_CHECKLIST_2026_11_05.md](LAUNCH_CHECKLIST_2026_11_05.md), created in3ff27458. It separates completed/verified; built but undeployed; manual desktop/physical-phone work; Stripe integration; and other launch requirements. Automatic recovery42088238497 is now confirmed SUCCESS, including PostgreSQL16/18, superseding the checklist's interim reference to checking its status here.
+
+Outstanding launch gates include owner desktop and real-device review, new-user simplicity sign-off, real payment-provider lifecycle integration, imagery commercial/coverage/accuracy clearance, managed recovery-point/restore proof, production release/access/alerting controls, and retention/customer-wording reconciliation. These are readiness items, not authorizations to implement features or change infrastructure.
+
+**Auto-deploy UNVERIFIED in this session.** No Render settings inspected or changed. Last documented recovery194c435b remains historical only. Main, production, current provider and customer data untouched; QA used temporary loopback SQLite and disposable CI PostgreSQL. Spexi remains paused. No real charges or checkout.
+
+Checkpoint is the containing documentation commit. Application/test code unchanged after tested d3bab94a; subsequent files are documentation only and CI-skipped. Pause now. Do not repeat completed tests without a specific new reason.
+
+---
+
 # November 5 — PDF readability resolution verified from existing CI; PAUSED
 
 Resumed checkpoint **85e731fd**. No new application/test changes or workflow runs were necessary. This entry supersedes the November 4 diagnostic's incomplete CI inventory, while retaining its exact-source caveat.
