@@ -1,3 +1,29 @@
+# November 5 — Hosted rejected-save task BLOCKED by shared browser session; no QA mutations; PAUSED
+
+Resumed **c9f14429** for <=20-minute hosted rejected-save check requiring employee disable through **normal controls**. Stopped early on a concrete environment limitation, per instruction to checkpoint blockers rather than repeat login attempts.
+
+## Exact blocker and validity boundary
+
+Available browser inventory returns one Chrome/CDP browser, ID1. Its tabs share the same site authentication cookies; available documented APIs do not provide independent browser contexts/profiles. The employee must retain its authenticated unsaved-edit page while an independently authenticated owner uses Manage Employees to disable it. Logging into the owner in another tab of this shared session replaces the employee identity. Logging the owner out and submitting the stale employee page would test logged-out rejection, not prove disabled-employee save protection.
+
+Earlier hosted lifecycle test used scoped administrative SQL for state changes while employee stayed authenticated; this new assignment explicitly requires **normal controls**. That method was not substituted here. No signed cookies, session injection, password guesses or bypass. This is a testing-environment blocker, not a confirmed AeriQuote defect.
+
+Valid next-session setup: two independent normal browser sessions, employee qa-staff@example.invalid in the controlled test browser and owner bob@gmail.com in a separate browser profile/private window/user browser. Owner uses actual /dealer-employees controls while employee edit remains open. User-operated independent owner browser is an option if arranged; its login must never be mistaken for signing this cloud browser in. Do not resume mutations until independence is established. Need complete scoped sequence: one fictional estimate baseline; unsaved edit; normal owner disable; employee Save rejection with unchanged revision/payload/allowances; activate; normal employee login; recover and save exactly once. Owner-disable variant only if time permits. All those new save-specific steps remain **NOT RUN**, not PASS.
+
+## Current verified state
+
+Recovery aeriquote-commercial-test / srv-db5a2g5ckfvc739fui70, Shingle Guard workspace. Auto-deploy directly rechecked **OFF** (autoDeploy=no, autoDeployTrigger=off). Read-only shell query asserted service ID and exact DB host dpg-dbj4f7lg1s2s73eob8t0-a / logical aeriquote_recovery_qa before connection.
+
+- Owner cdb6392e-04d6-4c7a-a586-c1b7c3262b0f / bob@gmail.com / QA TEST Hosted Access Owner remains ACTIVE trial, lookup/estimate limits3/3.
+- Employee effbf718-947e-4077-9c80-dcd2f7178498 / qa-staff@example.invalid / QA TEST FICTIONAL Hosted Access Employee remains ACTIVE.
+- Estimates/revisions/allowances/monthly/subscription/dealer usage/drafts/property sessions/save receipts all0 rows, same empty-row SHA256 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.
+- Sole QA Head Office role still c417b9a2-51ea-4816-84da-1e597a7de98d. No role or original identity/account changes.
+- No estimate created, property loaded, allowance consumed, access state changed, login attempted or local test rerun in this follow-up. No restoration needed. Existing lifecycle audit/history and completed top-up/PDF work left intact.
+
+No deployments, payments, Spexi, credential/binding/clock/billing changes, production connections or customer-data writes. Only this documentation checkpoint changed. Start time20:39:18UTC; stopped well before20-minute cap once blocker established. Containing commit is checkpoint. Pause for break; do not restart broader testing.
+
+---
+
 # November 5 — Hosted employee access checks COMPLETE within documented scope; RESTORED / PAUSED
 
 Read [hosted employee-access report](QA_HOSTED_EMPLOYEE_ACCESS_2026_11_05.md), created ae5691e1. Actual new QA pair: owner **bob@gmail.com** (cdb6392e-04d6-4c7a-a586-c1b7c3262b0f), QA TEST Hosted Access Owner / company QA TEST FICTIONAL HOSTED ACCESS NOV05; employee **qa-staff@example.invalid** (effbf718-947e-4077-9c80-dcd2f7178498), QA TEST FICTIONAL Hosted Access Employee. User created both passwords privately through normal browser forms. Unused long proposed emails were not created. Do not substitute original sdusome@diitalk.com.
