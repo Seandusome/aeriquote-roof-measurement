@@ -1,0 +1,58 @@
+name: Focused strengthened PDF assertions
+on:
+  push:
+    branches: [landscaping-multi-area-recovery-oct11]
+    paths: [.github/workflows/qa-strengthened-pdf.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  job-revisions:
+    if: github.ref == 'refs/heads/landscaping-multi-area-recovery-oct11'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      DATABASE_URL: ''
+      QA_BROWSER_WIDTHS: '1440'
+      QA_BROWSER_IMAGES: hide
+      QA_BROWSER_ALL_PDFS: '1'
+      QA_BROWSER_OUTPUT: /tmp/aq-strengthened-pdf-evidence
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: python -m pip install -r requirements.txt geographiclib==2.1
+      - run: npm install --no-save --package-lock=false playwright@1.62.1 leaflet@1.9.4 html2canvas@1.4.1 jspdf@4.2.1
+      - run: npx playwright install --with-deps chromium
+      - name: Run unchanged job-revisions suite including strengthened assertions
+        shell: bash
+        run: |
+          python scripts/job_revisions_browser_server.py > /tmp/aq-strengthened-server.log 2>&1 &
+          task_server_pid=$!
+          trap 'kill "$task_server_pid" || true' EXIT
+          python - <<'PY'
+          import time, urllib.request
+          for _ in range(80):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:8765/dealer-login',timeout=1)
+                  break
+              except OSError:
+                  time.sleep(.25)
+          else:
+              print(open('/tmp/aq-strengthened-server.log').read())
+              raise RuntimeError('Disposable QA server did not start')
+          PY
+          node scripts/test_job_revisions_browser.cjs
+          python scripts/verify_job_revisions.py "$QA_BROWSER_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strengthened-pdf-assertions
+          path: |
+            /tmp/aq-strengthened-pdf-evidence
+            /tmp/aq-strengthened-server.log
+          retention-days: 14
