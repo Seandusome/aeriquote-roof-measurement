@@ -1,3 +1,17 @@
+# November 5 — Hosted reactivation and owner-level blocking PASS; final restriction login pending
+
+Normal employee re-login after activation succeeded. Browser / loaded measuring workspace; DOM data-principal again exactly employee:effbf718-947e-4077-9c80-dcd2f7178498. Confirms hosted individual reactivation restores normal fresh-login access.
+
+Applied exact-scoped audited **owner_disable** 2753705d-d3af-485e-8b2f-4c21f44c1080 while employee active/authenticated. Existing /api/account/profile reload returned Account access disabled. Please log in again. Thus owner disable blocks active employee session. No owner-disabled fresh-login attempt separately performed.
+
+With owner disabled, applied individually audited **employee_disable** e1bbc63e-7b9d-4e9e-ad46-09af26af331f; then **owner_activate** f68bf504-e919-4bbe-bfb3-8b5c242026da. Independent SQL confirmed owner active trial3/3 and employee STILL DISABLED. All0 row counts/fingerprints for estimates/revisions/allowances/month/subscription/dealer usage/drafts/property sessions/save receipts unchanged; QA Head Office role unchanged.
+
+Current temporary state: owner bob@gmail.com ACTIVE; employee qa-staff@example.invalid DISABLED individually. Last manual sign-in handoff on staffLoginTab9 asks user to enter qa-staff@example.invalid and same private employee password and LOG IN; expected rejection proves individual restriction survives owner reactivation. Inspect result then **promptly restore employee active** via qaAccessChange('employee_activate','active','disabled'), retaining audit and revocations. Final BOTH ACTIVE, verify all fingerprints and roles/limits, verify recovery auto-deploy OFF, save comprehensive hosted report/checkpoint and pause. No further local tests or extra test rounds.
+
+No credentials/role/binding/deployment/main/production/original account changes. Scoped administrative SQL used to change QA access state while single shared-browser employee session was authenticated; normal owner UI was used for initial employee disable. This verifies deployed guards and normal authentication, not a new end-to-end Head Office-control UI audit. No session injection or bypass.
+
+---
+
 # November 5 — Disabled employee login rejected; employee REACTIVATED; normal re-login pending
 
 After verified normal qa-staff@example.invalid employee login and subsequent audited disable (ba52f64d), Sean manually attempted the same employee login and reported failure. Fresh browser /dealer-login showed alert **Email or password is incorrect.** Employee was confirmed disabled during this controlled attempt; together with the preceding verified normal login this supports disabled-sign-in rejection. Password/submitted raw email were not logged or exposed; do not treat generic message as wrong-password diagnosis.
