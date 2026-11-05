@@ -1,3 +1,13 @@
+# November 5 — Disabled employee login rejected; employee REACTIVATED; normal re-login pending
+
+After verified normal qa-staff@example.invalid employee login and subsequent audited disable (ba52f64d), Sean manually attempted the same employee login and reported failure. Fresh browser /dealer-login showed alert **Email or password is incorrect.** Employee was confirmed disabled during this controlled attempt; together with the preceding verified normal login this supports disabled-sign-in rejection. Password/submitted raw email were not logged or exposed; do not treat generic message as wrong-password diagnosis.
+
+Promptly restored employee effbf718-947e-4077-9c80-dcd2f7178498 to active using exact-scoped/audited update; committed audit **qa_employee_activate 89d7b2d7-4aeb-4218-bbbb-b77dd45ef5cc**. Owner cdb6392e-04d6-4c7a-a586-c1b7c3262b0f / bob@gmail.com remains active, trial3/3. Current pair BOTH ACTIVE. Retain revocations/audit. No credentials, roles, bindings, estimates, allowances or deployments changed.
+
+Manual sign-in handoff on staffLoginTab9 is for **qa-staff@example.invalid** now ACTIVE. User should enter that email and employee password privately, then LOG IN. Next verify exact DOM data-principal employee:effbf718... and workspace load to close hosted reactivation acceptance. Remaining owner-disable/employee-block and owner-reactivation-preserves-individual-restriction cases still pending. No unchanged local/monthly/PDF/top-up reruns. Preserve main/production/original account/QA Head Office role; no Spexi/payment/deployment. Containing commit interim checkpoint.
+
+---
+
 # November 5 — Hosted employee normal login and stale-session blocking PASS; disabled-login handoff PENDING
 
 User completed manual normal sign-in. Fresh measuring workspace loaded; DOM meta aqAccountId verified account cdb6392e-04d6-4c7a-a586-c1b7c3262b0f and data-principal **employee:effbf718-947e-4077-9c80-dcd2f7178498**. /api/account/profile confirmed exact QA TEST FICTIONAL HOSTED ACCESS NOV05 business, owner bob@gmail.com, active trial3/3, bonus0/0, complimentary0. This is verified hosted normal employee authentication for **qa-staff@example.invalid**; no injection/bypass.
