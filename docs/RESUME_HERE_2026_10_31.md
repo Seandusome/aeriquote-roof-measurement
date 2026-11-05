@@ -1,3 +1,21 @@
+# November 5 — QA pair CREATED; verified employee email; normal employee sign-in handoff PENDING
+
+New pair in isolated recovery:
+- Owner cdb6392e-04d6-4c7a-a586-c1b7c3262b0f / **bob@gmail.com**, QA TEST Hosted Access Owner, company QA TEST FICTIONAL HOSTED ACCESS NOV05, active trial, limits3/3. User chose this actual email during signup; proposed qa-hosted-owner-nov05-2026@example.invalid was not created. Do not silently change it.
+- Employee effbf718-947e-4077-9c80-dcd2f7178498 / **qa-staff@example.invalid**, QA TEST FICTIONAL Hosted Access Employee. User set password directly and clicked CREATE EMPLOYEE. Earlier long proposed employee email was not used. Browser employee-management page and exact read-only DB identity verified actual short email.
+
+Baseline: both active; zero estimates, revisions, allowances, monthly/subscription/dealer usage, drafts, property sessions and save receipts. Trial lookup/estimate limit3. Sole QA Head Office role remains c417b9a2-51ea-4816-84da-1e597a7de98d. Original account/bindings unchanged.
+
+Owner's normal Manage Employees DISABLE control successfully showed employee Disabled. Logged owner out before attempting normal employee authentication. One secure combined credential submission returned generic rejection, but exact submitted email was not independently verified; **inconclusive for disabled employee access**. Do not label hosted employee password/sign-in checks PASS.
+
+Restored employee active through strictly scoped/audited SQL after exact service/database/owner/employee assertions. Audit qa_employee_activate ID03e36ee3-d4b4-4147-89cc-382aa4cc0208 retained. No credential/allowance/data writes. Next email-only secure request visibly filled **sdusome@diitalk.com**, not qa-staff@example.invalid. Screenshot caught this before requesting password; no password-only request or second login submission followed. This shows selected/filled value only, not proof of every historical login cause.
+
+Next step: manual cloud-browser handoff on normal /dealer-login (tab9 staffLoginTab). User must clear full email field, type **qa-staff@example.invalid**, enter the employee password privately and click LOG IN. Do not put passwords in chat, repository or tool output; do not inject sessions/cookies or use service secrets. Verify authenticated account ID equals owner cdb6392e and account type employee / employee ID effbf718 before more tests. Browser tabs share cookies; any necessary status changes while employee signed in can use exact-scoped administrative updates with audit and normal revocation semantics, not authentication bypass. Record that mechanism transparently.
+
+All remaining hosted rejection/reactivation/owner restriction/data invariance cases still pending actual verified normal employee login. No unchanged local/monthly-rollover tests repeated. No deployment/payments/Spexi/new feature. Recovery auto-deploy verified OFF earlier this assignment; database bindings and QA Head Office role untouched. Current employee restored active, owner active; audit and revocations retained. Save containing documentation commit as interim checkpoint, continue after manual login.
+
+---
+
 # November 5 — New QA owner signed in; employee credential creation handoff PENDING
 
 User completed the prepared signup normally in browser. Actual submitted/created owner email is **bob@gmail.com**, not the proposed qa-hosted-owner-nov05-2026@example.invalid (which still has no match). Do not silently substitute the proposed email in authentication or notes.
