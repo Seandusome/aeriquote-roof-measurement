@@ -1,3 +1,23 @@
+# November 5 — Hosted QA credential setup prepared; owner signup handoff PENDING
+
+Resumed daed21f5. Sean now explicitly permits creating one clearly fictional owner/employee pair in isolated recovery if existing usable credentials are unavailable. No existing hosted owner/employee credentials available. No passwords may appear in chat/logs/repository. Use normal authentication only.
+
+Recovery service aeriquote-commercial-test / srv-db5a2g5ckfvc739fui70 and Shingle Guard workspace verified. Auto-deploy directly checked OFF (no/off). Before email availability query, asserted service ID and DATABASE_URL host dpg-dbj4f7lg1s2s73eob8t0-a / database aeriquote_recovery_qa. Read-only query found zero owner/employee matches for each proposed email:
+- Owner: **qa-hosted-owner-nov05-2026@example.invalid**
+- Employee: **qa-hosted-employee-nov05-2026@example.invalid**
+
+Sole existing QA Head Office role c417b9a2-51ea-4816-84da-1e597a7de98d unchanged. Original sdusome@diitalk.com and all bindings unchanged. No account was created and no hosted settings were changed during preparation before handoff.
+
+Normal signup page prepared in cloud browser tab8 at https://aeriquote-commercial-test.onrender.com/site/trial-signup.html. Prefilled noncredential labels: name QA TEST Hosted Access Owner; business QA TEST FICTIONAL HOSTED ACCESS NOV05; Canada. Email and Create Password remain blank. User must enter exact proposed owner email and a new password directly in browser, then CREATE FREE ACCOUNT. Signup also accepts displayed terms, so user performs submission. BrowserAuth cannot create accounts; do not use it for credential creation, do not manufacture a known password or inject a session.
+
+Next: inspect user's completed signup state normally; do not inspect entered password. Verify new identity/fictional company in exact QA database. Navigate owner employee management, prepare QA TEST FICTIONAL Hosted Access Employee and exact proposed employee email for user-controlled credential creation. Do not change any pre-existing credentials. Then normal secure owner/employee/Head Office sign-ins as needed, with exact email verification. Owner/employee can have no other business memberships. Record starting active statuses, plan/allowance and estimate/measurement fingerprints before tests; restore access settings afterward while retaining audit and revocations. Do not change Head Office role.
+
+Pending hosted acceptance: individually disabled employee normal login and stale session blocked; activation permits fresh login; owner-disable blocks employees; owner-reactivate preserves individual restriction; rejected actions preserve estimates/measurements/allowances. No unchanged local or monthly-rollover reruns. Prior local PASS remains valid; hosted cases are not yet PASS. No deployments/payments/Spexi/clock/billing/infrastructure changes. Completed top-up/PDF work preserved.
+
+Containing documentation commit is interim checkpoint for secure manual credential-creation handoff, not a completed pair/test claim. Continue the authorized task after user finishes that step.
+
+---
+
 # November 5 — Remaining employee cases LOCAL PASS; hosted credential limit recorded; PAUSED
 
 Resumed **8afeeda8**. Read [remaining employee-access report](QA_EMPLOYEE_ACCESS_REMAINING_2026_11_05.md), report commit afe769ca. Focused reproduction retained under docs/qa/employee-access-2026-11-05/ (copy into scripts/ of isolated deployed194c435b checkout to run).
