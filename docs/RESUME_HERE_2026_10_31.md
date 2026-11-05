@@ -1,3 +1,17 @@
+# November 5 — Hosted employee access checks COMPLETE within documented scope; RESTORED / PAUSED
+
+Read [hosted employee-access report](QA_HOSTED_EMPLOYEE_ACCESS_2026_11_05.md), created ae5691e1. Actual new QA pair: owner **bob@gmail.com** (cdb6392e-04d6-4c7a-a586-c1b7c3262b0f), QA TEST Hosted Access Owner / company QA TEST FICTIONAL HOSTED ACCESS NOV05; employee **qa-staff@example.invalid** (effbf718-947e-4077-9c80-dcd2f7178498), QA TEST FICTIONAL Hosted Access Employee. User created both passwords privately through normal browser forms. Unused long proposed emails were not created. Do not substitute original sdusome@diitalk.com.
+
+**Hosted PASS:** normal employee login with exact rendered employee principal; disabling blocks existing session; controlled manual disabled login rejected; reactivation permits fresh normal login with exact same employee principal; owner disable blocks already authenticated active employee; owner reactivation leaves individual employee disable intact, followed by expected controlled manual rejection. Stale ACTIVATE form without valid login redirected and did not change status. No session injection or auth bypass. Initial employee disable used owner UI; subsequent precisely scoped admin SQL changes were audited and followed normal revocation semantics because browser tabs share sign-in cookies. This is guard/normal-auth validation, not a rerun of every admin UI.
+
+**Starting settings restored and independently fingerprinted:** both ACTIVE, trial3/3, no complimentary/bonus/brand row. Still0 estimates/revisions/usage/drafts/property sessions/save receipts; every domain fingerprint identical to baseline. Existing sole QA Head Office role c417b9a2-51ea-4816-84da-1e597a7de98d unchanged. Seven QA audit rows retained (employee activate3/disable2, owner activate1/disable1), employee revocation version4 retained. Final restore audit1024e874-f173-467d-b02c-1e2f8cdfd90c. Old sessions must remain revoked. Ended signed out.
+
+**Limits:** hosted data invariance is empty-state only; no hosted estimate-save/nonempty-measurement rejection attempt or separate fresh employee login while owner disabled. Prior passing local populated-data/normal-login tests retained, not repeated. Raw submitted credentials not logged; two controlled manual rejections use known disabled states and preceding exact-principal successful logins. Earlier unverified-email generic failure excluded. No further final login after cleanup required to duplicate passed activation→normal-login evidence.
+
+Recovery auto-deploy directly verified **OFF** at completion (no/off), exact service/isolated DB mapping asserted. Database bindings, original account/password, main/production/customer data and QA Head Office role unchanged. No application defect/fix, feature, deployment, payments, Spexi, provider activity, hosted-clock/billing change or unchanged local/monthly/top-up/PDF test rerun. Completed work preserved. Containing documentation commit is final checkpoint; pause.
+
+---
+
 # November 5 — Hosted reactivation and owner-level blocking PASS; final restriction login pending
 
 Normal employee re-login after activation succeeded. Browser / loaded measuring workspace; DOM data-principal again exactly employee:effbf718-947e-4077-9c80-dcd2f7178498. Confirms hosted individual reactivation restores normal fresh-login access.
