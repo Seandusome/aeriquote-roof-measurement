@@ -1,3 +1,21 @@
+# November 5 — Original Head Office account FOUND ACTIVE; isolation cause established; READ-ONLY / PAUSED
+
+Read [full evidence and proposed correction](QA_HEAD_OFFICE_IDENTITY_LOCATION_2026_11_05.md), recorded3ee28ecb. Exact email **sdusome@diitalk.com**. No more login attempts or password requests.
+
+**Where it is:** Original resource dpg-db019ijncjis7383g3a0-a / aeriquote_database contains Sean's account58279332-0996-4bdd-9a6c-e202f40c5c0c, active, createdOctober2, with recorded Head Office admin role. Independent connector SELECTs were read-only and scoped to that identity/role. No customer estimates, hashes or secrets read.
+
+**Why recovery cannot find it:** Confirmed actual recovery Gunicorn master/worker58/59 in instance t99jq use dpg-dbj4f7lg1s2s73eob8t0-a / aeriquote_recovery_qa, matching shell and service srv-db5a2g5ckfvc739fui70, live194c435b. Read-only SQL again found0 owners for the correct email,0 for original account ID and0 QA admin roles. Role migration marker exists.
+
+October31 isolation deliberately switched recovery away from the formerly shared original database to a fresh QA-only database. Plan explicitly prohibited copying real accounts/passwords; implementation seeded fictional fixtures only. Account remains in original database: no evidence of its deletion. Head Office authorization recognizes the exact email/role only after a local active account authenticates; schema/role migrations do not create/copy that account. A completed role-preservation migration on an empty database can have0 roles. The trial reset/token cleanup paths reviewed do not delete identities.
+
+**Proposed, NOT applied:** Preserve the real account and both database bindings. Use original environment for its real identity; if Head Office QA is needed, separately review/approve assigning the existing admin role to an existing fictional QA owner. No replacement real account, copied password or reconnection to production. A future approved QA-bootstrap acceptance check should verify a designated fictional admin. Original main is oldc049a04; its account/configuration evidence is not a latest-feature QA or launch sign-off.
+
+**Verified recovery auto-deploy OFF** through Render get_service. Main's existing deployment/settings untouched. No credentials, roles, account settings, DB bindings or deployments changed. No login attempts, retries, password prompts or broad regression runs. Earlier autofill origin remains unproved; earlier programmatic credential-field comparisons were invalid due secure browser masking, while screenshot visually confirmed the correct email. Do not attribute every previous failure to a typo or claim successful dashboard access.
+
+Documentation-only checkpoint is containing commit. Top-up/PDF evidence preserved. Pause and report proposal before any account/infrastructure changes.
+
+---
+
 # November 5 — Head Office login rejection investigated; disposable purchase preview ready; PAUSED
 
 Resumed4673dfe7. No application changes, deployment, credential reset/account repair, customer-data changes, payments or Spexi work.
