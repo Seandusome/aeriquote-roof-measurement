@@ -1,3 +1,19 @@
+# November 5 — Head Office controls checked; QA settings RESTORED; PAUSED
+
+Resumed **06aeb288**. Read [Head Office control report](QA_HEAD_OFFICE_CONTROLS_2026_11_05.md) for starting/final values, evidence and live/local boundaries. Normal hosted sign-in used only **qa-browser-oct31-2026@example.invalid**; original **sdusome@diitalk.com** remains in the original database and was not used/changed.
+
+Live PASS: exact-account dashboard/credit search and profile details; one25/25 extra-credit grant and refresh with one audit; complimentary200 monthly label/persistence with Basic unchanged; business disable/reactivate, monthly-off on disable and remaining off after reactivation; SQL owner/employee revocation state; another fictional business's estimate and revision-history endpoints returned Estimate not found; Log Out followed by fresh dealer/credit dashboard requests redirected to login.
+
+Target fictional snow owner cf26ec4b-b649-4983-bd35-a4d7c2e773a9 / qa-isolation-snow-basic-aa5b2061-0@example.invalid and employee qa-isolation-employee-aa5b2061@example.invalid. Recorded and restored: active owner/employee, Basic, absent allowance row (effective complimentary off/brand none/bonus0/0), **5 estimates /2 revisions retained**. Restoration transaction asserted exact service/DB/account/current25/25 state and counts, removed only the test-created allowance row and added explicit qa_restore audit. Original grant/configure/disable/reactivate audit and session revocations retained; never restore revoked sessions. Independent read-only SQL plus browser reload verified restored settings.
+
+Disposable local deployed194c435b checks PASS: existing targeted account-credit suite (duplicate-operation retry, both monthly channels and shared employee limits, Edmonton boundary/rollover, no reset on resave, session revocation); additional actual normal-password-login fixture (owner/employee rejection while disabled, fresh logins after reactivation, individual employee disable/activate, Head Office estimate/privacy denial, logout). Reproduction saved under docs/qa/head-office-2026-11-05/. No session injection in hosted environment or new normal-auth fixture.
+
+Limits: hosted owner/employee password sign-ins and individual employee toggle not separately browser-tested; covered locally through actual routes. Monthly rollover simulated locally; live refresh verified, exact same-operation POST replay local only. No real imagery/quota exhaustion or calendar change.
+
+Recovery service/database assertions and final Render connector directly verify **auto-deploy OFF** (no/off). Both bindings, main, production, customer data, passwords and deployment settings untouched. No deployment, Spexi/payments, confirmed defect fix, new feature or full audit. Existing completed top-up/PDF code/evidence preserved. Ended signed out. Containing commit is checkpoint; pause.
+
+---
+
 # November 5 — Normal QA Head Office sign-in and dashboard VERIFIED; PAUSED
 
 Sean explicitly approved one normal sign-in using qa-browser-oct31-2026@example.invalid through secure browser authentication. Email-only secure entry initially showed sdusome@diitalk.com twice; no password request or login submission occurred for those mismatched entries. On continuation, screenshot visually verified the complete exact QA email qa-browser-oct31-2026@example.invalid before a password-only secure prompt explicitly bound to that identifier.
