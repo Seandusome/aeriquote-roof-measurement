@@ -1,3 +1,19 @@
+# November 5 — Normal QA Head Office sign-in and dashboard VERIFIED; PAUSED
+
+Sean explicitly approved one normal sign-in using qa-browser-oct31-2026@example.invalid through secure browser authentication. Email-only secure entry initially showed sdusome@diitalk.com twice; no password request or login submission occurred for those mismatched entries. On continuation, screenshot visually verified the complete exact QA email qa-browser-oct31-2026@example.invalid before a password-only secure prompt explicitly bound to that identifier.
+
+One normal password submission succeeded: browser redirected to the authenticated measurement workspace at /, showing ADMIN DASHBOARD and LOG OUT. Clicking ADMIN DASHBOARD loaded https://aeriquote-commercial-test.onrender.com/head-office/dealers with title AeriQuote | Admin Dashboard, Overview, fictional QA account table, support/storage navigation and credit-management link. Eleven labelled QA accounts were excluded from customer totals. Dashboard access is now end-to-end PASS for the fictional QA Head Office account; this does not assert that the original real identity can sign in to isolated recovery.
+
+No password/credential, account setting, role, database binding or deployment-setting changes in this sign-in follow-up. Normal authentication only; no session injection or bypass. No customer-data writes, measurement/save/purchase actions, payment or Spexi work. Completed top-up/PDF evidence preserved without rerunning tests. Recovery auto-deploy was verified OFF in the preceding grant session; not freshly inspected in this browser-only follow-up. Original real account and production remain untouched.
+
+Exact QA login: https://aeriquote-commercial-test.onrender.com/dealer-login
+Head Office dashboard: https://aeriquote-commercial-test.onrender.com/head-office/dealers
+QA account: **qa-browser-oct31-2026@example.invalid**. Use its existing password.
+
+Containing documentation commit is the checkpoint. Leave the verified dashboard open and pause.
+
+---
+
 # November 5 — Approved fictional QA Head Office role GRANTED; dashboard login pending
 
 Sean explicitly approved granting Head Office access to an existing fictional QA account after checking its data. Original sdusome@diitalk.com identity/password and both database bindings must remain unchanged. No new account or credential reset authorized.
