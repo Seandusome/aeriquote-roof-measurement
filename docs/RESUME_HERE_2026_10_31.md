@@ -1,3 +1,37 @@
+# November 5 — Head Office login rejection investigated; disposable purchase preview ready; PAUSED
+
+Resumed4673dfe7. No application changes, deployment, credential reset/account repair, customer-data changes, payments or Spexi work.
+
+## Head Office login findings
+
+- Live browser verified https://aeriquote-commercial-test.onrender.com/dealer-login loads the email/password form.
+- Head Office destination is /head-office/dealers. Live unauthenticated navigation redirects to /dealer-login. No separate Head Office sign-in form was found; do not direct Sean to /setup-dealer (account creation) or invent /admin-login.
+- Source at checkpoint4673dfe7 grants Head Office only to an active authenticated owner matching sdusome@diitalk.com (or explicit admin role). Authentication happens before that authorization check.
+- Initial secure email/password attempt returned the normal rejection. Sean reported the wrong email was used; that attempt is explicitly inconclusive for his requested identity. Do not reuse it as evidence that sdusome@diitalk.com credentials failed.
+- Then used secure email-only fill followed by a password-only request explicitly identifying sdusome@diitalk.com. Secure values were not returned; email readback was protected/redacted. Browser again showed “Email or password is incorrect.” at /dealer-login. This establishes rendered rejection, not a proven raw submitted-email audit or a wrong-password diagnosis.
+- Reviewed handler returns that message if active owner/employee verification conditions do not succeed; missing/incorrect identity, inactive account or verifier rejection are not distinguished in the UI. Successful authentication sets session and redirects. Current evidence does not support a cookie/redirect repair, password reset or account recreation.
+- No repeated guesses, credential values/hashes, request bodies, cookies, email counters or customer records were inspected. No live diagnostics enabled, env changes or deployment.
+- Root cause remains unresolved. Next diagnostic requires read-only active/dealer/employee identity/status and authorization metadata in the intended recovery database, correlated with one securely identified attempt if needed. Never run the historical identity-repair script or alter credentials merely because the UI is generic.
+
+## Working purchase preview
+
+- Actual checkpoint4673dfe7 purchase template and existing disposable fixture used locally. Temporary SQLite only; seeded fictional owner purchase-ca@example.invalid, active Basic policy, monthly25/Bonus3/purchased0. Real fixture credential verification returned302 and /qa/purchases returned200.
+- Tested real server-side start/pending/failure/retry/success via Flask test client: pending/failure/retry leave purchased0; success adds25; three duplicate success replays leave25. No payment/provider calls.
+- Exported the five actual rendered screen states into a self-contained interactive review copy. Its controls simulate one purchase entirely in browser memory; no backend connection, card fields, network requests, real account/balance or money. This is a screen-review preview, not a deployed or authenticated hosted QA application. Hidden form tokens were stripped. Reopening/reloading resets the preview to the initial fictional state.
+- Browser verified start→pending→failure→retry→success and purchased25. Latest start view reopened for Sean, with clear fictional identity and SIMULATION MODE. UI is the existing purchase screen; only review identity labels and one-scenario button limits are added in the exported copy.
+- Durable deliverable: AeriQuote_Purchase_Preview.html, Library ID libfile_dc4edf6fef788191993ca14b74be862b. [Open saved preview](https://chatgpt.com/library?file_id=libfile_dc4edf6fef788191993ca14b74be862b&account_id=personal). Download and double-click the HTML file in a desktop browser; no login/server needed. Click Start simulated purchase, then simulated success/failure; retry is available after failure.
+- Temporary cloud-browser review tab was opened at http://terminal.local:4173/ and marked deliverable. This is a transient internal preview address, not a public deployment or a URL to use in Sean's ordinary browser. Saved HTML remains the independent opening method. Actual hosted /qa/purchases remains blocked by design; Head Office is not a dealer owner and must not use the purchase fixture.
+
+## Isolation / state
+
+Render get_selected_workspace returned no selected workspace; **auto-deploy UNVERIFIED**. No workspace selected or Render configuration changed. Do not claim current OFF from historical notes. Main, production, hosted recovery database, account credentials/customer data and existing top-up/PDF work remain untouched. Prior test evidence retained; no broad audit rerun.
+
+Preview preparation encountered runtime mismatch: managed preview's dev sandbox lacked the Python executable/dependencies. No application guards were weakened to work around it; discarded runtime gateway was never delivered. Final supported static preview serves the self-contained browser-only copy. Source Python fixture ran in isolated local runtime. No sites registration, source synchronization, publish or deploy operation performed.
+
+Checkpoint is the containing documentation commit. Pause. Login root cause remains pending a properly scoped read-only account-state inspection; do not silently reset or change the requested identity.
+
+---
+
 # November 5 — Strengthened PDF browser assertions PASS; launch checklist saved; PAUSED
 
 Resumed **9a720bd4**. Tested source **d3bab94afcd499627f4c8be020c3aec06b070bf1** adds only a focused CI workflow. No application changes, new product features, Spexi work, Stripe integration, deployment, customer-data or hosted-balance changes.
