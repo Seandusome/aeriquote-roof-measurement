@@ -1,0 +1,85 @@
+--- a/app.py
++++ b/app.py
+@@ -3040,6 +3040,12 @@
+  else if(linearReport){prop=`<div class="metric-grid"><div class="metric">Linear Measurement<b>${Number(snap.linearFeet||calc.area).toFixed(1)} ft</b></div><div class="metric">Measurement Type<b>Linear</b></div></div><div class="structure"><div class="structure-head"><b>Measured Service Length</b><b>${Number(snap.linearFeet||calc.area).toFixed(1)} linear ft</b></div><div class="small">Measured point-to-point on the property aerial. Only the measured service length is included in this quote.</div></div>`}
+  else {prop=`<div class="metric-grid"><div class="metric">${snowReport?'Service Area':'Roof Area'}<b>${fmt(calc.area)} ft²</b></div><div class="metric">${snowReport?'Areas in Quote':'Roofs in Quote'}<b>${manualUsed?reportManual.length:reportStructures.length+(hybridUsed?reportManual.length:0)}</b></div></div>`;
+  if(manualUsed){prop+=`<div class="structure"><div class="structure-head"><b>${snowReport?'Manual Area Measurement':'Dealer Manual Measurement'}</b><b>${fmt(reportManualTotal)} ft²</b></div><div class="small">${snowReport?'Only the service areas selected for this property are included in this estimate.':'Only the shingle roof planes traced by the dealer are included in this estimate.'}</div></div>`}else{reportStructures.forEach((st,i)=>{let ps=structurePitchSummary(st);prop+=`<div class="structure"><div class="structure-head"><b>${snowReport?(i===0?'Primary Service Area':'Additional Area '+i):(reportStructures.length>3?'#'+(i+1)+' · ':'')+st.label}</b><b>${fmt(st.total_roof_sqft)} ft²</b></div><div class="small">${snowReport?`Automatic area measurement • ${st.imagery_quality||'—'} quality`:`${st.manually_measured?roofMeasurementSourceLabel(st):'Google measured'} • ${ps.complex?`Multiple roof pitches ${ps.detail}`:`Pitch ${ps.label}`}${st.manually_measured?'':` • ${st.imagery_quality||'—'} quality`}`}</div></div>`});if(hybridUsed){reportManual.forEach((p,i)=>{prop+=`<div class="structure"><div class="structure-head"><b>${snowReport?(reportManual.length===1?'Additional Service Area':'Additional Service Area '+(i+1)):(reportManual.length===1?'Added Roof':'Added Roof '+(i+1))}</b><b>${fmt(p.surface_sqft)} ft²</b></div><div class="small">${snowReport?'Manual area measurement':`Dealer traced • ${p.pitch_degrees.toFixed(1)}° pitch used`}</div></div>`})}}}
++ const namedSample=roofSampleSections(snap);
++ if(namedSample.length){
++  el('rEstimateTitle').textContent='Sample — Fictional QA Estimate';
++  prop='<div class="metric-grid"><div class="metric">Total Roof Area<b>'+fmt(calc.area)+' ft²</b></div></div>'
++    +namedSample.map(({label,roof})=>'<div class="structure"><div class="structure-head"><b>'+escapeHistory(label)+'</b><b>'+fmt(roof.surface_sqft)+' ft²</b></div><div class="small">Pitch '+escapeHistory(manualRoofPitchLabel(roof.pitch_degrees))+'</div></div>').join('');
++ }
+  el('rProperty').innerHTML=prop;
+  if(el('reportPropertyImageNote'))el('reportPropertyImageNote').textContent=linearReport?'Linear service length measured using available aerial imagery.':(areaReport?'Service area measured using available aerial imagery.':(snowReport?'Service area measured using available aerial imagery.':'Roof measured using available aerial imagery.'));
+ 
+@@ -3052,7 +3058,8 @@
+  else if(areaReport){price+=`<div class="line"><span>${currentBusinessType()==='paving'?'Paving & Sealcoating':(currentBusinessType()==='pressure'?'Pressure Washing':currentBusinessType()==='landscaping'?'Landscaping Service':'Area Service')} — ${fmt(Number(snap.areaSqFt||calc.area))} ft² × ${money(calc.price)}</span><b>${money(calc.subtotal)}</b></div>`}
+  else if(linearReport){price+=`<div class="line"><span>Linear Service — ${Number(snap.linearFeet||calc.area).toFixed(1)} ft × ${money(calc.price)}</span><b>${money(calc.subtotal)}</b></div>`}
+  else if(manualUsed){
+-   price+=`<div class="line"><span>${snowReport?'Snow Removal Service — Manual Area Measurement':'Roofing Service — Manual Measurement'}</span><b>${money(calc.subtotal)}</b></div>`;
++   const service=namedSample.length?'Roofing sections A–C · '+money(calc.price)+' / ft²':snowReport?'Snow Removal Service — Manual Area Measurement':'Roofing Service — Manual Measurement';
++   price+=`<div class="line"><span>${service}</span><b>${money(calc.subtotal)}</b></div>`;
+  }else{
+    const totalArea=calc.area||1;
+    structures.forEach((st,i)=>{
+@@ -3202,12 +3209,20 @@
+  return{x:frame.x+frame.width/2+(q[0]-c[0])*frame.width/view.width,y:frame.y+frame.height/2+(q[1]-c[1])*frame.height/view.height};
+ }
+ 
++function roofSampleSections(snap){
++ const roofs=snap?.manualPlanes||[];
++ return window.aqFictionalRoofSample&&snap?.businessType==='roofing'&&snap?.measureSource==='manual'
++  &&roofs.length===3&&roofs.every(roof=>roof.qa_sample_label&&roof.pitch_confirmed)
++  ?roofs.map((roof,i)=>({roof,label:String.fromCharCode(65+i)+' · '+roof.qa_sample_label})):[]; 
++}
++
+ function savedRoofOutlineImage(snapshot){
+  const snap=activeSavedDiagramSnapshot(snapshot||{});
+  if(snap.businessType!=='roofing'||snap.measurementMode!=='auto')return null;
+  const rings=[...(snap.structures||[]).map(roof=>roof.outline),...(snap.manualPlanes||[]).map(roof=>roof.points)]
+   .filter(ring=>Array.isArray(ring)&&ring.length>=3)
+   .map(ring=>ring.map(point=>[Number(point.lat??point[0]),Number(point.lng??point[1])]));
++ const namedSample=roofSampleSections(snap);
+  const points=rings.flat();
+  if(!points.length||points.some(p=>p.some(v=>!Number.isFinite(v))))return null;
+  const lat=points[0][0],lon=points[0][1],cos=Math.cos(lat*Math.PI/180);
+@@ -3216,14 +3231,26 @@
+  const left=Math.min(...xs),top=Math.min(...ys),w=Math.max(...xs)-left,h=Math.max(...ys)-top;
+  if(!(w>0&&h>0))return null;
+  const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=760;
+- const ctx=canvas.getContext('2d'),scale=Math.min(1160/w,570/h);
++ const ctx=canvas.getContext('2d'),scale=Math.min(1160/w,510/h);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,1400,760);
+  ctx.fillStyle='#122a40';ctx.font='bold 38px Arial';ctx.fillText('Saved roof outline',54,58);
+  ctx.fillStyle='#41576b';ctx.font='26px Arial';ctx.fillText('Plan view · Imagery omitted',54,718);
+- projected.forEach(ring=>{
+-  ctx.beginPath();ring.forEach(([x,y],i)=>ctx[i?'lineTo':'moveTo'](700+(x-left-w/2)*scale,386+(y-top-h/2)*scale));
++ projected.forEach((ring,i)=>{
++  ctx.beginPath();ring.forEach(([x,y],i)=>ctx[i?'lineTo':'moveTo'](700+(x-left-w/2)*scale,360+(y-top-h/2)*scale));
+   ctx.closePath();ctx.fillStyle='#dceef1';ctx.fill();ctx.strokeStyle='#186675';ctx.lineWidth=7;ctx.lineJoin='round';ctx.stroke();
++  if(namedSample.length){
++   const x=ring.reduce((n,p)=>n+p[0],0)/ring.length,y=ring.reduce((n,p)=>n+p[1],0)/ring.length;
++   ctx.fillStyle='#122a40';ctx.font='bold 42px Arial';ctx.textAlign='center';
++   ctx.fillText(String.fromCharCode(65+i),700+(x-left-w/2)*scale,374+(y-top-h/2)*scale);
++  }
++
+  });
++ if(namedSample.length){
++  ctx.textAlign='left';ctx.fillStyle='#122a40';ctx.font='bold 27px Arial';
++  namedSample.forEach(({label,roof},i)=>ctx.fillText(label+' · '+manualRoofPitchLabel(roof.pitch_degrees),54+i*440,676));
++  ctx.font='bold 30px Arial';ctx.fillText('N',1284,65);
++  ctx.beginPath();ctx.moveTo(1295,79);ctx.lineTo(1275,121);ctx.lineTo(1295,112);ctx.lineTo(1315,121);ctx.closePath();ctx.fill();
++ }
+  const image=new Image();image.alt='Saved roof outline on a plain background';image.src=canvas.toDataURL('image/png');
+  Object.assign(image.style,{display:'block',width:'100%',height:'100%',objectFit:'contain'});
+  return image;
+@@ -3263,7 +3290,7 @@
+   [...el('rProperty').children].forEach(n=>left.push(clone(n)));
+   right.push(title('ESTIMATE SUMMARY'));
+   [...el('rPricing').children].forEach(n=>right.push(clone(n)));
+-  const marketing=el('rMarketingPanel');if(marketing&&!marketing.classList.contains('marketingHidden')){const section=document.createElement('div');section.appendChild(clone(el('rMarketingHeading')));[...el('rMarketingBenefits').children].forEach(n=>section.appendChild(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))section.appendChild(clone(warranty));left.push(section)}
++  const marketing=el('rMarketingPanel');if(!roofSampleSections(quoteSnapshot).length&&marketing&&!marketing.classList.contains('marketingHidden')){const section=document.createElement('div');section.appendChild(clone(el('rMarketingHeading')));[...el('rMarketingBenefits').children].forEach(n=>section.appendChild(clone(n)));const warranty=el('rMarketingWarranty');if(warranty&&!warranty.classList.contains('marketingHidden'))section.appendChild(clone(warranty));left.push(section)}
+   const cta=report.querySelector('.cta');if(cta)right.push(clone(cta));
+   const street=el('rStreet');if(street&&street.style.display!=='none'&&street.complete&&street.naturalWidth){const image=clone(street);const fitted=expandedAerialSize(street.naturalWidth,street.naturalHeight,565,170);Object.assign(image.style,{display:'block',width:fitted.width+'px',height:fitted.height+'px',margin:'0 auto'});image.dataset.expandedStreetImage='true';const block=document.createElement('div');block.appendChild(image);block.appendChild(clone(el('rStreetMeta')));right.push(block)}
+   let continuation=false;

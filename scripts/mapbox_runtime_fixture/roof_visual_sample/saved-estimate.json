@@ -1,0 +1,151 @@
+{
+  "id": "8b9f2e49-1661-4fc2-9fc0-ce595c4fd898",
+  "created_at": "2026-11-07T23:01:38Z",
+  "version": "da4fbf3f2bf4cc9c2100c0784a1d03977528bab31c9373f60a753d1471f0b6c5",
+  "prior_revisions": 0,
+  "payload": {
+    "customer_name": "",
+    "customer_phone": "",
+    "customer_email": "",
+    "customer_notes": "",
+    "extra_service_description": "",
+    "extra_service_amount": 0,
+    "job_status": "Estimate",
+    "scheduled_date": "",
+    "completion_date": "",
+    "amount_paid": 0,
+    "address": "18 Fictional Roof Lane, Calgary, AB, Canada",
+    "total_area": 5366.774143361081,
+    "total_price": 4789.85,
+    "quote": {
+      "manualRoofWorkflow": true,
+      "roofScopeConfirmed": true,
+      "warrantyBrand": "",
+      "showWarrantyShield": true,
+      "structures": [],
+      "manualPlanes": [
+        {
+          "points": [
+            {
+              "lat": 50.9999,
+              "lng": -114.00023
+            },
+            {
+              "lat": 50.9999,
+              "lng": -113.99998
+            },
+            {
+              "lat": 51.00004,
+              "lng": -113.99998
+            },
+            {
+              "lat": 51.00004,
+              "lng": -114.00023
+            }
+          ],
+          "pitch_degrees": 22.62,
+          "surface_sqft": 3182.8425750080396,
+          "pitch_confirmed": true,
+          "manual_roof_qa": true,
+          "qa_sample_label": "Main roof"
+        },
+        {
+          "points": [
+            {
+              "lat": 51.00004,
+              "lng": -114.00014
+            },
+            {
+              "lat": 51.00004,
+              "lng": -114.00004
+            },
+            {
+              "lat": 51.00016,
+              "lng": -114.00004
+            },
+            {
+              "lat": 51.00016,
+              "lng": -114.00014
+            }
+          ],
+          "pitch_degrees": 33.69,
+          "surface_sqft": 1210.639084927448,
+          "pitch_confirmed": true,
+          "manual_roof_qa": true,
+          "qa_sample_label": "Cross-gable"
+        },
+        {
+          "points": [
+            {
+              "lat": 50.99993,
+              "lng": -113.99991
+            },
+            {
+              "lat": 50.99993,
+              "lng": -113.99981
+            },
+            {
+              "lat": 51.00004,
+              "lng": -113.99981
+            },
+            {
+              "lat": 51.00004,
+              "lng": -113.99991
+            }
+          ],
+          "pitch_degrees": 18.43,
+          "surface_sqft": 973.2924834255932,
+          "pitch_confirmed": true,
+          "manual_roof_qa": true,
+          "qa_sample_label": "Detached garage"
+        }
+      ],
+      "measureSource": "manual",
+      "adjustedArea": 0,
+      "measurementMode": "auto",
+      "linearPoints": [],
+      "linearFeet": 0,
+      "areaPoints": [],
+      "areaSqFt": 0,
+      "commercialAreas": [],
+      "businessType": "roofing",
+      "dealerCountry": "CA",
+      "commercialLinearRate": 0,
+      "commercialLinearSaved": false,
+      "landscapingCombined": false,
+      "landscapingAreaRate": 0,
+      "landscapingLinearRate": 0.85,
+      "pressureCombined": false,
+      "pressureAreaRate": 0,
+      "pressureLinearRate": 0.85,
+      "pavingCombined": false,
+      "pavingAreaRate": 0,
+      "pavingLinearRate": 0.85
+    },
+    "pricing": {
+      "estimatePeriod": "one_time",
+      "area": 5366.774143361081,
+      "price": 0.85,
+      "mode": "regular",
+      "disc": 0,
+      "subtotal": 4561.76,
+      "extraDescription": "",
+      "extraAmount": 0,
+      "discount": 0,
+      "taxBase": 4561.76,
+      "gst": 5,
+      "pst": 0,
+      "gstAmt": 228.09,
+      "pstAmt": 0,
+      "total": 4789.85,
+      "measurementMode": "auto",
+      "unit": "ft\u00b2"
+    },
+    "measurement_mode": "auto",
+    "linear_feet": 0,
+    "area_sqft": 0,
+    "street_meta": "Actual Street View",
+    "image_choice": "none",
+    "street_image_data": ""
+  }
+}
