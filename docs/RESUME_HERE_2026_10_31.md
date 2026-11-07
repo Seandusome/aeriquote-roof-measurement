@@ -1,3 +1,13 @@
+# Hosted disabled employee save passed — exact draft recovery inconclusive
+
+Resumed 79320fa8 in isolated recovery. Work QA Head Office Credits showed the fictional owner bob@gmail.com active on standard trial, complimentary off, with 0 extra measurements and 0 extra estimates. The same extra balance was observed immediately before and after the rejected attempt. Standard trial usage was not verified by this readout.
+
+The fresh owner-created Homeowner estimate at 2301 Ave C North, 115 had 44,309 ft² and $13,292.85. A first note was saved during setup, so the baseline for the disable attempt was one current estimate with the first note and one prior version. The earlier $4,978.30 estimate was kept as separate evidence. Employee typed “this is QA DISABLED SAVE CHECK — recover this exact line” and reported “Recovery copy saved for 24 hours.” Owner disabled qa-staff@example.invalid. One employee save returned “Your login expired. This estimate was not saved.” Owner history confirmed the same current estimate, first note, and exactly one prior version. Hosted extra credits remained 0/0.
+
+Owner reported reactivating the employee. After normal sign-in the employee reported two recovery draft entries, with the newer expiring 11/8/2026 at 3:22:47 PM. The notes field contained wording but was edited before the exact restored text could be compared. Exact draft recovery is inconclusive. No verified recovered save, resulting revision count, or post-success credit reading. Pause without another save. Prior newly typed note revision pass remains recorded separately.
+
+---
+
 # Fresh hosted draft recovery and credit comparison — awaiting QA Head Office sign-in
 
 Resumed 7f68ab91. Preserved the prior fictional estimate and its passed one-revision evidence. Opened the isolated recovery login in a separate tab from the old employee editor. These Work tabs share one browser profile. Use Work for QA Head Office, and two independent local profiles for owner and employee. A regular and an Incognito profile can serve as those two local sessions.
