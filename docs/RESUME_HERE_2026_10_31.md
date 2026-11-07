@@ -1,3 +1,11 @@
+# Draft card verified in disposable Chromium
+
+Tested exact workspace_drafts.js from d35aeca0a2e2612344d63e4df12147ea5310b144 (blob 89bffc6b1130ec670a14fca6fe91cf50b5df04d3), with the available local AeriQuote app snapshot and a fresh SQLite database. Chrome for Testing headless shell 151.0.7922.34 launched without the full Chromium socket blocker. Fictional roof vertices supplied to the native trace handler. Before screenshots use the earlier pending-save guard UI.
+
+1440px and 390px passed. The card was between the header and steps, within the viewport, and its heading had focus on blocked save. Exact message matched e17bc3e. Database snapshot unchanged on the blocked attempt, including estimates, revisions, draft and allowance counters. Keep working preserved the older draft payload and the open roof geometry. Successful save made one estimate and zero revisions, with one estimate allowance and zero lookup usage. Reopened via history and downloaded native single-page PDF at both widths. Stored area 889.6445511272713 ft², displayed as 890 ft², and USD 756.20 matched both PDF renders. Four before/after screenshots captured. Test used a local app snapshot and emulated phone viewport, not the entire hosted build or a physical phone. Undeployed; hosted Chaparral and provider configuration untouched.
+
+---
+
 # Compact recovery draft picker
 
 Resumed 1f914c5f. Sean's screenshot is the before reference: recovery copy text and actions above the header. Change d35aeca0 keeps the pending-choice guard and moves the picker below the header and before the steps. One “Unsaved draft found” card shows an expiry and address where the scoped draft detail supplies it. “Keep working on this estimate” is primary for an open roof trace and runs the existing separate-draft action. Restore remains available and Discard has distinct outlined red styling. The blocked save scrolls to the card and focuses its heading.
