@@ -1,3 +1,11 @@
+# November 7 — Two-session save test awaiting QA sign-in
+
+Resumed 987890fd. Work exposed one managed Chrome profile. Opened recovery /dealer-login for qa-staff@example.invalid. Secure sign-in prompt was declined, so employee sign-in remains pending. No authenticated owner or employee session verified. User received steps to sign in as fictional owner bob@gmail.com in a local Incognito window and open /dealer-employees without toggling access yet.
+
+No estimate opened or created, no draft edited, no access settings changed. Save rejection, revision and allowance checks, recovery and exactly-one-revision save all remain pending. Latest recorded pair baseline has zero saved estimates, so check for an existing fictional estimate after sign-in and create one baseline through normal QA controls if needed. Record baseline revision and allowances before editing. Once both sessions are verified and draft is ready, coordinate owner Disable, employee save attempt and baseline comparison, then owner Activate and normal employee login for draft recovery. Verify access restored and checkpoint results. Keep production, deployments, passwords, payments and Spexi out of scope.
+
+---
+
 # November 5 — Hosted rejected-save task BLOCKED by shared browser session; no QA mutations; PAUSED
 
 Resumed **c9f14429** for <=20-minute hosted rejected-save check requiring employee disable through **normal controls**. Stopped early on a concrete environment limitation, per instruction to checkpoint blockers rather than repeat login attempts.
