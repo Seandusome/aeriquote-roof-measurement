@@ -1,3 +1,13 @@
+# Fictional three-section roof PDF visual review
+
+Resumed 145e15ed, isolated SQLite and Chromium only. QA patch, test and exact saved record preserved in d876278f under scripts/mapbox_runtime_fixture/roof_visual_sample. Apply visual.patch after the prior fixture's runtime.patch to the same local app snapshot. Use the previous disposable fixture dependencies and grid, set AQ_FIXTURE_PASSWORD consistently in the fixture account seeder and browser runner, and use a fresh SQLite database. The browser supplied fictional vertices to the normal manual trace point/finish handlers, chose explicit pitches, and attached sample section names as QA metadata before the ordinary save. No hosted trace, aerial pixels, decorative roof lines or unsaved dimensions used.
+
+Saved and reopened estimate 8b9f2e49-1661-4fc2-9fc0-ce595c4fd898, current version da4fbf3f2bf4cc9c2100c0784a1d03977528bab31c9373f60a753d1471f0b6c5, zero prior revisions. Reopened geometry, names, pitches and full pricing matched before save. Main roof 3182.842575 ft² at 5/12, cross-gable 1210.639085 ft² at 8/12, detached garage 973.292483 ft² at 4/12. Exact total area 5366.774143 ft², common rate CAD 0.85/ft², subtotal CAD 4561.76, GST 5% CAD 228.09, PST zero, total CAD 4789.85. Independently recalculated amounts from saved areas. No saved edge dimensions.
+
+Both native exports marked “Sample — Fictional QA Estimate.” Single one page and Expanded two pages. All three final pages visually inspected. Expanded page one shows the saved A/B/C outline, north arrow and saved pitches; page two maps labels to quantities and common-rate pricing. Single includes diagram, matching labels, quantities and total. No aerial or Street View imagery. This is a visual sample with synthetic sections, not imagery-derived roof evidence. The prior one-section rectangular regression fixture remains separate. No deployment, no auto-deploy settings changed, no main/production/customer data or hosted Chaparral changes.
+
+---
+
 # Disposable provider runtime and native outline PDFs
 
 Resumed ccc1e686. QA-only fixture code and app patch preserved in b6f909ad under scripts/mapbox_runtime_fixture. App patch tested against the local app snapshot (base app.py Git blob c44cf290704f50549b8e9570bf0a5438cd673639) with exact d35aeca0 recovery module and Chromium headless. The patch is fixture material, not applied to the recovery branch app.py. Runtime harness binds localhost only and requires a disposable SQLite DB. Companion scripts reference the local /tmp/aq-mapbox-runtime layout, headless executable and vendored browser dependencies. Fixture account credential is supplied via AQ_FIXTURE_PASSWORD when reproducing from the saved harness. Grid image is a synthetic 640x640 PNG, not provider imagery.
