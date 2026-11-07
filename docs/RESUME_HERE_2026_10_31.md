@@ -1,3 +1,11 @@
+# Hosted KESTREL draft test — unexpected save, identity unverified
+
+Resumed c00b5c62. Owner history baseline for Homeowner at 2301 Ave C North, 115 showed 44,309 ft², $13,292.85, the saved QA RECOVERY CHECK note, and one previous version. Hosted Credits for bob@gmail.com showed standard trial and 0 extra measurements/0 extra estimates. Standard trial usage was not verified.
+
+Sean reported entering the previously unsaved KESTREL-6842 note and seeing “Recovery copy saved for 24 hours.” The owner window already showed the employee disabled before the requested access change. The exact principal of the Incognito save session was not verified. One save returned “Estimate saved. Recovery copy deleted.” Hosted extra balances remained 0/0. This is an unexpected outcome, not proof that a disabled employee can save. No recovery pass or resulting revision count verified. Preserve evidence, inspect owner history and Incognito role read-only, then restore active employee status through owner controls.
+
+---
+
 # Hosted disabled employee save passed — exact draft recovery inconclusive
 
 Resumed 79320fa8 in isolated recovery. Work QA Head Office Credits showed the fictional owner bob@gmail.com active on standard trial, complimentary off, with 0 extra measurements and 0 extra estimates. The same extra balance was observed immediately before and after the rejected attempt. Standard trial usage was not verified by this readout.
