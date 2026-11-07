@@ -1,0 +1,111 @@
+--- a/app.py
++++ b/app.py
+@@ -2078,7 +2078,8 @@
+  let ready;
+  try{
+   const surface=['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType());
+-  if(surface||d.manual_roof_only){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
++  if(d.provider==='mapbox')ready=await loadFallbackAerial(d.token,staging);
++  else if(surface||d.manual_roof_only){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
+   else if(d.fallback)ready=await loadFallbackAerial(d.token,staging);
+   else{
+    ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadRaster('/rgb/'+d.token,staging);
+@@ -2127,7 +2128,7 @@
+  const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,propertyCountryFromProvince(enteredProvince)].join(', ');
+ 
+  if(cc&&el('googleMatch'))el('googleMatch').textContent='Loading exact coordinates: '+authoritativeAddress;
+-const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!address){status('Enter API key and address.','error');return}
++const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if((!key&&!window.aqLocalMapbox)||!address){status('Enter API key and address.','error');return}
+  try{
+   status('Loading property…');showLoad(true);
+   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
+@@ -2135,10 +2136,13 @@
+   payload.business_type=currentBusinessType();
+   const requestKey=JSON.stringify(payload);if(loadProperty.pending?.key!==requestKey)loadProperty.pending={key:requestKey,id:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)};
+   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
++  if(d.provider==='mapbox'&&!window.confirm('Confirm the property and map pin before tracing.\n\nEntered: '+address+'\nMatched: '+d.formatted_address+'\nPin: '+d.center.latitude+', '+d.center.longitude+'\n'+(d.warnings||[]).join('\n'))){
++   status('Mapbox address and pin were not confirmed. Your previous measurements are unchanged.','warn');return;
++  }
+   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
+   try{
+     if(cc){if(verifyEl){verifyEl.style.display='block';verifyEl.style.color='#176b43';verifyEl.textContent='✓ Using exact dropped-pin coordinates — address matching bypassed.'}}
+-    else{
++    else if(d.provider!=='mapbox'){
+     const vr=await fetch('/mapbox-test?address='+encodeURIComponent(d.formatted_address||address)),vd=await vr.json();
+     if(verifyEl&&vr.ok&&vd.status==='warning'&&vd.nearby_same_number_alternatives?.length&&!skipAddressConflictOnce){
+       const alt=vd.nearby_same_number_alternatives[0],matched=d.formatted_address||address;
+@@ -2169,7 +2173,8 @@
+   resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
+   sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
+   let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))setPropertyRegion(prov);syncPropertyProvince()}
+-  el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
++  if(d.provider==='mapbox'){el('streetViewChoice').value='none';el('street').removeAttribute('src');el('street').style.visibility='hidden';el('streetMeta').textContent='Street imagery omitted'}else{el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
++  }
+   installPropertyImagery(prepared);
+   // Commercial surface measurements must never run the roof AutoMeasure path.
+   // Use the property satellite image, then activate the selected surface tool.
+@@ -3012,6 +3017,7 @@
+  el('rPhone').textContent=el('dealerPhone').value;if(el('rPhoneWrap'))el('rPhoneWrap').style.display=el('dealerPhone').value.trim()?'inline':'none';if(el('rDealerCompany'))el('rDealerCompany').textContent=dealerCompany;if(el('rDealerName'))el('rDealerName').textContent=(dealerName&&dealerName!==dealerCompany)?dealerName:'';if(el('rDealerEmail'))el('rDealerEmail').textContent=dealerEmail;if(el('rDealerEmailWrap'))el('rDealerEmailWrap').style.display=dealerEmail?'inline':'none';if(el('rDealerWebsite'))el('rDealerWebsite').textContent=dealerWebsite;if(el('rDealerAddress'))el('rDealerAddress').textContent=dealerAddress;if(el('rDealerAddressWrap'))el('rDealerAddressWrap').style.display=dealerAddress?'inline':'none';if(el('rDealerLogo')){const rdl=el('rDealerLogo'),dls=dealerLogoSrc();if(dls){rdl.src=dls;rdl.classList.remove('noDealerLogo')}else{rdl.removeAttribute('src');rdl.classList.add('noDealerLogo')}}if(el('rEstimateSubtitle'))el('rEstimateSubtitle').textContent=dealerCompany;if(el('rEstimateDealerSub'))el('rEstimateDealerSub').textContent='Prepared by '+dealerCompany;if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='commercial'?'Commercial Property Measurement & Estimate':currentBusinessType()==='paving'?'Paving & Sealcoating Measurement & Estimate':currentBusinessType()==='landscaping'?'Landscaping Measurement & Estimate':currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':currentBusinessType()==='snow'?'Snow Removal Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));applyDealerMarketing()
+ 
+  applyReportWarranty(snap,historicalMode);
++ if(window.aqLocalMapbox)el('streetViewChoice').value='none';
+  let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&!savedPropertyEditActive&&imageChoice==='auto')||useSavedStreet,useAerial=imageChoice!=='none';
+  if(el('streetPlaceholder'))el('streetPlaceholder').style.display=useStreet?'none':'flex';
+  if(el('customerMap'))el('customerMap').style.display=useAerial?'block':'none';
+@@ -3196,6 +3202,33 @@
+  return{x:frame.x+frame.width/2+(q[0]-c[0])*frame.width/view.width,y:frame.y+frame.height/2+(q[1]-c[1])*frame.height/view.height};
+ }
+ 
++function savedRoofOutlineImage(snapshot){
++ const snap=activeSavedDiagramSnapshot(snapshot||{});
++ if(snap.businessType!=='roofing'||snap.measurementMode!=='auto')return null;
++ const rings=[...(snap.structures||[]).map(roof=>roof.outline),...(snap.manualPlanes||[]).map(roof=>roof.points)]
++  .filter(ring=>Array.isArray(ring)&&ring.length>=3)
++  .map(ring=>ring.map(point=>[Number(point.lat??point[0]),Number(point.lng??point[1])]));
++ const points=rings.flat();
++ if(!points.length||points.some(p=>p.some(v=>!Number.isFinite(v))))return null;
++ const lat=points[0][0],lon=points[0][1],cos=Math.cos(lat*Math.PI/180);
++ const projected=rings.map(r=>r.map(([y,x])=>[(x-lon)*cos,lat-y]));
++ const xs=projected.flat().map(p=>p[0]),ys=projected.flat().map(p=>p[1]);
++ const left=Math.min(...xs),top=Math.min(...ys),w=Math.max(...xs)-left,h=Math.max(...ys)-top;
++ if(!(w>0&&h>0))return null;
++ const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=760;
++ const ctx=canvas.getContext('2d'),scale=Math.min(1160/w,570/h);
++ ctx.fillStyle='#fff';ctx.fillRect(0,0,1400,760);
++ ctx.fillStyle='#122a40';ctx.font='bold 38px Arial';ctx.fillText('Saved roof outline',54,58);
++ ctx.fillStyle='#41576b';ctx.font='26px Arial';ctx.fillText('Plan view · Imagery omitted',54,718);
++ projected.forEach(ring=>{
++  ctx.beginPath();ring.forEach(([x,y],i)=>ctx[i?'lineTo':'moveTo'](700+(x-left-w/2)*scale,386+(y-top-h/2)*scale));
++  ctx.closePath();ctx.fillStyle='#dceef1';ctx.fill();ctx.strokeStyle='#186675';ctx.lineWidth=7;ctx.lineJoin='round';ctx.stroke();
++ });
++ const image=new Image();image.alt='Saved roof outline on a plain background';image.src=canvas.toDataURL('image/png');
++ Object.assign(image.style,{display:'block',width:'100%',height:'100%',objectFit:'contain'});
++ return image;
++}
++
+ async function buildExpandedEstimatePDF(report){
+  // Reuse the approved map pixels. Never resize/refit Leaflet or alter quote data.
+  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
+@@ -3219,8 +3252,10 @@
+  const body=document.createElement('div');Object.assign(body.style,{paddingTop:'12px',height:(877-(body.offsetTop||0))+'px'});box.appendChild(body);body.style.height=(877-body.offsetTop)+'px';
+  const foot=document.createElement('div');Object.assign(foot.style,{position:'absolute',left:'24px',right:'24px',bottom:'14px',fontSize:'12px',display:'flex',justifyContent:'space-between'});const note=document.createElement('span');note.textContent=report.querySelector('.reportFoot')?.textContent||'';const number=document.createElement('span');number.dataset.pageNumber='true';foot.append(note,number);box.appendChild(foot);pages.push(box);bodies.push(body);return body}
+  try{
+-  const mapBody=page('PROPERTY AERIAL - MEASURED SERVICE AREAS');
++  const outline=!hasAerial?savedRoofOutlineImage(quoteSnapshot):null;
++  const mapBody=page(outline?'SAVED ROOF OUTLINE':'PROPERTY AERIAL - MEASURED SERVICE AREAS');
+   if(aerial){const legend=document.createElement('div');Object.assign(legend.style,{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px 14px',fontSize:'14px',paddingTop:'8px'});areas.forEach((a,i)=>{const item=document.createElement('div');item.textContent=(i+1)+'. '+(a.name||'Service Area')+' - '+fmt(a.sqft)+' ft²';legend.appendChild(item)});mapBody.appendChild(legend);const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);const fitted=expandedAerialSize(aerial.width,aerial.height,mapBody.clientWidth,mapBody.clientHeight-legend.offsetHeight-10);img.dataset.expandedAerial='true';Object.assign(img.style,{display:'block',width:fitted.width+'px',height:fitted.height+'px',margin:'0 auto'});mapBody.insertBefore(img,legend);await img.decode()}
++  else if(outline){outline.style.height='650px';mapBody.appendChild(outline);await outline.decode()}
+   else{const note=document.createElement('p');note.textContent='Property imagery omitted from this estimate.';mapBody.appendChild(note)}
+   const left=[],right=[];
+   const title=text=>{const n=document.createElement('div');n.className='reportTitle';n.textContent=text;return n};
+@@ -3256,6 +3291,10 @@
+  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false,onclone:(doc,copy)=>{
+   // html2canvas ignores object-fit. Fit the original pixels inside the same photo box,
+   // only in its export clone: no live layout, map, source URL or quote data changes.
++  if((el('streetViewChoice')?.value||'auto')==='none'){
++   const outline=savedRoofOutlineImage(quoteSnapshot),placeholder=copy.querySelector('#customerMapPlaceholder');
++   if(outline&&placeholder){placeholder.replaceChildren(outline);placeholder.style.background='#fff'}
++  }
+   const source=report.querySelector('#rStreet'),image=copy.querySelector('.reportStreet');
+   if(!image||!source?.complete||!source.naturalWidth||!source.naturalHeight||!image.clientWidth||!image.clientHeight)return;
+   const frame=doc.createElement('canvas');frame.width=image.clientWidth*2;frame.height=image.clientHeight*2;frame.className=image.className;frame.id=image.id;frame.style.cssText=image.style.cssText;
