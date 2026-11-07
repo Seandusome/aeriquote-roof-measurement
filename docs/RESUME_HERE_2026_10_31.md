@@ -1,3 +1,15 @@
+# November 7 — Hosted rejected-save baseline ready, owner disable pending
+
+Work signed in normally and rendered exact employee principal employee:effbf718-947e-4077-9c80-dcd2f7178498. Initial combined prompt landed in fictional owner session, verified by Manage Employees listing exact QA staff Active, then logged out and corrected via verified email and secure password prompt. Sean reported local Incognito owner view showing EMPLOYEES. Separate local owner action pending.
+
+Employee history initially empty. Created one fictional baseline through normal recovery UI at 2301 Ave C North, Saskatoon using test name QA TEST Fictional Two Session Save. One property lookup. Initial auto roof required review, so area-only creation was blocked by roof validation. Corrected Main House with traced roof and confirmed 5/12, saved image-free estimate. Saved history shows one current estimate and no earlier versions, timestamp 2026-11-07 19:56:36 UTC, 5,240 ft², CAD $4,978.30. Session counters after baseline: property lookups1, reports1. No real customer contact entered.
+
+Reopened current estimate via history and EDIT MEASUREMENTS / PRICE. Entered unsaved customer notes QA TEST Nov 7 - restore this unsaved revision once. UI displayed Recovery copy saved for 24 hours. Employee Work tab marked handoff and must stay open. Asked Sean to click DISABLE beside qa-staff@example.invalid in local owner Incognito and report Disabled, then keep it disabled until rejection verification. No disable observed, no rejected save attempted, no recovery or revision yet.
+
+Next: once Disabled confirmed, save via CREATE CUSTOMER ESTIMATE on existing employee editor, record UI and service log rejection. Check baseline in independent owner session before reactivation. Ask owner to ACTIVATE and verify Active, then normal employee login, recover draft, verify notes and save once. Confirm one added history revision and restore starting access. External Render Postgres read-only connector blocked by existing empty IP allowlist. Do not change networking. Session counters/history and logs are available, authoritative allowance proof still pending. No production/deploy/password/payment/Spexi changes.
+
+---
+
 # November 7 — Two-session save test awaiting QA sign-in
 
 Resumed 987890fd. Work exposed one managed Chrome profile. Opened recovery /dealer-login for qa-staff@example.invalid. Secure sign-in prompt was declined, so employee sign-in remains pending. No authenticated owner or employee session verified. User received steps to sign in as fictional owner bob@gmail.com in a local Incognito window and open /dealer-employees without toggling access yet.
