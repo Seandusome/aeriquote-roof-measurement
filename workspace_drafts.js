@@ -106,8 +106,19 @@
   }catch(e){paused=false;say('Recovery storage is unavailable. Changes have not reached the server. Keep this tab open.',true)}
  }
  async function prepareSave(){
-  if(paused||busy)return false;
   lastError=null;
+  if(busy)return false;
+  if(paused){
+   const panel=document.getElementById('workspaceRecoveryChoices');
+   if(panel){
+    const message='A recovery draft choice is pending. Choose Restore, Discard, or Start a separate draft.';
+    lastError=Object.assign(new Error(message),{status:428});
+    say(message+' Your measurements are still here.',true);
+    panel.scrollIntoView({block:'center'});
+    panel.querySelector('button')?.focus({preventScroll:true});
+   }
+   return false;
+  }
   if(await flush())return true;
   // A source consumed in another tab must not strand this tab's later edits.
   // Only an explicit Create retries under a fresh ID. Background autosave and
