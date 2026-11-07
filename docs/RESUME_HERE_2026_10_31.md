@@ -1,3 +1,11 @@
+# Chaparral save, reopen and native PDF verified
+
+Resumed 765976e6. The preserved trace was intact, and the live recovery UI explicitly said “Choose Restore, Discard or start a separate draft.” An older draft was listed. The earlier attempts had no estimate POST in hosted logs. Selected Start a separate draft without discarding the older draft or changing the trace. UI confirmed “Separate recovery draft ready.” One click on Create Customer Estimate then displayed “Estimate saved. Recovery copy deleted.” Render recorded one estimate POST with HTTP 200 at 22:10:59 UTC. The open draft-choice gate was the confirmed operational blocker. The caught JavaScript exception was not exposed by hosted logging. Resolved the gate through normal UI without a code change. The misleading generic connection message is a remaining UX issue.
+
+Owner history showed one current fictional Jamie Sample estimate and no previous versions at 218 Chaparral Place, Calgary. Reopened it from history and downloaded the native AeriQuote Single page PDF. Rendered and inspected the PDF. It shows one dealer-traced Main House, 1,679 ft², illustrative 5/12 (22.6°), $1,427.41 CAD and no property imagery. The native image-free layout shows placeholders and does not show the traced perimeter diagram. The standalone outline sample remains separate. Provider settings and deployments were not modified.
+
+---
+
 # Chaparral save investigation and Mapbox cutover plan
 
 Keep the existing workflow as the engineering launch baseline. Target around 150 paying customers for cutover review, contingent on licensing and QA. No runtime or deployment changes.
