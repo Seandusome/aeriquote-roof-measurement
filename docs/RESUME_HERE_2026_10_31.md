@@ -1,3 +1,11 @@
+# November 7 — Disabled employee save rejected, recovery pending
+
+Resumed 39cfae7a. Sean reported disabling the fictional employee in the independent owner session. Existing employee draft displayed its 24-hour recovery copy before the attempt. Clicked CREATE CUSTOMER ESTIMATE once. Recovery status displayed Account access disabled. Estimate save status displayed Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry. The local app source maps this save message to HTTP 401. Render access-log filter returned no matching records, so the HTTP status was not independently observed. Work editor marked handoff.
+
+Asked Sean to check owner history for QA TEST Fictional Two Session Save, $4,978.30 and only current version, then ACTIVATE qa-staff@example.invalid. Await owner confirmation. After activation use secure normal employee sign-in in a fresh tab, inspect recovery or retry in original tab as appropriate, and save exactly once. Confirm version count and draft notes. Authoritative allowance balance remains unverified because external DB connection was blocked. No changes to networking or deployments.
+
+---
+
 # November 7 — Hosted rejected-save baseline ready, owner disable pending
 
 Work signed in normally and rendered exact employee principal employee:effbf718-947e-4077-9c80-dcd2f7178498. Initial combined prompt landed in fictional owner session, verified by Manage Employees listing exact QA staff Active, then logged out and corrected via verified email and secure password prompt. Sean reported local Incognito owner view showing EMPLOYEES. Separate local owner action pending.
