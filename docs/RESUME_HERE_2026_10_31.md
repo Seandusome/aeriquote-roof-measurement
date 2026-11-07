@@ -1,3 +1,15 @@
+# Pending recovery choice save message corrected
+
+Resumed 77307a36. Chaparral saved record was not used for this replay. Confirmed cause in workspace_drafts.js: prepareSave returned false while the picker was pending without setting lastError, so performEstimateHistorySave substituted a generic exception and displayed the connection retry message.
+
+Fix ef09974f resets stale lastError and reports the choice only if the paused picker exists and no Restore is in progress. It scrolls the picker into view and focuses the first action without touching the trace or old draft. Save status: “Estimate not saved. A recovery draft choice is pending. Choose Restore, Discard, or Start a separate draft. Your measurements are still here.” The normal separate-draft path remains unchanged.
+
+Local isolated JS replay ran the actual recovery module with the estimate save handler from the local app snapshot, simulated DOM and HTTP, a fresh fictional roof trace, and an older draft. It reproduced the old exact message and passed the new exact message, scroll and focus assertions. Blocked save sent no estimate POST; fixture estimate, revision and allowance state stayed unchanged. Start a separate draft preserved trace and older draft, issued no DELETE, and one estimate POST carried unchanged measurements and total. Syntax check passed.
+
+Remaining verification: run the updated build in an isolated browser with a real disposable database and native PDF, then confirm reopen geometry, measurements and pricing and authoritative allowance counters. The local fixture did not verify those hosted results. No deployment, provider settings, image-free PDF diagram, Mapbox, or Chaparral changes.
+
+---
+
 # Chaparral save, reopen and native PDF verified
 
 Resumed 765976e6. The preserved trace was intact, and the live recovery UI explicitly said “Choose Restore, Discard or start a separate draft.” An older draft was listed. The earlier attempts had no estimate POST in hosted logs. Selected Start a separate draft without discarding the older draft or changing the trace. UI confirmed “Separate recovery draft ready.” One click on Create Customer Estimate then displayed “Estimate saved. Recovery copy deleted.” Render recorded one estimate POST with HTTP 200 at 22:10:59 UTC. The open draft-choice gate was the confirmed operational blocker. The caught JavaScript exception was not exposed by hosted logging. Resolved the gate through normal UI without a code change. The misleading generic connection message is a remaining UX issue.
