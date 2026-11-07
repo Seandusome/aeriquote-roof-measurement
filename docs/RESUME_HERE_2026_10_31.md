@@ -1,3 +1,9 @@
+# KESTREL save confirmed in owner history
+
+Follow-up to b92e109a. Owner detail showed the exact KESTREL-6842 note on the current estimate. History showed one current estimate and two previous versions, up from one previous version. All show $13,292.85 and 44,309 ft². Hosted extra credits remained 0 measurements and 0 estimates. The identified owner window showed qa-staff@example.invalid Active after the attempt. Employee status and authenticated principal at the time of the save remain unverified. Exact draft recovery remains unverified. Preserve the estimate as evidence and pause.
+
+---
+
 # Hosted KESTREL draft test — unexpected save, identity unverified
 
 Resumed c00b5c62. Owner history baseline for Homeowner at 2301 Ave C North, 115 showed 44,309 ft², $13,292.85, the saved QA RECOVERY CHECK note, and one previous version. Hosted Credits for bob@gmail.com showed standard trial and 0 extra measurements/0 extra estimates. Standard trial usage was not verified.
