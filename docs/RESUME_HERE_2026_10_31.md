@@ -1,3 +1,9 @@
+# Live Mapbox QA awaiting isolated service approval
+
+Resumed e7b6f078. Local disposable Flask/SQLite runtime has no secret settings page or secure entry prompt. Proposed a separate Render QA web service with auto-deploy OFF, no Google key, and an isolated database with fictional QA records only. After provisioning, use Render Dashboard → new QA service → Environment → Environment Variables → Add Environment Variable, key MAPBOX_ACCESS_TOKEN, and Save only. Save only takes effect on a later deploy. Wait for Sean's approval before provisioning or deploying. No live checks run this turn. Pending keyless address/aerial load, Chaparral mismatch, edit and draft imagery, and parity across switch/rollback using existing QA fixtures. PDF redesign paused and production untouched.
+
+---
+
 # Mapbox address safeguard — disposable QA passed, live token pending
 
 3a266c63 preserves the QA patch and browser replay in scripts/mapbox_runtime_fixture/address_guard. Apply after the prior runtime fixture, using the disposable SQLite and synthetic imagery setup. The server-side fixture uses the recorded Chaparral Place SE request / Chaparral Way SE response, with high confidence, rooftop accuracy and street unmatched. It now returns HTTP 409 with status blocked before creating an imagery session. Candidate policy also refuses warning-bearing results even if passed as confirmed. A valid fictional match still requires explicit pin confirmation, then loads the fixture image and binds the verified candidate address to the quote. Chromium confirmed zero imagery requests and no trace mode for the mismatch, then successful load/trace entry and correct bound address for the valid fixture. No estimates created. Hosted endpoint was not changed and the patch is not deployed.
