@@ -1,3 +1,11 @@
+# Fresh hosted draft recovery and credit comparison — awaiting QA Head Office sign-in
+
+Resumed 7f68ab91. Preserved the prior fictional estimate and its passed one-revision evidence. Opened the isolated recovery login in a separate tab from the old employee editor. These Work tabs share one browser profile. Use Work for QA Head Office, and two independent local profiles for owner and employee. A regular and an Incognito profile can serve as those two local sessions.
+
+First required screen is https://aeriquote-commercial-test.onrender.com/dealer-login for fictional Head Office qa-browser-oct31-2026@example.invalid, then Admin Dashboard → Credits. No login was submitted. Hosted pre-test balance is not recorded, so no fresh estimate, access toggle, or save was attempted. Capture the balance before starting, then separately after the rejected save and after any successful recovered save. If the exact fresh unsaved edit is missing after reauthentication, record that before entering anything new. Original draft recovery and hosted credit comparison remain unverified.
+
+---
+
 # November 7 — Hosted employee note revision passed
 
 Follow-up to `e574bc4a` on isolated recovery. Sean confirmed the fictional employee was reactivated and that owner history showed only the baseline after the disabled employee's rejected save.
