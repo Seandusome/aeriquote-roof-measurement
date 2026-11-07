@@ -1,3 +1,21 @@
+# Disposable provider runtime and native outline PDFs
+
+Resumed ccc1e686. QA-only fixture code and app patch preserved in b6f909ad under scripts/mapbox_runtime_fixture. App patch tested against the local app snapshot (base app.py Git blob c44cf290704f50549b8e9570bf0a5438cd673639) with exact d35aeca0 recovery module and Chromium headless. The patch is fixture material, not applied to the recovery branch app.py. Runtime harness binds localhost only and requires a disposable SQLite DB. Companion scripts reference the local /tmp/aq-mapbox-runtime layout, headless executable and vendored browser dependencies. Fixture account credential is supplied via AQ_FIXTURE_PASSWORD when reproducing from the saved harness. Grid image is a synthetic 640x640 PNG, not provider imagery.
+
+## Switch and rollback
+Local preset starts Google / Google / current. Switched to Mapbox / Mapbox / none with GOOGLE_MAPS_API_KEY empty in the app instance, retaining same SQLite file. Google baseline synthetic trace and one revision reopened in app; exact payload equality covered outline vertices, sections, pitch, area, pricing, taxes and total. Chaparral Place input received recorded Way SE candidate with street mismatch; dialog showed both addresses and candidate coordinates. Cancel kept tracing blocked and made zero imagery requests; explicit acceptance loaded the synthetic Mapbox grid and enabled manual trace. Saved one fresh fictional estimate in Mapbox mode. Reverted to Google preset and reopened both original versions and new estimate. Exact versions API equality held across settings. No estimate schema migration or data rewrite. Live Mapbox geocoding/imagery and visual real-pin validation remain unverified. The fixture is not a live provider integration or proof of licensing. Keyless history preview tested; editing-session and recovery-draft imagery routing across a real switch remain unverified.
+
+## Native PDFs
+From the fresh reopened fixture estimate, native Single (one page) and Expanded (two pages) exported and visually inspected. Plain-background saved roof geometry, 912 ft², USD 774.83, USD 0 tax. Expanded page one has the outline, page two measurements/pricing. The displayed property was the entered Place SE address and the trace is fictional; before live cutover ensure the selected candidate identity and entered address cannot diverge silently in the saved quote. No aerial or Street View pixels in either PDF.
+
+## Google workflow request meter
+One full Chromium manual-roof journey with actual app handlers and mocked upstream calls. Failed address preview + lookup: 2 Geocoding. Successful retry including address preview and initial map: 2 Geocoding, 9 Maps Static, 1 Street View metadata and 1 Street View image. Trace, save/preview, history reopen, Single and Expanded each added zero Google calls in the imagery-free workflow. Solar zero. Busiest observed fixture minute 22:50 UTC: 15 calls total, 4 Geocoding, 9 Static, 1 metadata, 1 Street image. At 300 completed properties/day with the same settings, no failures: 600 Geocoding, 2,700 Static, 300 metadata, 300 Street image, 0 Solar. If every property incurs that same failed preview + lookup first, Geocoding becomes 1,200, other totals unchanged. This is fixture measurement, not billing telemetry or production peak throughput. Panning, additional imagery and automatic roofing not covered.
+
+## Rights and release gates
+Obtain written terms for Mapbox commercial aerial display and roof tracing/measurement, derived outline retention and redistribution, permanent geocode storage, and customer PDF satellite print/export and re-download. Verify attribution and Google contract restrictions for any retained Google-sourced imagery and derivative content. PDF imagery stays off while print rights are pending. No deployment. Main, production, auto-deploy settings, customer data and saved Chaparral evidence untouched. Cutover review at 150 paying customers.
+
+---
+
 # Mapbox preparation — disposable QA checkpoint
 
 Resumed 721b2783 and the 765976e6 plan. No deployed provider, main, production, auto-deploy or customer data changes. Cutover review remains at 150 paying customers and requires approval.
