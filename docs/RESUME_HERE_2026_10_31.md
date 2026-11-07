@@ -1,3 +1,13 @@
+# Compact recovery draft picker
+
+Resumed 1f914c5f. Sean's screenshot is the before reference: recovery copy text and actions above the header. Change d35aeca0 keeps the pending-choice guard and moves the picker below the header and before the steps. One “Unsaved draft found” card shows an expiry and address where the scoped draft detail supplies it. “Keep working on this estimate” is primary for an open roof trace and runs the existing separate-draft action. Restore remains available and Discard has distinct outlined red styling. The blocked save scrolls to the card and focuses its heading.
+
+Exact message with open trace: “Estimate not saved. A recovery draft choice is pending. Choose Keep working on this estimate, Restore, or Discard. Your measurements are still here.”
+
+Local JS syntax and isolated replay passed. The blocked attempt made no estimate POST and left fixture estimate, revision and allowance state unchanged. Continuing preserved the older draft and submitted exactly one save with the unchanged trace and totals in the replay. Started local Flask against a disposable SQLite database, but Chromium exited before navigating because ProcessSingleton could not create a socket (Operation not permitted). Real browser/database allowance checks, reopen and native PDF, and desktop/phone before-and-after screenshots remain pending. No deployment or hosted estimate changes. The saved Chaparral record remains evidence.
+
+---
+
 # Pending recovery choice save message corrected
 
 Resumed 77307a36. Chaparral saved record was not used for this replay. Confirmed cause in workspace_drafts.js: prepareSave returned false while the picker was pending without setting lastError, so performEstimateHistorySave substituted a generic exception and displayed the connection retry message.
