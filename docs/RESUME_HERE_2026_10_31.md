@@ -1,3 +1,13 @@
+# November 7 — Hosted employee note revision passed
+
+Follow-up to `e574bc4a` on isolated recovery. Sean confirmed the fictional employee was reactivated and that owner history showed only the baseline after the disabled employee's rejected save.
+
+- **Passed — one revision for a fresh employee note edit.** Sean provided the owner detail showing the current estimate with the newly typed note “this is a note.” Owner history showed one current estimate and exactly one previous version for QA TEST Fictional Two Session Save. Both showed $4,978.30 and 5,240 ft².
+- **Unverified — original draft recovery.** The original unsaved note was visible in the open employee tab, but the later saved note was entered separately. Recovery and successful save of the original draft were not demonstrated.
+- **Unverified — hosted credit comparison.** No authoritative pre-save hosted credit balance was captured. The employee browser's session counters do not establish that balance.
+
+---
+
 # November 7 — Disabled employee save rejected, recovery pending
 
 Resumed 39cfae7a. Sean reported disabling the fictional employee in the independent owner session. Existing employee draft displayed its 24-hour recovery copy before the attempt. Clicked CREATE CUSTOMER ESTIMATE once. Recovery status displayed Account access disabled. Estimate save status displayed Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry. The local app source maps this save message to HTTP 401. Render access-log filter returned no matching records, so the HTTP status was not independently observed. Work editor marked handoff.
