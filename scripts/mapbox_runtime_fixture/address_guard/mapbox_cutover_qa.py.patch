@@ -1,0 +1,11 @@
+--- a/mapbox_cutover_qa.py
++++ b/mapbox_cutover_qa.py
+@@ -53,6 +53,8 @@
+         return cls(label, longitude, latitude, tuple(warnings))
+ 
+     def tracing_pin(self, confirmed_candidate):
++        if self.warnings:
++            raise ValueError("Resolve the address mismatch before tracing")
+         if confirmed_candidate != self:
+             raise ValueError("Confirm this address and pin before tracing")
+         return self.latitude, self.longitude

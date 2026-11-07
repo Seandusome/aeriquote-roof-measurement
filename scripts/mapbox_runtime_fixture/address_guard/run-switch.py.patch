@@ -1,0 +1,36 @@
+--- a/run-switch.py
++++ b/run-switch.py
+@@ -17,16 +17,24 @@
+  if provider.address=='google':
+   return original_lookup(d)
+  calls['Mapbox geocoding fixture']+=1
+- token=m.create_session('',candidate.latitude,candidate.longitude,mode='manual_roof_static',formatted_address=candidate.label)
++ # Select the recorded or valid upstream fixture, then apply the same gate.
++ match=candidate if 'Chaparral' in d['address'] else AddressCandidate.from_mapbox({
++  'geometry':{'coordinates':[-114.029064,50.88856]},
++  'properties':{'full_address':d['address'],'feature_type':'address',
++  'coordinates':{'accuracy':'rooftop'},'match_code':{'street':'matched','address_number':'matched','confidence':'high'}}})
++ if match.warnings:
++  return jsonify(status='blocked',error='Mapbox found a different street. Verify the address and retry.',
++    requested_address=d['address'],matched_address=match.label,warnings=match.warnings),409
++ token=m.create_session('',match.latitude,match.longitude,mode='manual_roof_static',formatted_address=match.label)
+  return jsonify(provider='mapbox',token=token,manual_roof_only=True,fallback=True,
+    center=dict(latitude=candidate.latitude,longitude=candidate.longitude),
+-   formatted_address=candidate.label,warnings=candidate.warnings,parts={})
++   formatted_address=match.label,warnings=match.warnings,parts={})
+ 
+ def fallback(token):
+  if provider.aerial!='mapbox':return m.fallback_map(token)
+  if not m.SESSIONS.get(token):return Response('Session expired',status=404)
+  calls['Mapbox imagery fixture']+=1
+- return m.send_from_directory('/tmp/aq-mapbox-runtime','qa-grid.png')
++ return m.send_from_directory('/tmp/aq-address-guard','qa-grid.png')
+ 
+ m.perform_property_lookup=fixture_lookup
+ m.app.view_functions['fallback_map']=fallback
+@@ -41,4 +49,4 @@
+  return jsonify(settings=provider.__dict__,google_key_available=bool(m.GOOGLE_MAPS_API_KEY))
+ @m.app.get('/qa-provider-counts')
+ def provider_counts():return jsonify(calls)
+-exec(open('runqa.py').read().replace('port=8880','port=8881'))
++exec(open('runqa.py').read().replace('port=8880','port=8891'))

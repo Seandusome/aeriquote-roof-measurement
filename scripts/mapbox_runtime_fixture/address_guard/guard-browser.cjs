@@ -1,0 +1,32 @@
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const assert=require('node:assert/strict');
+const url='http://127.0.0.1:8891';
+(async()=>{const browser=await chromium.launch({executablePath:'/tmp/aq-chrome/chrome-headless-shell-linux64/chrome-headless-shell',args:['--no-sandbox']});
+try{for(const [key,width,old] of [['desktop',1440,false]]){
+ const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true});
+ await context.route('**/*',r=>{const u=new URL(r.request().url());if(u.origin===url){if(old&&u.pathname==='/static/workspace_drafts.js')return r.fulfill({path:'/tmp/aq-picker-qa/before.js',contentType:'application/javascript'});return r.continue()}const name=u.pathname.split('/').at(-1);return /^(leaflet\.(js|css)|html2canvas.min.js|jspdf.umd.min.js)$/.test(name)?r.fulfill({path:'/tmp/aq-picker-qa/vendor/'+name}):r.abort()});
+ await context.request.post(url+'/qa-provider',{data:{mode:'google'}});
+ const login=await context.request.post(url+'/dealer-login',{form:{email:(key==='before-phone'?'before':key)+'@example.invalid',password:process.env.AQ_FIXTURE_PASSWORD},maxRedirects:0});assert.equal(login.status(),302);
+ const p=await context.newPage();
+ await context.request.post(url+'/qa-provider',{data:{mode:'mapbox'}});
+ await p.goto(url);await p.waitForFunction(()=>window.aqLocalMapbox&&window.aqRecovery);
+ const lookup=async street=>{
+  await p.evaluate(street=>{setPropertyRegion('AB');el('streetAddress').value=street;el('cityTown').value='Calgary'},street);
+  await p.evaluate(()=>loadProperty());
+ };
+ let dialogs=0;p.on('dialog',async d=>{dialogs++;await d.accept()});
+ await lookup('218 Chaparral Place SE');
+ assert.match(await p.locator('#status').innerText(),/different street/);
+ assert.equal(dialogs,0);
+ assert.deepEqual(await p.evaluate(()=>({token:sessionToken,trace:traceMode})),{token:null,trace:false});
+ const counts=await(await context.request.get(url+'/qa-provider-counts')).json();
+ assert.equal(counts['Mapbox imagery fixture'],undefined);
+ await lookup('18 Fictional Roof Lane');
+ assert.equal(dialogs,1);
+ assert.match(await p.locator('#status').innerText(),/Trace each roof section/);
+ const opened=await p.evaluate(()=>({token:sessionToken,trace:traceMode,address:el('address').value}));
+ assert(opened.token&&opened.trace);assert.match(opened.address,/18 Fictional Roof Lane/);
+ const state=await(await context.request.get(url+'/qa-state')).json();assert.equal(state.estimates.length,0);
+ console.log('PASS blocked mismatch, no imagery or trace; valid confirmed match loaded and bound its address to quote. No estimates created.');
+ await context.close();
+}}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
