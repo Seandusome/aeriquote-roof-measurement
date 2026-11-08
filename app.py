@@ -44,7 +44,10 @@ def password_ok(password, stored):
     except Exception:return False
 SESSIONS = PropertySessions(lambda: estimate_db(), lambda: session.get("dealer_id"), lambda: GOOGLE_MAPS_API_KEY)
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GOOGLE_MAPS_API_KEY", "")
-MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", "")
+MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", "").strip()
+AERIAL_PROVIDER = os.environ.get("AERIQUOTE_AERIAL_PROVIDER", "google").strip().lower()
+if AERIAL_PROVIDER not in {"google", "mapbox"}:
+    raise ValueError("AERIQUOTE_AERIAL_PROVIDER must be google or mapbox")
 # Persistent estimate storage:
 # - Render production uses PostgreSQL whenever DATABASE_URL is present.
 # - Local development falls back to SQLite.
@@ -1048,7 +1051,7 @@ async function loadFallbackAerial(token,targetMap=map){
  // rejected even though the same Static Maps request is allowed from this page.
  // Try the browser context once before declaring the aerial unavailable.
  const key="{{GOOGLE_MAPS_API_KEY}}".trim();
- if(key){
+ if(key&&d.provider!=='mapbox'){
    const qs=new URLSearchParams({center:d.latitude+','+d.longitude,zoom:String(d.zoom),size:d.width+'x'+d.height,maptype:'satellite',format:'png',key:key});
    const direct='https://maps.googleapis.com/maps/api/staticmap?'+qs.toString();
    try{
@@ -2915,7 +2918,7 @@ async function resumeSavedEstimateWorkspace(){
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
  const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setPropertyRegion(province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
  setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
- await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
+ if(d.provider==='mapbox')await loadFallbackAerial(d.token);else await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
  redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
  savedPropertyEditActive=true;quoteSnapshot=null;lastHistorySaveKey='';
  updatePropertyActionButton();updateAreaUi();updateLinearUi();renderSummary();
@@ -5164,15 +5167,17 @@ def workspace_draft_imagery(draft_id):
         row=drafts.load(con,dealer,user,draft_id)
         metadata=json.loads(row["property_metadata"] or "null")
         if not metadata:return jsonify(error="Property imagery was not acknowledged before interruption. Your measurements are retained; retry the original property loading step."),409
-        if not GOOGLE_MAPS_API_KEY:return jsonify(error="Imagery is unavailable. Your draft remains available; retry later."),503
+        provider=metadata.get("provider", "google")
+        credential=MAPBOX_ACCESS_TOKEN if provider=="mapbox" else GOOGLE_MAPS_API_KEY
+        if not credential:return jsonify(error="Imagery is unavailable. Your draft remains available; retry later."),503
         token=uuid.uuid4().hex
-        metadata.update(key=GOOGLE_MAPS_API_KEY,created=time.time(),dealer_id=dealer)
+        metadata.update(key=GOOGLE_MAPS_API_KEY if provider=="google" else "",created=time.time(),dealer_id=dealer)
         from property_sessions import CACHES,image_url
         metadata.update({k:None for k in CACHES})
         if metadata.get("street"):metadata["street"]=image_url(metadata["street"],GOOGLE_MAPS_API_KEY)
         metadata["structure_masks"]={}
         SESSIONS[token]=metadata;SESSIONS.persist(token)
-        return jsonify(token=token,center={"latitude":metadata["lat"],"longitude":metadata["lng"]})
+        return jsonify(token=token,provider=provider,center={"latitude":metadata["lat"],"longitude":metadata["lng"]})
     except drafts.DraftError as e:return jsonify(error=str(e)),e.status
     finally:con.close()
 
@@ -5390,12 +5395,14 @@ def saved_estimate_editing_session(estimate_id):
         version=data["current"] if index==-1 else data["revisions"][index]
         payload=version.get("payload") or {};bounds=measurement_bounds(payload)
     except (ValueError,IndexError,KeyError) as e:return jsonify(error=str(e) or "Saved version unavailable"),400
-    if not GOOGLE_MAPS_API_KEY:return jsonify(error="Google Maps API key is not configured"),503
+    provider=AERIAL_PROVIDER
+    credential=MAPBOX_ACCESS_TOKEN if provider=="mapbox" else GOOGLE_MAPS_API_KEY
+    if not credential:return jsonify(error="The selected aerial provider is unavailable"),503
     lat=(bounds[0][0]+bounds[1][0])/2;lng=(bounds[0][1]+bounds[1][1])/2
     token=uuid.uuid4().hex
-    SESSIONS[token]={"key":GOOGLE_MAPS_API_KEY,"dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"manual_roof_static" if manual_roof_qa_enabled() or (payload.get("quote") or {}).get("manualRoofWorkflow") else "fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
+    SESSIONS[token]={"provider":provider,"fallback_zoom":19 if provider=="mapbox" else 20,"key":GOOGLE_MAPS_API_KEY if provider=="google" else "","dealer_id":str(session.get("dealer_id") or ""),"created":time.time(),"mode":"manual_roof_static" if manual_roof_qa_enabled() or (payload.get("quote") or {}).get("manualRoofWorkflow") else "fallback","lat":lat,"lng":lng,"anchor_lat":lat,"anchor_lng":lng,"formatted_address":payload.get("address") or "","rgb":None,"mask":None,"street":None,"rgb_cache":None,"mask_cache":None,"street_cache":None,"fallback_cache":None,"exact_pin_cache":None,"structure_masks":{}}
     SESSIONS.persist(token)
-    return jsonify(token=token,version=estimate_version(data["current"]["payload"]),center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
+    return jsonify(token=token,provider=provider,version=estimate_version(data["current"]["payload"]),center={"latitude":lat,"longitude":lng},bounds=bounds,job_details={k:(data["current"].get("payload") or {}).get(k) for k in ("job_status","scheduled_date","completion_date","amount_paid")})
 
 @app.get("/exact-pin-meta/<token>")
 def exact_pin_meta(token):
@@ -5447,12 +5454,28 @@ def wide_aerial(token):
 def fallback_meta(token):
     sess=SESSIONS.get(token)
     if not sess:return jsonify(error="Session expired"),404
-    return jsonify(latitude=sess.get("lat"),longitude=sess.get("lng"),zoom=sess.get("fallback_zoom",20),width=640,height=640)
+    return jsonify(latitude=sess.get("lat"),longitude=sess.get("lng"),zoom=sess.get("fallback_zoom",19 if sess.get("provider")=="mapbox" else 20),width=640,height=640,provider=sess.get("provider","google"))
 
 @app.get("/fallback-map/<token>")
 def fallback_map(token):
     sess=SESSIONS.get(token)
     if not sess:return Response("Session expired",status=404)
+    if sess.get("provider")=="mapbox":
+        if not MAPBOX_ACCESS_TOKEN:return Response("Mapbox imagery unavailable",status=503)
+        if sess.get("fallback_cache") is None:
+            zoom=sess.get("fallback_zoom",19)
+            url=f'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/{sess["lng"]},{sess["lat"]},{zoom},0,0/640x640?'
+            try:
+                with urllib.request.urlopen(url+urllib.parse.urlencode({"access_token":MAPBOX_ACCESS_TOKEN}),timeout=12) as upstream:
+                    content_type=upstream.headers.get_content_type()
+                    body=upstream.read(5_000_001)
+                if not content_type.startswith("image/") or not 0<len(body)<=5_000_000:
+                    return Response("Mapbox imagery unavailable",status=502)
+            except (OSError,ValueError):
+                return Response("Mapbox imagery unavailable",status=502)
+            sess["fallback_cache"]=(content_type,body)
+        content_type,body=sess["fallback_cache"]
+        return Response(body,content_type=content_type)
     try:
         if sess.get("fallback_cache") is None:
             q=urllib.parse.urlencode({"center":f'{sess["lat"]},{sess["lng"]}',"zoom":sess.get("fallback_zoom",20),"size":"640x640","scale":"2","maptype":"satellite","format":"png","key":sess["key"]})

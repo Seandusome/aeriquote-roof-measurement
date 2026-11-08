@@ -74,7 +74,8 @@
    if(imagery){map.setView([imagery.center.latitude,imagery.center.longitude],18);setPropertyMarker(imagery.center.latitude,imagery.center.longitude)}
    redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
    // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.
-   if(imagery)await loadStandardWideAerial();
+   if(imagery?.provider==='mapbox')await loadFallbackAerial(imagery.token);
+   else if(imagery)await loadStandardWideAerial();
    // Aerial loading initializes its own source defaults; recovery owns the retained source and rates.
    fields.forEach(k=>{const n=el(k);if(n&&k in w.values){if(n.type==='checkbox')n.checked=w.values[k];else n.value=w.values[k]}});
    renderSummary();

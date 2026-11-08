@@ -3,7 +3,7 @@ import json
 import time
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
-FIELDS = ('rgb','mask','street','lat','lng','created','mode','fallback_zoom','anchor_lat','anchor_lng','formatted_address','dealer_id','exact_pin','display_lat','display_lng','display_zoom')
+FIELDS = ('provider','rgb','mask','street','lat','lng','created','mode','fallback_zoom','anchor_lat','anchor_lng','formatted_address','dealer_id','exact_pin','display_lat','display_lng','display_zoom')
 CACHES = ('rgb_cache','mask_cache','street_cache','fallback_cache','exact_pin_cache')
 
 def image_url(url, key=None):
@@ -63,8 +63,8 @@ class PropertySessions(dict):
         value = json.loads(row['payload'])
         if value.get('dealer_id') != owner or self.clock()-float(value['created']) >= self.ttl:
             return default
-        key = self.api_key()
-        if not key:
+        key = '' if value.get('provider') == 'mapbox' else self.api_key()
+        if not key and value.get('provider') != 'mapbox':
             return default
         value['key'] = key
         value.update({field:None for field in CACHES})
