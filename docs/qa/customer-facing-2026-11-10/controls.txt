@@ -1,0 +1,71 @@
+PASS: actual DOM + ADD AREA, finish/save, third-area button, visible panel and three independent saved rows
+PASS: nine aerial tiles, correct latitude placement, triple coverage, saved areas retained
+PASS paving: wide 3x3 aerial and saved measurements retained
+PASS snow: wide 3x3 aerial and saved measurements retained
+PASS pressure: wide 3x3 aerial and saved measurements retained
+PASS roofing: wide 3x3 aerial and saved measurements retained
+PASS: zoom/pan fetches zoom-20 aerial detail, reuses unchanged views, and retains wide coverage and geometry
+PASS: small Roofing estimate requests detailed source imagery from frozen roof outline
+PASS: every saved commercial area retains feet on every edge in linear view
+PASS: PDF keeps aerial, excludes all duplicate vectors and restores layers on success or failure
+PASS: rapid repeated PDF actions create one download and release their lock
+PASS: Roofing feet and pitch labels use full-width backgrounds and paint above PDF outlines
+PASS: roof PDF replaces transformed SVG without changing approved polygon; edge labels retain true midpoint anchors
+PASS: saved Roofing report retains every edge and pitch label
+PASS paving: rendered summary and customer estimate list every area with its own rate plus linear service
+PASS pressure: rendered summary and customer estimate list every area with its own rate plus linear service
+PASS snow: rendered summary and customer estimate list every area with its own rate plus linear service
+PASS paving: actual property loader uses wide area workspace for dropped pins and roof-data fallback
+PASS snow: actual property loader uses wide area workspace for dropped pins and roof-data fallback
+PASS pressure: actual property loader uses wide area workspace for dropped pins and roof-data fallback
+PASS landscaping: actual property loader uses wide area workspace for dropped pins and roof-data fallback
+PASS commercial: actual property loader uses wide area workspace for dropped pins and roof-data fallback
+PASS: AI tracing controls removed; manual measurements remain available
+PASS: sixteen crowded labels separate inside the aerial without removing measurements
+PASS: expanded aerial then seven measurement/pricing rows, page numbers, unchanged snapshot and cleanup on failure
+PASS: reopened aerial paints every area edge, area total and linear segment into PDF canvas without changing saved geometry or pricing
+PASS: expanded saved aerial resets capture transform and paints numbered references without changing geometry
+PASS: historical PDF captures the labeled saved canvas without a live property session
+PASS: delayed replacement aerial blocks stale-image export and matches the current estimate area
+PASS: notes-only changes save and reopen with customer email; internal notes stay out of PDF
+PASS: history industry labels, linear-only units, expandable notes, and escaped note text
+PASS pressure: linear-first line stays visible through two saved areas; geometry and linear rate retained
+PASS paving: linear-first line stays visible through two saved areas; geometry and linear rate retained
+PASS snow: linear-first line stays visible through two saved areas; geometry and linear rate retained
+PASS landscaping: linear-first line stays visible through two saved areas; geometry and linear rate retained
+PASS commercial: linear-first line stays visible through two saved areas; geometry and linear rate retained
+PASS pressure: remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement
+PASS paving: remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement
+PASS snow: remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement
+PASS landscaping: remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement
+PASS commercial: remove saved area during empty draft, discard ghost row, retain remaining geometry/rate and linear measurement
+PASS pressure: Linear exposes area controls; remove retains line/rate, edit and add select Area safely
+PASS paving: Linear exposes area controls; remove retains line/rate, edit and add select Area safely
+PASS snow: Linear exposes area controls; remove retains line/rate, edit and add select Area safely
+PASS landscaping: Linear exposes area controls; remove retains line/rate, edit and add select Area safely
+PASS commercial: Linear exposes area controls; remove retains line/rate, edit and add select Area safely
+PASS roofing: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS pressure: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS paving: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS snow: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS landscaping: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS commercial: draggable line edit; Cancel restores, Save retains new length, areas/rate/usage preserved, tool switch cancels
+PASS area: real saved-measurement summary records one activation before returning
+PASS linear: real saved-measurement summary records one activation before returning
+PASS: live manual Roofing canvas includes all four edges and pitch with unchanged snapshot
+PASS: late aerial and profile responses preserve selected Linear mode, points and rate
+PASS: connected rooftop mask stays inside the selected building; empty intersection remains unavailable
+PASS: 12-roof workspace/preview/saved labels, neighbouring-mask rejection, stable-ID duplicates, unavailable own-mask protection
+PASS: incomplete condo blocked, one-roof trace/pitch replacement, count/other roof/rate preserved, source snapshot, cancel and new-property reset
+PASS: real Roofing property loader retains AutoMeasure area, preserves original area for review but blocks mismatched live/saved estimates and PDFs until remeasured
+PASS: detected-outline review, explicit verified uniform pitch, real marker drag/confirmation reset, cancel, custom/invalid pitch, crossed outline, analytical area/price, source snapshot/customer report, added-roof candidate and new-property reset
+PASS: rejected trace removes all Leaflet layers; latest saved/draft roof trace wins; one review overlay; cancel restoration; explicit duplicate replacement; other roofs preserved; saved-boundary re-review; Roofing-specific footprint/linear wording
+PASS: repeated same-roof Remeasure restarts empty, removes every prior draft/review layer, resets pitch, preserves both saved roofs, blocks estimate during editing and restores readiness on Cancel
+PASS: default 5/12 saves without touching pitch; explicit pitch selection unlocks Save with no pitch checkbox; inline feedback; structured controls; custom pitch validation; actual button save preserves main roof
+PASS: simple Roofing default, collapsed secondary/advanced tools, one action per roof, targeted clean Fix -> pitch -> actual Save, saved state and named estimate blocker, no duplicate controls and reversible six-industry tool placement with unchanged measurements
+PASS: main AutoMeasure retains measured area; Snow placeholders, hover help, statuses and reversible Roofing terms
+PASS: real saved-area rate entry preserves blank and blocks quote; explicit zero allowed; excessive discount blocked and corrected discount recovers
+PASS snow: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset
+PASS landscaping: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset
+PASS commercial: monthly preview/report, saved period, unchanged money, restore, legacy default, new-job reset
+Script errors: []
