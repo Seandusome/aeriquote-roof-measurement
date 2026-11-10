@@ -22,7 +22,7 @@ footer{background:#071a3d;color:#dce6f3;margin-top:0}footer a{color:#dce6f3;text
 
 <section class="page-head"><div class="eyebrow">FREE AERIQUOTE TRIAL</div><h1 id="main-content" tabindex="-1">Start with 3 Free Property Measurements &amp; Estimates</h1><p>No credit card required. No automatic billing.</p></section>
 <div class="checkout-wrap">
-<section class="panel"><h2>Create your AeriQuote account</h2><p id="selectedIndustry"></p><p>Already have an account? <a href="/dealer-login">Log in</a>.</p>
+<section class="panel"><h2>Create your AeriQuote account</h2><p id="selectedIndustry"></p><p id="measurementHelp">Trace service areas and lengths on aerial imagery, apply your pricing and create branded estimates.</p><p>Already have an account? <a href="/dealer-login">Log in</a>.</p>
 <form id="trialForm">
 <div class="field"><label for="trialName">First &amp; Last Name</label><input id="trialName" required="" placeholder="Your name" autocomplete="name"></div>
 <div class="field"><label for="trialBusiness">Business Name</label><input id="trialBusiness" required="" placeholder="Your business" autocomplete="organization"></div>
@@ -41,7 +41,7 @@ footer{background:#071a3d;color:#dce6f3;margin-top:0}footer a{color:#dce6f3;text
  const params=new URLSearchParams(location.search);
  const names={roofing:'Roofing',snow:'Snow Removal',pressure:'Pressure Washing',paving:'Paving & Sealcoating',landscaping:'Landscaping',commercial:'Commercial Properties'};
  const chosen=(params.get('industry')||'roofing').toLowerCase(),industry=names[chosen]?chosen:'roofing';
- const selected=document.getElementById('selectedIndustry');selected.append(document.createTextNode('Your industry: '+names[industry]+' · '));const change=document.createElement('a');change.href='/site/start-free-trial';change.textContent='Change';selected.append(change);
+ const selected=document.getElementById('selectedIndustry');selected.append(document.createTextNode('Your industry: '+names[industry]+' · '));if(industry==='roofing')document.getElementById('measurementHelp').textContent='Review automatic roof measurements where available, confirm the outline and pitch, or trace manually when needed. Apply your pricing and create branded estimates.';const change=document.createElement('a');change.href='/site/start-free-trial';change.textContent='Change';selected.append(change);
  document.getElementById('trialForm').addEventListener('submit',async function(e){
    e.preventDefault();
    const button=this.querySelector('button[type="submit"]'),error=document.getElementById('signupError');if(button.disabled)return;button.disabled=true;button.textContent='CREATING YOUR ACCOUNT…';error.hidden=true;
