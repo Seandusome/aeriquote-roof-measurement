@@ -12,6 +12,6 @@ with tempfile.TemporaryDirectory(prefix='aq-copy-runtime-') as scratch, open('/t
     with urllib.request.urlopen('http://127.0.0.1:8765/dealer-login',timeout=.5):break
    except Exception:time.sleep(.2)
   else:raise RuntimeError('Disposable loopback server did not become ready')
-  sys.exit(subprocess.run(['node','scripts/test_customer_copy_browser.cjs']).returncode)
+  sys.exit(subprocess.run(['node',os.environ.get('QA_COPY_BROWSER_SCRIPT','scripts/test_customer_copy_browser.cjs')]).returncode)
  finally:
   server.terminate();server.wait(timeout=5)
