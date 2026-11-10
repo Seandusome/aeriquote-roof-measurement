@@ -1,0 +1,74 @@
+[
+  {
+    "width": 1440,
+    "actualWidth": 1440,
+    "page": "pricing",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  },
+  {
+    "width": 1440,
+    "actualWidth": 1440,
+    "page": "upgrade",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  },
+  {
+    "width": 1440,
+    "actualWidth": 1440,
+    "page": "home",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  },
+  {
+    "width": 390,
+    "actualWidth": 390,
+    "page": "pricing",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  },
+  {
+    "width": 390,
+    "actualWidth": 390,
+    "page": "upgrade",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  },
+  {
+    "width": 390,
+    "actualWidth": 390,
+    "page": "home",
+    "cards": 3,
+    "wording": "pass",
+    "allowances": "25/75/200",
+    "brandedEstimates": "pass",
+    "explanation": "pass",
+    "overflow": "none",
+    "browser": "141.0.7390.37"
+  }
+]
