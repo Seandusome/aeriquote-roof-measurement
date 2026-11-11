@@ -59,9 +59,13 @@ with tempfile.TemporaryDirectory() as tmp:
   for industry in ['snow','pressure','paving','landscaping','commercial']:
    r=c.post('/property',json={'key':'qa','address':'QA property','business_type':industry,'direct_coordinates':True,'latitude':52,'longitude':-106,'prepare_only':True},headers={'Idempotency-Key':industry});assert r.status_code==200 and r.json['manual_roof_only'] is False
   with c.session_transaction() as s:s['dealer_id']='unlisted'
-  assert "const MANUAL_ROOF_QA='0'" in c.get('/').text,'Allowlist isolates QA from other accounts'
+  assert "const MANUAL_ROOF_QA='1'" in c.get('/').text,'Unlisted customers use manual roofing'
   with c.session_transaction() as s:s['dealer_id']='manual-qa'
- assert "const MANUAL_ROOF_QA='0'" in c.get('/').text,'Mode defaults off'
+ assert "const MANUAL_ROOF_QA='1'" in c.get('/').text,'Manual roofing defaults on'
+ with patch.dict(os.environ,{'AERIQUOTE_AUTOMEASURE_QA':'1','AERIQUOTE_AUTOMEASURE_QA_IDS':'manual-qa'}):
+  assert "const MANUAL_ROOF_QA='0'" in c.get('/').text,'Explicit local allowlisted automatic test retained'
+  with patch.dict(os.environ,{'RENDER_SERVICE_ID':'not-a-local-runtime'}):
+   assert "const MANUAL_ROOF_QA='1'" in c.get('/').text,'Automatic test cannot leak onto hosted customers'
  # Independent spherical reference, one rectangle per pitch; adjacent boundaries permitted.
  base=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]]
  def plane(points,pitch):return {'points':points,'pitch_degrees':pitch,'surface_sqft':polygon_sqft(points)/math.cos(math.radians(pitch)),'pitch_confirmed':True,'manual_roof_qa':True}
@@ -81,4 +85,14 @@ with tempfile.TemporaryDirectory() as tmp:
  with patch.dict(os.environ,{'AERIQUOTE_MANUAL_ROOF_QA':'1','AERIQUOTE_MANUAL_ROOF_QA_IDS':'manual-qa'}),patch.object(a,'req_json',side_effect=provider):
   r=c.post('/api/estimates/'+str(eid)+'/editing-session',json={});assert r.status_code==200,r.json
   assert c.get('/rgb/'+r.json['token']).status_code==409
- print('PASS QA double opt-in; default off/account isolation; manual property/pin and all automatic escape routes; imagery failures/retries/recovery zero Solar; five industries unchanged; independent multi-pitch/shared-edge/garage geometry; invalid/overlap/unconfirmed rejection; actual save/reopen')
+ # Compatibility fixture: pre-manual automatic payload has no new workflow flags.
+ from scripts.qa_estimate_fixture import automatic_roof,price_fixture
+ legacy=price_fixture({'address':'FICTIONAL legacy automatic roof','customer_name':'FICTIONAL LEGACY OWNER','business_type':'roofing','quote':{'businessType':'roofing','measurementMode':'auto','measureSource':'google','structures':[automatic_roof(base)],'manualPlanes':[]},'pricing':{'price':.2,'gst':5,'pst':6}})
+ r=c.post('/api/estimates',json=legacy);assert r.status_code==200,r.json
+ old_id=r.json['id'];old=c.get('/api/estimates/'+str(old_id)).json
+ assert old['payload']['customer_name']=='FICTIONAL LEGACY OWNER'
+ with patch.object(a,'req_json',side_effect=provider):
+  r=c.post('/api/estimates/'+str(old_id)+'/editing-session',json={});assert r.status_code==200,r.json
+ assert c.get('/api/estimates/'+str(old_id)).json==old,'Legacy snapshot unchanged after editor access'
+ print('PASS legacy automatic estimate accessible and editing session preserves stored snapshot')
+ print('PASS manual default; isolated allowlisted automatic testing; manual property/pin and all automatic escape routes; imagery failures/retries/recovery zero Solar; five industries unchanged; independent multi-pitch/shared-edge/garage geometry; invalid/overlap/unconfirmed rejection; actual save/reopen')

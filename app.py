@@ -708,7 +708,7 @@ function applyBusinessTerminology(root=document.body){
   for(const [attr,base] of Object.entries(original))node.setAttribute(attr,mode==='snow'?(attr==='data-tip'&&/pitch/i.test(base)?'Measure the snow-clearing service area or linear route, then save the measurement.':translateSnowText(base)):base);
  });
  if(mode==='roofing'&&roofRemeasureTarget){if(el('manualPitchLabel'))el('manualPitchLabel').childNodes[0].nodeValue='Roof pitch — defaults to 5/12; change if needed ';if(el('manualRoofSummary'))el('manualRoofSummary').textContent='Replace measurement — '+roofRemeasureTarget.label;if(el('manualRoofWarning'))el('manualRoofWarning').textContent='Editing '+roofRemeasureTarget.label+' only. Its saved measurement stays unchanged until the replacement is saved.';if(el('clearManualBtn'))el('clearManualBtn').textContent='CLEAR THIS ROOF DRAWING'}
- const intro=document.querySelector('.measure-intro span');if(intro)intro.textContent=mode==='roofing'?(manualRoofQa()?"Load property → Trace roof → Confirm pitch → Review estimate. Trace different pitches as separate sections.":"Review an available automatic roof outline and confirm the pitch, or trace manually when needed. Use Area for flat footprints or Linear for lengths. Then apply your pricing and create a branded estimate."):'Use one tool or combine multiple measurements on the same property.';
+ const intro=document.querySelector('.measure-intro span');if(intro)intro.textContent=mode==='roofing'?(manualRoofQa()?"Load property → Trace roof → Confirm pitch → Price → Save. Trace different pitches as separate sections.":"Review an available automatic roof outline and confirm the pitch, or trace manually when needed. Use Area for flat footprints or Linear for lengths. Then apply your pricing and create a branded estimate."):'Use one tool or combine multiple measurements on the same property.';
  const copy=AERI_TOOL_COPY[mode]||AERI_TOOL_COPY.roofing;
  const areaToolButton=el('toolAreaBtn'),linearToolButton=el('toolLinearBtn');
  if(areaToolButton){areaToolButton.querySelector('b').textContent=manualRoofQa()?'TRACE ROOF':'+ ADD AREA';areaToolButton.querySelector('small').textContent=manualRoofQa()?'Roof sections • confirmed pitch':copy.area;}
@@ -2226,13 +2226,13 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   if(d.fallback){
     structures=[];setManualCorrectionLayout(true);setManualUi(true);if(el('measureSource'))el('measureSource').value='manual';
     const aerialLoaded=true;
-    showSolarFallback(true,'Google does not have an automatic roof measurement for this property. Manual measurement is required. Trace the shingled roof below and confirm its pitch.');
+    showSolarFallback(!manualRoofQa(),manualRoofQa()?'':'Google does not have an automatic roof measurement for this property. Manual measurement is required. Trace the shingled roof below and confirm its pitch.');
     renderSummary();
     if(el('garageGuide'))el('garageGuide').innerHTML='<b>Manual measurement required.</b> Trace the shingled roof area shown below and confirm the pitch. If imagery appears older, verify the current roof layout before sending the estimate.';
     if(el('measureClicked'))el('measureClicked').disabled=true;if(el('measureClickedTop'))el('measureClickedTop').disabled=true;
     const details=el('manualRoofDetails');if(details)details.open=true;
     if(aerialLoaded){setTimeout(()=>{if(!traceMode)toggleTrace()},80)}
-    status('Automatic measurement unavailable — manual roof tracing is ready. Confirm the pitch before saving.','warn');return;
+    status(manualRoofQa()?'Property aerial loaded — trace the roof and confirm its pitch before saving.':'Automatic measurement unavailable — manual roof tracing is ready. Confirm the pitch before saving.',manualRoofQa()?'ok':'warn');return;
   }
   structures=[{...d.main,label:'Main House'}];setManualCorrectionLayout(false);setManualUi(false);if(el('measureSource'))el('measureSource').value='google';roofMask=prepared.mask;d.main.outline=outlineFromMask(roofMask,d.main.latitude,d.main.longitude);structures[0].outline=d.main.outline;reviewAutomaticRoof(structures[0]);let rgb=prepared;redrawRoofData();if(exactPinDisplay)frameAerial(map,rgb.bounds,0);renderSummary();if(el('garageGuide'))el('garageGuide').innerHTML=roofQuoteNeedsReview()?'<b>Main roof requires review.</b> Use the roof action beside the aerial to review or trace it.': '<b>Main house measured.</b> If there is another roof to include, click <b>+ ADD GARAGE / OTHER ROOF</b>, then click once on that roof. It will measure automatically.';if(el('measureClicked'))el('measureClicked').disabled=false;if(el('measureClickedTop'))el('measureClickedTop').disabled=false;status((structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'Main roof coverage needs review. Use the roof action beside the aerial to review or trace it.':'Main roof detected. Select KEEP OUTLINE above the aerial, or Remeasure to trace it again.',(structures[0]?.needs_remeasure||structures[0]?.automatic_review_warning)?'warn':'ok');pendingMeasurementMode=requestedMeasurementMode;if(requestedMeasurementMode==='area'||requestedMeasurementMode==='linear'){selectMeasurementTool(requestedMeasurementMode)}else{measurementViewMode='auto';updatePropertyActionButton();updateMeasurementInterface()}
  }catch(e){status(e.message+' Your existing saved or unsaved work is unchanged. Retry Load Property when ready.','error')}finally{showLoad(false)}
@@ -4490,9 +4490,11 @@ def vector_pdf_qa_script():
     return response
 
 def manual_roof_qa_enabled():
-    # Deliberate double opt-in. Never enabled for an entire plan or business type.
-    allowed={v.strip() for v in os.environ.get("AERIQUOTE_MANUAL_ROOF_QA_IDS","").split(",") if v.strip()}
-    return os.environ.get("AERIQUOTE_MANUAL_ROOF_QA","")=="1" and str(session.get("dealer_id") or "") in allowed
+    """Manual roofing is the customer default; automatic testing stays isolated."""
+    allowed={v.strip() for v in os.environ.get("AERIQUOTE_AUTOMEASURE_QA_IDS","").split(",") if v.strip()}
+    isolated=request.host.split(":")[0] in ("127.0.0.1","localhost") and not os.environ.get("RENDER_SERVICE_ID") and not os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+    automatic_test=isolated and os.environ.get("AERIQUOTE_AUTOMEASURE_QA")=="1" and str(session.get("dealer_id") or "") in allowed
+    return not automatic_test
 
 def manual_roof_session(sess):
     return bool(sess and sess.get("mode")=="manual_roof_static")
@@ -4855,7 +4857,7 @@ def perform_property_lookup(d):
 def structure():
     d=request.get_json(silent=True) or {};sess=SESSIONS.get(str(d.get("token") or ""))
     if not sess or sess.get("dealer_id")!=str(session.get("dealer_id") or ""):return jsonify(error="Property session expired. Reload the property.",user_error="Property session expired. Reload the property."),400
-    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in manual-only QA mode."),409
+    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in the manual roofing workflow."),409
     try:
         roof=building(sess["key"],float(d["latitude"]),float(d["longitude"]))
         # Fetch imagery only when the client has accepted this distinct building.
@@ -4895,7 +4897,7 @@ def structure_mask(token,mask_id):
 def locate_building():
     d=request.get_json(silent=True) or {};sess=SESSIONS.get(str(d.get("token") or ""))
     if not sess:return jsonify(error="Property session expired.",user_error="Property session expired. Reload the property."),400
-    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in manual-only QA mode."),409
+    if manual_roof_session(sess) or manual_roof_qa_enabled():return jsonify(error="Automatic roofing is unavailable in the manual roofing workflow."),409
     try:
         lat=float(d["latitude"]);lng=float(d["longitude"]);main=building(sess["key"],lat,lng);img_lat,img_lng,img_radius=roof_imagery_request(main);layers=solar_layers(sess["key"],img_lat,img_lng,img_radius)
         street_url,street_date=street_view_info(sess["key"],sess.get("formatted_address") or "",sess.get("anchor_lat"),sess.get("anchor_lng"),sess.get("anchor_lat"),sess.get("anchor_lng"))

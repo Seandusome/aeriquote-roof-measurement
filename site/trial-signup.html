@@ -41,7 +41,7 @@ footer{background:#071a3d;color:#dce6f3;margin-top:0}footer a{color:#dce6f3;text
  const params=new URLSearchParams(location.search);
  const names={roofing:'Roofing',snow:'Snow Removal',pressure:'Pressure Washing',paving:'Paving & Sealcoating',landscaping:'Landscaping',commercial:'Commercial Properties'};
  const chosen=(params.get('industry')||'roofing').toLowerCase(),industry=names[chosen]?chosen:'roofing';
- const selected=document.getElementById('selectedIndustry');selected.append(document.createTextNode('Your industry: '+names[industry]+' · '));if(industry==='roofing')document.getElementById('measurementHelp').textContent='Review automatic roof measurements where available, confirm the outline and pitch, or trace manually when needed. Apply your pricing and create branded estimates.';const change=document.createElement('a');change.href='/site/start-free-trial';change.textContent='Change';selected.append(change);
+ const selected=document.getElementById('selectedIndustry');selected.append(document.createTextNode('Your industry: '+names[industry]+' · '));if(industry==='roofing')document.getElementById('measurementHelp').textContent='Load the aerial image, trace each roof section and confirm its pitch. Apply your pricing and save branded estimates.';const change=document.createElement('a');change.href='/site/start-free-trial';change.textContent='Change';selected.append(change);
  document.getElementById('trialForm').addEventListener('submit',async function(e){
    e.preventDefault();
    const button=this.querySelector('button[type="submit"]'),error=document.getElementById('signupError');if(button.disabled)return;button.disabled=true;button.textContent='CREATING YOUR ACCOUNT…';error.hidden=true;
