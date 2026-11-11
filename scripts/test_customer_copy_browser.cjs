@@ -18,7 +18,7 @@ try{for(const width of [1440,390]){
  const overflow=async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No horizontal overflow at '+width);
  const link=page.getByRole('link',{name:'PLANS / EXTRA MEASUREMENTS',exact:true});await link.waitFor({state:'visible'});assert.equal(await link.getAttribute('href'),'/site/pricing#extra-measurements');await overflow();
  await page.screenshot({path:`${output}/owner-${width}.png`});
- const intro=page.locator('.measure-intro');assert((await intro.innerText()).includes('Confirm pitch'));await page.locator('#toolAreaBtn').screenshot({path:`${output}/measurement-copy-${width}.png`});
+ const intro=page.locator('.measure-intro');assert((await intro.innerText()).includes('Confirm pitch'));assert.equal(await page.locator('#toolAutoBtn').isVisible(),false);
  await link.click();await page.waitForURL('**/site/pricing#extra-measurements');
  const offer=page.locator('#extra-measurements');await offer.waitFor({state:'visible'});const text=await offer.innerText();
  for(const term of ['25 extra property measurements for US$25','Estimates included','carry forward without expiry','active paid or complimentary subscription','applicable tax','Purchasing is not available yet'])assert(text.includes(term),term);
