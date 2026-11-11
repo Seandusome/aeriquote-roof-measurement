@@ -6,6 +6,7 @@ on:
       - .github/workflows/qa-browser-crash-recovery.yml
       - scripts/test_*browser*.cjs
       - scripts/test_pdf_amount_layout.cjs
+      - scripts/test_profile_restore.cjs
       - scripts/fresh_user_browser_server.py
       - scripts/job_revisions_browser_server.py
       - scripts/job_revision_checks.cjs
