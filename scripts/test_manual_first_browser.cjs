@@ -16,6 +16,15 @@ change(" console.log('loaded',", " assert.equal(await page.locator('#toolAutoBtn
 change("  await page.click('#confirmRoofPitches');",`  assert.equal(await page.evaluate(()=>manualPlanes.length),1);
   await page.click('#traceBtn');await draw(pts.map(([lat,lng])=>[lat,lng+.00018]));await page.selectOption('#pitchSel','26.57');await page.evaluate(()=>pitchChanged());await page.click('#finishTrace');
   assert.equal(await page.evaluate(()=>manualPlanes.length),2);await page.click('#confirmRoofPitches');`);
+// Reopen an older-format automatic record, without new manual workflow flags.
+change(" const captureChecks=[];",` const legacy=JSON.parse(JSON.stringify(payload));legacy.customer_name='FICTIONAL LEGACY '+width;
+ legacy.quote.structures=legacy.quote.manualPlanes.map((p,i)=>({building_id:'legacy-'+i,label:'Saved Roof '+i,outline:p.points,total_roof_sqft:p.surface_sqft,roof_ground_sqft:p.surface_sqft*Math.cos(p.pitch_degrees*Math.PI/180),building_ground_sqft:p.surface_sqft*Math.cos(p.pitch_degrees*Math.PI/180),roof_coverage_ratio:1,segment_count:1,segments:[{pitch_degrees:p.pitch_degrees,area_sqft:p.surface_sqft}]}));legacy.quote.manualPlanes=[];legacy.quote.measureSource='google';delete legacy.quote.manualRoofWorkflow;delete legacy.quote.roofScopeConfirmed;
+ const oldResponse=await context.request.post('http://127.0.0.1:8765/api/estimates',{data:legacy});assert(oldResponse.ok(),await oldResponse.text());const oldId=(await oldResponse.json()).id;
+ const oldBefore=await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+oldId)).json();
+ await page.evaluate(id=>openHistoricalEstimate(id,-1),oldId);await page.waitForFunction(name=>el('rCustomerName')?.textContent===name,'FICTIONAL LEGACY '+width);assert.equal(await page.evaluate(()=>quoteSnapshot.savedPricing.total),payload.total_price);
+ assert.deepEqual(await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+oldId)).json(),oldBefore);
+ await page.evaluate(id=>openHistoricalEstimate(id,-1),saved.id);await page.waitForFunction(name=>el('rCustomerName')?.textContent===name,payload.customer_name);console.log('PASS older-format automatic saved estimate reopens unchanged',width);
+ const captureChecks=[];`);
 // Independently verify editing and a server recovery draft before returning to the saved report for PDF export.
 change(" const captureChecks=[];",` const beforeEdit=await(await context.request.get('http://127.0.0.1:8765/api/estimates/'+saved.id)).json();
  await page.click('#backToDealerBtn');await page.waitForFunction(()=>!document.body.classList.contains('report-open')&&!!sessionToken);
