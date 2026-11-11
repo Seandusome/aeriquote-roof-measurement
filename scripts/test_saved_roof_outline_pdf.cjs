@@ -1,0 +1,17 @@
+// Geometry-only report regression: no imagery, network, pricing or data writes.
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const {JSDOM}=require('jsdom');const dom=new JSDOM('<div/>');global.window=dom.window;global.document=dom.window.document;const L=require('leaflet');
+const src=fs.readFileSync(process.argv[2]||'app.py','utf8');assert(src.includes('function buildSavedRoofOutlineSnapshot('),'Missing imagery-omitted saved roof renderer');
+let canvas,vertices=[],labels=[];const host={style:{},replaceChildren(c){canvas=c}};
+const ctx={save(){},restore(){},beginPath(){},moveTo(x,y){vertices.push([x,y])},lineTo(x,y){vertices.push([x,y])},closePath(){},fill(){},stroke(){},fillRect(){},strokeRect(){},fillText(t){labels.push(t)},measureText(t){return{width:t.length*9}}};
+const c={L,Number,Math,JSON,Error,fmt:n=>Math.round(n).toLocaleString('en-US'),customerMap:null,customerRgbLayer:null,customerOverlays:[],el:id=>id==='customerMap'?host:{style:{}},document:{createElement:()=>({style:{},dataset:{},getContext:()=>ctx})},measurementLabelPosition:(x,y,w,h)=>({x:x-w/2,y:y-h/2})};vm.createContext(c);
+vm.runInContext(src.slice(src.indexOf('function activeSavedDiagramSnapshot('),src.indexOf('function savedDiagramGeometryError('))+src.split('\n').find(l=>l.startsWith('function savedDiagramFingerprint('))+src.slice(src.indexOf('function drawSavedMeasurementLabels('),src.indexOf('async function buildSavedHistoricalSnapshot(')),c);
+const ring=[[51,-114],[51,-113.9998],[51.0001,-113.9998],[51.0001,-114]];
+for(const old of [false,true]){
+ const snap={businessType:'roofing',measurementMode:'auto',measureSource:old?'google':'manual',manualPlanes:old?[]:[{points:ring.map(([lat,lng])=>({lat,lng})),pitch_degrees:22.62,surface_sqft:900}],structures:old?[{outline:ring,total_roof_sqft:900,segments:[{pitch_degrees:22.62,area_sqft:900,center:{latitude:51.00005,longitude:-113.9999}}]}]:[],commercialAreas:[{points:ring,sqft:123}],savedPricing:{area:900,taxBase:90,gstAmt:4.5,pstAmt:5.4,total:99.9}};
+ c.quoteSnapshot=snap;const frozen=JSON.stringify(snap);vertices=[];labels=[];assert.equal(c.buildSavedRoofOutlineSnapshot(),true);assert.equal(JSON.stringify(snap),frozen);assert.equal(canvas.dataset.savedRoofOutline,'true');assert.equal(canvas.dataset.diagramScope,c.savedDiagramFingerprint(snap));
+ assert.equal(labels.filter(t=>t.endsWith(' ft')).length,4);assert(labels.includes('22.6°'));assert(!labels.includes('123 ft²'),'Inactive geometry excluded');
+ const v=JSON.parse(canvas.dataset.mapView),world=256*2**v.zoom,sy=Math.sin(v.latitude*Math.PI/180),cx=(v.longitude+180)/360*world,cy=(.5-Math.log((1+sy)/(1-sy))/(4*Math.PI))*world;
+ for(let i=0;i<4;i++){const [x,y]=vertices[i],wx=cx+(x-640)*v.width/1280,wy=cy+(y-420)*v.height/840;assert(Math.abs(wx/world*360-180-ring[i][1])<1e-10);assert(Math.abs(Math.atan(Math.sinh(Math.PI*(1-2*wy/world)))*180/Math.PI-ring[i][0])<1e-10);assert(x>0&&x<1280&&y>0&&y<840)}
+}
+console.log('PASS old array and fresh object geometry, exact projected vertices, pitch/edge labels, active scope and complete financial/snapshot immutability');dom.window.close();

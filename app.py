@@ -2747,6 +2747,30 @@ function drawSavedMeasurementLabels(ctx,snap,view,width,height){
  (snap.manualPlanes||[]).forEach(st=>{const points=(st.points||[]).map(p=>[Number(p.lat??p[0]),Number(p.lng??p[1])]);if(points.length<3)return;edges(points,true,'#d97706');const bounds=L.latLngBounds(points).getCenter();label([bounds.lat,bounds.lng],Number(st.pitch_degrees||0).toFixed(1)+'°','#7a3f08')});
  return occupied;
 }
+function buildSavedRoofOutlineSnapshot(){
+ const original=quoteSnapshot||captureQuoteSnapshot(),snap=activeSavedDiagramSnapshot(original);
+ if(snap.businessType!=='roofing'||snap.measurementMode!=='auto')return false;
+ const rings=[...snap.structures.map(s=>s.outline||[]),...snap.manualPlanes.map(p=>p.points||[])].filter(p=>p.length>=3);
+ if(!rings.length)return false;
+ const host=el('customerMap');if(!host)return false;
+ const world=256*Math.pow(2,19),project=p=>{const lat=Number(p.lat??p[0]),lng=Number(p.lng??p[1]),v=Math.sin(lat*Math.PI/180);return[(lng+180)/360*world,(.5-Math.log((1+v)/(1-v))/(4*Math.PI))*world]};
+ const projected=rings.map(r=>r.map(project)),points=projected.flat();
+ if(points.some(p=>p.some(v=>!Number.isFinite(v))))throw new Error('Saved roof outline coordinates are invalid.');
+ const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
+ const width=1280,height=840,span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*width/height,1)*1.35;
+ const view={latitude:Math.atan(Math.sinh(Math.PI*(1-2*cy/world)))*180/Math.PI,longitude:cx/world*360-180,zoom:19,width:span,height:span*height/width};
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+ Object.assign(canvas.style,{display:'block',maxWidth:'100%',maxHeight:'100%',width:'auto',height:'auto',flex:'none'});
+ canvas.dataset.savedRoofOutline='true';canvas.dataset.diagramScope=savedDiagramFingerprint(original);canvas.dataset.mapView=JSON.stringify(view);
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);
+ projected.forEach((ring,i)=>{ctx.beginPath();ring.forEach((p,j)=>{const x=width/2+(p[0]-cx)*width/span,y=height/2+(p[1]-cy)*height/view.height;if(j)ctx.lineTo(x,y);else ctx.moveTo(x,y)});ctx.closePath();ctx.fillStyle='#f59e0b18';ctx.fill();ctx.strokeStyle=i<snap.structures.length?'#2d6cdf':'#d97706';ctx.lineWidth=4;ctx.stroke()});
+ canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,width,height));
+ if(customerMap){customerMap.remove();customerMap=null}customerRgbLayer=null;customerOverlays=[];
+ host.replaceChildren(canvas);host.style.display='flex';host.style.alignItems='center';host.style.justifyContent='center';
+ if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
+ if(el('reportOutlineControls'))el('reportOutlineControls').style.display='none';
+ return true;
+}
 async function buildSavedHistoricalSnapshot(){
  const host=el('customerMap');if(!host)return;
  if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
@@ -2780,6 +2804,7 @@ async function buildSavedHistoricalSnapshot(){
 async function buildCustomerMap(){
  if(!sessionToken)return;
  const imageChoice=el('streetViewChoice')?.value||'auto';
+ if(imageChoice==='none'&&buildSavedRoofOutlineSnapshot())return;
  const useAerial=imageChoice!=='none';
  const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
  const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
@@ -3102,7 +3127,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
  if(!historicalMode&&!correctionRefresh){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
- try{if(historicalMode){if(useAerial)await buildSavedHistoricalSnapshot()}else await buildCustomerMap()}catch(e){console.error('AQ:estimate-image-failed');if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
+ try{if(!useAerial)buildSavedRoofOutlineSnapshot();else if(historicalMode)await buildSavedHistoricalSnapshot();else await buildCustomerMap()}catch(e){console.error('AQ:estimate-image-failed');if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
 
  // Final business-specific estimate-summary label.
  if(currentBusinessType()==='roofing'){
@@ -3230,7 +3255,8 @@ function savedAerialPoint(point,view,frame){
 async function buildExpandedEstimatePDF(report){
  // Reuse the approved map pixels. Never resize/refit Leaflet or alter quote data.
  const options={scale:2,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',logging:false};
- const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none';
+ const outlineOnly=(el('streetViewChoice')?.value||'auto')==='none'&&!!el('customerMap')?.querySelector('canvas[data-saved-roof-outline]');
+ const hasAerial=(el('streetViewChoice')?.value||'auto')!=='none'||outlineOnly;
  const aerial=hasAerial?await html2canvas(el('customerMap'),options):null;
  const areas=(activeSavedDiagramSnapshot(quoteSnapshot||{}).commercialAreas||[]).filter(a=>a.sqft>0&&a.points?.length>=3);
  if(aerial&&areas.length){const host=el('customerMap'),savedCanvas=host.querySelector('canvas'),savedView=savedCanvas?.dataset.mapView,view=savedView?JSON.parse(savedView):null,hostRect=host.getBoundingClientRect(),savedRect=savedCanvas?.getBoundingClientRect(),frame=savedRect?{x:savedRect.left-hostRect.left,y:savedRect.top-hostRect.top,width:savedRect.width,height:savedRect.height}:null;
@@ -3250,7 +3276,7 @@ async function buildExpandedEstimatePDF(report){
  const body=document.createElement('div');Object.assign(body.style,{paddingTop:'12px',height:(877-(body.offsetTop||0))+'px'});box.appendChild(body);body.style.height=(877-body.offsetTop)+'px';
  const foot=document.createElement('div');Object.assign(foot.style,{position:'absolute',left:'24px',right:'24px',bottom:'14px',fontSize:'12px',display:'flex',justifyContent:'space-between'});const note=document.createElement('span');note.textContent=report.querySelector('.reportFoot')?.textContent||'';const number=document.createElement('span');number.dataset.pageNumber='true';foot.append(note,number);box.appendChild(foot);pages.push(box);bodies.push(body);return body}
  try{
-  const mapBody=page('PROPERTY AERIAL - MEASURED SERVICE AREAS');
+  const mapBody=page(outlineOnly?'SAVED ROOF OUTLINE - IMAGERY OMITTED':'PROPERTY AERIAL - MEASURED SERVICE AREAS');
   if(aerial){const legend=document.createElement('div');Object.assign(legend.style,{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px 14px',fontSize:'14px',paddingTop:'8px'});areas.forEach((a,i)=>{const item=document.createElement('div');item.textContent=(i+1)+'. '+(a.name||'Service Area')+' - '+fmt(a.sqft)+' ft²';legend.appendChild(item)});mapBody.appendChild(legend);const img=document.createElement('img');img.src=aerial.toDataURL('image/jpeg',.95);const fitted=expandedAerialSize(aerial.width,aerial.height,mapBody.clientWidth,mapBody.clientHeight-legend.offsetHeight-10);img.dataset.expandedAerial='true';Object.assign(img.style,{display:'block',width:fitted.width+'px',height:fitted.height+'px',margin:'0 auto'});mapBody.insertBefore(img,legend);await img.decode()}
   else{const note=document.createElement('p');note.textContent='Property imagery omitted from this estimate.';mapBody.appendChild(note)}
   const left=[],right=[];
@@ -3388,7 +3414,8 @@ async function downloadEstimatePDF(){
   // Do not rebuild the manual aerial and do not refit/recenter the map before capture.
   // The saved outline and the PDF therefore use the exact same Leaflet viewport + geometry.
   const useAerial=(el('streetViewChoice')?.value||'auto')!=='none';
-  if(useAerial&&!customerMap){if(quoteSnapshot?.savedPricing){if(el('customerMap')?.querySelector('canvas')?.dataset.diagramScope!==savedDiagramFingerprint(quoteSnapshot))await buildSavedHistoricalSnapshot()}else{await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}}
+  if(!useAerial)buildSavedRoofOutlineSnapshot();
+  else if(!customerMap){if(quoteSnapshot?.savedPricing){if(el('customerMap')?.querySelector('canvas')?.dataset.diagramScope!==savedDiagramFingerprint(quoteSnapshot))await buildSavedHistoricalSnapshot()}else{await buildCustomerMap();await new Promise(r=>setTimeout(r,220))}}
   else if(customerMap){await new Promise(r=>setTimeout(r,160))}
   const actions=report.querySelector('.reportActions'),outlineControls=el('reportOutlineControls');
   const oldActionsDisplay=actions?actions.style.display:'',oldOutlineDisplay=outlineControls?outlineControls.style.display:'';
