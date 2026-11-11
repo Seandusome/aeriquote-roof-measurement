@@ -99,9 +99,27 @@ with patch.object(a,'google_geocode_first',return_value=(200,{'status':'ZERO_RES
  assert lookup.post('/property',json={'key':'qa','address':'invalid'}).status_code==404
 assert used('qa4-lookup','lookups')==199
 for lat in (float('nan'),float('inf'),91):assert lookup.post('/property',json={'key':'qa','address':'QA coords','direct_coordinates':True,'latitude':lat,'longitude':0}).status_code==400
-with patch.object(a,'building',side_effect=TimeoutError('QA upstream timeout')):
- assert lookup.post('/property',json={'key':'qa','address':'QA coords','direct_coordinates':True,'latitude':52,'longitude':-106}).status_code==400
+# A real failure in the normal manual-first lookup path, not unused Solar.
+with patch.object(a,'google_geocode_first',side_effect=TimeoutError('QA upstream timeout')):
+ failed=lookup.post('/property',json={'key':'qa','address':'QA geocode timeout'})
+ assert failed.status_code==400,failed.json
+ assert failed.json['error']=='QA upstream timeout',failed.json
 assert used('qa4-lookup','lookups')==199
+# Valid direct coordinates intentionally bypass Solar and prepare manual imagery.
+# Preparation and a rejected imagery load must spend no allowance.
+owner('qa4-manual');manual=client('qa4-manual')
+with patch.object(a,'building',side_effect=AssertionError('Manual lookup must not call Solar')) as solar,patch.object(a,'street_view_info',return_value=(None,None)):
+ prepared=manual.post('/property',json={'key':'qa','address':'QA coords','direct_coordinates':True,'latitude':52,'longitude':-106,'prepare_only':True},headers={'Idempotency-Key':'manual-prepare'})
+ assert prepared.status_code==200,prepared.json
+ assert prepared.json['manual_roof_only'] is True and prepared.json['fallback_aerial']=='static'
+ assert prepared.json['center']=={'latitude':52.0,'longitude':-106.0}
+ solar.assert_not_called()
+assert used('qa4-manual','lookups')==199
+with patch.object(a.urllib.request,'urlopen',side_effect=TimeoutError('QA imagery timeout')):
+ failed_image=manual.get('/fallback-map/'+prepared.json['token'])
+ assert failed_image.status_code==400,failed_image.data
+ assert failed_image.get_data(as_text=True)=='QA imagery timeout'
+assert used('qa4-manual','lookups')==199
 calls=[]
 def provider(d):calls.append(1);time.sleep(.03);return a.jsonify(token='qa-fixture-token')
 with patch.object(a,'perform_property_lookup',provider):

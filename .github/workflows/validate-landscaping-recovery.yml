@@ -115,6 +115,7 @@ jobs:
       - run: node scripts/test_vector_download.cjs
       - run: node scripts/test_vector_full_report.cjs
       - run: python scripts/test_api_cost_routing.py
+      - run: python scripts/test_api_cost_routing.py --automatic
       - run: node scripts/test_logo_cache.cjs
 
   postgres_integrity:

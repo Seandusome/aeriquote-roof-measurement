@@ -8,7 +8,7 @@ function reset(){w.eval(`el('businessType').value='${industry}';resetMeasurement
 function points(ps){for(const p of ps)w.eval(`map.fire('click',{latlng:L.latLng(${p[0]},${p[1]})})`)}
 const rectangle=[[52,-106],[52,-105.9999],[52.0001,-105.9999],[52.0001,-106]];
 const crossing=[[52,-106],[52.0003,-105.9998],[52,-105.9998],[52.0002,-106]];
-reset();if(industry==='roofing')assert(w.document.querySelector('.measure-intro').textContent.includes('selected tool'));id('toolAreaBtn').click();points(crossing);const uses=w.eval('usage.area');id('areaStartBtn').click();
+reset();if(industry==='roofing')assert(w.document.querySelector('.measure-intro').textContent.includes('confirm the pitch')&&w.document.querySelector('.measure-intro').textContent.includes('trace manually when needed'));id('toolAreaBtn').click();points(crossing);const uses=w.eval('usage.area');id('areaStartBtn').click();
 assert(!w.eval('areaMeasurementSaved'));assert(w.eval('areaMode'));assert.equal(w.eval('usage.area'),uses);assert(industry==='roofing'?id('status').textContent.includes('crosses itself'):id('areaStartBtn').disabled&&id('areaHelp').textContent.includes('crosses itself'));assert(id('createEstimateBtn')?.disabled!==false);
 // Leaving an unfinished outline must not silently save its quantity.
 const pending=w.eval('JSON.stringify(areaPoints)');id('toolLinearBtn').click();assert.equal(w.eval('measurementViewMode'),'area');assert.equal(w.eval('JSON.stringify(areaPoints)'),pending);

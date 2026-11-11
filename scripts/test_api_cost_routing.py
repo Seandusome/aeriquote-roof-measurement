@@ -7,6 +7,10 @@ with tempfile.TemporaryDirectory() as tmp:
  os.environ['DATABASE_URL']='';os.environ['ESTIMATE_DB_PATH']=tmp+'/qa.db'
  import app as a
  a.GOOGLE_MAPS_API_KEY='qa-unused'
+ automatic='--automatic' in sys.argv
+ if automatic:
+  os.environ.update(AERIQUOTE_AUTOMEASURE_QA='1',AERIQUOTE_AUTOMEASURE_QA_IDS='cost-qa')
+  os.environ.pop('RENDER_SERVICE_ID',None);os.environ.pop('RENDER_EXTERNAL_HOSTNAME',None)
  con=a.estimate_db();con.execute("INSERT INTO dealers(id,dealer_name,email,password_hash,status,created_at) VALUES('cost-qa','QA ONLY','cost-qa@example.invalid','unused','active','2026-10-22')");con.execute("INSERT INTO account_allowances(dealer_id,complimentary) VALUES('cost-qa',1)");con.commit();con.close()
  c=a.app.test_client()
  with c.session_transaction() as s:s.update(dealer_id='cost-qa',account_type='owner',auth_version=0)
@@ -27,13 +31,14 @@ with tempfile.TemporaryDirectory() as tmp:
      body.update({'direct_coordinates':True,'latitude':52,'longitude':-106} if direct else {'expected_city':'Saskatoon','expected_province':'SK','expected_street_number':'2301'})
      operation=f'cost-{industry}-{mode}-{direct}';r=c.post('/property',json=body,headers={'Idempotency-Key':operation});assert r.status_code==200,r.json
      if industry=='snow' and mode=='area' and not direct:first={'operation_id':operation,'token':r.json['token']}
-     expected=1 if industry=='roofing' or '--baseline' in sys.argv else 0
+     expected=1 if industry=='roofing' and automatic or '--baseline' in sys.argv else 0
      assert count('buildingInsights')==expected,(industry,mode,direct,'Insights',calls)
      assert count('dataLayers')==expected,(industry,mode,direct,'Layers',calls)
      assert count('geocode/json')==(0 if direct else 1)
-     if industry=='roofing':assert r.json['main']['segments'][0]['pitch_degrees']==30 and r.json['main']['total_roof_sqft']>1000
+     if industry=='roofing' and expected:assert r.json['main']['segments'][0]['pitch_degrees']==30 and r.json['main']['total_roof_sqft']>1000
      elif '--baseline' not in sys.argv:
       assert r.json['fallback'] and r.json['fallback_aerial']=='static' and 'main' not in r.json
+      assert r.json['manual_roof_only'] is (industry=='roofing')
       with a.app.test_request_context('/'):
        a.session['dealer_id']='cost-qa';sess=a.SESSIONS.get(r.json['token']);assert sess['rgb'] is None and sess['mask'] is None
      print(industry,mode,'pin' if direct else 'address','Solar:',count('buildingInsights'),count('dataLayers'))
