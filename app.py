@@ -481,6 +481,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
    <div id="roofCheckCard" class="stepcard auto-only" style="margin:10px 0"><h2 style="margin-bottom:5px">Is AutoMeasure showing the correct MAIN HOUSE?</h2><div class="small">If the blue outline is on the correct main house, continue. Garage and other-roof corrections are handled separately below.</div><div class="simple-actions" style="margin-top:9px"><button class="primary" onclick="roofCheckGood()">YES — MAIN HOUSE IS CORRECT</button></div><div id="roofFixHelp" class="small" style="margin-top:7px"></div><details class="roof-advanced"><summary>ROOF CORRECTIONS / ADVANCED OPTIONS</summary><div class="roof-advanced-body"><details style="margin-top:8px"><summary>Wrong garage / extra roof included? <span class="info-tip" tabindex="0" data-tip="Use this when Google correctly measured the main house but included a garage or other roof you do not want in the quote.">ⓘ</span></summary><div class="small" style="padding:8px 0"><b>Remove only the wrong extra roof.</b> The main house stays in the quote. If you need the correct garage afterward, use <b>ADD / REMEASURE GARAGE OR OTHER ROOF</b> directly below.</div><div class="simple-actions" style="margin-top:8px"><button id="fixRoofBtn" class="ghost" onclick="toggleRoofFix()">REMOVE WRONG GARAGE / EXTRA ROOF</button></div></details><details style="margin-top:8px"><summary>Customer picture outline needs cleanup? <span class="info-tip" tabindex="0" data-tip="Picture only. Adjusting this outline does NOT change Google's square footage, pitch, or estimate price.">ⓘ</span></summary><div class="small" style="padding:8px 0">This changes the customer picture only — not square footage, pitch or price.</div><div class="simple-actions"><button id="adjustOutlineBtn" class="secondary" onclick="toggleOutlineAdjust()">ADJUST CUSTOMER OUTLINE</button><button id="finishOutlineBtn" class="primary" onclick="finishOutlineAdjust()" disabled style="display:none">FINISH OUTLINE</button><button id="undoOutlineBtn" class="ghost" onclick="undoOutlinePoint()" style="display:none">UNDO POINT</button><button id="clearOutlineBtn" class="ghost" onclick="clearAdjustedOutline()" style="display:none">USE GOOGLE OUTLINE</button></div><div id="outlineHelp" class="small" style="margin-top:7px"></div></details><details style="margin-top:12px;border-top:1px solid #d9e3dc;padding-top:9px"><summary><b>Main house measurement is wrong?</b></summary><div class="warning" style="margin-top:8px"><b>Only use this to replace the MAIN HOUSE measurement.</b> Do not use this button for a garage or other added roof.</div><div class="simple-actions" style="margin-top:8px"><button id="manualOverrideBtn" class="danger" onclick="startManualOverride()">REPLACE MAIN HOUSE MEASUREMENT</button></div></details></div></details></div><div id="commercialAreaPanel" style="display:none;padding:10px;border:1px solid #ccd7e4;border-radius:8px;margin-bottom:8px"><b>Commercial service areas</b><div id="commercialAreaList"></div><button type="button" class="secondary" id="commercialAddAreaBtn" onclick="startServiceAreaTool()">+ ADD ANOTHER SERVICE AREA</button></div><div id="areaTool" class="area-tool"><div class="area-head"><div><div class="area-title">AREA MEASURE</div><div class="small">Measure the selected service area in square feet.</div></div><div id="areaTotal" class="area-total">Area: 0 ft²</div></div><div class="area-body"><div class="simple-actions"><button id="areaCorrectBtn" type="button" class="secondary" onclick="correctAreaOutline()" style="display:none">CORRECT MEASUREMENT OUTLINE</button><button id="areaCancelCorrectionBtn" type="button" class="ghost" onclick="cancelAreaCorrection()" style="display:none">CANCEL CORRECTION</button><button id="areaStartBtn" type="button" class="secondary" onclick="toggleAreaMeasure()">START AREA MEASURE</button><button id="areaUndoBtn" type="button" class="ghost" onclick="undoAreaPoint()" style="display:none">UNDO LAST POINT</button><button id="areaClearBtn" type="button" class="ghost" onclick="clearAreaMeasure()" style="display:none">CLEAR AREA MEASUREMENT</button><button id="areaAutoBtn" type="button" class="ghost" onclick="returnAreaToAutoMeasure()" style="display:none">RETURN TO AUTOMEASURE</button></div><div id="areaHelp" class="small" style="margin-top:7px">Click Start Area Measure for a clean aerial workspace. Click around the outside edge of the service area, then save it.</div></div></div><div id="linearTool" class="linear-tool"><div class="linear-head"><div><div class="linear-title">LINEAR MEASURE</div><div class="small">Measure gutters, fencing, curbing, edging, crack sealing or any point-to-point distance.</div></div><div id="linearTotal" class="linear-total">Total: 0.0 ft</div></div><div class="linear-body"><div class="simple-actions"><button id="linearEditBtn" type="button" class="secondary" onclick="editLinearMeasure()" style="display:none">EDIT LINE</button><button id="linearSaveEditBtn" type="button" class="primary" onclick="saveLinearCorrection()" style="display:none">SAVE LINE CHANGES</button><button id="linearCancelEditBtn" type="button" class="ghost" onclick="cancelLinearCorrection()" style="display:none">CANCEL LINE EDIT</button><button id="linearStartBtn" type="button" class="secondary" onclick="toggleLinearMeasure()">START LINEAR MEASURE</button><button id="linearUndoBtn" type="button" class="ghost" onclick="undoLinearPoint()" style="display:none">UNDO LAST POINT</button><button id="linearClearBtn" type="button" class="ghost" onclick="clearLinearMeasure()" style="display:none">CLEAR LINEAR MEASUREMENT</button><button id="linearAutoBtn" type="button" class="ghost" onclick="returnToAutoMeasure()" style="display:none">RETURN TO AUTOMEASURE</button></div><div id="linearHelp" class="small" style="margin-top:7px">Click Start Linear Measure for a clean aerial workspace. Roof overlays hide while you draw. AeriQuote shows every segment and the running total. Use the measurement tools above to switch modes.</div></div></div><details id="manualRoofDetails" class="manualbox auto-only" open><summary id="manualRoofSummary">Add / Remeasure Garage or Other Roof</summary><div id="manualRoofWarning" class="warning" style="margin:8px 12px"><b>Google's confirmed MAIN HOUSE stays in the quote.</b> Use this to add or remeasure a garage, shed, addition, or other shingled roof.</div><div class="manualrow"><button id="traceBtn" class="orange" onclick="toggleTrace()">ADD / REMEASURE GARAGE OR OTHER ROOF</button><div id="tracePitchControl" class="pitch" style="display:none"><label id="manualPitchLabel" style="margin:0 0 3px" class="aeri-added-pitch-label">Pitch of Added Roof <span class="info-tip" tabindex="0" data-tip="Google supplies pitch for automatically measured roofs. For a manually traced roof, the dealer must confirm the pitch. 5/12 is only the starting default.">ⓘ</span></label><select id="pitchSel" onchange="pitchChanged()" class="pitch-select"><option value="">Select roof pitch</option><option value="18.43">4/12</option><option value="22.62" selected>5/12</option><option value="26.57">6/12</option><option value="30.26">7/12</option><option value="33.69">8/12</option><option value="36.87">9/12</option><option value="39.81">10/12</option><option value="42.51">11/12</option><option value="45">12/12</option><option value="custom">Custom°</option></select></div><input id="pitchDeg" type="hidden" value="22.62"><button id="finishTrace" class="secondary" onclick="finishTrace()" disabled style="display:none">SAVE & ADD ROOF</button><button id="undoTraceBtn" class="ghost" onclick="undoPoint()" style="display:none">UNDO LAST POINT</button><button id="clearManualBtn" class="danger" onclick="clearManual()" style="display:none">CLEAR CURRENT DRAWING</button></div><div id="pitchReminder" class="pitch-reminder"><b>Confirm the roof pitch.</b> Manual roofs start at 5/12. Change it if needed before saving.</div><div id="manualRoofHelp" class="small" style="padding:0 12px 10px">Click around only the garage or other roof you want to add, confirm its pitch, then press SAVE & ADD ROOF. The Google main house stays unchanged.</div></details>
    <details id="advancedOptions" class="advanced"><summary>Show advanced roof display options</summary><div style="padding:8px 10px"><b>Roof Outlines:</b> <select id="outlineMode" onchange="redrawRoofData()" style="width:auto"><option value="smart">Actual Roof Outline (Recommended)</option><option value="all">Show Google segment boxes</option><option value="clean">Pitch labels only</option></select></div></details>
    <div id="aerialRoofAction" class="stepcard" hidden></div>
+   <button type="button" id="widerMapboxAerial" hidden onclick="widenMapboxAerial()">Wider aerial</button>
    <div class="mapwrap"><div id="loading" class="loading" style="display:none">Loading aerial imagery…</div><div id="traceBanner" class="tracebanner">MANUAL MEASURE ON — click roof corners, then SAVE & ADD ROOF</div><div id="map"></div></div>
   </div>
   <div class="panel"><div class="ptitle">STEP 3 — Review & price</div><button type="button" class="aq-context-help" data-aq-help-topic="price">Help with this step</button><div class="side"><img id="street" class="street" alt="Actual Street View"><div id="streetMeta" class="small" style="margin-top:4px"></div><div id="jobPriceCard" class="stepcard measurement-price-card" style="margin-top:10px"><h2 id="jobPriceTitle">Price for this job</h2><label id="jobPriceLabel">Price for This Job / sq. ft. <span class="info-tip" tabindex="0" data-tip="Your dealer default loads here automatically. Change this number for any individual job and the quote recalculates immediately.">ⓘ</span></label><input id="jobPrice" type="number" step=".01" value=".95" oninput="jobPriceChanged()" onchange="jobPriceChanged()"><div id="jobPriceHelp" class="small">This is the price used for the quote. Change it anytime before creating the estimate.</div><div id="appliedJobPrice" class="good" style="margin-top:7px;padding:7px">Quote is using <b>$0.95 / sq. ft.</b></div></div><div id="estimatePeriodWrap" style="display:none;margin-top:10px"><label for="estimatePeriod">Price covers</label><select id="estimatePeriod" onchange="renderSummary()"><option value="one_time">One-time service</option><option value="visit">Per visit</option><option value="snowfall">Per snowfall</option><option value="month">Per month</option><option value="season">Per season</option><option value="year">Per year</option></select><div class="small">The calculated amount applies to this period. It is not multiplied by visits or months. Any additional services use the same period.</div></div><div id="summary"></div><div class="stepcard workflow-next"><h2>STEP 4 — Customer</h2><button type="button" class="aq-context-help" data-aq-help-topic="customer">Help with this step</button><div class="customer-grid"><div class="full"><label>Customer Name</label><input id="customerName" name="aq_job_customer_name" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Customer name" oninput="updateProgressSteps()"></div><div><label>Customer Phone</label><input id="customerPhone" name="aq_job_customer_phone" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Phone" oninput="updateProgressSteps()"></div><div><label>Customer Email</label><input id="customerEmail" name="aq_job_customer_email" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" type="email" placeholder="Email" oninput="updateProgressSteps()"></div><div class="full"><label>Customer / Job Notes <span class="small">(optional)</span></label><textarea id="customerNotes" name="aq_job_customer_notes" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" placeholder="Optional notes for this customer or job"></textarea></div></div></div><div class="stepcard workflow-next"><h2>STEP 5 — Create estimate</h2><button type="button" class="aq-context-help" data-aq-help-topic="estimate">Help with this step</button><label>Additional Services / Repairs <span class="small">(optional)</span></label><input id="extraServiceDescription" placeholder="Example: Replace damaged shingles, seal vent, minor roof repair" oninput="renderSummary()"><label style="margin-top:8px">Additional Services / Repairs Amount</label><input id="extraServiceAmount" type="number" min="0" step="0.01" value="0" oninput="renderSummary()"><div class="small" style="margin-top:5px">Added to the estimate and uses the same sales-tax setting as this job.</div><label style="margin-top:10px">Estimate images</label><select id="streetViewChoice"><option value="auto" selected>Use Aerial + Google Street View</option><option value="hide">Use Aerial + Property Assessment Placeholder</option><option value="none">Create Estimate Without Images</option></select><div class="simple-actions" style="margin-top:10px"><button id="createEstimateBtn" class="primarybig" onclick="showCustomerEstimate()" disabled>CREATE CUSTOMER ESTIMATE</button></div></div></div></div>
@@ -1035,18 +1036,21 @@ function setPropertyMarker(lat,lng){if(propertyMarker){try{map.removeLayer(prope
 function setManualCorrectionLayout(on){manualOverrideMode=!!on;if(el('garageControls'))el('garageControls').style.display=on||manualRoofQa()?'none':'';if(el('roofCheckCard'))el('roofCheckCard').style.display=on?'none':'';if(el('advancedOptions'))el('advancedOptions').style.display=on?'none':'';}
 async function startManualOverride(){if(!sessionToken){status('Load the property first.','error');return}cancelCurrentTrace();garageMode=false;roofFixMode=false;locateRoofMode=false;outlineEditMode=false;outlinePoints=[];clearOutlineTemp();clearOverlays();structures=[];manualPlanes=[];manualLayers.forEach(x=>{try{map.removeLayer(x)}catch(e){}});manualLayers=[];adjustedOutline=null;setManualCorrectionLayout(true);setManualUi(true);if(el('measureSource'))el('measureSource').value='manual';if(el('solarFallback'))el('solarFallback').style.display='block';if(el('solarFallbackText'))el('solarFallbackText').textContent='Manual measurement selected for this property. Trace the shingled roof around the customer property pin and confirm the pitch.';if(el('garageGuide'))el('garageGuide').innerHTML='<b>Manual measurement mode.</b> Google lines are hidden. Trace the customer roof shown at the property pin.';const details=el('manualRoofDetails');if(details)details.open=true;renderSummary();status('Preparing stable satellite image for manual measurement…','warn');await useStableManualAerial();setTimeout(()=>{if(!traceMode)toggleTrace()},60);status('Manual measurement mode is ready. Trace the roof corners, zoom as needed, then save.','warn')}
 function mercatorLat(y){const n=Math.PI-2*Math.PI*y;return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))}
-function staticMapBounds(lat,lng,zoom,w=640,h=640){const scale=256*Math.pow(2,zoom),x=(lng+180)/360*scale,s=Math.sin(lat*Math.PI/180),y=(.5-Math.log((1+s)/(1-s))/(4*Math.PI))*scale;const x1=x-w/2,x2=x+w/2,y1=y-h/2,y2=y+h/2;return L.latLngBounds([mercatorLat(y2/scale),(x1/scale)*360-180],[mercatorLat(y1/scale),(x2/scale)*360-180])}
-async function loadFallbackAerial(token,targetMap=map){
+function staticMapBounds(lat,lng,zoom,w=640,h=640,tileSize=256){const scale=tileSize*Math.pow(2,zoom),x=(lng+180)/360*scale,s=Math.sin(lat*Math.PI/180),y=(.5-Math.log((1+s)/(1-s))/(4*Math.PI))*scale;const x1=x-w/2,x2=x+w/2,y1=y-h/2,y2=y+h/2;return L.latLngBounds([mercatorLat(y2/scale),(x1/scale)*360-180],[mercatorLat(y1/scale),(x2/scale)*360-180])}
+async function loadFallbackAerial(token,targetMap=map,requestedZoom=null){
  const r=await fetch('/fallback-meta/'+token),d=await r.json();
  if(!r.ok)throw new Error(d.error||'Could not load fallback aerial.');
- const b=staticMapBounds(d.latitude,d.longitude,d.zoom,d.width,d.height);
+ if(requestedZoom!==null&&d.provider==='mapbox')d.zoom=requestedZoom;
+ const b=staticMapBounds(d.latitude,d.longitude,d.zoom,d.width,d.height,d.tile_size||256);
  let proxyError='';
  try{
-   const ir=await fetch('/fallback-map/'+token+'?v='+Date.now());
+   const ir=await fetch('/fallback-map/'+token+'?zoom='+d.zoom+'&v='+Date.now());
    if(!ir.ok){proxyError=(await ir.text())||'Could not load Google satellite fallback.';throw new Error(proxyError)}
-   const blob=await ir.blob(),obj=URL.createObjectURL(blob),layer=L.imageOverlay(obj,b,{opacity:1,interactive:false});layer._sgAerial=true;layer._sgAerialType='static-satellite';layer.addTo(targetMap);
+   const blob=await ir.blob(),obj=URL.createObjectURL(blob);
+   try{const probe=new Image();probe.src=obj;await probe.decode()}catch(e){URL.revokeObjectURL(obj);throw new Error('Satellite image could not decode.')}
+   const layer=L.imageOverlay(obj,b,{opacity:1,interactive:false});layer._sgAerial=true;layer._sgAerialType='static-satellite';layer._sgProvider=d.provider;layer._sgZoom=d.zoom;layer.addTo(targetMap);
    layer.once('remove',()=>{try{URL.revokeObjectURL(obj)}catch(e){}});
-   return{layer,bounds:b,method:'proxy'}
+   return{layer,bounds:b,method:'proxy',provider:d.provider,zoom:d.zoom}
  }catch(e){proxyError=e.message||String(e)}
  // If a Google key uses browser/referrer restrictions, the local Python proxy can be
  // rejected even though the same Static Maps request is allowed from this page.
@@ -2108,7 +2112,8 @@ async function preparePropertyImagery(d){
  let ready;
  try{
   const surface=['paving','pressure','landscaping','commercial','snow'].includes(currentBusinessType());
-  if(surface||d.manual_roof_only){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
+  if(d.provider==='mapbox')ready=await loadFallbackAerial(d.token,staging,d.zoom??null);
+  else if(surface||d.manual_roof_only){try{ready=await loadStandardWideAerial(d.token,staging,true,L.latLng(center.latitude,center.longitude))}catch(e){ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadFallbackAerial(d.token,staging)}}
   else if(d.fallback)ready=await loadFallbackAerial(d.token,staging);
   else{
    ready=d.exact_pin_display?await loadExactPinAerial(d.token,staging):await loadRaster('/rgb/'+d.token,staging);
@@ -2136,7 +2141,35 @@ function installPropertyImagery(ready){
  if(ready.layer._sgAerialType==='wide-3x3-mosaic')map.setView(ready.bounds.getCenter(),18,{animate:false});else frameAerial(map,ready.bounds,0);
  map.off('moveend',scheduleAerialDetail);if(ready.layer._sgAerialType==='wide-3x3-mosaic')map.on('moveend',scheduleAerialDetail);
  aerialDetailSequence++;aerialDetailKey='';aerialDetailLayer=null;
+ syncWiderAerial();
 }
+function syncWiderAerial(){const b=el('widerMapboxAerial');if(b){b.hidden=fallbackLayer?._sgProvider!=='mapbox';b.disabled=!!widenMapboxAerial.inFlight||fallbackLayer?._sgZoom<=15}}
+async function widenMapboxAerial(){
+ if(widenMapboxAerial.inFlight||fallbackLayer?._sgProvider!=='mapbox')return;
+ const token=sessionToken,zoom=fallbackLayer._sgZoom-1;
+ if(zoom<15)return;
+ widenMapboxAerial.inFlight=true;syncWiderAerial();let ready;
+ try{
+  const meta=await (await fetch('/fallback-meta/'+token)).json();
+  ready=await preparePropertyImagery({provider:'mapbox',token,zoom,center:meta});
+  if(sessionToken!==token)throw new Error('The property changed. Existing work is unchanged.');
+  const r=await fetch('/mapbox-aerial/'+token+'/commit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({zoom})});
+  if(!r.ok)throw new Error('Wider aerial could not be accepted. Retry; existing work is unchanged.');
+  installPropertyImagery(ready);redrawRoofData();status('Wider aerial loaded. Your measured points and area are unchanged.','ok');ready=null;
+ }catch(e){status(e.message||'Wider aerial unavailable. Your image and measurements are unchanged. Retry.','error')}
+ finally{if(ready)URL.revokeObjectURL(ready.layer._url);widenMapboxAerial.inFlight=false;syncWiderAerial()}
+}
+function confirmMapboxProperty(d,ready){return new Promise(resolve=>{
+ const dialog=document.createElement('dialog');dialog.id='mapboxPinConfirmation';dialog.style.cssText='max-width:560px;width:90%;border:2px solid #175bba;border-radius:12px;padding:16px';
+ dialog.innerHTML='<h2>Confirm property and pin</h2><p class="matchedAddress"></p><p>Check that this address and the centre pin identify the roof you intend to measure. Cancel if they do not match.</p><div style="position:relative"><img style="width:100%;display:block"><span aria-label="Property pin" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;background:#165ac7;border:2px solid white;border-radius:50%;padding:3px">●</span></div><p class="pinCoordinates"></p><button type="button" id="confirmMapboxPin">Use this address and pin</button> <button type="button" id="cancelMapboxPin">Cancel</button>';
+ dialog.querySelector('.matchedAddress').textContent=d.formatted_address;
+ dialog.querySelector('.pinCoordinates').textContent=d.center.latitude.toFixed(6)+', '+d.center.longitude.toFixed(6);
+ dialog.querySelector('img').src=ready.layer._url;
+ const done=value=>{dialog.close();dialog.remove();resolve(value)};
+ dialog.querySelector('#confirmMapboxPin').onclick=()=>done(true);dialog.querySelector('#cancelMapboxPin').onclick=()=>done(false);dialog.oncancel=e=>{e.preventDefault();done(false)};
+ document.body.appendChild(dialog);dialog.showModal();dialog.querySelector('#confirmMapboxPin').focus();
+})}
+
 async function loadProperty(){
  if(loadProperty.inFlight)return loadProperty.inFlight;
  loadProperty.inFlight=performLoadProperty();
@@ -2157,7 +2190,7 @@ async function performLoadProperty(){
  const authoritativeAddress=cc?(cc.lat.toFixed(6)+','+cc.lng.toFixed(6)):[enteredStreet,enteredCity,enteredProvince,propertyCountryFromProvince(enteredProvince)].join(', ');
 
  if(cc&&el('googleMatch'))el('googleMatch').textContent='Loading exact coordinates: '+authoritativeAddress;
-const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!address){status('Enter API key and address.','error');return}
+const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(("{{AERIAL_PROVIDER}}"!=="mapbox"&&!key)||!address){status('Enter API key and address.','error');return}
  try{
   status('Loading property…');showLoad(true);
   const payload=cc?{key,address,latitude:cc.lat,longitude:cc.lng,direct_coordinates:true}:{key,address,expected_city:enteredCity,expected_province:enteredProvince,expected_street_number:enteredNumber};
@@ -2167,7 +2200,8 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   let r=await fetch('/property',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':loadProperty.pending.id},body:JSON.stringify({...payload,prepare_only:true})}),d=await r.json();if(r.status===401)throw new Error('Your login expired. Keep this page open and sign in in another tab. Your previous measurements are unchanged.');if(!r.ok){if(r.status===410)loadProperty.pending=null;if(r.status===403&&d.code==='trial_limit_reached'){showLoad(false);showTrialLimit();status('Free trial complete — choose a plan to continue measuring properties.','warn');return}throw new Error(d.user_error||d.error||'Property request failed')}
   const verifyEl=el('propertyVerify');if(verifyEl){verifyEl.style.display='none';verifyEl.textContent=''}
   try{
-    if(cc){if(verifyEl){verifyEl.style.display='block';verifyEl.style.color='#176b43';verifyEl.textContent='✓ Using exact dropped-pin coordinates — address matching bypassed.'}}
+    if(d.provider==='mapbox'){/* Strict server match plus explicit image/pin confirmation below. */}
+    else if(cc){if(verifyEl){verifyEl.style.display='block';verifyEl.style.color='#176b43';verifyEl.textContent='✓ Using exact dropped-pin coordinates — address matching bypassed.'}}
     else{
     const vr=await fetch('/mapbox-test?address='+encodeURIComponent(d.formatted_address||address)),vd=await vr.json();
     if(verifyEl&&vr.ok&&vd.status==='warning'&&vd.nearby_same_number_alternatives?.length&&!skipAddressConflictOnce){
@@ -2188,18 +2222,19 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(!key||!addre
   }catch(e){if(verifyEl&&!cc)verifyEl.style.display='none'}
   skipAddressConflictOnce=false;
   const prepared=await preparePropertyImagery(d);
+  if(d.provider==='mapbox'&&!await confirmMapboxProperty(d,prepared)){URL.revokeObjectURL(prepared.layer._url);status('Property not changed. Review the address and pin before continuing.','warn');return}
   if(workspaceSaveFingerprint()!==workspaceKey)throw new Error('Your measurements or pricing changed while loading. Save your work before replacing the property.');
   if(propertyInputAddressKey()!==enteredKey)throw new Error('The address changed while imagery was loading. Review it and retry.');
-  const accepted=await fetch('/property/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation_id:loadProperty.pending.id,token:d.token})});
+  const accepted=await fetch('/property/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation_id:loadProperty.pending.id,token:d.token,address_pin_confirmed:d.provider==='mapbox'})});
   const acceptance=await accepted.json();
   if(!accepted.ok){if(accepted.status===410)loadProperty.pending=null;throw new Error(acceptance.error||'Property could not be accepted. Keep this page open and retry.');}
   loadProperty.pending=null;
  if((el('address')?.value||'')!==authoritativeAddress)['customerName','customerPhone','customerEmail','customerNotes'].forEach(id=>{if(el(id))el(id).value=''});
- resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=authoritativeAddress;syncPropertyProvince();
+ resetReportForNewProperty();exactPinDisplay=false;if(el('address'))el('address').value=d.provider==='mapbox'?d.formatted_address:authoritativeAddress;syncPropertyProvince();
   resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
-  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent='Google matched: '+(d.formatted_address||buildPropertyAddress());
+  sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent=(d.provider==='mapbox'?'Mapbox matched: ':'Google matched: ')+(d.formatted_address||buildPropertyAddress());
   let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))setPropertyRegion(prov);syncPropertyProvince()}
-  el('street').style.visibility='visible';el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
+  el('street').style.visibility=d.provider==='mapbox'?'hidden':'visible';if(d.provider!=='mapbox')el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
   installPropertyImagery(prepared);
   // Commercial surface measurements must never run the roof AutoMeasure path.
   // Use the property satellite image, then activate the selected surface tool.
@@ -2969,7 +3004,7 @@ async function resumeSavedEstimateWorkspace(){
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
  const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setPropertyRegion(province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
  setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
- if(d.provider==='mapbox')await loadFallbackAerial(d.token);else await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
+ if(d.provider==='mapbox')installPropertyImagery(await preparePropertyImagery(d));else await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
  redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
  savedPropertyEditActive=true;quoteSnapshot=null;lastHistorySaveKey='';
  updatePropertyActionButton();updateAreaUi();updateLinearUi();renderSummary();
@@ -4527,7 +4562,7 @@ def manual_roof_session(sess):
     return bool(sess and sess.get("mode")=="manual_roof_static")
 
 @app.route("/")
-def home():return render_template_string(HTML, VECTOR_PDF_QA_FLAG="1" if vector_pdf_qa_enabled() else "0", MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), DRAFT_PRINCIPAL=__import__("workspace_drafts").principal(session), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
+def home():return render_template_string(HTML, VECTOR_PDF_QA_FLAG="1" if vector_pdf_qa_enabled() else "0", MANUAL_ROOF_QA_FLAG="1" if manual_roof_qa_enabled() else "0", ACCOUNT_ID=str(session.get("dealer_id") or ""), DRAFT_PRINCIPAL=__import__("workspace_drafts").principal(session), GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, AERIAL_PROVIDER=AERIAL_PROVIDER, IS_HEAD_OFFICE=is_head_office(), IS_EMPLOYEE=is_employee(), IS_DEALER_OWNER=is_dealer_owner())
 @app.get("/mapbox-test")
 def mapbox_test():
     address = request.args.get("address", "").strip()
@@ -4819,14 +4854,43 @@ def accept_property():
         receipt=con.execute("SELECT response_json FROM estimate_save_receipts WHERE dealer_id=? AND operation_id=?",(dealer_id,"lookup:"+operation)).fetchone()
         if receipt:return jsonify(ok=True)
         if not SESSIONS.get(token):return jsonify(error="Property preparation expired. Retry Load Property."),410
+        if SESSIONS[token].get("provider")=="mapbox" and d.get("address_pin_confirmed") is not True:
+            return jsonify(error="Confirm this address and pin before tracing."),409
         allowed,used,limit=consume_property_lookup(dealer_id,con,operation_id="lookup:"+operation if operation else None)
         if not allowed:return jsonify(error="Property lookup allowance reached. Existing work is unchanged."),403
         con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"lookup:"+operation,pending["payload_hash"],pending["response_json"]))
         con.commit();return jsonify(ok=True)
     finally:con.close()
 
+def mapbox_property_lookup(d):
+    from mapbox_provider import verified_address
+    address=str(d.get("address") or "").strip()
+    if not address or d.get("direct_coordinates"):
+        return jsonify(error="Mapbox requires a street address with a verified rooftop pin."),400
+    if not d.get("prepare_only"):
+        return jsonify(error="Confirm the address, pin and aerial before accepting this property."),409
+    industry=d.get("business_type","roofing")
+    if industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}:
+        return jsonify(error="Unknown measurement industry."),400
+    if not MAPBOX_ACCESS_TOKEN:return jsonify(error="Mapbox is not configured."),503
+    try:
+        query=urllib.parse.urlencode({"q":address,"access_token":MAPBOX_ACCESS_TOKEN,"limit":1,"autocomplete":"false"})
+        with urllib.request.urlopen("https://api.mapbox.com/search/geocode/v6/forward?"+query,timeout=12) as upstream:
+            result=json.loads(upstream.read(1_000_000))
+        features=result.get("features") or []
+        if not features:return jsonify(error="Mapbox could not find that address. Check it and retry."),404
+        try:formatted,lat,lng=verified_address(features[0],address)
+        except ValueError as error:
+            return jsonify(error=str(error),matched_address=(features[0].get("properties") or {}).get("full_address")),409
+        token=create_session('',lat,lng,mode="manual_roof_static" if industry=="roofing" else "surface_static",formatted_address=formatted)
+        SESSIONS[token].update(provider="mapbox",fallback_zoom=19)
+        return jsonify(provider="mapbox",token=token,manual_roof_only=industry=="roofing",fallback=True,center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts={},requires_pin_confirmation=True)
+    except (OSError,ValueError,TypeError,KeyError):
+        return jsonify(error="Mapbox address lookup is unavailable. Existing work is unchanged. Retry."),502
+
 def perform_property_lookup(d):
     key=str(d.get("key") or "").strip();address=str(d.get("address") or "").strip()
+    if AERIAL_PROVIDER=="mapbox":return mapbox_property_lookup(d)
     if not key or not address:return jsonify(error="API key and address are required."),400
     industry=d.get("business_type","roofing")
     if not isinstance(industry,str) or industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}:
@@ -5505,11 +5569,23 @@ def wide_aerial(token):
     except Exception as e:
         return Response(str(e).replace(sess.get("key") or "","[API KEY REDACTED]"),status=400,content_type="text/plain; charset=utf-8")
 
+@app.post("/mapbox-aerial/<token>/commit")
+def commit_mapbox_aerial(token):
+    sess=SESSIONS.get(token)
+    if not sess or sess.get("dealer_id")!=str(session.get("dealer_id") or ""):
+        return jsonify(error="Property session expired."),404
+    zoom=(request.get_json(silent=True) or {}).get("zoom")
+    if sess.get("provider")!="mapbox" or type(zoom) is not int or zoom not in sess.get("mapbox_frames",{}):
+        return jsonify(error="Load the replacement aerial before accepting it."),409
+    sess["fallback_zoom"]=zoom;sess["fallback_cache"]=sess["mapbox_frames"][zoom]
+    SESSIONS.persist(token)
+    return jsonify(ok=True)
+
 @app.get("/fallback-meta/<token>")
 def fallback_meta(token):
     sess=SESSIONS.get(token)
     if not sess:return jsonify(error="Session expired"),404
-    return jsonify(latitude=sess.get("lat"),longitude=sess.get("lng"),zoom=sess.get("fallback_zoom",19 if sess.get("provider")=="mapbox" else 20),width=640,height=640,provider=sess.get("provider","google"))
+    return jsonify(latitude=sess.get("lat"),longitude=sess.get("lng"),zoom=sess.get("fallback_zoom",19 if sess.get("provider")=="mapbox" else 20),width=640,height=640,provider=sess.get("provider","google"),tile_size=512 if sess.get("provider")=="mapbox" else 256)
 
 @app.get("/fallback-map/<token>")
 def fallback_map(token):
@@ -5517,19 +5593,20 @@ def fallback_map(token):
     if not sess:return Response("Session expired",status=404)
     if sess.get("provider")=="mapbox":
         if not MAPBOX_ACCESS_TOKEN:return Response("Mapbox imagery unavailable",status=503)
-        if sess.get("fallback_cache") is None:
-            zoom=sess.get("fallback_zoom",19)
+        try:zoom=int(request.args.get("zoom",sess.get("fallback_zoom",19)))
+        except (ValueError,TypeError):return Response("Invalid aerial zoom",status=400)
+        if not 15<=zoom<=19:return Response("Invalid aerial zoom",status=400)
+        frames=sess.setdefault("mapbox_frames",{})
+        if zoom not in frames:
             url=f'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/{sess["lng"]},{sess["lat"]},{zoom},0,0/640x640?'
             try:
                 with urllib.request.urlopen(url+urllib.parse.urlencode({"access_token":MAPBOX_ACCESS_TOKEN}),timeout=12) as upstream:
-                    content_type=upstream.headers.get_content_type()
-                    body=upstream.read(5_000_001)
+                    content_type=upstream.headers.get_content_type();body=upstream.read(5_000_001)
                 if not content_type.startswith("image/") or not 0<len(body)<=5_000_000:
                     return Response("Mapbox imagery unavailable",status=502)
-            except (OSError,ValueError):
-                return Response("Mapbox imagery unavailable",status=502)
-            sess["fallback_cache"]=(content_type,body)
-        content_type,body=sess["fallback_cache"]
+            except (OSError,ValueError):return Response("Mapbox imagery unavailable",status=502)
+            frames[zoom]=(content_type,body)
+        content_type,body=frames[zoom]
         return Response(body,content_type=content_type)
     try:
         if sess.get("fallback_cache") is None:
