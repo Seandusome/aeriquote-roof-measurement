@@ -4870,7 +4870,7 @@ def mapbox_property_lookup(d):
     if not d.get("prepare_only"):
         return jsonify(error="Confirm the address, pin and aerial before accepting this property."),409
     industry=d.get("business_type","roofing")
-    if industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}:
+    if not isinstance(industry,str) or industry not in {"roofing","snow","pressure","paving","landscaping","commercial"}:
         return jsonify(error="Unknown measurement industry."),400
     if not MAPBOX_ACCESS_TOKEN:return jsonify(error="Mapbox is not configured."),503
     try:

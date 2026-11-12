@@ -29,6 +29,7 @@ with tempfile.TemporaryDirectory() as tmp:
   def __exit__(self,*args):pass
   def read(self,*args):return self.body
  def geocode(*args,**kwargs):return Reply(json.dumps({'features':[feature]}).encode())
+ for invalid in [[],{},1]:assert c.post('/property',json={'business_type':invalid,'address':'QA','prepare_only':True},headers={'Idempotency-Key':'invalid-'+str(invalid)}).status_code==400
  before=dbstate();body={'address':feature['properties']['full_address'],'business_type':'roofing','prepare_only':True}
  with patch.object(a.urllib.request,'urlopen',side_effect=geocode):r=c.post('/property',json=body,headers={'Idempotency-Key':'rebuild-1'})
  assert r.status_code==200,r.json
