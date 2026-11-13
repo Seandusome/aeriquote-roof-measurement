@@ -425,6 +425,7 @@ HTML = r"""<!doctype html>
 /* Leaflet removes its touch-drag CSS when panning is disabled. Keep native page
    gestures from taking over a line correction; Leaflet still handles pinch zoom. */
 #map.linear-correcting,#map.polygon-correcting{touch-action:none}
+.roof-edit-handle{touch-action:none!important;cursor:move;display:flex!important;align-items:center;justify-content:center;background:transparent;border:0}.roof-edit-handle span{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:3px solid #d97706;border-radius:50%;background:#fff;color:#713f12;font-size:13px;font-weight:800;box-sizing:border-box;box-shadow:0 1px 4px #0008;pointer-events:none}
 .surface-simple #jobMeasurements{display:none}.surface-simple .measure-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}.surface-simple #commercialAreaPanel{padding:12px!important;background:#fff;border-radius:10px!important}.surface-saved-area{display:grid;grid-template-columns:minmax(220px,1fr) minmax(235px,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #e4e9ed;margin-top:8px}.surface-saved-area .simple-actions{flex-wrap:wrap}.surface-saved-area button{font-size:12px;padding:8px}.surface-simple #areaStartBtn,.surface-simple #linearStartBtn,.surface-simple #linearSaveEditBtn{order:0}.surface-simple #areaCancelCorrectionBtn,.surface-simple #surfaceLineCancel,.surface-simple #linearCancelEditBtn{order:1}.surface-simple #areaUndoBtn,.surface-simple #linearUndoBtn{order:2}.surface-simple #areaClearBtn,.surface-simple #linearClearBtn{order:3}@media(max-width:1150px){.surface-saved-area{grid-template-columns:1fr}.surface-area-heading label{max-width:none}}.surface-area-heading,.surface-area-price{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.surface-area-heading label{flex:1;margin:0;max-width:420px}.surface-area-heading strong{white-space:nowrap}.surface-saved-area label{font-size:12px;color:#536579;font-weight:700}.surface-saved-area label input{display:block;margin-top:4px}.surface-area-price label{max-width:135px;margin:0}.surface-area-price .small{color:#39765a}.surface-simple #surfaceLineMore{margin-top:8px}.surface-simple #surfaceLineMore summary{font-size:13px;font-weight:700;color:#52677a;cursor:pointer}.surface-simple #surfaceLineMore .simple-actions{margin-top:8px}@media(max-width:600px){.surface-area-heading,.surface-area-price{flex-wrap:wrap}.surface-area-price .small{width:100%}}
 
 .area-tool{margin:10px 0;border:1px solid #d9e3dc;border-radius:10px;background:#fbfdfc;overflow:hidden}.area-tool .area-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;background:#f7f5ff;border-bottom:1px solid #e6e0f5}.area-tool .area-title{font-weight:900;color:#102a43;letter-spacing:.2px}.area-tool .area-body{padding:10px 12px}.area-total{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;background:#f1edff;color:#5630a5;font-weight:900;border:1px solid #d7ccf7}.area-point{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #7357b8;box-shadow:0 1px 4px #0004}.area-label{background:#fff;border:2px solid #7357b8;border-radius:6px;padding:3px 6px;font-size:12px;font-weight:900;color:#49348a;white-space:nowrap;box-shadow:0 1px 4px #0003}.area-active #map{cursor:crosshair}
@@ -505,7 +506,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
    <div class="cta"><strong id="rCtaHeading">YOUR ESTIMATE</strong><div id="rCtaText" style="margin-top:5px;color:#f59d0a;font-weight:800"></div><div style="margin-top:9px"><b id="rDealerCompany"></b></div><div id="rDealerName" style="margin-top:2px"></div><div class="dealerContactCompact"><span id="rPhoneWrap">Call or Text: <b id="rPhone"></b></span><span id="rDealerEmailWrap"><span class="contactSep">•</span><span id="rDealerEmail"></span></span><br><span id="rDealerWebsite"></span><span id="rDealerAddressWrap"><span class="contactSep">•</span><span id="rDealerAddress"></span></span></div></div>
  </div></div>
  <div class="reportFoot">Remote aerial measurements are used for estimating. Final property conditions and measurements should be confirmed before work begins.</div>
- <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="printEstimate()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onpointerdown="armReportClose(event)" onclick="closeReport(event)">Back to Dealer View</button></div>
+ <div class="reportActions"><span id="reportOutlineHelp" class="reportEditHelp" style="display:none"></span><label style="font-weight:700">PDF layout <select id="estimatePdfLayout" aria-label="PDF layout"><option value="single">Single page</option><option value="expanded">Expanded - aerial, then details</option>{% if VECTOR_PDF_QA_FLAG == "1" %}<option value="vector">Vector Diagram - QA only</option>{% endif %}</select></label><button id="downloadPdfBtn" class="primary" onclick="downloadEstimatePDF()">DOWNLOAD ESTIMATE PDF</button><button class="secondary" onclick="printEstimate()">PRINT ESTIMATE</button><button class="primary" onclick="startNewProperty()">NEW PROPERTY / NEXT ESTIMATE</button><button id="backToDealerBtn" class="secondary" onclick="closeReport(event)">Back to Dealer View</button></div>
  <p id="pdfLayoutHelp" class="pdfLayoutHelp" role="status" style="display:none;color:#664500;background:#fff7e6;padding:10px;border-radius:8px"></p>
 </div></div>
 
@@ -518,6 +519,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
 <script>
 const MANUAL_ROOF_QA='{{ MANUAL_ROOF_QA_FLAG }}'==='1';
 let manualRoofEditIndex=null;
+let manualRoofEditScopeConfirmed=null;
 function manualRoofQa(){return typeof MANUAL_ROOF_QA!=='undefined'&&MANUAL_ROOF_QA&&currentBusinessType()==='roofing'}
 let map=L.map('map',{maxZoom:22,zoomControl:true,zoomSnap:.25,zoomDelta:.5}).setView([52.1522,-106.6595],19);
 let skipAddressConflictOnce=false;
@@ -1735,12 +1737,19 @@ function beginManualRoofSection(){
 }
 function editManualRoofSection(index){
  if(!manualRoofQa()||traceMode||!manualPlanes[index])return;
- beginManualRoofSection();manualRoofEditIndex=index;syncMeasurementEditMapDragging();
+ const plane=manualPlanes[index],confirmed=!!el('manualRoofScopeConfirmed')?.checked;
+ beginManualRoofSection();manualRoofEditIndex=index;manualRoofEditScopeConfirmed=confirmed;
+ if(el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=confirmed;
+ const pitch=Number(plane.pitch_degrees),valid=plane.pitch_confirmed&&Number.isFinite(pitch)&&pitch>=0&&pitch<80;
+ const option=Array.from(el('pitchSel').options).find(o=>o.value!==''&&o.value!=='custom'&&Number(o.value)===pitch);
+ el('pitchSel').value=valid?(option?option.value:'custom'):'';
+ el('pitchDeg').value=valid?String(pitch):'';el('pitchDeg').type=valid&&!option?'number':'hidden';
+ syncMeasurementEditMapDragging();
  const points=manualPlanes[index].points.map(p=>L.latLng(p.lat??p[0],p.lng??p[1]));
  points.forEach(addTracePoint);clearTempTrace();
- tracePoints.forEach((p,i)=>{const marker=L.marker(p,{draggable:true}).addTo(map);marker.on('dragend',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine();manualRoofInvalidateScope()});tempTraceLayers.push(marker)});
+ tracePoints.forEach((p,i)=>{const marker=L.marker(p,{draggable:true,autoPan:false,title:'Drag roof corner '+(i+1),icon:L.divIcon({className:'roof-edit-handle',html:'<span>'+(i+1)+'</span>',iconSize:[44,44],iconAnchor:[22,22]})}).addTo(map);marker.on('drag',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine()});marker.on('dragend',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine();renderSummary()});tempTraceLayers.push(marker)});
  redrawTraceLine();el('finishTrace').textContent='SAVE SECTION CHANGES';
- status('Drag corners or start over to correct this section. Confirm its pitch before saving. Cancel preserves the saved section.','ok');
+ renderSummary();status('Drag the numbered corners, then Save Section Changes. The saved pitch is retained; change it only if needed. Cancel preserves the saved section.','ok');
 }
 function deleteManualRoofSection(index){
  if(!manualRoofQa()||traceMode||!manualPlanes[index])return;
@@ -1825,7 +1834,7 @@ function toggleTrace(forReplacement=false){if(manualRoofQa()&&!traceMode){el('pi
 function addTracePoint(ll){if(roofOutlineReviewMode){status('Drag the numbered corners to correct this outline. Cancel and use Remeasure This Roof to draw a different boundary.','warn');return}tracePoints.push(ll);let n=tracePoints.length,pt=L.marker(ll,{interactive:false,icon:L.divIcon({className:'',html:`<div class="point-label">${n}</div>`,iconAnchor:[12,12]})}).addTo(map);tempTraceLayers.push(pt);redrawTraceLine();const ready=tracePoints.length>=3;el('finishTrace').disabled=!ready;if(ready){const action=roofRemeasureTarget?'SAVE REPLACEMENT ROOF':((manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0)?'FINISH MEASUREMENT':'SAVE & ADD ROOF';if(el('manualRoofHelp'))el('manualRoofHelp').innerHTML=`<b>✓ Roof traced.</b> Confirm the pitch, then click <b>${action}</b>.`;status('Roof traced — confirm pitch, then save.','ok')}updateManualReplacementUi();if(manualRoofQa())syncRoofNextAction()}
 function redrawTraceLine(){tempTraceLayers.filter(x=>x._traceLine).forEach(x=>map.removeLayer(x));tempTraceLayers=tempTraceLayers.filter(x=>!x._traceLine);if(tracePoints.length>=2){let c=[...tracePoints];if(tracePoints.length>=3)c.push(tracePoints[0]);let l=L.polyline(c,{color:'#d97706',weight:4,dashArray:'6,5'}).addTo(map);l._traceLine=true;tempTraceLayers.push(l)}}
 function clearTempTrace(){tempTraceLayers.forEach(x=>{try{map.removeLayer(x)}catch(e){}});tempTraceLayers=[];if(traceSavePopup){try{map.closePopup(traceSavePopup)}catch(e){}traceSavePopup=null}}
-function cancelCurrentTrace(){if(manualRoofQa())manualRoofEditIndex=null;el('traceBtn')?.closest('.manualrow')?.classList.remove('roof-replacement-row');if(el('manualRoofSaveFeedback'))el('manualRoofSaveFeedback').remove();const restoreRoofDisplay=!!roofRemeasureTarget;if(restoreRoofDisplay){el('pitchSel').value='22.62';el('pitchDeg').value='22.62';el('pitchDeg').type='hidden'}roofOutlineReviewMode=false;roofReviewBoundarySource='detected';roofReviewManualIndices=[];roofRemeasureTarget=null;if(el('roofRemeasurePitch'))el('roofRemeasurePitch').style.display='none';traceMode=false;tracePoints=[];clearTempTrace();setTraceControls(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;el('traceBtn').textContent=mainManual?'START MAIN HOUSE MEASUREMENT':'ADD / REMEASURE GARAGE OR OTHER ROOF';el('traceBtn').className='orange';el('traceBanner').style.display='none';el('finishTrace').textContent=mainManual?'FINISH MEASUREMENT':'SAVE & ADD ROOF';el('finishTrace').disabled=true;if(restoreRoofDisplay){redrawRoofData();redrawManualDisplayLayers();renderSummary()}syncRoofWorkspace()}
+function cancelCurrentTrace(){if(manualRoofQa()){if(manualRoofEditScopeConfirmed!==null&&el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=manualRoofEditScopeConfirmed;manualRoofEditIndex=null;manualRoofEditScopeConfirmed=null;}el('traceBtn')?.closest('.manualrow')?.classList.remove('roof-replacement-row');if(el('manualRoofSaveFeedback'))el('manualRoofSaveFeedback').remove();const restoreRoofDisplay=!!roofRemeasureTarget;if(restoreRoofDisplay){el('pitchSel').value='22.62';el('pitchDeg').value='22.62';el('pitchDeg').type='hidden'}roofOutlineReviewMode=false;roofReviewBoundarySource='detected';roofReviewManualIndices=[];roofRemeasureTarget=null;if(el('roofRemeasurePitch'))el('roofRemeasurePitch').style.display='none';traceMode=false;tracePoints=[];clearTempTrace();setTraceControls(false);const mainManual=(manualOverrideMode||fallbackMode)&&structures.length===0&&manualPlanes.length===0;el('traceBtn').textContent=mainManual?'START MAIN HOUSE MEASUREMENT':'ADD / REMEASURE GARAGE OR OTHER ROOF';el('traceBtn').className='orange';el('traceBanner').style.display='none';el('finishTrace').textContent=mainManual?'FINISH MEASUREMENT':'SAVE & ADD ROOF';el('finishTrace').disabled=true;if(restoreRoofDisplay){redrawRoofData();redrawManualDisplayLayers();renderSummary()}syncRoofWorkspace()}
 function undoPoint(){if(!traceMode||!tracePoints.length)return;let keep=tracePoints.slice(0,-1);tracePoints=[];clearTempTrace();keep.forEach(addTracePoint)}
 function finishTrace(){
  if(manualRoofQa()){
@@ -2023,7 +2032,7 @@ function resetReportForNewProperty(){
  customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;reportOutlines={};reportOutlineTarget=null;reportOutlineEditMode=false;reportOutlinePoints=[];reportOutlineTemp=[];reportCloseArmedAt=0;estimateOpenInProgress=false;pdfInProgress=false;if(customerMapBuildTimer){clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null}if(el('createEstimateBtn'))el('createEstimateBtn').disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false;
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
-function resetMeasurementForNewProperty(){areaRemeasureMode=false;manualRoofEditIndex=null;manualRoofInvalidateScope();
+function resetMeasurementForNewProperty(){areaRemeasureMode=false;manualRoofEditIndex=null;manualRoofEditScopeConfirmed=null;manualRoofInvalidateScope();
  saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;loadProperty.loadedAddressKey=null;
  savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;if(el('estimatePeriod'))el('estimatePeriod').value='one_time';
  surfaceLineDraftOriginal=null;areaCorrectionOriginal=null;
@@ -3003,6 +3012,7 @@ function restoreSavedQuoteFields(p,snap,pr){
  setSavedField('commercialLinearRate',snap.commercialLinearRate??0);
  for(const [id,value] of Object.entries({landscapingAreaRate:snap.landscapingAreaRate,pressureAreaRate:snap.pressureAreaRate,pavingAreaRate:snap.pavingAreaRate}))if(value!==undefined)setSavedField(id,value);
  if(surfaceIndustry())setSavedField('jobPrice',measurementViewMode==='linear'&&snap.businessType!=='commercial'?savedLinearJobRate:(commercialAreas[0]?.rate??pr.price??0));
+ if(manualRoofQa()){renderSummary();if(el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=!!snap.roofScopeConfirmed&&!manualRoofConfirmationBlocked();syncRoofNextAction()}
 }
 async function resumeSavedEstimateWorkspace(){
  const context=savedEstimateEditContext;if(!context)return;
@@ -3537,23 +3547,19 @@ async function downloadEstimatePDF(){
    pdfInProgress=false;if(btn){btn.disabled=!!reportOutlineEditMode;btn.textContent=oldText||'DOWNLOAD ESTIMATE PDF'}
  }
 }
-let reportCloseArmedAt=0;
-function armReportClose(e){
- const b=el('backToDealerBtn');
- if(!b||!e||e.currentTarget!==b)return;
- reportCloseArmedAt=Date.now();
-}
+let reportCloseInProgress=false;
 async function closeReport(e){
- if(reportMeasurementCorrection)return;
+ if(reportMeasurementCorrection||reportCloseInProgress)return;
  const b=el('backToDealerBtn');
- const deliberate=!!(e&&b&&e.currentTarget===b&&reportCloseArmedAt&&Date.now()-reportCloseArmedAt<1500);
- reportCloseArmedAt=0;
- if(!deliberate)return;
- if(savedEstimateEditContext){b.disabled=true;try{await resumeSavedEstimateWorkspace()}catch(err){status(err.message||'Could not restore saved job for editing.','error');return}finally{b.disabled=false}}
- document.body.classList.remove('report-open');
- el('reportOverlay').style.display='none';
- if(customerMap){try{customerMap.remove()}catch(err){}customerMap=null}
- customerRgbLayer=null;customerOverlays=[];
+ if(!e||!b||e.currentTarget!==b)return;
+ reportCloseInProgress=true;const label=b.textContent;b.disabled=true;b.textContent='OPENING EDITOR…';
+ try{
+  if(savedEstimateEditContext)await resumeSavedEstimateWorkspace();
+  document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
+  if(customerMap){try{customerMap.remove()}catch(err){}customerMap=null}
+  customerRgbLayer=null;customerOverlays=[];
+ }catch(err){const message=err.message||'Could not restore saved job for editing.';status(message,'error');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=message+' Please try Edit Measurements / Price again.';}
+ finally{reportCloseInProgress=false;b.disabled=false;b.textContent=label}
 }
 function saveAssessment(){if(!structures.length&&!manualPlanes.length){status('Measure a property first.','error');return}let rec={date:new Date().toISOString(),address:el('address').value,structures:structures.map(s=>({label:s.label,area:s.total_roof_sqft,segments:s.segment_count,pitch:s.segments.length?s.segments.reduce((a,x)=>a+x.pitch_degrees,0)/s.segments.length:0,date:s.imagery_date,quality:s.imagery_quality})),manualArea:manualTotal(),measurementSource:el('measureSource')?el('measureSource').value:'google',pricing:priceCalc(),streetDate:el('streetMeta').textContent};let h=[];try{h=JSON.parse(localStorage.getItem('sgSavedAssessments')||'[]')}catch(e){}h.unshift(rec);localStorage.setItem('sgSavedAssessments',JSON.stringify(h.slice(0,50)));usage.saved++;updateUsage();status('Assessment saved in this browser for the demo. Production CRM will save it to the customer record.','ok')}
 
