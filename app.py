@@ -1737,6 +1737,7 @@ function beginManualRoofSection(){
 }
 function editManualRoofSection(index){
  if(!manualRoofQa()||traceMode||!manualPlanes[index])return;
+ el('estimateRoofSectionPicker')?.remove();
  const plane=manualPlanes[index],confirmed=!!el('manualRoofScopeConfirmed')?.checked;
  beginManualRoofSection();manualRoofEditIndex=index;manualRoofEditScopeConfirmed=confirmed;
  if(el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=confirmed;
@@ -1746,6 +1747,7 @@ function editManualRoofSection(index){
  el('pitchDeg').value=valid?String(pitch):'';el('pitchDeg').type=valid&&!option?'number':'hidden';
  syncMeasurementEditMapDragging();
  const points=manualPlanes[index].points.map(p=>L.latLng(p.lat??p[0],p.lng??p[1]));
+ map.fitBounds(L.latLngBounds(points).pad(.2),{padding:[35,35],maxZoom:20.5,animate:false});
  points.forEach(addTracePoint);clearTempTrace();
  tracePoints.forEach((p,i)=>{const marker=L.marker(p,{draggable:true,autoPan:false,title:'Drag roof corner '+(i+1),icon:L.divIcon({className:'roof-edit-handle',html:'<span>'+(i+1)+'</span>',iconSize:[44,44],iconAnchor:[22,22]})}).addTo(map);marker.on('drag',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine()});marker.on('dragend',()=>{tracePoints[i]=marker.getLatLng();redrawTraceLine();renderSummary()});tempTraceLayers.push(marker)});
  redrawTraceLine();el('finishTrace').textContent='SAVE SECTION CHANGES';
@@ -2032,7 +2034,7 @@ function resetReportForNewProperty(){
  customerRgbLayer=null;customerOverlays=[];quoteSnapshot=null;reportOutlines={};reportOutlineTarget=null;reportOutlineEditMode=false;reportOutlinePoints=[];reportOutlineTemp=[];reportCloseArmedAt=0;estimateOpenInProgress=false;pdfInProgress=false;if(customerMapBuildTimer){clearTimeout(customerMapBuildTimer);customerMapBuildTimer=null}if(el('createEstimateBtn'))el('createEstimateBtn').disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false;
  const report=document.querySelector('#reportOverlay .report');if(report)report.classList.remove('estimate-editing');
 }
-function resetMeasurementForNewProperty(){areaRemeasureMode=false;manualRoofEditIndex=null;manualRoofEditScopeConfirmed=null;manualRoofInvalidateScope();
+function resetMeasurementForNewProperty(){el('estimateRoofSectionPicker')?.remove();areaRemeasureMode=false;manualRoofEditIndex=null;manualRoofEditScopeConfirmed=null;manualRoofInvalidateScope();
  saveEstimateHistory.baseVersion=null;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=null;loadProperty.loadedAddressKey=null;
  savedEstimateEditContext=null;savedPropertyEditActive=false;savedStreetImageData='';savedJobDetails=null;if(el('estimatePeriod'))el('estimatePeriod').value='one_time';
  surfaceLineDraftOriginal=null;areaCorrectionOriginal=null;
@@ -3093,7 +3095,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  if(el('pdfLayoutHelp')){el('pdfLayoutHelp').textContent='';el('pdfLayoutHelp').style.display='none'}
  if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
- if(el('backToDealerBtn'))el('backToDealerBtn').textContent=historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
+ if(el('backToDealerBtn'))el('backToDealerBtn').textContent=manualRoofQa()&&measurementViewMode==='auto'&&manualPlanes.length?'EDIT MEASUREMENT':historicalMode?'EDIT MEASUREMENTS / PRICE':'Back to Dealer View';
  // Historical aerials are frozen canvases, not interactive outline editors.
  // Never leave another report's roof/area/line buttons above the saved image.
  if(historicalMode&&el('reportOutlineControls')){el('reportOutlineControls').style.display='none';el('reportOutlineTargetButtons')?.replaceChildren()}
@@ -3547,6 +3549,17 @@ async function downloadEstimatePDF(){
    pdfInProgress=false;if(btn){btn.disabled=!!reportOutlineEditMode;btn.textContent=oldText||'DOWNLOAD ESTIMATE PDF'}
  }
 }
+function openEstimateRoofEditor(){
+ if(!manualRoofQa()||measurementViewMode!=='auto'||!manualPlanes.length)return;
+ el('estimateRoofSectionPicker')?.remove();
+ if(manualPlanes.length===1){editManualRoofSection(0);el('map')?.scrollIntoView({block:'center'});return}
+ const picker=document.createElement('section');picker.id='estimateRoofSectionPicker';picker.className='stepcard';picker.setAttribute('aria-label','Choose roof section to edit');
+ const title=document.createElement('h2');title.textContent='Choose the roof section to edit';picker.append(title);
+ const help=document.createElement('p');help.textContent='Select one section below. Its corners open for editing immediately; saved pitches stay unchanged.';picker.append(help);
+ manualPlanes.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='secondary';b.style.cssText='display:block;width:100%;margin:8px 0;text-align:left';b.textContent='EDIT ROOF SECTION '+(i+1)+' — '+fmt(p.surface_sqft)+' ft² · '+manualRoofPitchLabel(p.pitch_degrees)+' pitch';b.onclick=()=>{editManualRoofSection(i);el('map')?.scrollIntoView({block:'center'})};picker.append(b)});
+ const cancel=document.createElement('button');cancel.type='button';cancel.className='ghost';cancel.textContent='CANCEL SECTION SELECTION';cancel.onclick=()=>picker.remove();picker.append(cancel);
+ el('map').before(picker);picker.scrollIntoView({block:'center'});
+}
 let reportCloseInProgress=false;
 async function closeReport(e){
  if(reportMeasurementCorrection||reportCloseInProgress)return;
@@ -3558,6 +3571,7 @@ async function closeReport(e){
   document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
   if(customerMap){try{customerMap.remove()}catch(err){}customerMap=null}
   customerRgbLayer=null;customerOverlays=[];
+  openEstimateRoofEditor();
  }catch(err){const message=err.message||'Could not restore saved job for editing.';status(message,'error');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=message+' Please try Edit Measurements / Price again.';}
  finally{reportCloseInProgress=false;b.disabled=false;b.textContent=label}
 }
