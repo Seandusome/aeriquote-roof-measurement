@@ -2547,6 +2547,17 @@ async function buildExactPinCustomerSnapshot(){
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
+function fitReportCanvas(host,canvas){
+ const fit=()=>{
+  const width=host.clientWidth,height=host.clientHeight;
+  if(!width||!height||!canvas.width||!canvas.height)return;
+  const scale=Math.min(width/canvas.width,height/canvas.height);
+  Object.assign(canvas.style,{display:'block',width:(canvas.width*scale)+'px',height:(canvas.height*scale)+'px',maxWidth:'100%',maxHeight:'100%',flex:'none'});
+ };
+ host.style.display='flex';host.style.alignItems='center';host.style.justifyContent='center';
+ host.aqCanvasResizeObserver?.disconnect();fit();
+ if(typeof ResizeObserver!=='undefined'){host.aqCanvasResizeObserver=new ResizeObserver(fit);host.aqCanvasResizeObserver.observe(host)}
+}
 async function buildManualCustomerSnapshot(){
  const host=el('customerMap');if(!host||!sessionToken)return;
  if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
@@ -2569,7 +2580,7 @@ async function buildManualCustomerSnapshot(){
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
    const labeledSnap={...snap,manualPlanes:(snap.manualPlanes||[]).map((p,i)=>({...p,points:reportOutlines['manual-'+i]||p.points}))};
-   drawSavedMeasurementLabels(ctx,labeledSnap,view,canvas.width,canvas.height);host.appendChild(canvas);
+   drawSavedMeasurementLabels(ctx,labeledSnap,view,canvas.width,canvas.height);host.appendChild(canvas);fitReportCanvas(host,canvas);
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 async function loadCustomerWideAerial(token,targetMap){
@@ -2832,7 +2843,7 @@ async function buildSavedHistoricalSnapshot(){
  try{
    const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='auto';canvas.style.height='auto';canvas.style.maxWidth='100%';canvas.style.maxHeight='100%';canvas.style.flex='none';canvas.style.display='block';
-   canvas.dataset.diagramScope=savedDiagramFingerprint(original);canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
+   canvas.dataset.diagramScope=savedDiagramFingerprint(original);canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);fitReportCanvas(host,canvas);if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
  }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
 }
 
