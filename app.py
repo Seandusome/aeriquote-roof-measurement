@@ -539,6 +539,25 @@ let quoteSnapshot=null;
 let commercialAreas=[],commercialAreaLayers=[],commercialEditingIndex=-1;
 let savedLinearJobRate=null;
 let savedStreetImageData='';
+const streetViewUnavailableMessage='Street View unavailable for this location. Your measurements and pricing are unchanged.';
+function showStreetViewImage(image,source,caption,report=false){
+ if(!image)return;
+ image.onload=null;image.onerror=null;image.removeAttribute('src');
+ image.dataset.streetUnavailable=source?'0':'1';
+ const meta=el(report?'rStreetMeta':'streetMeta');
+ const unavailable=()=>{
+  image.dataset.streetUnavailable='1';
+  if(report){image.style.display='none';if(el('streetPlaceholder'))el('streetPlaceholder').style.display='flex';if(el('reportPropertyImageNote'))el('reportPropertyImageNote').textContent=streetViewUnavailableMessage}
+  else image.style.visibility='hidden';
+  if(meta)meta.textContent=streetViewUnavailableMessage;
+ };
+ if(!source){unavailable();return}
+ image.onload=()=>{image.dataset.streetUnavailable='0';if(report){image.style.display='block';if(el('streetPlaceholder'))el('streetPlaceholder').style.display='none'}else image.style.visibility='visible';if(meta)meta.textContent=caption||'Google Street View'};
+ image.onerror=unavailable;
+ if(meta)meta.textContent=caption||'Loading Google Street View…';
+ image.src=source;
+}
+
 let savedEstimateEditContext=null,savedPropertyEditActive=false,savedJobDetails=null;
 let exactPinDisplay=false;
 let estimateOpenInProgress=false,customerMapBuildTimer=null,pdfInProgress=false;
@@ -2245,7 +2264,7 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(("{{AERIAL_P
   resetMeasurementForNewProperty();locateRoofMode=false;fallbackMode=false;setManualCorrectionLayout(false);showSolarFallback(false);if(propertyMarker){try{map.removeLayer(propertyMarker)}catch(e){}propertyMarker=null};removeStaleAerialLayers();
   sessionToken=d.token;exactPinDisplay=!!d.exact_pin_display;lastLoadedStreet=el('streetAddress')?.value.trim()||'';applyAddressParts(d.parts);loadProperty.loadedAddressKey=propertyInputAddressKey();if(d.center)setPropertyMarker(d.center.latitude,d.center.longitude);else if(d.anchor)setPropertyMarker(d.anchor.latitude,d.anchor.longitude);if(el('addressAutoStatus'))el('addressAutoStatus').textContent='✓ '+(d.formatted_address||buildPropertyAddress());if(el('googleMatch'))el('googleMatch').textContent=(d.provider==='mapbox'?'Mapbox matched: ':'Google matched: ')+(d.formatted_address||buildPropertyAddress());
   let prov=detectProvince(d.formatted_address||address);if(prov){if(el('propertyProvince'))setPropertyRegion(prov);syncPropertyProvince()}
-  el('street').style.visibility=d.provider==='mapbox'?'hidden':'visible';if(d.provider!=='mapbox')el('street').src='/street/'+sessionToken+'?v='+Date.now();el('streetMeta').textContent=d.street_date?('Street View imagery: '+d.street_date):'Actual Street View';usage.property++;
+  showStreetViewImage(el('street'),d.provider==='mapbox'?'':'/street/'+sessionToken+'?v='+Date.now(),d.street_date?('Street View imagery: '+d.street_date):'Google Street View');usage.property++;
   installPropertyImagery(prepared);
   // Commercial surface measurements must never run the roof AutoMeasure path.
   // Use the property satellite image, then activate the selected surface tool.
@@ -3035,7 +3054,7 @@ async function resumeSavedEstimateWorkspace(){
  setSavedField('measureSource',context.snapshot.measureSource||((manualPlanes.length&&!structures.length)?'manual':(manualPlanes.length?'hybrid':'google')));
  for(const [id,value] of Object.entries({landscapingAreaRate:context.snapshot.landscapingAreaRate,pressureAreaRate:context.snapshot.pressureAreaRate,pavingAreaRate:context.snapshot.pavingAreaRate}))if(value!==undefined)setSavedField(id,value);
  renderSummary();
- if(savedStreetImageData){el('street').src=savedStreetImageData;el('street').style.visibility='visible'}else el('street').style.visibility='hidden';
+ showStreetViewImage(el('street'),savedStreetImageData,p.street_meta||'Saved Google Street View');
  if(el('addressAutoStatus'))el('addressAutoStatus').textContent='Saved property restored — measurements and rates retained.';
  if(el('googleMatch'))el('googleMatch').textContent='';
  savedEstimateEditContext=null;
@@ -3126,16 +3145,16 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  el('rPhone').textContent=el('dealerPhone').value;if(el('rPhoneWrap'))el('rPhoneWrap').style.display=el('dealerPhone').value.trim()?'inline':'none';if(el('rDealerCompany'))el('rDealerCompany').textContent=dealerCompany;if(el('rDealerName'))el('rDealerName').textContent=(dealerName&&dealerName!==dealerCompany)?dealerName:'';if(el('rDealerEmail'))el('rDealerEmail').textContent=dealerEmail;if(el('rDealerEmailWrap'))el('rDealerEmailWrap').style.display=dealerEmail?'inline':'none';if(el('rDealerWebsite'))el('rDealerWebsite').textContent=dealerWebsite;if(el('rDealerAddress'))el('rDealerAddress').textContent=dealerAddress;if(el('rDealerAddressWrap'))el('rDealerAddressWrap').style.display=dealerAddress?'inline':'none';if(el('rDealerLogo')){const rdl=el('rDealerLogo'),dls=dealerLogoSrc();if(dls){rdl.src=dls;rdl.classList.remove('noDealerLogo')}else{rdl.removeAttribute('src');rdl.classList.add('noDealerLogo')}}if(el('rEstimateSubtitle'))el('rEstimateSubtitle').textContent=dealerCompany;if(el('rEstimateDealerSub'))el('rEstimateDealerSub').textContent='Prepared by '+dealerCompany;if(el('rEstimateTitle'))el('rEstimateTitle').textContent=currentBusinessType()==='commercial'?'Commercial Property Measurement & Estimate':currentBusinessType()==='paving'?'Paving & Sealcoating Measurement & Estimate':currentBusinessType()==='landscaping'?'Landscaping Measurement & Estimate':currentBusinessType()==='pressure'?'Pressure Washing Measurement & Estimate':currentBusinessType()==='snow'?'Snow Removal Measurement & Estimate':(linearReport?'Linear Property Measurement & Estimate':(areaReport?'Area Property Measurement & Estimate':'Property Measurement & Estimate'));applyDealerMarketing()
 
  applyReportWarranty(snap,historicalMode);
- let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&!savedPropertyEditActive&&imageChoice==='auto')||useSavedStreet,useAerial=imageChoice!=='none';
+ let imageChoice=((el('streetViewChoice')&&el('streetViewChoice').value)||'auto'),useSavedStreet=imageChoice==='auto'&&!!savedStreetImageData,useStreet=(!historicalMode&&!savedPropertyEditActive&&imageChoice==='auto'&&el('street')?.dataset.streetUnavailable!=='1')||useSavedStreet,useAerial=imageChoice!=='none';
  if(el('streetPlaceholder'))el('streetPlaceholder').style.display=useStreet?'none':'flex';
  if(el('customerMap'))el('customerMap').style.display=useAerial?'block':'none';
  if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display=useAerial?'none':'flex';
  if(el('rStreet')){
    el('rStreet').style.display=useStreet?'block':'none';
-   if(useSavedStreet)el('rStreet').src=savedStreetImageData;
-   else if(useStreet)el('rStreet').src='/street/'+sessionToken+'?v='+Date.now();
+   if(useStreet)showStreetViewImage(el('rStreet'),useSavedStreet?savedStreetImageData:'/street/'+sessionToken+'?v='+Date.now(),el('streetMeta').textContent,true);
+   else{el('rStreet').removeAttribute('src');if(el('reportPropertyImageNote'))el('reportPropertyImageNote').textContent=imageChoice==='auto'?streetViewUnavailableMessage:'Property assessed using the selected imagery.'}
  }
- if(el('rStreetMeta'))el('rStreetMeta').textContent=useStreet?(historicalMode?(el('streetMeta').textContent||'Saved Google Street View'):el('streetMeta').textContent):(imageChoice==='none'?'Property imagery omitted':(historicalMode?'Saved property aerial and roof outline':'Property assessment'));
+ if(el('rStreetMeta'))el('rStreetMeta').textContent=useStreet?(historicalMode?(el('streetMeta').textContent||'Saved Google Street View'):el('streetMeta').textContent):(imageChoice==='none'?'Property imagery omitted':(imageChoice==='auto'?streetViewUnavailableMessage:(historicalMode?'Saved property aerial and roof outline':'Property assessment')));
 
  const snowReport=currentBusinessType()==='snow';
  let prop='';
@@ -5735,7 +5754,7 @@ def street(token):
     try:
         if s["street_cache"] is None:s["street_cache"]=req_bytes(s["street"])
         ct,body=s["street_cache"];return Response(body,content_type=ct)
-    except Exception as e:return Response(str(e),status=404)
+    except Exception:return Response("Street View image could not be loaded. Please retry; your saved work is unchanged.",status=503)
 
 if __name__=="__main__":
     port=5102
