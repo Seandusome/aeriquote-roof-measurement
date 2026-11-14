@@ -3326,6 +3326,17 @@ async function buildExpandedEstimatePDF(report){
  Object.assign(root.style,{position:'absolute',left:'-20000px',top:'0',width:'1200px',color:'#18352a',background:'#fff',fontFamily:'Arial,sans-serif',fontSize:'17px',lineHeight:'1.35'});
  document.body.appendChild(root);
  const clone=node=>{if(!node)return null;const copy=node.cloneNode(true);copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));return copy};
+ function splitExpandedTextBlock(block,column,maxHeight){
+  const text=block.textContent||'';if(!text.trim())return null;
+  const fragment=(start,end)=>{const range=document.createRange(),walker=document.createTreeWalker(block,NodeFilter.SHOW_TEXT);let node,total=0,first=null,last=null;while(node=walker.nextNode()){const next=total+node.length;if(first===null&&start<=next)first={node,offset:Math.max(0,start-total)};if(end<=next){last={node,offset:Math.max(0,end-total)};break}total=next}if(!first||!last)return null;range.setStart(first.node,first.offset);range.setEnd(last.node,last.offset);const copy=block.cloneNode(false);copy.appendChild(range.cloneContents());return copy};
+  const fits=end=>{const copy=fragment(0,end);if(!copy)return false;column.appendChild(copy);const ok=column.scrollHeight<=maxHeight;copy.remove();return ok};
+  let lo=0,hi=text.length;while(lo<hi){const mid=Math.ceil((lo+hi)/2);if(fits(mid))lo=mid;else hi=mid-1}
+  if(!lo||lo>=text.length)return null;
+  const space=text.slice(0,lo).lastIndexOf(' ');if(space>lo*.8)lo=space+1;
+  const head=fragment(0,lo),tail=fragment(lo,text.length);if(!head||!tail||!head.textContent.trim()||!tail.textContent.trim())return null;
+  if(head.textContent+tail.textContent!==text)throw new Error('Expanded text pagination did not preserve the complete section.');
+  return {head,tail};
+ }
  const pages=[],bodies=[];
  function page(title){const box=document.createElement('div');box.className='aq-expanded-page';Object.assign(box.style,{width:'1200px',height:'927px',padding:'24px',boxSizing:'border-box',background:'#fff',position:'relative',overflow:'hidden'});root.appendChild(box);
  const head=document.createElement('div');Object.assign(head.style,{display:'flex',alignItems:'center',gap:'20px',borderBottom:'2px solid #0b193e',paddingBottom:'10px'});const logo=el('rDealerLogo');if(logo?.getAttribute('src')&&!logo.classList.contains('noDealerLogo')){const image=clone(logo);const ratio=(logo.naturalWidth||1)/(logo.naturalHeight||1),h=Math.min(65,170/ratio);Object.assign(image.style,{width:(h*ratio)+'px',height:h+'px',maxHeight:'65px',flexShrink:'0'});head.appendChild(image)}const text=document.createElement('div');const name=document.createElement('strong');name.textContent=el('rEstimateTitle').textContent;Object.assign(name.style,{fontSize:'23px',color:'#0b193e'});const company=document.createElement('div');company.textContent=el('rEstimateSubtitle').textContent;text.append(name,company);head.appendChild(text);const shield=el('rWarrantyShield');if(shield&&shield.style.display!=='none'&&shield.getAttribute('src')){const badge=clone(shield);Object.assign(badge.style,{display:'block',width:'80px',height:'80px',objectFit:'contain',marginLeft:'auto'});head.appendChild(badge)}box.appendChild(head);
@@ -3350,7 +3361,7 @@ async function buildExpandedEstimatePDF(report){
   while(left.length||right.length){const body=page(continuation?'ESTIMATE DETAILS - CONTINUED':'MEASUREMENTS & ESTIMATE DETAILS');Object.assign(body.style,{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'22px',alignItems:'start'});
    for(const queue of [left,right]){const col=document.createElement('div');col.style.minWidth='0';body.appendChild(col);let added=0;
     while(queue.length){const block=queue[0];block.style.overflowWrap='anywhere';block.style.breakInside='avoid';col.appendChild(block);fitExpandedStreetBlock(block,col,body.clientHeight);
-     if(col.scrollHeight>body.clientHeight){block.remove();if(!added)throw new Error('An estimate section is too long for one expanded page. Shorten that section before exporting.');break}
+     if(col.scrollHeight>body.clientHeight){block.remove();if(!added){const split=splitExpandedTextBlock(block,col,body.clientHeight);if(!split)throw new Error('An estimate section cannot fit on an expanded page. Review that section before exporting.');col.appendChild(split.head);queue[0]=split.tail;}break}
      queue.shift();added++;
     }
    }continuation=true;
