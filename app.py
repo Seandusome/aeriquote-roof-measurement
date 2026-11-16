@@ -12,7 +12,7 @@ from datetime import datetime
 from activation_metrics import account_metrics, account_plan_report
 from account_credits import init_credit_db, settings as credit_settings, lock_account, consume as consume_credit, register_credits, paid_usage, SUBSCRIPTION_LIMITS
 from property_sessions import PropertySessions
-from property_address import unit_address, building_address
+from property_address import CANADIAN_PROVINCES, unit_address, building_address
 from account_recovery import init_recovery_db, auth_version, register_recovery, limited
 from support_center import init_support_db, register_support
 from storage_checks import init_storage_db, register_storage
@@ -2251,11 +2251,12 @@ const key="{{GOOGLE_MAPS_API_KEY}}",address=authoritativeAddress;if(("{{AERIAL_P
     }
   }catch(e){if(verifyEl&&!cc)verifyEl.style.display='none'}
   skipAddressConflictOnce=false;
+  if(d.requires_address_confirmation&&!window.confirm('CONFIRM FOUND ADDRESS\n\nGoogle returned a partial match:\n'+d.formatted_address+'\n\nThe street number, street, municipality, province/state and country match. Confirm this is the intended property. Choose Cancel to keep your existing work.')){status('Property not changed. Review the found address and retry.','warn');return}
   const prepared=await preparePropertyImagery(d);
   if(d.provider==='mapbox'&&!await confirmMapboxProperty(d,prepared)){URL.revokeObjectURL(prepared.layer._url);status('Property not changed. Review the address and pin before continuing.','warn');return}
   if(workspaceSaveFingerprint()!==workspaceKey)throw new Error('Your measurements or pricing changed while loading. Save your work before replacing the property.');
   if(propertyInputAddressKey()!==enteredKey)throw new Error('The address changed while imagery was loading. Review it and retry.');
-  const accepted=await fetch('/property/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation_id:loadProperty.pending.id,token:d.token,address_pin_confirmed:d.provider==='mapbox'})});
+  const accepted=await fetch('/property/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation_id:loadProperty.pending.id,token:d.token,address_pin_confirmed:d.provider==='mapbox',address_confirmed:!!d.requires_address_confirmation})});
   const acceptance=await accepted.json();
   if(!accepted.ok){if(accepted.status===410)loadProperty.pending=null;throw new Error(acceptance.error||'Property could not be accepted. Keep this page open and retry.');}
   loadProperty.pending=null;
@@ -4687,17 +4688,21 @@ def mapbox_test():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 def geocode_parts(g):
-    parts={"street":"","city":"","province":"","postal":""}
+    parts={"street":"","city":"","province":"","postal":"","country":"","route":"","street_number":""}
     comps=g.get("address_components") or []
-    num=route=""
+    # Component order is not a hierarchy. Prefer the actual municipality over
+    # a sublocality regardless of Google's ordering.
+    for kind in ("locality","postal_town","administrative_area_level_3","sublocality_level_1","sublocality"):
+        found=next((c.get("long_name") for c in comps if kind in (c.get("types") or []) and c.get("long_name")),"")
+        if found:parts["city"]=found;break
     for c in comps:
         types=set(c.get("types") or [])
-        if "street_number" in types:num=c.get("long_name") or ""
-        if "route" in types:route=c.get("long_name") or ""
-        if not parts["city"] and types.intersection({"locality","postal_town","sublocality","administrative_area_level_3"}):parts["city"]=c.get("long_name") or ""
+        if "street_number" in types:parts["street_number"]=c.get("long_name") or ""
+        if "route" in types:parts["route"]=c.get("long_name") or ""
         if "administrative_area_level_1" in types:parts["province"]=c.get("short_name") or ""
+        if "country" in types:parts["country"]=c.get("short_name") or ""
         if "postal_code" in types:parts["postal"]=c.get("long_name") or ""
-    parts["street"]=(num+" "+route).strip()
+    parts["street"]=(parts["street_number"]+" "+parts["route"]).strip()
     return parts
 
 def usa_address_variants(address):
@@ -4732,23 +4737,43 @@ def _norm_place(v):
     import re
     return re.sub(r"[^a-z0-9]", "", str(v or "").lower())
 
-def address_mismatch(expected_city,expected_province,parts,expected_street_number=""):
-    ec=_norm_place(expected_city); ep=_norm_place(expected_province)
-    ac=_norm_place((parts or {}).get("city")); ap=_norm_place((parts or {}).get("province"))
-    city_bad=bool(ec and (not ac or ec!=ac))
+def _norm_route(value):
+    # Exact token equality with conventional street-type/direction abbreviations;
+    # never substring equality or removal of locality prefixes such as "Old".
+    aliases={"st":"street","rd":"road","ave":"avenue","av":"avenue","blvd":"boulevard","dr":"drive","cres":"crescent","ct":"court","ln":"lane","pl":"place","hwy":"highway","pkwy":"parkway","ter":"terrace","trl":"trail","n":"north","s":"south","e":"east","w":"west","ne":"northeast","nw":"northwest","se":"southeast","sw":"southwest"}
+    return " ".join(aliases.get(t,t) for t in re.findall(r"[a-z0-9]+",str(value or "").lower()))
+
+def address_mismatch(expected_city,expected_province,parts,expected_street_number="",expected_address=""):
+    parts=parts or {}
+    ec=_norm_place(expected_city);ep=_norm_place(expected_province)
+    ac=_norm_place(parts.get("city"));ap=_norm_place(parts.get("province"));country=str(parts.get("country") or "").upper()
+    # Reviewed municipality relationship only. Old Toronto is the former central
+    # municipality within Toronto, Ontario, Canada (City of Toronto archives).
+    toronto_pair={ec,ac}<={"toronto","oldtoronto"} and bool(ec and ac) and ep==ap=="on" and country=="CA"
+    city_bad=bool(ec and (not ac or (ec!=ac and not toronto_pair)))
     prov_bad=bool(ep and (not ap or ep!=ap))
-    import re
-    en=re.sub(r"[^0-9a-z]","",str(expected_street_number or "").lower())
-    found_street=str((parts or {}).get("street") or "").strip()
-    m=re.match(r"^\s*(\d+[A-Za-z]?)\b",found_street)
-    an=re.sub(r"[^0-9a-z]","",(m.group(1) if m else "").lower())
-    number_bad=bool(en and en!=an)  # also rejects a street-only Google result with no civic number
-    return city_bad or prov_bad or number_bad
+    en=_norm_place(expected_street_number)
+    found_number=parts.get("street_number")
+    if not found_number:
+        found_match=re.match(r"^\s*(\d+[A-Za-z]?)\b",str(parts.get("street") or ""))
+        found_number=found_match[1] if found_match else ""
+    number_bad=bool(en and en!=_norm_place(found_number))
+    # Query carries street, city, region and country. Keep all of these hard
+    # safeguards even when a reviewed municipality alias is accepted.
+    route_bad=country_bad=False
+    if expected_address:
+        first=building_address(expected_address).split(",",1)[0]
+        match=re.match(r"^\s*\d+[A-Za-z]?\s+(.+)$",first)
+        route_bad=not match or _norm_route(match[1])!=_norm_route(parts.get("route"))
+        expected_country="CA" if str(expected_province).upper() in CANADIAN_PROVINCES else "US"
+        tail=expected_address.rsplit(",",1)[-1].strip().upper()
+        explicit={"CANADA":"CA","CA":"CA","US":"US","USA":"US","UNITED STATES":"US","UNITED STATES OF AMERICA":"US"}.get(tail)
+        country_bad=country!=expected_country or bool(explicit and country!=explicit)
+    return city_bad or prov_bad or number_bad or route_bad or country_bad
 
 def mismatch_message(expected_city,expected_province,parts):
-    wanted=", ".join(x for x in [str(expected_city or "").strip(),str(expected_province or "").strip()] if x) or "the location entered"
-    found=", ".join(x for x in [(parts or {}).get("city",""),(parts or {}).get("province","")] if x) or "a different location"
-    return f"You entered {wanted} but Google found {found}. Correct the address or use exact dropped-pin coordinates."
+    found=", ".join(x for x in [(parts or {}).get("street",""),(parts or {}).get("city",""),(parts or {}).get("province",""),(parts or {}).get("country","")] if x) or "a different location"
+    return f"Google found {found}, which does not match the entered street number, street, city, province/state or country. Check the address and retry. Existing work is unchanged."
 
 @app.post("/address-preview")
 def address_preview():
@@ -4761,7 +4786,7 @@ def address_preview():
         gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
         if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Address not found"),404
         g=geo["results"][0];parts=geocode_parts(g)
-        if address_mismatch(expected_city,expected_province,parts,expected_street_number):
+        if address_mismatch(expected_city,expected_province,parts,expected_street_number,address):
             return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
         return jsonify(formatted_address=g.get("formatted_address"),parts=parts)
     except Exception as e:return jsonify(error=str(e)),400
@@ -4931,6 +4956,8 @@ def accept_property():
         if not SESSIONS.get(token):return jsonify(error="Property preparation expired. Retry Load Property."),410
         if SESSIONS[token].get("provider")=="mapbox" and d.get("address_pin_confirmed") is not True:
             return jsonify(error="Confirm this address and pin before tracing."),409
+        if result.get("requires_address_confirmation") and d.get("address_confirmed") is not True:
+            return jsonify(error="Confirm the full Google found address before loading this property."),409
         allowed,used,limit=consume_property_lookup(dealer_id,con,operation_id="lookup:"+operation if operation else None)
         if not allowed:return jsonify(error="Property lookup allowance reached. Existing work is unchanged."),403
         con.execute("INSERT INTO estimate_save_receipts(dealer_id,operation_id,payload_hash,response_json) VALUES(?,?,?,?)",(dealer_id,"lookup:"+operation,pending["payload_hash"],pending["response_json"]))
@@ -4983,8 +5010,10 @@ def perform_property_lookup(d):
             gs,geo,_matched_query=google_geocode_first(key,address,components_country=True,expected_province=expected_province)
             if gs!=200 or geo.get("status")!="OK" or not geo.get("results"):return jsonify(error="Google could not find that address. Check the address and try again.",user_error="Google could not find that address. Check the address and try again."),404
             g=geo["results"][0];parts=geocode_parts(g)
-            if address_mismatch(expected_city,expected_province,parts,expected_street_number):
+            if address_mismatch(expected_city,expected_province,parts,expected_street_number,address):
                 return jsonify(error="ADDRESS DOESN'T MATCH",user_error=mismatch_message(expected_city,expected_province,parts),formatted_address=g.get("formatted_address"),parts=parts),409
+            if g.get("partial_match") and not d.get("prepare_only"):
+                return jsonify(error="Confirm the found address before loading this partial match.",formatted_address=g.get("formatted_address")),409
             loc=g["geometry"]["location"];lat=float(loc["lat"]);lng=float(loc["lng"]);formatted=g.get("formatted_address") or address
         if industry!="roofing" or manual_roof_qa_enabled():
             # Service-area/linear geometry is measured locally over the same Static
@@ -4992,7 +5021,7 @@ def perform_property_lookup(d):
             street_url,street_date=street_view_info(key,formatted,lat,lng,lat,lng)
             token=create_session(key,lat,lng,street_url=street_url,mode="manual_roof_static" if industry=="roofing" else "surface_static",anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
             if direct:SESSIONS[token].update({"exact_pin":True,"display_lat":lat,"display_lng":lng,"display_zoom":19})
-            return jsonify(token=token,manual_roof_only=industry=="roofing",fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,exact_pin_display=bool(direct))
+            return jsonify(token=token,manual_roof_only=industry=="roofing",fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,exact_pin_display=bool(direct),requires_address_confirmation=bool(g.get("partial_match")))
         try:
             main=building(key,lat,lng)
         except SolarBuildingNotFound:
@@ -5003,19 +5032,19 @@ def perform_property_lookup(d):
             try:
                 fallback_layers=solar_layers(key,lat,lng)
                 token=create_session(key,lat,lng,street_url=street_url,mode="manual_solar",layers=fallback_layers,anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
-                return jsonify(token=token,fallback=True,fallback_aerial="solar",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date)
+                return jsonify(token=token,fallback=True,fallback_aerial="solar",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,requires_address_confirmation=bool(g.get("partial_match")))
             except Exception:
                 # Last display fallback only. If Maps Static is not enabled the UI
                 # gives a clear setup message instead of exposing a raw Google error.
                 token=create_session(key,lat,lng,street_url=street_url,mode="manual_static",layers=None,anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
-                return jsonify(token=token,fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date)
+                return jsonify(token=token,fallback=True,fallback_aerial="static",center={"latitude":lat,"longitude":lng},formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,requires_address_confirmation=bool(g.get("partial_match")))
         img_lat,img_lng,img_radius=roof_imagery_request(main);layers=solar_layers(key,img_lat,img_lng,img_radius)
         street_url,street_date=street_view_info(key,formatted,lat,lng,lat,lng)
         token=create_session(key,main["latitude"],main["longitude"],street_url=street_url,mode="solar",layers=layers,anchor_lat=lat,anchor_lng=lng,formatted_address=formatted)
         if direct:
             dl,do,dz=exact_pin_display_request(main)
             SESSIONS[token].update({"exact_pin":True,"display_lat":dl,"display_lng":do,"display_zoom":dz,"fallback_zoom":dz})
-        return jsonify(token=token,main=main,formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,anchor={"latitude":lat,"longitude":lng},exact_pin_display=bool(direct))
+        return jsonify(token=token,main=main,formatted_address=formatted,parts=geocode_parts(g),street_date=street_date,anchor={"latitude":lat,"longitude":lng},exact_pin_display=bool(direct),requires_address_confirmation=bool(g.get("partial_match")))
     except Exception as e:
         return jsonify(error=str(e),user_error="Google could not complete the automatic roof measurement for this property. Try again, or use the manual fallback if offered."),400
 
@@ -5068,7 +5097,7 @@ def locate_building():
         lat=float(d["latitude"]);lng=float(d["longitude"]);main=building(sess["key"],lat,lng);img_lat,img_lng,img_radius=roof_imagery_request(main);layers=solar_layers(sess["key"],img_lat,img_lng,img_radius)
         street_url,street_date=street_view_info(sess["key"],sess.get("formatted_address") or "",sess.get("anchor_lat"),sess.get("anchor_lng"),sess.get("anchor_lat"),sess.get("anchor_lng"))
         sess.update({"rgb":layers.get("rgbUrl"),"rgb_cache":None,"mask":layers.get("maskUrl"),"mask_cache":None,"lat":main["latitude"],"lng":main["longitude"],"mode":"solar","street":street_url,"street_cache":None})
-        return jsonify(main=main,street_date=street_date)
+        return jsonify(main=main,street_date=street_date,requires_address_confirmation=bool(g.get("partial_match")))
     except SolarBuildingNotFound:return jsonify(error="Building not found",user_error="Google still cannot automatically measure this roof. Try a nearby point or choose manual measurement."),404
     except Exception as e:return jsonify(error=str(e),user_error="Google could not complete automatic measurement at that point. You can use manual measurement."),400
 
