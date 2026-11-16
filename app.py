@@ -3478,8 +3478,22 @@ function savedEstimateMoneyIssue(pricing){
  const cents=value=>Math.round((Number(value)+Number.EPSILON)*100);
  return cents(values[0])+cents(values[1])+cents(values[2])===cents(values[3])?'':'Saved estimate totals do not reconcile. Select EDIT MEASUREMENTS / PRICE, review the quote, then create a corrected estimate. Original saved amounts are unchanged.';
 }
-function printEstimate(){if(typeof savedDiagramGeometryError==='function'){const issue=savedDiagramGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
+async function confirmEstimateExportAccess(){
+ const account=el('aqAccountId')?.dataset?.accountId||'';
+ if(!account){status('Reopen this estimate from your signed-in business before exporting.','warn');return false}
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
+ try{
+  const response=await fetch('/api/account/profile',{headers:{'X-AeriQuote-Account':account},cache:'no-store',signal:controller.signal});
+  if(!response.ok){status(response.status===409?'This estimate belongs to a different signed-in business. Sign in to the original business and reopen it before exporting.':'Your login expired or access changed. Sign in with an active account from this business and reopen the estimate before exporting.','warn');return false}
+  const current=await response.json();
+  if(String(current.id||'')!==account){status('This estimate belongs to another business. Reopen it from the correct account before exporting.','warn');return false}
+  return true;
+ }catch(e){status('Could not verify your access. Your estimate is unchanged. Check your connection and retry the export.','warn');return false}
+ finally{clearTimeout(timeout)}
+}
+async function printEstimate(){if(!await confirmEstimateExportAccess())return;if(typeof savedDiagramGeometryError==='function'){const issue=savedDiagramGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}if(reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before printing.';return}window.print()}
 async function downloadEstimatePDF(){
+ if(!await confirmEstimateExportAccess())return;
  if(typeof savedDiagramGeometryError==='function'){const issue=savedDiagramGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}
  if(typeof pricedRoofGeometryError==='function'){const issue=pricedRoofGeometryError(quoteSnapshot);if(issue){status(issue,'warn');return}}
  if(typeof reportMeasurementCorrection!=='undefined'&&reportMeasurementCorrection){el('reportOutlineHelpTop').textContent='Save or cancel the measurement correction before downloading.';return}
