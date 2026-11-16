@@ -5097,7 +5097,7 @@ def locate_building():
         lat=float(d["latitude"]);lng=float(d["longitude"]);main=building(sess["key"],lat,lng);img_lat,img_lng,img_radius=roof_imagery_request(main);layers=solar_layers(sess["key"],img_lat,img_lng,img_radius)
         street_url,street_date=street_view_info(sess["key"],sess.get("formatted_address") or "",sess.get("anchor_lat"),sess.get("anchor_lng"),sess.get("anchor_lat"),sess.get("anchor_lng"))
         sess.update({"rgb":layers.get("rgbUrl"),"rgb_cache":None,"mask":layers.get("maskUrl"),"mask_cache":None,"lat":main["latitude"],"lng":main["longitude"],"mode":"solar","street":street_url,"street_cache":None})
-        return jsonify(main=main,street_date=street_date,requires_address_confirmation=bool(g.get("partial_match")))
+        return jsonify(main=main,street_date=street_date)
     except SolarBuildingNotFound:return jsonify(error="Building not found",user_error="Google still cannot automatically measure this roof. Try a nearby point or choose manual measurement."),404
     except Exception as e:return jsonify(error=str(e),user_error="Google could not complete automatic measurement at that point. You can use manual measurement."),400
 
