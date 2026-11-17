@@ -28,21 +28,38 @@
  }
  async function request(path,options={}){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
-  try{const r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal});const data=await r.json();if(!r.ok){const e=new Error(data.error||'Recovery request failed');e.status=r.status;e.code=data.code;throw e}return data}finally{clearTimeout(timer)}
+  const failure=(message,status=0,code)=>Object.assign(new Error(message),{status,code});
+  try{
+   let r;
+   try{r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal})}
+   catch(e){throw failure(e.name==='AbortError'?'Recovery connection timed out.':'Recovery connection is unavailable.');}
+   // Preserve the HTTP/authentication result even if a private preview gateway
+   // returns HTML rather than the application's JSON error response.
+   if(r.status===401)throw failure('Your login expired. Sign in to the original account in another tab, then retry here.',401);
+   const type=r.headers?.get('content-type')||'';
+   if(r.redirected||(r.headers&&!/\bapplication\/(?:[\w.+-]+\+)?json\b/i.test(type)))
+    throw failure('Recovery connection returned an unexpected page. Check the private preview sign-in in another tab, then retry here.',r.ok?0:r.status,'unexpected_response');
+   let data;
+   try{data=await r.json()}catch(e){throw failure('Recovery returned an unreadable response. Retry here when the server is available.',r.ok?0:r.status,'invalid_response');}
+   if(!r.ok)throw failure(typeof data?.error==='string'?data.error:'Recovery request failed.',r.status,data?.code);
+   return data;
+  }finally{clearTimeout(timer)}
  }
  async function flush(){
-  if(paused||ended)return false;
+  // An unresolved older draft choice must not prevent preserving NEW work
+  // under this tab's independent ID. Explicit estimate save still requires a choice.
+  if(ended)return false;
   if(writing){const ok=await writing;if(!ok)return false;return flush()}
   let workspace;try{workspace=capture()}catch(e){say('Changes have not reached recovery storage. Keep this tab open.',true);return false}
   if(!workspace)return true;
   const serialized=JSON.stringify(workspace);if(serialized===ack&&!uncertainWrite)return true;
-  say('Changes have not reached the server yet. Keep this tab open.',true);
+  if(!lastError)say('Changes have not reached the server yet. Keep this tab open.',true);
   // Resolve an uncertain accepted write before attempting a newer payload.
   // Reusing its exact version/body lets the server recognize a lost-ack retry.
   const attempt=uncertainWrite?.id===id?uncertainWrite:{id,version,workspace:clone(workspace),serialized};
   const draftId=attempt.id,draftVersion=attempt.version;
   writing=(async()=>{
-   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace:attempt.workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=attempt.serialized;uncertainWrite=null;if(JSON.stringify(capture())===ack)say('Recovery copy saved for 24 hours.');else say('Changes have not reached the server yet. Keep this tab open.',true);return true}
+   try{const r=await request('/'+draftId,{method:'PUT',body:JSON.stringify({version:draftVersion,workspace:attempt.workspace})});if(id!==draftId)return true;if(!Number.isInteger(r?.version)||r.version!==draftVersion+1||!Number.isFinite(r.expires_at))throw new Error('Recovery acknowledgement unavailable');version=r.version;ack=attempt.serialized;uncertainWrite=null;lastError=null;if(JSON.stringify(capture())===ack)say('Recovery copy saved for 24 hours.');else if(!lastError)say('Changes have not reached the server yet. Keep this tab open.',true);return true}
    catch(e){if(id===draftId&&!(e.status>=400&&e.status<500))uncertainWrite=attempt;lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
   let ok;try{ok=await writing}finally{writing=null}
@@ -53,6 +70,7 @@
  async function restore(row){
   busy=true;
   try{
+   if(capture()&&!await flush())throw new Error('Current work has not reached recovery storage. Keep this tab open before restoring another draft.');
    const d=await request('/'+row.draft_id),w=d.workspace;
    const imagery=w.sessionToken?await request('/'+row.draft_id+'/imagery-session',{method:'POST',body:'{}'}):null;
    // Read the retained workspace only after ownership and imagery metadata checks.
@@ -115,7 +133,7 @@
     line.append(label,yes,no);panel.append(line);
    }
    const fresh=document.createElement('button');fresh.id='workspaceRecoveryContinue';fresh.textContent=separateLabel();
-   fresh.onclick=()=>{if(busy)return;panel.remove();paused=false;newDraft();say('Separate recovery draft ready.');};panel.append(fresh);
+   fresh.onclick=()=>{if(busy)return;panel.remove();paused=false;say('Separate recovery draft ready.');flush();};panel.append(fresh);
    const steps=document.getElementById('progress1')?.closest('.stepbar');
    if(steps)steps.before(panel);else badge.after(panel);
    say('');
@@ -148,13 +166,13 @@
  function changed(){
   const continueButton=document.getElementById('workspaceRecoveryContinue');
   if(continueButton)continueButton.textContent=separateLabel();
-  if(paused||busy)return;
+  if(busy)return;
   try{const w=capture();if(!w||JSON.stringify(w)===ack)return}catch(e){}
-  say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700);
+  if(!lastError)say('Changes have not reached the server yet. Keep this tab open.',true);clearTimeout(debounce);debounce=setTimeout(flush,700);
  }
  document.addEventListener('input',()=>{touched=true;changed()});
  const priorSummary=renderSummary;renderSummary=function(){const result=priorSummary.apply(this,arguments);changed();return result};
- setInterval(()=>{if(!paused&&!busy)flush()},1800);
+ setInterval(()=>{if(!busy)flush()},1800);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
  window.addEventListener('online',flush);
  choose();
