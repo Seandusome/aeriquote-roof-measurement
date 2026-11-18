@@ -23,3 +23,6 @@ Sean is still on a break; no application or infrastructure changes are included 
 
 ## November 18 reconciliation — no cleanup enabled
 Sean approved 120 days of read-only saved-estimate viewing/downloading after paid access ends, then deletion of estimates and associated imagery from active storage. No create/edit in that window; exact access-expiry date must be shown. This conflicts with earlier six-month full/one-year lightweight commitments above; existing promises must not be silently shortened. Grandfathering, active-account retention, lightweight records, backup/legal exceptions and imagery licensing must be reconciled before implementation. No record was changed or deleted.
+
+## November 18 operating-rule approval
+The 120-day clock begins when paid access ends. Successful resubscription within that window restores normal access to retained estimates. Longer existing promises must be honored. Signing in does not reset usage, duplicate extras or extend deadlines. Exact deadline display and active-storage removal remain unimplemented; timezone/boundary proposal and outstanding backup/legal/provider dependencies are documented in APPROVED_OPERATING_RULES_PLAN_2026_11_18.md. No deletion performed.
