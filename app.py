@@ -3144,6 +3144,7 @@ function estimateActionMessage(message){
  box.textContent=message;box.hidden=!message;
 }
 async function showCustomerEstimate(historicalMode=false,historicalDate='',correctionRefresh=false){
+ if(!historicalMode&&!await confirmQaSubscriptionEditAccess())return;
  if(el('pdfLayoutHelp')){el('pdfLayoutHelp').textContent='';el('pdfLayoutHelp').style.display='none'}
  if(!historicalMode&&typeof manualRoofQa==='function'&&manualRoofQa()&&traceMode){status('Save or cancel the roof section before creating the estimate.','warn');return}
  if(!historicalMode){const issue=quotePricingError();if(issue){status(issue,'error');return}}
@@ -3517,6 +3518,7 @@ async function confirmEstimateExportAccess(){
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
  try{
   const response=await fetch('/api/account/profile',{headers:{'X-AeriQuote-Account':account},cache:'no-store',signal:controller.signal});
+  if(response.status===403){try{const denied=await response.clone().json();if(String(denied.code||'').startsWith('subscription_')){status(denied.error,'warn');return false}}catch(e){}}
   if(!response.ok){status(response.status===409?'This estimate belongs to a different signed-in business. Sign in to the original business and reopen it before exporting.':'Your login expired or access changed. Sign in with an active account from this business and reopen the estimate before exporting.','warn');return false}
   const current=await response.json();
   if(String(current.id||'')!==account){status('This estimate belongs to another business. Reopen it from the correct account before exporting.','warn');return false}
@@ -3637,11 +3639,25 @@ function openEstimateRoofEditor(){
  const cancel=document.createElement('button');cancel.type='button';cancel.className='ghost';cancel.textContent='CANCEL SECTION SELECTION';cancel.onclick=()=>picker.remove();picker.append(cancel);
  el('map').before(picker);picker.scrollIntoView({block:'center'});
 }
+async function confirmQaSubscriptionEditAccess(){
+ if(!document.querySelector('meta[name="aq-subscription-qa"]'))return true;
+ try{
+  const r=await fetch('/qa/subscription-policy',{cache:'no-store'}),d=await r.json();
+  if(!r.ok)throw Error(d.error||'Could not check account access.');
+  if(['retained_read_only','expired'].includes(d.state)){
+   status(d.message||'Saved estimate access is restricted. Your work is still here.','warn');
+   if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=d.message||'Your work is still here.';
+   return false;
+  }
+  return true;
+ }catch(e){status('Could not confirm current access. Keep this page open; your work is still here.','warn');return false}
+}
 let reportCloseInProgress=false;
 async function closeReport(e){
  if(reportMeasurementCorrection||reportCloseInProgress)return;
  const b=el('backToDealerBtn');
  if(!e||!b||e.currentTarget!==b)return;
+ if(!await confirmQaSubscriptionEditAccess())return;
  reportCloseInProgress=true;const label=b.textContent;b.disabled=true;b.textContent='OPENING EDITOR…';
  try{
   if(savedEstimateEditContext)await resumeSavedEstimateWorkspace();

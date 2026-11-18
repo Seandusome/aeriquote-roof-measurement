@@ -4,6 +4,7 @@ No payment adapter, counter mutation, migrations, cleanup or global flag changes
 Existing authentication executes first; this guard cannot override its denials.
 """
 import json
+import html
 import re
 from pathlib import Path
 from flask import request, session, jsonify, g, Response
@@ -53,6 +54,14 @@ def saved_roofs(payload):
     return roofs
 
 
+def access_message(data):
+    deadline=(data.get('expiry') or 'unknown').replace('T',' ').replace('.000000Z',' UTC')
+    if data['state']=='expired':return 'Saved estimate access expired at '+deadline+'. Reopen after successful reactivation if the work is still retained. This QA check does not delete your work.'
+    if data.get('lightweight_only'):return 'Only retained estimate details are available. Full imagery/PDF access expired at '+deadline+'. Your stored work is unchanged.'
+    if data['state']=='retained_read_only':return 'Paid access has ended. This account is read-only. Saved estimates can be viewed and downloaded until '+deadline+'. Creating and editing are disabled. Your work is still here.'
+    return 'Subscription facts are unknown; existing access is unchanged.'
+
+
 def register(app, estimate_db, db_path, is_head_office):
     app.config.setdefault('SUBSCRIPTION_ACCESS_QA', False)
 
@@ -80,7 +89,7 @@ def register(app, estimate_db, db_path, is_head_office):
                 or path.startswith(('/manual-report-map/','/exact-pin','/fallback-','/wide-aerial/','/rgb/','/mask/','/street/','/structure-mask/','/mapbox-aerial/')))
 
     def deny(state):
-        return jsonify(error=('Paid access ended. Saved estimates are read-only.' if state=='retained_read_only' else 'Saved estimate access has expired.'),
+        return jsonify(error=access_message(g.subscription_qa),
                        code='subscription_'+state,expiry=g.subscription_qa.get('expiry')),403
 
     @app.before_request
@@ -137,6 +146,12 @@ def register(app, estimate_db, db_path, is_head_office):
     @app.after_request
     def subscription_qa_diagnostic(response):
         if getattr(g,'subscription_qa',None):
+            if enabled() and request.path=='/' and response.status_code==200 and response.mimetype=='text/html':
+                text=response.get_data(as_text=True).replace('</head>','<meta name="aq-subscription-qa" content="1"></head>',1)
+                if g.subscription_qa['state']!='paid_active' and g.subscription_qa['state']!='existing_dealer_access':
+                    notice='<aside id="subscriptionAccessStatus" role="status" style="padding:14px;background:#fff3d7;color:#493413">'+html.escape(access_message(g.subscription_qa))+'</aside>'
+                    text=re.sub(r'(<body[^>]*>)',lambda m:m.group(1)+notice,text,count=1)
+                response.set_data(text)
             if g.subscription_qa.get('lightweight_only') and response.status_code==200 and response.is_json and request.path!='/qa/subscription-policy':
                 response.set_data(json.dumps(lightweight(response.get_json())))
             response.headers['X-AeriQuote-QA-Subscription']=g.subscription_qa['state']
@@ -147,7 +162,7 @@ def register(app, estimate_db, db_path, is_head_office):
     @app.get('/qa/subscription-policy')
     def subscription_qa_policy():
         if not enabled():return jsonify(error='Not found'),404
-        return jsonify(getattr(g,'subscription_qa',{'state':'unknown','expiry':None}))
+        data=dict(getattr(g,'subscription_qa',{'state':'unknown','expiry':None}));data['message']=access_message(data);return jsonify(data)
 
     @app.get('/qa/subscription/estimates/<estimate_id>/download')
     def subscription_qa_saved_download(estimate_id):
