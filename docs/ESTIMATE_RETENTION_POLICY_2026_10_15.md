@@ -20,3 +20,6 @@ Actual record sizes and the extra six months of lightweight records still need m
 ## Resume order
 Read this alongside docs/CHECKPOINT_2026_10_15.md and docs/HOSTING_CAPACITY_COSTS_2026_10_15.md.
 Sean is still on a break; no application or infrastructure changes are included in this documentation update.
+
+## November 18 reconciliation — no cleanup enabled
+Sean approved 120 days of read-only saved-estimate viewing/downloading after paid access ends, then deletion of estimates and associated imagery from active storage. No create/edit in that window; exact access-expiry date must be shown. This conflicts with earlier six-month full/one-year lightweight commitments above; existing promises must not be silently shortened. Grandfathering, active-account retention, lightweight records, backup/legal exceptions and imagery licensing must be reconciled before implementation. No record was changed or deleted.
