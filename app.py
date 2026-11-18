@@ -4623,6 +4623,10 @@ def require_dealer_login():
         return jsonify(error="This page belongs to another business. Keep it open, sign in to the original business in another tab, then retry. Your unsaved entries are still here."),409
 
 
+# Default-OFF, disposable local QA only; existing authentication runs first.
+from subscription_access_qa import register as register_subscription_access_qa
+register_subscription_access_qa(app, estimate_db, lambda: ESTIMATE_DB if not DATABASE_URL else None, is_head_office)
+
 app.before_request(allowance_maintenance_gate)
 
 from qa_purchase_screen import register as register_qa_purchase_screen
