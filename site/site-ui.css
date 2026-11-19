@@ -141,3 +141,12 @@ footer.legal-footer br{display:none}
 .setup-page .setup-actions .next{background:#075fb8;border-color:#075fb8;color:#fff}
 .industry-cards>.aq-industry-card{display:block;color:inherit;text-decoration:none;border-radius:11px}
 .industry-cards>.aq-industry-card:hover article{border-color:#075fb8}
+
+/* November 19 visual QA: public-site readability only. */
+.industry-cards .aq-industry-card p{font-size:14px;line-height:1.5}
+footer.legal-footer>.wrap:last-child:not(:first-child) br{display:initial}
+@media(max-width:600px){
+ .compare table{table-layout:fixed;width:100%}
+ .compare th,.compare td{padding:12px 3px;font-size:14px;overflow-wrap:anywhere}
+ .compare th:first-child,.compare td:first-child{width:28%}
+}
