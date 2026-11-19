@@ -1,0 +1,3 @@
+# Task-only dependencies. Not application requirements or a Stripe connection.
+stripe==17.1.0
+psycopg2-binary==2.9.10
