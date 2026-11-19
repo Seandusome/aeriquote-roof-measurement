@@ -1,0 +1,1154 @@
+{
+  "description": "HAND-AUTHORED RECORDED FICTION, NOT STRIPE CAPTURES. No PII or credentials. Half of 28-day month: -1450+2950=1500 cents. Taxes/discount/credit/multi-payment scenarios intentionally review-only.",
+  "binding": {
+    "business_id": "qa-fictional-boundary",
+    "account_id": "acct_fixture",
+    "customer_id": "cus_fixture",
+    "subscription_id": "sub_fixture",
+    "subscription_item_id": "si_fixture",
+    "prices": {
+      "basic": {
+        "id": "price_fixture_basic",
+        "product": "prod_fixture_basic"
+      },
+      "pro": {
+        "id": "price_fixture_pro",
+        "product": "prod_fixture_pro"
+      },
+      "business": {
+        "id": "price_fixture_business",
+        "product": "prod_fixture_business"
+      }
+    }
+  },
+  "cases": {
+    "initial": {
+      "notification": {
+        "id": "evt_fixture_initial",
+        "object": "event",
+        "api_version": "2026-10-28.endive",
+        "livemode": false,
+        "type": "invoice.paid",
+        "created": 1769860820,
+        "data": {
+          "object": {
+            "id": "in_fixture_initial",
+            "object": "invoice"
+          }
+        }
+      },
+      "contract": {
+        "business_id": "qa-fictional-boundary",
+        "customer_id": "cus_fixture",
+        "subscription_id": "sub_fixture",
+        "invoice_id": "in_fixture_initial",
+        "kind": "initial.paid",
+        "to_plan": "basic",
+        "period": {
+          "id": "p1",
+          "start": 1769860800,
+          "end": 1772280000,
+          "anchor": 1769860800
+        },
+        "effective_at": 1769860800,
+        "previous_operation": null,
+        "lines": [
+          {
+            "id": "il_fixture_initial0",
+            "plan": "basic",
+            "amount": 2900,
+            "period": {
+              "start": 1769860800,
+              "end": 1772280000
+            },
+            "proration": false
+          }
+        ],
+        "expected_total": 2900
+      },
+      "canonical": {
+        "provenance": "recorded_fictional_canonical_objects_v1",
+        "api_version": "2026-10-28.endive",
+        "account_id": "acct_fixture",
+        "customer": {
+          "id": "cus_fixture",
+          "object": "customer",
+          "livemode": false,
+          "deleted": false
+        },
+        "prices": {
+          "price_fixture_basic": {
+            "id": "price_fixture_basic",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_basic",
+            "currency": "usd",
+            "unit_amount": 2900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_pro": {
+            "id": "price_fixture_pro",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_pro",
+            "currency": "usd",
+            "unit_amount": 5900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_business": {
+            "id": "price_fixture_business",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_business",
+            "currency": "usd",
+            "unit_amount": 9900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          }
+        },
+        "invoice": {
+          "id": "in_fixture_initial",
+          "object": "invoice",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "collection_method": "charge_automatically",
+          "billing_reason": "subscription_create",
+          "parent": {
+            "type": "subscription_details",
+            "subscription_details": {
+              "subscription": "sub_fixture"
+            }
+          },
+          "status": "paid",
+          "status_transitions": {
+            "paid_at": 1769860800
+          },
+          "subtotal": 2900,
+          "total": 2900,
+          "amount_due": 2900,
+          "amount_paid": 2900,
+          "amount_remaining": 0,
+          "starting_balance": 0,
+          "pre_payment_credit_notes_amount": 0,
+          "post_payment_credit_notes_amount": 0,
+          "amount_overpaid": 0,
+          "amount_shipping": 0,
+          "discounts": [],
+          "total_taxes": [],
+          "on_behalf_of": null,
+          "lines": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "il_fixture_initial0",
+                "object": "line_item",
+                "livemode": false,
+                "invoice": "in_fixture_initial",
+                "currency": "usd",
+                "quantity": 1,
+                "amount": 2900,
+                "period": {
+                  "start": 1769860800,
+                  "end": 1772280000
+                },
+                "discount_amounts": [],
+                "taxes": [],
+                "pretax_credit_amounts": [],
+                "parent": {
+                  "type": "subscription_item_details",
+                  "subscription_item_details": {
+                    "subscription": "sub_fixture",
+                    "subscription_item": "si_fixture",
+                    "proration": false
+                  }
+                },
+                "pricing": {
+                  "type": "price_details",
+                  "price_details": {
+                    "price": "price_fixture_basic",
+                    "product": "prod_fixture_basic"
+                  }
+                }
+              }
+            ]
+          },
+          "payments": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "inpay_fixture_initial",
+                "object": "invoice_payment",
+                "livemode": false,
+                "invoice": "in_fixture_initial",
+                "currency": "usd",
+                "amount_requested": 2900,
+                "amount_paid": 2900,
+                "status": "paid",
+                "payment": {
+                  "type": "payment_intent",
+                  "payment_intent": "pi_fixture_initial"
+                },
+                "status_transitions": {
+                  "paid_at": 1769860800
+                }
+              }
+            ]
+          }
+        },
+        "subscription": {
+          "id": "sub_fixture",
+          "object": "subscription",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "status": "active",
+          "pending_update": null,
+          "billing_cycle_anchor": 1769860800,
+          "items": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "si_fixture",
+                "quantity": 1,
+                "current_period_start": 1769860800,
+                "current_period_end": 1772280000,
+                "price": {
+                  "id": "price_fixture_basic"
+                }
+              }
+            ]
+          }
+        },
+        "payment_intent": {
+          "id": "pi_fixture_initial",
+          "object": "payment_intent",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 2900,
+          "amount_received": 2900,
+          "status": "succeeded",
+          "latest_charge": "ch_fixture_initial"
+        },
+        "charge": {
+          "id": "ch_fixture_initial",
+          "object": "charge",
+          "livemode": false,
+          "payment_intent": "pi_fixture_initial",
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 2900,
+          "amount_captured": 2900,
+          "paid": true,
+          "captured": true,
+          "refunded": false,
+          "amount_refunded": 0,
+          "disputed": false
+        }
+      }
+    },
+    "upgrade": {
+      "notification": {
+        "id": "evt_fixture_upgrade",
+        "object": "event",
+        "api_version": "2026-10-28.endive",
+        "livemode": false,
+        "type": "invoice.paid",
+        "created": 1771070420,
+        "data": {
+          "object": {
+            "id": "in_fixture_upgrade",
+            "object": "invoice"
+          }
+        }
+      },
+      "contract": {
+        "business_id": "qa-fictional-boundary",
+        "customer_id": "cus_fixture",
+        "subscription_id": "sub_fixture",
+        "invoice_id": "in_fixture_upgrade",
+        "kind": "upgrade.paid",
+        "to_plan": "pro",
+        "period": {
+          "id": "p1",
+          "start": 1769860800,
+          "end": 1772280000,
+          "anchor": 1769860800
+        },
+        "effective_at": 1771070400,
+        "previous_operation": "usage23",
+        "lines": [
+          {
+            "id": "il_fixture_upgrade0",
+            "plan": "basic",
+            "amount": -1450,
+            "period": {
+              "start": 1771070400,
+              "end": 1772280000
+            },
+            "proration": true
+          },
+          {
+            "id": "il_fixture_upgrade1",
+            "plan": "pro",
+            "amount": 2950,
+            "period": {
+              "start": 1771070400,
+              "end": 1772280000
+            },
+            "proration": true
+          }
+        ],
+        "expected_total": 1500,
+        "from_plan": "basic",
+        "quote_id": "qa-quote-half-period"
+      },
+      "canonical": {
+        "provenance": "recorded_fictional_canonical_objects_v1",
+        "api_version": "2026-10-28.endive",
+        "account_id": "acct_fixture",
+        "customer": {
+          "id": "cus_fixture",
+          "object": "customer",
+          "livemode": false,
+          "deleted": false
+        },
+        "prices": {
+          "price_fixture_basic": {
+            "id": "price_fixture_basic",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_basic",
+            "currency": "usd",
+            "unit_amount": 2900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_pro": {
+            "id": "price_fixture_pro",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_pro",
+            "currency": "usd",
+            "unit_amount": 5900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_business": {
+            "id": "price_fixture_business",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_business",
+            "currency": "usd",
+            "unit_amount": 9900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          }
+        },
+        "invoice": {
+          "id": "in_fixture_upgrade",
+          "object": "invoice",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "collection_method": "charge_automatically",
+          "billing_reason": "subscription_update",
+          "parent": {
+            "type": "subscription_details",
+            "subscription_details": {
+              "subscription": "sub_fixture"
+            }
+          },
+          "status": "paid",
+          "status_transitions": {
+            "paid_at": 1771070400
+          },
+          "subtotal": 1500,
+          "total": 1500,
+          "amount_due": 1500,
+          "amount_paid": 1500,
+          "amount_remaining": 0,
+          "starting_balance": 0,
+          "pre_payment_credit_notes_amount": 0,
+          "post_payment_credit_notes_amount": 0,
+          "amount_overpaid": 0,
+          "amount_shipping": 0,
+          "discounts": [],
+          "total_taxes": [],
+          "on_behalf_of": null,
+          "lines": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "il_fixture_upgrade0",
+                "object": "line_item",
+                "livemode": false,
+                "invoice": "in_fixture_upgrade",
+                "currency": "usd",
+                "quantity": 1,
+                "amount": -1450,
+                "period": {
+                  "start": 1771070400,
+                  "end": 1772280000
+                },
+                "discount_amounts": [],
+                "taxes": [],
+                "pretax_credit_amounts": [],
+                "parent": {
+                  "type": "subscription_item_details",
+                  "subscription_item_details": {
+                    "subscription": "sub_fixture",
+                    "subscription_item": "si_fixture",
+                    "proration": true
+                  }
+                },
+                "pricing": {
+                  "type": "price_details",
+                  "price_details": {
+                    "price": "price_fixture_basic",
+                    "product": "prod_fixture_basic"
+                  }
+                }
+              },
+              {
+                "id": "il_fixture_upgrade1",
+                "object": "line_item",
+                "livemode": false,
+                "invoice": "in_fixture_upgrade",
+                "currency": "usd",
+                "quantity": 1,
+                "amount": 2950,
+                "period": {
+                  "start": 1771070400,
+                  "end": 1772280000
+                },
+                "discount_amounts": [],
+                "taxes": [],
+                "pretax_credit_amounts": [],
+                "parent": {
+                  "type": "subscription_item_details",
+                  "subscription_item_details": {
+                    "subscription": "sub_fixture",
+                    "subscription_item": "si_fixture",
+                    "proration": true
+                  }
+                },
+                "pricing": {
+                  "type": "price_details",
+                  "price_details": {
+                    "price": "price_fixture_pro",
+                    "product": "prod_fixture_pro"
+                  }
+                }
+              }
+            ]
+          },
+          "payments": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "inpay_fixture_upgrade",
+                "object": "invoice_payment",
+                "livemode": false,
+                "invoice": "in_fixture_upgrade",
+                "currency": "usd",
+                "amount_requested": 1500,
+                "amount_paid": 1500,
+                "status": "paid",
+                "payment": {
+                  "type": "payment_intent",
+                  "payment_intent": "pi_fixture_upgrade"
+                },
+                "status_transitions": {
+                  "paid_at": 1771070400
+                }
+              }
+            ]
+          }
+        },
+        "subscription": {
+          "id": "sub_fixture",
+          "object": "subscription",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "status": "active",
+          "pending_update": null,
+          "billing_cycle_anchor": 1769860800,
+          "items": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "si_fixture",
+                "quantity": 1,
+                "current_period_start": 1769860800,
+                "current_period_end": 1772280000,
+                "price": {
+                  "id": "price_fixture_pro"
+                }
+              }
+            ]
+          }
+        },
+        "payment_intent": {
+          "id": "pi_fixture_upgrade",
+          "object": "payment_intent",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 1500,
+          "amount_received": 1500,
+          "status": "succeeded",
+          "latest_charge": "ch_fixture_upgrade"
+        },
+        "charge": {
+          "id": "ch_fixture_upgrade",
+          "object": "charge",
+          "livemode": false,
+          "payment_intent": "pi_fixture_upgrade",
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 1500,
+          "amount_captured": 1500,
+          "paid": true,
+          "captured": true,
+          "refunded": false,
+          "amount_refunded": 0,
+          "disputed": false
+        }
+      }
+    },
+    "renewal": {
+      "notification": {
+        "id": "evt_fixture_renewal",
+        "object": "event",
+        "api_version": "2026-10-28.endive",
+        "livemode": false,
+        "type": "invoice.paid",
+        "created": 1772280020,
+        "data": {
+          "object": {
+            "id": "in_fixture_renewal",
+            "object": "invoice"
+          }
+        }
+      },
+      "contract": {
+        "business_id": "qa-fictional-boundary",
+        "customer_id": "cus_fixture",
+        "subscription_id": "sub_fixture",
+        "invoice_id": "in_fixture_renewal",
+        "kind": "renewal.paid",
+        "to_plan": "pro",
+        "period": {
+          "id": "p2",
+          "start": 1772280000,
+          "end": 1774958400,
+          "anchor": 1769860800
+        },
+        "effective_at": 1772280000,
+        "previous_operation": "invoice:in_fixture_upgrade:upgrade.paid",
+        "lines": [
+          {
+            "id": "il_fixture_renewal0",
+            "plan": "pro",
+            "amount": 5900,
+            "period": {
+              "start": 1772280000,
+              "end": 1774958400
+            },
+            "proration": false
+          }
+        ],
+        "expected_total": 5900
+      },
+      "canonical": {
+        "provenance": "recorded_fictional_canonical_objects_v1",
+        "api_version": "2026-10-28.endive",
+        "account_id": "acct_fixture",
+        "customer": {
+          "id": "cus_fixture",
+          "object": "customer",
+          "livemode": false,
+          "deleted": false
+        },
+        "prices": {
+          "price_fixture_basic": {
+            "id": "price_fixture_basic",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_basic",
+            "currency": "usd",
+            "unit_amount": 2900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_pro": {
+            "id": "price_fixture_pro",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_pro",
+            "currency": "usd",
+            "unit_amount": 5900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          },
+          "price_fixture_business": {
+            "id": "price_fixture_business",
+            "object": "price",
+            "livemode": false,
+            "product": "prod_fixture_business",
+            "currency": "usd",
+            "unit_amount": 9900,
+            "type": "recurring",
+            "billing_scheme": "per_unit",
+            "recurring": {
+              "interval": "month",
+              "interval_count": 1,
+              "usage_type": "licensed"
+            }
+          }
+        },
+        "invoice": {
+          "id": "in_fixture_renewal",
+          "object": "invoice",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "collection_method": "charge_automatically",
+          "billing_reason": "subscription_cycle",
+          "parent": {
+            "type": "subscription_details",
+            "subscription_details": {
+              "subscription": "sub_fixture"
+            }
+          },
+          "status": "paid",
+          "status_transitions": {
+            "paid_at": 1772280000
+          },
+          "subtotal": 5900,
+          "total": 5900,
+          "amount_due": 5900,
+          "amount_paid": 5900,
+          "amount_remaining": 0,
+          "starting_balance": 0,
+          "pre_payment_credit_notes_amount": 0,
+          "post_payment_credit_notes_amount": 0,
+          "amount_overpaid": 0,
+          "amount_shipping": 0,
+          "discounts": [],
+          "total_taxes": [],
+          "on_behalf_of": null,
+          "lines": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "il_fixture_renewal0",
+                "object": "line_item",
+                "livemode": false,
+                "invoice": "in_fixture_renewal",
+                "currency": "usd",
+                "quantity": 1,
+                "amount": 5900,
+                "period": {
+                  "start": 1772280000,
+                  "end": 1774958400
+                },
+                "discount_amounts": [],
+                "taxes": [],
+                "pretax_credit_amounts": [],
+                "parent": {
+                  "type": "subscription_item_details",
+                  "subscription_item_details": {
+                    "subscription": "sub_fixture",
+                    "subscription_item": "si_fixture",
+                    "proration": false
+                  }
+                },
+                "pricing": {
+                  "type": "price_details",
+                  "price_details": {
+                    "price": "price_fixture_pro",
+                    "product": "prod_fixture_pro"
+                  }
+                }
+              }
+            ]
+          },
+          "payments": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "inpay_fixture_renewal",
+                "object": "invoice_payment",
+                "livemode": false,
+                "invoice": "in_fixture_renewal",
+                "currency": "usd",
+                "amount_requested": 5900,
+                "amount_paid": 5900,
+                "status": "paid",
+                "payment": {
+                  "type": "payment_intent",
+                  "payment_intent": "pi_fixture_renewal"
+                },
+                "status_transitions": {
+                  "paid_at": 1772280000
+                }
+              }
+            ]
+          }
+        },
+        "subscription": {
+          "id": "sub_fixture",
+          "object": "subscription",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "status": "active",
+          "pending_update": null,
+          "billing_cycle_anchor": 1769860800,
+          "items": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "si_fixture",
+                "quantity": 1,
+                "current_period_start": 1772280000,
+                "current_period_end": 1774958400,
+                "price": {
+                  "id": "price_fixture_pro"
+                }
+              }
+            ]
+          }
+        },
+        "payment_intent": {
+          "id": "pi_fixture_renewal",
+          "object": "payment_intent",
+          "livemode": false,
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 5900,
+          "amount_received": 5900,
+          "status": "succeeded",
+          "latest_charge": "ch_fixture_renewal"
+        },
+        "charge": {
+          "id": "ch_fixture_renewal",
+          "object": "charge",
+          "livemode": false,
+          "payment_intent": "pi_fixture_renewal",
+          "customer": "cus_fixture",
+          "currency": "usd",
+          "amount": 5900,
+          "amount_captured": 5900,
+          "paid": true,
+          "captured": true,
+          "refunded": false,
+          "amount_refunded": 0,
+          "disputed": false
+        }
+      }
+    }
+  },
+  "invalid_mutations": [
+    [
+      "notification.api_version",
+      "2025-01-27.acacia"
+    ],
+    [
+      "notification.livemode",
+      true
+    ],
+    [
+      "notification.account",
+      "acct_foreign"
+    ],
+    [
+      "notification.data.object.id",
+      "in_other"
+    ],
+    [
+      "canonical.account_id",
+      "acct_foreign"
+    ],
+    [
+      "canonical.customer.id",
+      "cus_other"
+    ],
+    [
+      "canonical.customer.deleted",
+      true
+    ],
+    [
+      "canonical.invoice.customer",
+      "cus_other"
+    ],
+    [
+      "canonical.subscription.customer",
+      "cus_other"
+    ],
+    [
+      "canonical.subscription.id",
+      "sub_other"
+    ],
+    [
+      "canonical.invoice.parent.subscription_details.subscription",
+      "sub_other"
+    ],
+    [
+      "canonical.invoice.currency",
+      "cad"
+    ],
+    [
+      "canonical.invoice.collection_method",
+      "send_invoice"
+    ],
+    [
+      "canonical.invoice.billing_reason",
+      "manual"
+    ],
+    [
+      "canonical.subscription.status",
+      "incomplete"
+    ],
+    [
+      "canonical.subscription.pending_update",
+      {}
+    ],
+    [
+      "canonical.subscription.items.has_more",
+      true
+    ],
+    [
+      "canonical.subscription.items.data.0.price.id",
+      "price_other"
+    ],
+    [
+      "canonical.subscription.items.data.0.quantity",
+      2
+    ],
+    [
+      "canonical.subscription.items.data.0.current_period_end",
+      1772280001
+    ],
+    [
+      "canonical.subscription.billing_cycle_anchor",
+      1769860801
+    ],
+    [
+      "canonical.prices.price_fixture_basic.unit_amount",
+      2901
+    ],
+    [
+      "canonical.prices.price_fixture_basic.unit_amount",
+      true
+    ],
+    [
+      "canonical.prices.price_fixture_basic.currency",
+      "cad"
+    ],
+    [
+      "canonical.prices.price_fixture_basic.product",
+      "prod_other"
+    ],
+    [
+      "canonical.prices.price_fixture_basic.recurring.interval",
+      "year"
+    ],
+    [
+      "canonical.invoice.lines.has_more",
+      true
+    ],
+    [
+      "canonical.invoice.lines.data.0.pricing.price_details.price",
+      "price_other"
+    ],
+    [
+      "canonical.invoice.lines.data.0.parent.subscription_item_details.subscription",
+      "sub_other"
+    ],
+    [
+      "canonical.invoice.lines.data.0.amount",
+      true
+    ],
+    [
+      "canonical.invoice.lines.data.0.period.end",
+      1772280001
+    ],
+    [
+      "canonical.invoice.lines.data.0.parent.subscription_item_details.proration",
+      true
+    ],
+    [
+      "canonical.invoice.lines.data.0.taxes",
+      [
+        {
+          "amount": 1
+        }
+      ]
+    ],
+    [
+      "canonical.invoice.lines.data.0.discount_amounts",
+      [
+        {
+          "amount": 1
+        }
+      ]
+    ],
+    [
+      "canonical.invoice.subtotal",
+      2901
+    ],
+    [
+      "canonical.invoice.total",
+      2901
+    ],
+    [
+      "canonical.invoice.amount_due",
+      0
+    ],
+    [
+      "canonical.invoice.amount_paid",
+      0
+    ],
+    [
+      "canonical.invoice.amount_remaining",
+      1
+    ],
+    [
+      "canonical.invoice.starting_balance",
+      -2900
+    ],
+    [
+      "canonical.invoice.post_payment_credit_notes_amount",
+      1
+    ],
+    [
+      "canonical.invoice.pre_payment_credit_notes_amount",
+      1
+    ],
+    [
+      "canonical.invoice.amount_overpaid",
+      1
+    ],
+    [
+      "canonical.invoice.amount_shipping",
+      1
+    ],
+    [
+      "canonical.invoice.discounts",
+      [
+        "di_other"
+      ]
+    ],
+    [
+      "canonical.invoice.total_taxes",
+      [
+        {
+          "amount": 1
+        }
+      ]
+    ],
+    [
+      "canonical.invoice.on_behalf_of",
+      "acct_other"
+    ],
+    [
+      "canonical.invoice.status",
+      "open"
+    ],
+    [
+      "canonical.invoice.status_transitions.paid_at",
+      1769860801
+    ],
+    [
+      "canonical.invoice.payments.has_more",
+      true
+    ],
+    [
+      "canonical.invoice.payments.data",
+      []
+    ],
+    [
+      "canonical.invoice.payments.data.0.invoice",
+      "in_other"
+    ],
+    [
+      "canonical.invoice.payments.data.0.payment.payment_intent",
+      "pi_other"
+    ],
+    [
+      "canonical.invoice.payments.data.0.status",
+      "open"
+    ],
+    [
+      "canonical.invoice.payments.data.0.amount_paid",
+      2899
+    ],
+    [
+      "canonical.payment_intent.customer",
+      "cus_other"
+    ],
+    [
+      "canonical.payment_intent.amount_received",
+      2899
+    ],
+    [
+      "canonical.payment_intent.currency",
+      "cad"
+    ],
+    [
+      "canonical.payment_intent.status",
+      "requires_capture"
+    ],
+    [
+      "canonical.payment_intent.latest_charge",
+      "ch_other"
+    ],
+    [
+      "canonical.charge.payment_intent",
+      "pi_other"
+    ],
+    [
+      "canonical.charge.captured",
+      false
+    ],
+    [
+      "canonical.charge.amount_captured",
+      2899
+    ],
+    [
+      "canonical.charge.refunded",
+      true
+    ],
+    [
+      "canonical.charge.amount_refunded",
+      100
+    ],
+    [
+      "canonical.charge.disputed",
+      true
+    ],
+    [
+      "contract.customer_id",
+      "cus_other"
+    ],
+    [
+      "contract.business_id",
+      "qa-fictional-other"
+    ],
+    [
+      "contract.to_plan",
+      "business"
+    ],
+    [
+      "contract.expected_total",
+      2901
+    ],
+    [
+      "contract.kind",
+      "unknown"
+    ],
+    [
+      "contract.period.end",
+      1772280001
+    ],
+    [
+      "contract.effective_at",
+      1769860801
+    ]
+  ],
+  "upgrade_mutations": [
+    [
+      "contract.from_plan",
+      "business"
+    ],
+    [
+      "contract.quote_id",
+      "missing"
+    ],
+    [
+      "contract.effective_at",
+      1771070401
+    ],
+    [
+      "canonical.invoice.lines.data.0.amount",
+      -1449
+    ],
+    [
+      "canonical.invoice.lines.data.1.amount",
+      2949
+    ],
+    [
+      "canonical.invoice.lines.data.0.parent.subscription_item_details.proration",
+      false
+    ],
+    [
+      "canonical.invoice.lines.data.1.period.start",
+      1771070401
+    ],
+    [
+      "canonical.subscription.items.data.0.current_period_end",
+      1772280001
+    ],
+    [
+      "canonical.subscription.billing_cycle_anchor",
+      1771070400
+    ],
+    [
+      "contract.expected_total",
+      3000
+    ]
+  ]
+}
