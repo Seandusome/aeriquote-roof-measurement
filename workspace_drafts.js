@@ -18,6 +18,29 @@
  loading.style.cssText='box-sizing:border-box;width:calc(100% - 32px);max-width:30rem;padding:24px;border:2px solid #16457b;border-radius:12px;color:#132a46;background:white;overflow-wrap:anywhere';
  loading.innerHTML='<h2 id="workspaceRecoveryLoadingTitle" tabindex="-1" style="margin:0 0 12px">Restoring draft…</h2><p id="workspaceRecoveryLoadingHelp" style="margin:0">Please wait before editing or switching jobs. Your measurements, prices and customer details are being restored. Keep this tab open.</p>';
  loading.addEventListener('cancel',e=>e.preventDefault());document.body.append(loading);
+
+ // Recovery imagery is staged off-screen. Only this awaited attempt can
+ // install it; a timeout/cancelled attempt never writes into a later job.
+ const cancelImagery=document.createElement('button');cancelImagery.id='workspaceRecoveryKeepCurrent';cancelImagery.type='button';cancelImagery.textContent='Keep current work';cancelImagery.style.cssText='margin-top:16px;padding:10px 14px';cancelImagery.hidden=true;loading.append(cancelImagery);
+ function releaseRecoveryImagery(ready){
+  if(!ready?.layer)return;
+  const layers=ready.layer.getLayers?ready.layer.getLayers():[ready.layer];
+  ready.layer.remove();layers.forEach(layer=>{if(String(layer._url||'').startsWith('blob:'))URL.revokeObjectURL(layer._url)});
+ }
+ async function prepareRecoveryImagery(imagery){
+  let accept=true,timer,rejectWait;
+  const fail=(message,code)=>Object.assign(new Error(message),{code});
+  const stopped=new Promise((resolve,reject)=>{rejectWait=reject;timer=setTimeout(()=>reject(fail('Imagery did not finish within 25 seconds. Current work is unchanged.','recovery_imagery_timeout')),25000)});
+  // manual_roof_only keeps Google's recovery on its existing wide-aerial
+  // path regardless of the industry of the workspace currently on screen.
+  const pending=preparePropertyImagery({...imagery,manual_roof_only:true});
+  pending.then(ready=>{if(!accept)releaseRecoveryImagery(ready)},()=>{});
+  const help=el('workspaceRecoveryLoadingHelp'),originalHelp=help.textContent;help.textContent='Waiting for saved imagery (up to 25 seconds). Keep current work stops recovery without discarding the saved draft.';
+  cancelImagery.hidden=false;
+  cancelImagery.onclick=()=>rejectWait(fail('Recovery stopped. Current work is unchanged.','recovery_cancelled'));
+  try{return await Promise.race([pending,stopped])}
+  finally{accept=false;clearTimeout(timer);cancelImagery.onclick=null;cancelImagery.hidden=true;help.textContent=originalHelp}
+ }
  const fields=['address','streetAddress','cityTown','postalCode','propertyProvince','businessType','dealerCountry','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice','jobPrice','pricingMode','discountPct','gst','pst','estimatePeriod','commercialLinearRate','landscapingAreaRate','pressureAreaRate','pavingAreaRate','measureSource','adjustedArea','manualRoofScopeConfirmed','pitchSel','pitchDeg','roofRemeasurePitch'];
  const clone=x=>JSON.parse(JSON.stringify(x));
  const points=x=>(x||[]).map(p=>[p.lat??p[0],p.lng??p[1]]);
@@ -80,13 +103,14 @@
  function newDraft(){id=uuid();version=0;ack='';ended=false;uncertainWrite=null}
  async function restore(row){
   if(busy)return false;
-  busy=true;let restoredValues=null;
+  busy=true;let restoredValues=null,stagedImagery=null;
   const applyValues=()=>{if(restoredValues)fields.forEach(k=>{const n=el(k);if(n&&k in restoredValues){if(n.type==='checkbox')n.checked=restoredValues[k];else n.value=restoredValues[k]}})};
   try{
    loading.showModal();el('workspaceRecoveryLoadingTitle').focus();
    if(capture()&&!await flush(true))throw new Error('Current work has not reached recovery storage. Keep this tab open before restoring another draft.');
    const d=await request('/'+row.draft_id),w=d.workspace;
    const imagery=w.sessionToken?await request('/'+row.draft_id+'/imagery-session',{method:'POST',body:'{}'}):null;
+   if(imagery)stagedImagery=await prepareRecoveryImagery(imagery);
    // Read the retained workspace only after ownership and imagery metadata checks.
    resetMeasurementForNewProperty();
    restoreSavedQuoteFields({address:w.values.address||''},w.quote,{});
@@ -106,8 +130,7 @@
    if(imagery){map.setView([imagery.center.latitude,imagery.center.longitude],18);setPropertyMarker(imagery.center.latitude,imagery.center.longitude)}
    redrawRoofData();redrawManualDisplayLayers();if(traceMode){redrawTraceLine();setTraceControls(true)};redrawAreaMeasure();redrawLinearMeasure();updateAreaUi();updateLinearUi();updatePropertyActionButton();renderSummary();
    // Keep every measurement exactly as stored. Imagery refresh never invokes lookup.
-   if(imagery?.provider==='mapbox')installPropertyImagery(await preparePropertyImagery(imagery));
-   else if(imagery)await loadStandardWideAerial();
+   if(stagedImagery){installPropertyImagery(stagedImagery);stagedImagery=null}
    // Aerial loading initializes its own source defaults; recovery owns the retained source and rates.
    applyValues();
    renderSummary();
@@ -120,8 +143,9 @@
   }catch(e){
    // An imagery failure must not leave loader defaults in the retained fields.
    applyValues();if(restoredValues)renderSummary();
+   if(e.code==='recovery_cancelled'){paused=false;document.getElementById('workspaceRecoveryChoices')?.remove();say('Recovery stopped. Current work is unchanged. The server draft is kept; reload to restore it later.');return false}
    say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false;
-  }finally{busy=false;if(loading.open)loading.close()}
+  }finally{if(stagedImagery)releaseRecoveryImagery(stagedImagery);busy=false;if(loading.open)loading.close()}
  }
  const separateLabel=()=>structures.some(roof=>roof.manually_measured)||manualPlanes.length||tracePoints.length
   ?'Keep working on this estimate':'Start a separate draft';
