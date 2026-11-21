@@ -4101,11 +4101,47 @@ def _public_site_package_ready(filename):
         return False
 
 
+def _public_site_account_industry():
+    """Read-only navigation hint, with the same active-session checks as the app.
+
+    This never grants app access: protected routes still validate every request.
+    Public pages remain available when a session is absent, disabled or revoked.
+    """
+    dealer_id=session.get('dealer_id')
+    if not dealer_id:return None
+    con=estimate_db()
+    try:
+        account=con.execute('SELECT status,industry FROM dealers WHERE id=?',(dealer_id,)).fetchone()
+        if not account or str(account['status']).lower()!='active':return None
+        employee_id=session.get('employee_id') if is_employee() else None
+        if is_employee() and not employee_id:return None
+        if employee_id:
+            employee=con.execute('SELECT status FROM dealer_employees WHERE id=? AND dealer_id=?',(employee_id,dealer_id)).fetchone()
+            if not employee or str(employee['status']).lower()!='active':return None
+        kind='employee' if is_employee() else 'owner'
+        if int(session.get('auth_version') or 0)!=auth_version(con,kind,employee_id or dealer_id):return None
+        from public_site_navigation import INDUSTRIES
+        return account['industry'] if account['industry'] in INDUSTRIES else 'roofing'
+    finally:con.close()
+
+
 def _serve_site_resource(filename):
     disk_path=os.path.join(SITE_DIR, filename)
     if filename.endswith(".html") and (not _public_site_package_ready(filename) or not os.path.isfile(disk_path)):
         return Response(PUBLIC_SITE_UNAVAILABLE, status=503, content_type="text/html; charset=utf-8",
                         headers={"Cache-Control":"no-store"})
+    if filename.endswith('.html') and os.path.isfile(disk_path):
+        from public_site_navigation import signed_in_links, industry_for, measuring_url, TRIAL_PATHS
+        industry=_public_site_account_industry()
+        if industry and '/site/'+filename.removesuffix('.html') in TRIAL_PATHS:
+            response=redirect(measuring_url(industry_for(filename,industry,request.query_string.decode('latin-1'))))
+        else:
+            with open(disk_path,encoding='utf-8') as handle:document=handle.read()
+            response=Response(signed_in_links(document,filename,industry) if industry else document,
+                              content_type='text/html; charset=utf-8')
+        response.headers['Cache-Control']='private, no-store'
+        response.vary.add('Cookie')
+        return response
     if os.path.isfile(disk_path):
         return send_from_directory(SITE_DIR, filename)
     return Response("Required website asset unavailable", status=404, content_type="text/plain; charset=utf-8")
