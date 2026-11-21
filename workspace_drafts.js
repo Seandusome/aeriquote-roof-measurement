@@ -10,6 +10,14 @@
  const badge=document.createElement('div');badge.id='workspaceRecoveryStatus';badge.setAttribute('role','status');badge.style.cssText='padding:7px 12px;font-size:12px;background:#f0f5f3;color:#24483a';
  document.body.prepend(badge);
  const say=(message,warn=false)=>{badge.textContent=message;badge.hidden=!message;badge.style.background=warn?'#fff0d5':'#f0f5f3'};
+
+ // A native modal keeps forms, maps and job navigation inert for the entire
+ // asynchronous restore, not just until the first geometry has been applied.
+ const loading=document.createElement('dialog');loading.id='workspaceRecoveryLoading';
+ loading.setAttribute('aria-labelledby','workspaceRecoveryLoadingTitle');loading.setAttribute('aria-describedby','workspaceRecoveryLoadingHelp');
+ loading.style.cssText='box-sizing:border-box;width:calc(100% - 32px);max-width:30rem;padding:24px;border:2px solid #16457b;border-radius:12px;color:#132a46;background:white;overflow-wrap:anywhere';
+ loading.innerHTML='<h2 id="workspaceRecoveryLoadingTitle" tabindex="-1" style="margin:0 0 12px">Restoring draft…</h2><p id="workspaceRecoveryLoadingHelp" style="margin:0">Please wait before editing or switching jobs. Your measurements, prices and customer details are being restored. Keep this tab open.</p>';
+ loading.addEventListener('cancel',e=>e.preventDefault());document.body.append(loading);
  const fields=['address','streetAddress','cityTown','postalCode','propertyProvince','businessType','dealerCountry','customerName','customerPhone','customerEmail','customerNotes','extraServiceDescription','extraServiceAmount','streetViewChoice','jobPrice','pricingMode','discountPct','gst','pst','estimatePeriod','commercialLinearRate','landscapingAreaRate','pressureAreaRate','pavingAreaRate','measureSource','adjustedArea','manualRoofScopeConfirmed','pitchSel','pitchDeg','roofRemeasurePitch'];
  const clone=x=>JSON.parse(JSON.stringify(x));
  const points=x=>(x||[]).map(p=>[p.lat??p[0],p.lng??p[1]]);
@@ -45,11 +53,14 @@
    return data;
   }finally{clearTimeout(timer)}
  }
- async function flush(){
+ async function flush(duringRestore=false){
   // An unresolved older draft choice must not prevent preserving NEW work
   // under this tab's independent ID. Explicit estimate save still requires a choice.
   if(ended)return false;
-  if(writing){const ok=await writing;if(!ok)return false;return flush()}
+  // Visibility/online events and external callers must not acknowledge a
+  // partially applied workspace. Only restore's own checkpoints may write.
+  if(busy&&duringRestore!==true)return false;
+  if(writing){const ok=await writing;if(!ok)return false;return flush(duringRestore)}
   let workspace;try{workspace=capture()}catch(e){say('Changes have not reached recovery storage. Keep this tab open.',true);return false}
   if(!workspace)return true;
   const serialized=JSON.stringify(workspace);if(serialized===ack&&!uncertainWrite)return true;
@@ -63,20 +74,23 @@
    catch(e){if(id===draftId&&!(e.status>=400&&e.status<500))uncertainWrite=attempt;lastError=e;say('Changes have not reached the server. '+e.message+' Keep this tab open.',true);return false}
   })();
   let ok;try{ok=await writing}finally{writing=null}
-  if(ok&&id===draftId&&JSON.stringify(capture())!==ack)return flush();
+  if(ok&&id===draftId&&JSON.stringify(capture())!==ack)return flush(duringRestore);
   return ok;
  }
  function newDraft(){id=uuid();version=0;ack='';ended=false;uncertainWrite=null}
  async function restore(row){
-  busy=true;
+  if(busy)return false;
+  busy=true;let restoredValues=null;
+  const applyValues=()=>{if(restoredValues)fields.forEach(k=>{const n=el(k);if(n&&k in restoredValues){if(n.type==='checkbox')n.checked=restoredValues[k];else n.value=restoredValues[k]}})};
   try{
-   if(capture()&&!await flush())throw new Error('Current work has not reached recovery storage. Keep this tab open before restoring another draft.');
+   loading.showModal();el('workspaceRecoveryLoadingTitle').focus();
+   if(capture()&&!await flush(true))throw new Error('Current work has not reached recovery storage. Keep this tab open before restoring another draft.');
    const d=await request('/'+row.draft_id),w=d.workspace;
    const imagery=w.sessionToken?await request('/'+row.draft_id+'/imagery-session',{method:'POST',body:'{}'}):null;
    // Read the retained workspace only after ownership and imagery metadata checks.
    resetMeasurementForNewProperty();
    restoreSavedQuoteFields({address:w.values.address||''},w.quote,{});
-   fields.forEach(k=>{const n=el(k);if(n&&k in w.values){if(n.type==='checkbox')n.checked=w.values[k];else n.value=w.values[k]}});
+   restoredValues=w.values;applyValues();
    const v=w.state;
    areaPoints=latlng(v.areaPoints);linearPoints=latlng(v.linearPoints);
    ({areaMode,linearMode,areaMeasurementSaved,linearMeasurementSaved,commercialEditingIndex,traceMode,garageMode,roofFixMode,outlineEditMode,adjustedOutline,areaRemeasureMode,areaCorrectionOriginal,linearCorrectionOriginal,surfaceLineDraftOriginal,savedLinearJobRate,savedPropertyEditActive,savedJobDetails,measurementViewMode,pendingMeasurementMode,lastLoadedStreet,roofRemeasureTarget,roofOutlineReviewMode,roofReviewBoundarySource,roofReviewManualIndices,manualRoofEditIndex}=v);
@@ -95,16 +109,19 @@
    if(imagery?.provider==='mapbox')installPropertyImagery(await preparePropertyImagery(imagery));
    else if(imagery)await loadStandardWideAerial();
    // Aerial loading initializes its own source defaults; recovery owns the retained source and rates.
-   fields.forEach(k=>{const n=el(k);if(n&&k in w.values){if(n.type==='checkbox')n.checked=w.values[k];else n.value=w.values[k]}});
+   applyValues();
    renderSummary();
    const sourceId=row.draft_id;newDraft();paused=false;
    say('Draft restored. Review your measurements, then create the estimate when ready.');
-   if(!await flush())return false;
+   if(!await flush(true))return false;
    const cleanup=await request('/'+sourceId,{method:'DELETE',body:JSON.stringify({version:d.version})});
    if(!cleanup.deleted)say('Recovery copy saved for 24 hours. Newer work from another tab was kept separately.');
    return true;
-  }catch(e){say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false}
-  finally{busy=false}
+  }catch(e){
+   // An imagery failure must not leave loader defaults in the retained fields.
+   applyValues();if(restoredValues)renderSummary();
+   say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false;
+  }finally{busy=false;if(loading.open)loading.close()}
  }
  const separateLabel=()=>structures.some(roof=>roof.manually_measured)||manualPlanes.length||tracePoints.length
   ?'Keep working on this estimate':'Start a separate draft';
@@ -141,7 +158,7 @@
  }
  async function prepareSave(){
   lastError=null;
-  if(busy)return false;
+  if(busy){lastError=Object.assign(new Error('Draft recovery is still loading. Wait for it to finish before saving.'),{status:428});return false}
   if(paused){
    const panel=document.getElementById('workspaceRecoveryChoices');
    if(panel){
