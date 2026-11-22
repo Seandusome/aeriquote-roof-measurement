@@ -67,7 +67,7 @@ with tempfile.TemporaryDirectory() as tmp:
  assert owner.get('/api/workspace-drafts/'+race,headers=h).get_json()['workspace']==newer
  assert owner.get('/api/workspace-drafts/'+fork,headers=h).get_json()['workspace']==w
  assert owner.delete('/api/workspace-drafts/'+race,headers=h,json={'version':2}).get_json()['deleted'] is True
- assert owner.delete('/api/workspace-drafts/'+fork,headers=h).get_json()['deleted'] is True
+ assert owner.delete('/api/workspace-drafts/'+fork,headers=h,json={'version':1}).get_json()['deleted'] is True
  # Valid explicit save atomically removes the recovery payload; replay is exactly once.
  p={'address':'1 Fictional QA Street','customer_name':'FICTIONAL ONLY','quote':{'commercialAreas':[{'points':[[52,-106],[52,-105.999],[52.001,-106]],'rate':.1}]}}
  from measurement_integrity import polygon_sqft

@@ -4678,6 +4678,8 @@ def require_dealer_login():
     # An old browser tab must not save its draft into a different business after re-login.
     expected_account=request.headers.get("X-AeriQuote-Account", "")
     if expected_account and expected_account!=str(session.get("dealer_id") or ""):
+        if path.startswith('/api/workspace-drafts'):
+            return jsonify(error="This tab's saved account context does not match the current login. No draft was changed. Keep this tab open and sign in to its original account in another tab before retrying.",code="draft_account_context"),409
         return jsonify(error="This page belongs to another business. Keep it open, sign in to the original business in another tab, then retry. Your unsaved entries are still here."),409
 
 
@@ -4972,6 +4974,8 @@ def create_session(key,lat,lng,street_url=None,mode="solar",layers=None,anchor_l
 
 @app.after_request
 def retain_property_session(response):
+    if request.path in {'/','/static/workspace_drafts.js'} or request.path.startswith('/api/workspace-drafts'):
+        response.headers['Cache-Control']='private, no-store'
     if request.method == "POST" and response.status_code == 200 and request.path in {"/property","/structure","/locate-building"}:
         result = response.get_json(silent=True) or {}
         data = request.get_json(silent=True) or {}
@@ -5416,7 +5420,7 @@ def draft_identity():
     dealer=str(session.get("dealer_id") or "")
     user=drafts.principal(session)
     if request.headers.get("X-AeriQuote-Principal") != user:
-        raise drafts.DraftError("Sign in to the original user account before recovering this workspace.",409)
+        raise drafts.DraftError("This tab's user context does not match the current login. Keep it open and sign in to its original user account in another tab before retrying.",409,code="draft_user_context")
     origin=request.headers.get("Origin","").lower()
     if request.headers.get("Sec-Fetch-Site","")=="cross-site" or (origin and origin not in {"https://"+request.host.lower(),"http://"+request.host.lower()}):
         raise drafts.DraftError("Recovery requests must come from this AeriQuote page.",403)
@@ -5434,11 +5438,22 @@ def workspace_draft_api(draft_id=None):
         if draft_id is None:
             rows=con.execute("SELECT draft_id,version,expires_at FROM workspace_drafts WHERE dealer_id=? AND principal=? AND closed=0 ORDER BY expires_at DESC",(dealer,user)).fetchall()
             con.commit()
-            return jsonify(drafts=[dict(r) for r in rows])
+            return jsonify(drafts=[dict(r) for r in rows],server_time=time.time())
         if request.method=="DELETE":
             cleanup=request.get_json(silent=True) or {}
             if not isinstance(cleanup,dict):return jsonify(error="Recovery cleanup must be an object."),400
+            expected=cleanup.get('version')
+            if isinstance(expected,bool) or not isinstance(expected,int) or expected<0:
+                return jsonify(error="This older page cannot safely discard without the saved draft version. Keep this tab open. Open a fresh AeriQuote tab for the same account to review and discard the draft there.",code="draft_version_required"),428
+            row=con.execute('SELECT version,closed FROM workspace_drafts WHERE dealer_id=? AND principal=? AND draft_id=?',(dealer,user,draft_id)).fetchone()
+            if not row:
+                if cleanup.get('intent')!='discard':return jsonify(deleted=False)
+                return jsonify(error="This recovery draft is unavailable or its 24-hour window ended. Current work is unchanged.",code="draft_unavailable"),404
+            if cleanup.get('intent')=='discard' and row['closed'] and row['version']==expected:
+                con.commit();return jsonify(deleted=True,already_closed=True)
             deleted=drafts.close(con,dealer,user,draft_id,expected_version=cleanup.get("version"))
+            if not deleted and cleanup.get('intent')=='discard':
+                return jsonify(error="This draft changed after it was listed. The newer saved work was kept. Review the refreshed draft before retrying Discard.",code="draft_changed"),409
             con.commit();return jsonify(deleted=deleted)
         if request.method=="GET":
             row=drafts.load(con,dealer,user,draft_id)

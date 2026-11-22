@@ -7,6 +7,7 @@
  const headers={'Content-Type':'application/json','X-AeriQuote-Account':account,'X-AeriQuote-Principal':identity};
  const uuid=()=>crypto.randomUUID();
  let id=uuid(),version=0,ack='',busy=false,paused=true,ended=false,writing=null,lastError=null,touched=false,uncertainWrite=null;
+ let pruneRecoveryChoices=()=>{};
  const badge=document.createElement('div');badge.id='workspaceRecoveryStatus';badge.setAttribute('role','status');badge.style.cssText='padding:7px 12px;font-size:12px;background:#f0f5f3;color:#24483a';
  document.body.prepend(badge);
  const say=(message,warn=false)=>{badge.textContent=message;badge.hidden=!message;badge.style.background=warn?'#fff0d5':'#f0f5f3'};
@@ -62,7 +63,7 @@
   const failure=(message,status=0,code)=>Object.assign(new Error(message),{status,code});
   try{
    let r;
-   try{r=await fetch('/api/workspace-drafts'+path,{...options,headers,signal:controller.signal})}
+   try{r=await fetch('/api/workspace-drafts'+path,{...options,headers,cache:'no-store',signal:controller.signal})}
    catch(e){throw failure(e.name==='AbortError'?'Recovery connection timed out.':'Recovery connection is unavailable.');}
    // Preserve the HTTP/authentication result even if a private preview gateway
    // returns HTML rather than the application's JSON error response.
@@ -152,10 +153,16 @@
  async function choose(){
   try{
    const data=await request('');
+   const clockOffset=Number.isFinite(data.server_time)?data.server_time*1000-Date.now():0;
+   const expired=row=>Number.isFinite(row.expires_at)&&row.expires_at*1000<=Date.now()+clockOffset;
+   data.drafts=data.drafts.filter(row=>!expired(row));
    if(!data.drafts.length){paused=false;say('Recovery autosave is ready.');return}
    const panel=document.createElement('section');panel.id='workspaceRecoveryChoices';panel.setAttribute('aria-labelledby','workspaceRecoveryHeading');
    panel.style.cssText='margin:0 16px 12px;padding:12px;border:1px solid #bdcbd8;border-radius:10px;background:#f8fafc;scroll-margin-top:16px';
    const title=document.createElement('h2');title.id='workspaceRecoveryHeading';title.tabIndex=-1;title.textContent='Unsaved draft found';title.style.cssText='margin:0 0 8px;font-size:1rem';panel.append(title);
+   const choices=[];
+   const finishChoices=message=>{if(panel.children.length===2){panel.remove();pruneRecoveryChoices=()=>{};paused=false;say(message)}};
+   pruneRecoveryChoices=()=>{if(busy)return;for(const choice of choices){if(expired(choice.row))choice.line.remove()}finishChoices('The listed recovery windows ended. Current work is unchanged.');};
    for(const row of data.drafts){
     const line=document.createElement('div'),label=document.createElement('span');
     line.style.cssText='display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px';
@@ -169,12 +176,26 @@
     const yes=document.createElement('button');yes.textContent='Restore';
     const no=document.createElement('button');no.textContent='Discard';no.style.cssText='background:white;color:#9b2226;border:1px solid #9b2226';
     yes.style.cssText='background:white;color:#16457b;border:1px solid #16457b';
-    yes.onclick=async()=>{if(busy)return;yes.disabled=true;const ok=await restore(row);yes.disabled=false;if(ok)panel.remove()};
-    no.onclick=async()=>{if(busy)return;no.disabled=true;try{await request('/'+row.draft_id,{method:'DELETE'});line.remove();if(panel.children.length===2){panel.remove();paused=false;newDraft();say('Recovery draft discarded.')}}catch(e){say(e.message,true);no.disabled=false}};
-    line.append(label,yes,no);panel.append(line);
+    const actionStatus=document.createElement('span');actionStatus.setAttribute('role','status');actionStatus.style.cssText='flex-basis:100%;color:#9b2226';
+    yes.onclick=async()=>{if(busy)return;pruneRecoveryChoices();if(expired(row))return;yes.disabled=true;const ok=await restore(row);yes.disabled=false;if(ok){panel.remove();pruneRecoveryChoices=()=>{}}};
+    no.onclick=async()=>{
+     if(busy)return;pruneRecoveryChoices();if(expired(row))return;
+     no.disabled=true;yes.disabled=true;actionStatus.textContent='Discarding this recovery draft…';
+     try{
+      const result=await request('/'+row.draft_id,{method:'DELETE',body:JSON.stringify({version:row.version,intent:'discard'})});
+      if(result.deleted!==true)throw new Error('The server did not confirm discard. The draft is kept.');
+      line.remove();finishChoices('Recovery draft discarded. Current work is unchanged.');
+     }catch(e){
+      actionStatus.textContent='Draft was not discarded. '+e.message+' Current work is unchanged.';
+      if(e.code==='draft_changed'){
+       try{const latest=await request('/'+row.draft_id);row.version=latest.version;row.expires_at=latest.expires_at;const address=latest.workspace?.values?.address||latest.workspace?.values?.streetAddress||'Recovery draft';label.textContent=address+' · Expires '+new Date(row.expires_at*1000).toLocaleString();actionStatus.textContent+=' Its saved version was refreshed. Review it before retrying Discard.'}catch(_){}
+      }
+     }finally{no.disabled=false;yes.disabled=false}
+    };
+    line.append(label,yes,no,actionStatus);panel.append(line);choices.push({row,line});
    }
    const fresh=document.createElement('button');fresh.id='workspaceRecoveryContinue';fresh.textContent=separateLabel();
-   fresh.onclick=()=>{if(busy)return;panel.remove();paused=false;say('Separate recovery draft ready.');flush();};panel.append(fresh);
+   fresh.onclick=()=>{if(busy)return;panel.remove();pruneRecoveryChoices=()=>{};paused=false;say('Separate recovery draft ready.');flush();};panel.append(fresh);
    const steps=document.getElementById('progress1')?.closest('.stepbar');
    if(steps)steps.before(panel);else badge.after(panel);
    say('');
@@ -213,8 +234,9 @@
  }
  document.addEventListener('input',()=>{touched=true;changed()});
  const priorSummary=renderSummary;renderSummary=function(){const result=priorSummary.apply(this,arguments);changed();return result};
- setInterval(()=>{if(!busy)flush()},1800);
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+ setInterval(()=>{pruneRecoveryChoices();if(!busy)flush()},1800);
+ document.addEventListener('visibilitychange',()=>{pruneRecoveryChoices();if(document.visibilityState==='hidden')flush()});
+ window.addEventListener('pageshow',()=>pruneRecoveryChoices());
  window.addEventListener('online',flush);
  choose();
 })();
