@@ -159,6 +159,10 @@ class Planner(unittest.TestCase):
             f=fixture();f['records'][0]['policy']['retention']['legacy_full']=value
             self.assertEqual(self.record(f)['restore_action'],'HOLD')
 
+    def test_missing_payment_period_identity_requires_review(self):
+        f=fixture();f['records'][0]['policy']['period'].pop('id')
+        self.assertEqual(self.record(f)['restore_action'],'HOLD')
+
     def test_parent_deletion_quarantines_every_linked_revision_and_media(self):
         f=fixture();parent=f['records'][0]
         for kind, rid, pid in [('revision','rev-1','estimate-1'),('imagery','image-1','rev-1'),('imagery','image-2','estimate-1')]:

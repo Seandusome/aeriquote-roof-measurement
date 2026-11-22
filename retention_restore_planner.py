@@ -102,6 +102,7 @@ def _retention(record, now):
     retention = p['retention']
     if not isinstance(retention, dict) or not isinstance(p.get('period'), dict):
         raise PlannerInputError('Explicit period and retention mappings required')
+    _required_text(p['period'].get('id'))
     for name in ('legacy_full', 'legacy_lightweight'):
         promise = retention[name]
         if not isinstance(promise, dict):
