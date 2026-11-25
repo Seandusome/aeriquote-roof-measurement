@@ -104,7 +104,7 @@
  function newDraft(){id=uuid();version=0;ack='';ended=false;uncertainWrite=null}
  async function restore(row){
   if(busy)return false;
-  busy=true;let restoredValues=null,stagedImagery=null;
+  busy=true;let restoredValues=null,stagedImagery=null,cancelled=false;
   const applyValues=()=>{if(restoredValues)fields.forEach(k=>{const n=el(k);if(n&&k in restoredValues){if(n.type==='checkbox')n.checked=restoredValues[k];else n.value=restoredValues[k]}})};
   try{
    loading.showModal();el('workspaceRecoveryLoadingTitle').focus();
@@ -144,9 +144,9 @@
   }catch(e){
    // An imagery failure must not leave loader defaults in the retained fields.
    applyValues();if(restoredValues)renderSummary();
-   if(e.code==='recovery_cancelled'){paused=false;document.getElementById('workspaceRecoveryChoices')?.remove();say('Recovery stopped. Current work is unchanged. The server draft is kept; reload to restore it later.');return false}
+   if(e.code==='recovery_cancelled'){cancelled=true;paused=false;document.getElementById('workspaceRecoveryChoices')?.remove();say('Recovery stopped. Current work is unchanged. The server draft is kept; reload to restore it later.');return false}
    say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false;
-  }finally{if(stagedImagery)releaseRecoveryImagery(stagedImagery);busy=false;if(loading.open)loading.close()}
+  }finally{if(stagedImagery)releaseRecoveryImagery(stagedImagery);busy=false;if(loading.open)loading.close();if(cancelled)focusWorkspace()}
  }
  const focusWorkspace=()=>{const target=el('streetAddress')||el('address');if(target)target.focus()};
  const separateLabel=()=>structures.some(roof=>roof.manually_measured)||manualPlanes.length||tracePoints.length
