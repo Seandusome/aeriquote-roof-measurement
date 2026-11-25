@@ -148,6 +148,7 @@
    say('Draft could not be restored. '+e.message+' Retry Restore; the server copy is retained.',true);return false;
   }finally{if(stagedImagery)releaseRecoveryImagery(stagedImagery);busy=false;if(loading.open)loading.close()}
  }
+ const focusWorkspace=()=>{const target=el('streetAddress')||el('address');if(target)target.focus()};
  const separateLabel=()=>structures.some(roof=>roof.manually_measured)||manualPlanes.length||tracePoints.length
   ?'Keep working on this estimate':'Start a separate draft';
  async function choose(){
@@ -173,11 +174,12 @@
      const address=d.workspace?.values?.address||d.workspace?.values?.streetAddress;
      if(address)label.textContent=address+' · Expires '+expiry;
     }).catch(()=>{});
-    const yes=document.createElement('button');yes.textContent='Restore';
-    const no=document.createElement('button');no.textContent='Discard';no.style.cssText='background:white;color:#9b2226;border:1px solid #9b2226';
+    label.id='workspaceRecoveryLabel-'+choices.length;
+    const yes=document.createElement('button');yes.textContent='Restore';yes.setAttribute('aria-describedby',label.id);
+    const no=document.createElement('button');no.textContent='Discard';no.setAttribute('aria-describedby',label.id);no.style.cssText='background:white;color:#9b2226;border:1px solid #9b2226';
     yes.style.cssText='background:white;color:#16457b;border:1px solid #16457b';
     const actionStatus=document.createElement('span');actionStatus.setAttribute('role','status');actionStatus.style.cssText='flex-basis:100%;color:#9b2226';
-    yes.onclick=async()=>{if(busy)return;pruneRecoveryChoices();if(expired(row))return;yes.disabled=true;const ok=await restore(row);yes.disabled=false;if(ok){panel.remove();pruneRecoveryChoices=()=>{}}};
+    yes.onclick=async()=>{if(busy)return;pruneRecoveryChoices();if(expired(row))return;yes.disabled=true;const ok=await restore(row);yes.disabled=false;if(ok){panel.remove();pruneRecoveryChoices=()=>{};focusWorkspace()}};
     no.onclick=async()=>{
      if(busy)return;pruneRecoveryChoices();if(expired(row))return;
      no.disabled=true;yes.disabled=true;actionStatus.textContent='Discarding this recovery draft…';
@@ -185,6 +187,7 @@
       const result=await request('/'+row.draft_id,{method:'DELETE',body:JSON.stringify({version:row.version,intent:'discard'})});
       if(result.deleted!==true)throw new Error('The server did not confirm discard. The draft is kept.');
       line.remove();finishChoices('Recovery draft discarded. Current work is unchanged.');
+      if(panel.isConnected)panel.querySelector('button:not([disabled])')?.focus();else focusWorkspace();
      }catch(e){
       actionStatus.textContent='Draft was not discarded. '+e.message+' Current work is unchanged.';
       if(e.code==='draft_changed'){

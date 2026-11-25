@@ -489,7 +489,7 @@ body.landscaping-industry #toolAutoBtn,body.landscaping-industry #garageControls
  </div>
 </div></div>
 
-<div id="historyModal" class="historyModal"><div class="historyBox"><div class="historyHead"><div><h2 style="margin:0;color:var(--green2)">Previous Estimates</h2><div class="small">Find and reopen a saved estimate or review its earlier versions.</div></div><button class="ghost" onclick="closeEstimateHistory()">CLOSE</button></div><div style="display:flex;gap:8px;margin-top:14px"><input id="historySearch" placeholder="Search customer, address, phone or email" onkeydown="if(event.key==='Enter')searchEstimateHistory()"><button onclick="searchEstimateHistory()">SEARCH</button></div><div class="historyColumns"><div>Customer</div><div>Property</div><div>Date</div><div>Estimate</div><div>Actions</div></div><div id="historyResults" class="historyResults"><div class="small" style="padding:14px 0">Your saved estimates will appear here.</div></div></div></div>
+<div id="historyModal" class="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle"><div class="historyBox"><div class="historyHead"><div><h2 id="historyTitle" style="margin:0;color:var(--green2)">Previous Estimates</h2><div class="small">Find and reopen a saved estimate or review its earlier versions.</div></div><button class="ghost" onclick="closeEstimateHistory()">CLOSE</button></div><div style="display:flex;gap:8px;margin-top:14px"><input id="historySearch" aria-label="Search previous estimates" placeholder="Search customer, address, phone or email" onkeydown="if(event.key==='Enter')searchEstimateHistory()"><button onclick="searchEstimateHistory()">SEARCH</button></div><div class="historyColumns"><div>Customer</div><div>Property</div><div>Date</div><div>Estimate</div><div>Actions</div></div><div id="historyResults" class="historyResults"><div class="small" style="padding:14px 0">Your saved estimates will appear here.</div></div></div></div>
 
 <div id="trialLimitOverlay" class="trial-limit-overlay" role="dialog" aria-modal="true" aria-labelledby="trialLimitTitle"><div class="trial-limit-card"><h2 id="trialLimitTitle">You’ve Used Your 3 Free Property Measurements</h2><p>Your AeriQuote free trial included 3 property measurements and estimates.</p><p>Choose a plan to continue measuring properties and creating professional estimates.</p><div class="trial-limit-actions"><a href="/site/pricing.html">VIEW PLANS →</a><button type="button" onclick="closeTrialLimit();openEstimateHistory()">BACK TO MY ACCOUNT</button></div><p class="trial-note">No automatic billing. Choose a plan only when you're ready.</p></div></div>
 <div id="reportOverlay"><div class="report" style="width:min(1320px,calc(100vw - 44px));">
@@ -2995,8 +2995,33 @@ async function performEstimateHistorySave(){
   lastHistorySaveKey=saveKey;saveEstimateHistory.pending=null;saveEstimateHistory.cleanWorkspace=workspaceStamp;if(typeof window!=='undefined'&&window.aqRecovery)window.aqRecovery.saved();return true;
  }catch(e){saveEstimateHistory.lastFailureStatus=e.status||0;console.warn('AQ:estimate-save-failed');status(e.status===401?'Your login expired. This estimate was not saved. Keep this page open and sign in in another tab, then retry.':e.status===409?e.message:e.status>=400&&e.status<500&&e.message!=='save failed'?'Estimate not saved. '+e.message+' Your measurements are still here.':'Estimate not saved. Your measurements are still here. Check your connection, then select CREATE CUSTOMER ESTIMATE to retry.','error');return false}
 }
-function openEstimateHistory(){el('historyModal').classList.add('open');searchEstimateHistory()}
-function closeEstimateHistory(){el('historyModal').classList.remove('open')}
+let historyOpener=null,historyInert=[];
+function openEstimateHistory(){
+ const dialog=el('historyModal');
+ if(!dialog.classList.contains('open')){
+  historyOpener=document.activeElement;historyInert=[];
+  for(let branch=dialog;branch&&branch!==document.body;branch=branch.parentElement){
+   for(const node of branch.parentElement?.children||[]){if(node!==branch){historyInert.push([node,node.inert]);node.inert=true}}
+  }
+  dialog.classList.add('open');el('historySearch').focus();
+ }
+ searchEstimateHistory();
+}
+function closeEstimateHistory(){
+ const dialog=el('historyModal');if(!dialog.classList.contains('open'))return;
+ dialog.classList.remove('open');historyInert.forEach(([node,prior])=>node.inert=prior);historyInert=[];
+ if(historyOpener?.isConnected)historyOpener.focus();historyOpener=null;
+}
+document.addEventListener('keydown',event=>{
+ const dialog=el('historyModal');if(!dialog?.classList.contains('open'))return;
+ if(event.key==='Escape'){event.preventDefault();closeEstimateHistory();return}
+ if(event.key!=='Tab')return;
+ const nodes=[...dialog.querySelectorAll('a[href],button,input,select,textarea,[tabindex]')].filter(n=>!n.disabled&&n.tabIndex>=0&&n.getClientRects().length);
+ const first=nodes[0],last=nodes[nodes.length-1];
+ if(!first)return;
+ if(event.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){event.preventDefault();last.focus()}
+ else if(!event.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){event.preventDefault();first.focus()}
+});
 async function searchEstimateHistory(){
  const q=(el('historySearch')?.value||'').trim(),box=el('historyResults');box.innerHTML='<div class="small" style="padding:14px 0">Searching…</div>';
  try{const r=await fetch('/api/estimates?q='+encodeURIComponent(q)),d=await r.json();if(!r.ok)throw new Error(d.error||'Search failed');if(!d.length){box.innerHTML='<div class="small" style="padding:14px 0">No saved estimates found.</div>';return}
