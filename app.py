@@ -3240,7 +3240,7 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
  if(!historicalMode&&!correctionRefresh){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
- reportImageryHistorical=historicalMode;estimateImageryMessage('');
+ reportImageryHistorical=historicalMode;estimateImageryMessage('');renderEstimateDiagramText(snap);
  if(historicalMode||(snap.measureSource==='manual'&&snap.manualPlanes?.length&&!snap.structures?.length))await retryEstimateImage();
  else try{if(!useAerial)buildSavedRoofOutlineSnapshot();else await buildCustomerMap()}catch(e){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}
  customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false;

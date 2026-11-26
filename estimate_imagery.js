@@ -1,5 +1,24 @@
 /* Image preparation never acknowledges, saves or replaces a workspace until accepted. */
 let estimateImageryAttempt=null,reportImageryHistorical=false;
+function renderEstimateDiagramText(original){
+ const snap=activeSavedDiagramSnapshot(original),planes=snap.businessType==='roofing'?(snap.manualPlanes||[]):[];
+ let details=el('estimateDiagramText');
+ if(!planes.length){details?.remove();return}
+ if(!details){
+  details=document.createElement('details');details.id='estimateDiagramText';details.className='estimateImageryActions';
+  details.setAttribute('data-html2canvas-ignore','true');details.style.cssText='padding:12px;font-size:14px;line-height:1.5;overflow-wrap:anywhere';
+  const summary=document.createElement('summary');summary.textContent='Measurement labels (text)';summary.style.cssText='cursor:pointer;font-weight:700';details.append(summary,document.createElement('ul'));
+  el('customerMap').closest('.reportMapWrap').after(details);
+ }
+ const list=details.querySelector('ul');list.replaceChildren();
+ planes.forEach((plane,index)=>{
+  const points=(plane.points||[]).map(p=>[Number(p.lat??p[0]),Number(p.lng??p[1])]);
+  if(points.length<3||points.some(p=>!p.every(Number.isFinite)))return;
+  const sides=points.map((p,i)=>{const feet=L.latLng(p).distanceTo(L.latLng(points[(i+1)%points.length]))*3.28084;return(feet<100?feet.toFixed(1):Math.round(feet).toLocaleString())+' ft'});
+  const item=document.createElement('li'),pitch=Number(plane.pitch_degrees);
+  item.textContent='Roof section '+(index+1)+': '+fmt(plane.surface_sqft)+' ft²; '+(plane.pitch_degrees!=null&&Number.isFinite(pitch)?'pitch '+pitch.toFixed(1)+'°':'pitch unavailable')+'. Sides: '+sides.join(' · ')+'.';list.append(item);
+ });
+}
 function disposeEstimateImagery(ready){
  if(!ready?.layer)return;
  const layers=ready.layer.getLayers?ready.layer.getLayers():[ready.layer];
