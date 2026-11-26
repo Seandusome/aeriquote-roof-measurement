@@ -40,7 +40,7 @@ function startEstimateImagery(title,opener){
  return attempt;
 }
 async function renderEstimateAerial(url,body,original,attempt){
- const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:attempt?.signal});
+ const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-AeriQuote-Account':el('aqAccountId')?.dataset.accountId||''},body:JSON.stringify(body),signal:attempt?.signal});
  // A long-lived browser may outlive its short-lived imagery session. Use the
  // frozen geometry route, with the same account checks, rather than remeasuring.
  if(r.status===404&&url.startsWith('/manual-report-map/'))return buildSavedHistoricalSnapshot(attempt,original);
