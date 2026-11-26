@@ -224,7 +224,7 @@ HTML = r"""<!doctype html>
 .report.pdf-export .cta{padding:11px;margin-top:9px;font-size:13.5px;line-height:1.28}.report.pdf-export .cta strong{font-size:19px}
 .report.pdf-export .reportPrice{margin-top:9px}.report.pdf-export .reportPrice .rphead,.report.pdf-export .reportPrice .rpbody{padding:8px 10px;font-size:16px;line-height:1.25}
 .report.pdf-export .reportFoot{font-size:11.5px;line-height:1.3;margin-top:7px}
-.report.pdf-export #reportOutlineControls,.report.pdf-export .reportActions{display:none!important}
+.report.pdf-export #reportOutlineControls,.report.pdf-export .reportActions,.report.pdf-export .estimateImageryActions{display:none!important}
 @media(max-width:980px){.main,.grid2,.grid3,.reportGrid,.reportHead,.reportMeta{grid-template-columns:1fr}#map{height:600px}.reportHead h1{text-align:left}}
 @page{size:letter landscape;margin:.22in}
 @media print{
@@ -246,7 +246,7 @@ HTML = r"""<!doctype html>
  .cta{padding:.06in;margin-top:.05in;font-size:8pt}.cta strong{font-size:11pt}
  .reportPrice{margin-top:.05in}.reportPrice .rphead,.reportPrice .rpbody{padding:.05in .07in;font-size:8pt}
  .reportFoot{font-size:6.5pt;margin-top:.03in}
- .reportActions,.pdfLayoutHelp{display:none!important}.estimateOutlineBar{display:none!important}
+ .reportActions,.estimateImageryActions,.pdfLayoutHelp{display:none!important}.estimateOutlineBar{display:none!important}
  .reportPanel,.reportPrice,.cta{break-inside:avoid;page-break-inside:avoid}
 }
 
@@ -994,7 +994,7 @@ async function refreshAerialDetail(){
  }catch(e){console.warn('AQ:detail-aerial-failed')}
 }
 function scheduleAerialDetail(){clearTimeout(aerialDetailTimer);aerialDetailTimer=setTimeout(refreshAerialDetail,300)}
-async function loadStandardWideAerial(token=sessionToken,targetMap=map,staging=false,center=null){
+async function loadStandardWideAerial(token=sessionToken,targetMap=map,staging=false,center=null,signal){
  if(!token)throw new Error('Load the property first.');
  // A 3x3 continuous satellite mosaic restores panning beyond the old 640px square.
  // The measurement geometry and pricing code are untouched.
@@ -1012,15 +1012,17 @@ async function loadStandardWideAerial(token=sessionToken,targetMap=map,staging=f
    bounds.extend(b);
    const q=new URLSearchParams({lat:String(centre.lat),lng:String(centre.lng),zoom:String(z)});
    jobs.push((async()=>{
-     const r=await fetch('/wide-aerial/'+token+'?'+q.toString());
+     const r=await fetch('/wide-aerial/'+token+'?'+q.toString(),{signal});
      if(!r.ok)throw new Error('Wide satellite image request failed: '+r.status);
-     const blob=await r.blob(),url=URL.createObjectURL(blob);
+     const blob=await r.blob();if(signal?.aborted)throw new Error('Image loading stopped.');const url=URL.createObjectURL(blob);
      const layer=L.imageOverlay(url,b,{opacity:1,interactive:false});
      layer.once('remove',()=>URL.revokeObjectURL(url));
      await new Promise((resolve,reject)=>{
-       const timeout=setTimeout(()=>reject(new Error('Satellite tile timed out')),20000);
-       layer.once('load',()=>{clearTimeout(timeout);resolve()});
-       layer.once('error',()=>{clearTimeout(timeout);reject(new Error('Satellite tile failed to decode'))});
+       const done=error=>{clearTimeout(timeout);signal?.removeEventListener('abort',abort);error?reject(error):resolve()};
+       const abort=()=>done(new Error('Image loading stopped.'));
+       const timeout=setTimeout(()=>done(new Error('Satellite tile timed out')),20000);
+       signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted){abort();return}
+       layer.once('load',()=>done());layer.once('error',()=>done(new Error('Satellite tile failed to decode')));
        layer.addTo(group);
      });
    })());
@@ -2532,6 +2534,7 @@ async function startReportOutlineEdit(target){
  if(!customerMap){
    const snap=quoteSnapshot||captureQuoteSnapshot();
    const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
+ if(attempt&&pureManual){await buildManualCustomerSnapshot(attempt);return;}
    if(pureManual){
      try{await buildInteractiveCustomerMap()}catch(e){console.error('AQ:outline-editor-failed');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Could not open outline editor. Close and reopen the estimate, then try again.';return}
    }
@@ -2621,30 +2624,12 @@ function fitReportCanvas(host,canvas){
  host.aqCanvasResizeObserver?.disconnect();fit();
  if(typeof ResizeObserver!=='undefined'){host.aqCanvasResizeObserver=new ResizeObserver(fit);host.aqCanvasResizeObserver.observe(host)}
 }
-async function buildManualCustomerSnapshot(){
- const host=el('customerMap');if(!host||!sessionToken)return;
- if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
- host.innerHTML='';host.style.position='relative';host.style.overflow='hidden';
- // Manual reports are rendered by Google as ONE satellite image with the dealer trace
- // baked into the image. This is the proven manual-PDF path from the earlier working build.
+async function buildManualCustomerSnapshot(attempt){
  const snap=quoteSnapshot||captureQuoteSnapshot();
- const planes=(snap.manualPlanes||[]).map((p,i)=>{
-   const key=`manual-${i}`;
-   const pts=(Array.isArray(reportOutlines[key])&&reportOutlines[key].length>=3)?reportOutlines[key]:p.points;
-   return Array.isArray(pts)?pts.map(v=>({lat:Number(v.lat!==undefined?v.lat:v[0]),lng:Number(v.lng!==undefined?v.lng:v[1])})):[];
- }).filter(pts=>pts.length>=3);
+ const original={...snap,manualPlanes:(snap.manualPlanes||[]).map((p,i)=>({...p,points:reportOutlines['manual-'+i]||p.points}))};
+ const planes=original.manualPlanes.map(p=>(p.points||[]).map(v=>({lat:Number(v.lat??v[0]),lng:Number(v.lng??v[1])}))).filter(p=>p.length>=3);
  if(!planes.length)throw new Error('No saved manual roof outline is available for the report.');
- const r=await fetch('/manual-report-map/'+sessionToken,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({planes})});
- if(!r.ok)throw new Error((await r.text())||'Could not create manual report aerial.');
- const view=JSON.parse(r.headers.get('X-AeriQuote-Map-View')||'null');if(!view)throw new Error('Manual report aerial is missing its map view.');
- const blob=await r.blob(),obj=URL.createObjectURL(blob);
- try{
-   const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Manual report aerial could not be decoded.'));im.src=obj});
-   const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='100%';canvas.style.height='100%';canvas.style.display='block';
-   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
-   const labeledSnap={...snap,manualPlanes:(snap.manualPlanes||[]).map((p,i)=>({...p,points:reportOutlines['manual-'+i]||p.points}))};
-   drawSavedMeasurementLabels(ctx,labeledSnap,view,canvas.width,canvas.height);host.appendChild(canvas);fitReportCanvas(host,canvas);
- }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
+ return renderEstimateAerial('/manual-report-map/'+sessionToken,{planes},original,attempt);
 }
 async function loadCustomerWideAerial(token,targetMap){
  // Use one continuous satellite image for estimates instead of a raster tile mosaic.
@@ -2880,11 +2865,8 @@ function buildSavedRoofOutlineSnapshot(){
  if(el('reportOutlineControls'))el('reportOutlineControls').style.display='none';
  return true;
 }
-async function buildSavedHistoricalSnapshot(){
- const host=el('customerMap');if(!host)return;
- if(customerMap){try{customerMap.remove()}catch(e){}customerMap=null;customerRgbLayer=null;customerOverlays=[]}
- host.innerHTML='';host.style.position='relative';host.style.overflow='hidden';host.style.display='flex';host.style.alignItems='center';host.style.justifyContent='center';
- const original=quoteSnapshot||captureQuoteSnapshot(),issue=savedDiagramGeometryError(original);if(issue)throw new Error(issue);
+async function buildSavedHistoricalSnapshot(attempt,original=quoteSnapshot||captureQuoteSnapshot()){
+ const issue=savedDiagramGeometryError(original);if(issue)throw new Error(issue);
  const snap=activeSavedDiagramSnapshot(original),roofs=[];
  (snap.structures||[]).forEach((st,i)=>{
    const pts=st.outline;
@@ -2898,25 +2880,17 @@ async function buildSavedHistoricalSnapshot(){
  (areas.length?areas:[{points:snap.areaPoints||[]}]).forEach(a=>{if(a.points.length>=3)roofs.push({kind:'area',points:a.points.map(p=>({lat:p[0],lng:p[1]}))})});
  if(snap.linearPoints?.length>=2)roofs.push({kind:'linear',points:snap.linearPoints.map(p=>({lat:p[0],lng:p[1]}))});
  if(!roofs.length)throw new Error('Saved estimate has no measurement outline for the aerial image.');
- const r=await fetch('/saved-estimate-report-map',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roofs})});
- if(!r.ok)throw new Error((await r.text())||'Could not rebuild saved estimate aerial.');
- const view=JSON.parse(r.headers.get('X-AeriQuote-Map-View')||'null');
- if(!view||![view.latitude,view.longitude,view.zoom,view.width,view.height].every(Number.isFinite))throw new Error('Saved aerial measurement coordinates are unavailable.');
- const blob=await r.blob(),obj=URL.createObjectURL(blob);
- try{
-   const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Saved estimate aerial could not be decoded.'));im.src=obj});
-   const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||1280;canvas.height=img.naturalHeight||840;canvas.style.width='auto';canvas.style.height='auto';canvas.style.maxWidth='100%';canvas.style.maxHeight='100%';canvas.style.flex='none';canvas.style.display='block';
-   canvas.dataset.diagramScope=savedDiagramFingerprint(original);canvas.dataset.mapView=JSON.stringify(view);const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.dataset.labelBoxes=JSON.stringify(drawSavedMeasurementLabels(ctx,snap,view,canvas.width,canvas.height));host.appendChild(canvas);fitReportCanvas(host,canvas);if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
- }finally{try{URL.revokeObjectURL(obj)}catch(e){}}
+ return renderEstimateAerial('/saved-estimate-report-map',{roofs},original,attempt);
 }
 
-async function buildCustomerMap(){
+async function buildCustomerMap(attempt){
  if(!sessionToken)return;
  const imageChoice=el('streetViewChoice')?.value||'auto';
  if(imageChoice==='none'&&buildSavedRoofOutlineSnapshot())return;
  const useAerial=imageChoice!=='none';
  const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
  const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
+ if(attempt&&pureManual){await buildManualCustomerSnapshot(attempt);return;}
  // V11.6.63 — MANUAL ESTIMATE PIXEL LOCK
  // For a pure dealer-manual quote, do not re-project the saved trace onto a
  // second Leaflet map. Ask Google Static Maps to render the satellite image
@@ -2935,7 +2909,7 @@ async function buildCustomerMap(){
    if(el('customerMap'))el('customerMap').style.display='block';
    if(el('customerMapPlaceholder'))el('customerMapPlaceholder').style.display='none';
    if(el('reportOutlineControls')){el('reportOutlineControls').style.display='flex';renderReportOutlineTargetButtons()}
-   await buildManualCustomerSnapshot();
+   await buildManualCustomerSnapshot(attempt);
    setReportOutlineButtons(false);
    return;
  }
@@ -3095,18 +3069,19 @@ function restoreSavedQuoteFields(p,snap,pr){
  if(surfaceIndustry())setSavedField('jobPrice',measurementViewMode==='linear'&&snap.businessType!=='commercial'?savedLinearJobRate:(commercialAreas[0]?.rate??pr.price??0));
  if(manualRoofQa()){renderSummary();if(el('manualRoofScopeConfirmed'))el('manualRoofScopeConfirmed').checked=!!snap.roofScopeConfirmed&&!manualRoofConfirmationBlocked();syncRoofNextAction()}
 }
-async function resumeSavedEstimateWorkspace(){
+async function resumeSavedEstimateWorkspace(attempt){
  const context=savedEstimateEditContext;if(!context)return;
- const r=await fetch('/api/estimates/'+encodeURIComponent(context.id)+'/editing-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_index:context.versionIndex})}),d=await r.json();
+ const r=await fetch('/api/estimates/'+encodeURIComponent(context.id)+'/editing-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_index:context.versionIndex}),signal:attempt.signal}),d=await r.json();
  if(!r.ok)throw new Error(d.error||'Could not restore this saved job.');
+ const ready=await stageSavedEditorImagery(d,attempt);attempt.check();
  resetMeasurementForNewProperty();savedEstimateEditContext=context;restoreSavedQuoteFields(context.payload,context.snapshot,context.pricing);
  savedJobDetails=d.job_details||{};saveEstimateHistory.baseVersion=d.version||null;
- sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;removeStaleAerialLayers();
+ sessionToken=d.token;exactPinDisplay=false;fallbackMode=true;
  const parts=String(context.payload.address||'').split(',').map(s=>s.trim());
  setSavedField('streetAddress',parts[0]||context.payload.address||'');setSavedField('cityTown',parts[1]||'');setSavedField('postalCode','');
  const province=parts.slice(2).map(s=>s.match(/^([A-Z]{2})(?:\s|$)/)?.[1]).find(Boolean)||'';setPropertyRegion(province);lastLoadedStreet=el('streetAddress')?.value||'';loadProperty.loadedAddressKey=propertyInputAddressKey();
  setPropertyMarker(d.center.latitude,d.center.longitude);map.setView([d.center.latitude,d.center.longitude],18);
- if(d.provider==='mapbox')installPropertyImagery(await preparePropertyImagery(d));else await loadStandardWideAerial();map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
+ installPropertyImagery(ready);map.fitBounds(d.bounds,{padding:[45,45],maxZoom:20});
  redrawRoofData();redrawManualDisplayLayers();redrawAreaMeasure();redrawLinearMeasure();
  savedPropertyEditActive=true;quoteSnapshot=null;lastHistorySaveKey='';
  updatePropertyActionButton();updateAreaUi();updateLinearUi();renderSummary();
@@ -3265,7 +3240,10 @@ async function showCustomerEstimate(historicalMode=false,historicalDate='',corre
  if(historicalMode){const moneyIssue=savedEstimateMoneyIssue(quoteSnapshot?.savedPricing);if(moneyIssue){const moneyWarning=document.createElement('div');moneyWarning.className='warning';moneyWarning.setAttribute('role','alert');moneyWarning.textContent=moneyIssue;el('rPricing').appendChild(moneyWarning)}}
  if(!historicalMode&&!correctionRefresh){usage.reports++;updateUsage();}
  if(customerMapBuildTimer)clearTimeout(customerMapBuildTimer);
- try{if(!useAerial)buildSavedRoofOutlineSnapshot();else if(historicalMode)await buildSavedHistoricalSnapshot();else await buildCustomerMap()}catch(e){console.error('AQ:estimate-image-failed');if(el('customerMapPlaceholder')){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}}finally{customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false}
+ reportImageryHistorical=historicalMode;estimateImageryMessage('');
+ if(historicalMode||(snap.measureSource==='manual'&&snap.manualPlanes?.length&&!snap.structures?.length))await retryEstimateImage();
+ else try{if(!useAerial)buildSavedRoofOutlineSnapshot();else await buildCustomerMap()}catch(e){el('customerMap').style.display='none';el('customerMapPlaceholder').style.display='flex';el('customerMapPlaceholder').textContent='Property image could not be rebuilt.'}
+ customerMapBuildTimer=null;estimateOpenInProgress=false;if(createBtn)createBtn.disabled=false;if(el('downloadPdfBtn'))el('downloadPdfBtn').disabled=false;
 
  // Final business-specific estimate-summary label.
  if(currentBusinessType()==='roofing'){
@@ -3500,7 +3478,7 @@ async function captureSinglePageEstimate(report){
  const copy=report.cloneNode(true);copy.classList.add('pdf-export');
  Object.assign(copy.style,{position:'absolute',left:'-20000px',top:'0',width:'1320px',maxWidth:'none',margin:'0'});
  if(mapPixels){const host=copy.querySelector('#customerMap');host.replaceChildren(mapPixels);Object.assign(host.style,{height:'430px',position:'relative',display:'flex',alignItems:'center',justifyContent:'center'});}
- copy.querySelectorAll('.reportActions,#reportOutlineControls,.reportDrawLayer,.pdfLayoutHelp').forEach(n=>n.remove());
+ copy.querySelectorAll('.reportActions,.estimateImageryActions,#reportOutlineControls,.reportDrawLayer,.pdfLayoutHelp').forEach(n=>n.remove());
  copy.removeAttribute('id');copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
  document.body.appendChild(copy);
  try{
@@ -3686,14 +3664,15 @@ async function closeReport(e){
  if(!e||!b||e.currentTarget!==b)return;
  if(!await confirmQaSubscriptionEditAccess())return;
  reportCloseInProgress=true;const label=b.textContent;b.disabled=true;b.textContent='OPENING EDITOR…';
+ const attempt=savedEstimateEditContext?startEstimateImagery('Opening saved estimate for editing',b):null;
  try{
-  if(savedEstimateEditContext)await resumeSavedEstimateWorkspace();
+  if(savedEstimateEditContext)await attempt.wait(resumeSavedEstimateWorkspace(attempt));
   document.body.classList.remove('report-open');el('reportOverlay').style.display='none';
   if(customerMap){try{customerMap.remove()}catch(err){}customerMap=null}
   customerRgbLayer=null;customerOverlays=[];
-  openEstimateRoofEditor();
- }catch(err){const message=err.message||'Could not restore saved job for editing.';status(message,'error');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=message+' Please try Edit Measurements / Price again.';}
- finally{reportCloseInProgress=false;b.disabled=false;b.textContent=label}
+  estimateImageryMessage('');openEstimateRoofEditor();
+ }catch(err){const message='The editor could not load its imagery. Your measurements, pitch, pricing and customer details are retained. Retry Edit, or go back to Previous Estimates.';status(message,'error');estimateImageryMessage(message,false);}
+ finally{reportCloseInProgress=false;b.disabled=false;b.textContent=label;attempt?.finish();if(document.body.classList.contains('report-open'))b.focus()}
 }
 function saveAssessment(){if(!structures.length&&!manualPlanes.length){status('Measure a property first.','error');return}let rec={date:new Date().toISOString(),address:el('address').value,structures:structures.map(s=>({label:s.label,area:s.total_roof_sqft,segments:s.segment_count,pitch:s.segments.length?s.segments.reduce((a,x)=>a+x.pitch_degrees,0)/s.segments.length:0,date:s.imagery_date,quality:s.imagery_quality})),manualArea:manualTotal(),measurementSource:el('measureSource')?el('measureSource').value:'google',pricing:priceCalc(),streetDate:el('streetMeta').textContent};let h=[];try{h=JSON.parse(localStorage.getItem('sgSavedAssessments')||'[]')}catch(e){}h.unshift(rec);localStorage.setItem('sgSavedAssessments',JSON.stringify(h.slice(0,50)));usage.saved++;updateUsage();status('Assessment saved in this browser for the demo. Production CRM will save it to the customer record.','ok')}
 
@@ -3848,6 +3827,7 @@ function coordinatesEntered(){
 function syncPropertyProvince(){if(el('propertyProvince')?.value)setPropertyRegion(el('propertyProvince').value);renderSummary();}
 const _aeriRenderSummary=renderSummary;renderSummary=function(){const r=_aeriRenderSummary.apply(this,arguments);setTimeout(()=>applyBusinessTerminology(),0);return r};
 </script>
+<script src="/static/estimate_imagery.js"></script>
 <script src="/static/workspace_drafts.js"></script>
 </body></html>"""
 
@@ -4999,7 +4979,7 @@ def create_session(key,lat,lng,street_url=None,mode="solar",layers=None,anchor_l
 
 @app.after_request
 def retain_property_session(response):
-    if request.path in {'/','/static/workspace_drafts.js'} or request.path.startswith('/api/workspace-drafts'):
+    if request.path in {'/','/static/workspace_drafts.js','/static/estimate_imagery.js'} or request.path.startswith('/api/workspace-drafts'):
         response.headers['Cache-Control']='private, no-store'
     if request.method == "POST" and response.status_code == 200 and request.path in {"/property","/structure","/locate-building"}:
         result = response.get_json(silent=True) or {}
