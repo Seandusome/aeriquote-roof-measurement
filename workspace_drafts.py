@@ -83,7 +83,7 @@ def put(con, dealer, user, draft_id, expected, payload, metadata=None, now=None)
         if row['closed']:
             raise DraftError('This recovery draft has ended. Start a new recovery draft.',code='draft_closed')
         if row['expires_at'] <= now:
-            raise DraftError('This recovery draft has ended. Start a new recovery draft.')
+            raise DraftError('This recovery draft has ended. Start a new recovery draft.',code='draft_closed')
         if row['version'] != expected:
             # A lost acknowledgement may be retried, but stale edits never overwrite.
             if row['payload'] == encoded and row['version'] == expected + 1:
@@ -94,7 +94,7 @@ def put(con, dealer, user, draft_id, expected, payload, metadata=None, now=None)
                     (expected + 1, encoded, metadata_json, now + TTL, dealer, user, draft_id))
     else:
         if expected != 0:
-            raise DraftError('This recovery draft has expired or was deleted.')
+            raise DraftError('This recovery draft has expired or was deleted.',code='draft_closed')
         con.execute('INSERT INTO workspace_drafts(dealer_id,principal,draft_id,version,expires_at,payload,property_metadata,closed) VALUES(?,?,?,?,?,?,?,0)',
                     (dealer, user, draft_id, 1, now + TTL, encoded, json.dumps(metadata) if metadata else None))
     return dict(version=expected + 1, expires_at=now + TTL)
