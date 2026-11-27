@@ -85,7 +85,7 @@ async function retryEstimateImage(){
  estimateImageryMessage('Loading the image. The estimate is already saved.');
  try{
   const useAerial=(el('streetViewChoice')?.value||'auto')!=='none';
-  await attempt.wait(!useAerial?Promise.resolve(buildSavedRoofOutlineSnapshot()):reportImageryHistorical?buildSavedHistoricalSnapshot(attempt):buildCustomerMap(attempt));
+  await attempt.wait(!useAerial?Promise.resolve(buildSavedRoofOutlineSnapshot()):reportImageryHistorical&&!Object.keys(reportOutlines).some(key=>key.startsWith('manual-'))?buildSavedHistoricalSnapshot(attempt):buildCustomerMap(attempt));
   attempt.check();estimateImageryMessage('');
  }catch(e){
   // Never display a stale image as if it belonged to the current report.

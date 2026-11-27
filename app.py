@@ -2534,9 +2534,14 @@ async function startReportOutlineEdit(target){
  if(!customerMap){
    const snap=quoteSnapshot||captureQuoteSnapshot();
    const pureManual=(snap.measureSource==='manual'&&(snap.manualPlanes||[]).length>0&&!(snap.structures||[]).length);
- if(attempt&&pureManual){await buildManualCustomerSnapshot(attempt);return;}
    if(pureManual){
-     try{await buildInteractiveCustomerMap()}catch(e){console.error('AQ:outline-editor-failed');if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Could not open outline editor. Close and reopen the estimate, then try again.';return}
+     const opener=el('reportOutlineTargetButtons')?.querySelector('button'),attempt=startEstimateImagery('Opening roof outline editor',opener);
+     try{await attempt.wait(buildInteractiveCustomerMap(attempt));attempt.check();estimateImageryMessage('')}
+     catch(e){
+       if(customerMap===attempt.outlineMap){customerMap.remove();customerMap=null;customerRgbLayer=null;customerOverlays=[]}
+       const message='Could not load the outline editor. Your measurements, pitch, pricing and customer details are retained. Retry Edit or return to Previous Estimates.';
+       if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=message;estimateImageryMessage(message,true);return;
+     }finally{attempt.finish()}
    }
  }
  if(!customerMap){if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent='Turn estimate images on to edit roof outlines.';return}
@@ -2551,9 +2556,13 @@ async function startReportOutlineEdit(target){
  document.querySelector('#reportOverlay .report')?.classList.add('estimate-editing');setReportOutlineButtons(true);
  const svg=el('reportDrawLayer');if(svg&&!svg.dataset.bound){svg.addEventListener('pointerdown',reportOutlinePointer);svg.dataset.bound='1'}
 }
-function cancelReportOutlineEdit(){if(reportMeasurementCorrection){cancelReportMeasurementCorrection();return}if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error('AQ:outline-render-failed'));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);buildCustomerMap().catch(e=>console.error('AQ:outline-render-failed'))}
+function refreshReportOutlineImage(){
+ const snap=quoteSnapshot||captureQuoteSnapshot();
+ return snap.measureSource==='manual'&&snap.manualPlanes?.length&&!snap.structures?.length?retryEstimateImage():buildCustomerMap();
+}
+function cancelReportOutlineEdit(){if(reportMeasurementCorrection){cancelReportMeasurementCorrection();return}if(visualCorrectionMode){clearVisualCorrection();buildCustomerMap().catch(e=>console.error('AQ:outline-render-failed'));setReportOutlineButtons(false);if(el('reportSaveOutlineBtnTop'))el('reportSaveOutlineBtnTop').textContent='SAVE OUTLINE';return}reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');setReportOutlineButtons(false);refreshReportOutlineImage().catch(e=>console.error('AQ:outline-render-failed'))}
 function undoReportOutlinePoint(){if(reportMeasurementCorrection){const c=reportMeasurementCorrection;if(!c.saving&&!c.uncertain&&c.history.length){c.points=c.history.pop().map(p=>L.latLng(p));c.error="";redrawReportCorrection()}return}if(visualCorrectionMode){const m=visualCorrectionMarkers.pop();if(m)customerMap.removeLayer(m);refreshVisualCorrectionLine();return;}if(!reportOutlineEditMode||!reportOutlinePoints.length)return;reportOutlinePoints.pop();drawReportOutlineTemp();setReportOutlineButtons(true)}
-async function saveReportOutline(){if(reportMeasurementCorrection){await saveReportMeasurementCorrection();return}if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error('AQ:outline-render-failed'));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await buildCustomerMap();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
+async function saveReportOutline(){if(reportMeasurementCorrection){await saveReportMeasurementCorrection();return}if(visualCorrectionMode){saveVisualCorrection().catch(e=>console.error('AQ:outline-render-failed'));return}if(!reportOutlineEditMode||reportOutlinePoints.length<3||!reportOutlineTarget)return;const target=reportOutlineTarget,label=reportTargetLabel(target);reportOutlines[target]=reportOutlinePoints.map(p=>[p.lat,p.lng]);reportOutlineEditMode=false;reportOutlinePoints=[];clearReportOutlineTemp();document.querySelector('#reportOverlay .report')?.classList.remove('estimate-editing');await refreshReportOutlineImage();setReportOutlineButtons(false);if(el('reportOutlineHelpTop'))el('reportOutlineHelpTop').textContent=`✓ ${label} outline saved. You can now edit another roof. Measurements and price are unchanged.`}
 
 async function buildExactPinCustomerSnapshot(){
  const host=el('customerMap');if(!host||!sessionToken)return;
@@ -2631,7 +2640,7 @@ async function buildManualCustomerSnapshot(attempt){
  if(!planes.length)throw new Error('No saved manual roof outline is available for the report.');
  return renderEstimateAerial('/manual-report-map/'+sessionToken,{planes},original,attempt);
 }
-async function loadCustomerWideAerial(token,targetMap){
+async function loadCustomerWideAerial(token,targetMap,signal){
  // Use one continuous satellite image for estimates instead of a raster tile mosaic.
  const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot()),pts=[];
  (snap.commercialAreas||[]).forEach(a=>(a.points||[]).forEach(p=>pts.push(L.latLng(p[0],p[1]))));
@@ -2643,10 +2652,11 @@ async function loadCustomerWideAerial(token,targetMap){
  const extent=pts.length?L.latLngBounds(pts):null;
  let zoom=18;if(extent)for(zoom=20;zoom>15;zoom--){const nw=map.project(extent.getNorthWest(),zoom),se=map.project(extent.getSouthEast(),zoom);if(Math.abs(se.x-nw.x)<=500&&Math.abs(se.y-nw.y)<=340)break}
  const qs=new URLSearchParams({lat:String(center.lat),lng:String(center.lng),zoom:String(zoom)});
- const response=await fetch('/wide-aerial/'+token+'?'+qs.toString());
+ const response=await fetch('/wide-aerial/'+token+'?'+qs.toString(),{signal});
  if(!response.ok)throw new Error('Wide estimate aerial unavailable');
  const blob=await response.blob();
  const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Could not decode estimate aerial'));reader.readAsDataURL(blob)});
+ if(signal?.aborted)throw new Error('Image loading stopped.');
  const bounds=staticMapBounds(center.lat,center.lng,zoom,640,640);
  const layer=L.imageOverlay(dataUrl,bounds,{opacity:1,interactive:false});
  await new Promise((resolve,reject)=>{layer.once('load',resolve);layer.once('error',()=>reject(new Error('Wide estimate image failed to load')));layer.addTo(targetMap)});
@@ -2682,7 +2692,7 @@ function drawCustomerAreaEdgeLabels(points,targetMap=customerMap,targetList=cust
   targetList.push(L.marker(mid,{interactive:false,keyboard:false,icon:L.divIcon({className:'aeri-edge-label-icon',html:'<span class="aeri-edge-label">'+label+' ft</span>',iconSize:[90,24],iconAnchor:[45,12]})}).addTo(targetMap));
  }
 }
-async function buildInteractiveCustomerMap(){
+async function buildInteractiveCustomerMap(attempt){
  if(!sessionToken)return;
  const imageChoice=el('streetViewChoice')?.value||'auto';
  const useAerial=imageChoice!=='none';
@@ -2692,14 +2702,15 @@ async function buildInteractiveCustomerMap(){
  if(!useAerial){if(customerMap){customerMap.remove();customerMap=null;customerRgbLayer=null;customerOverlays=[]}return}
  if(customerMap){customerMap.remove();customerMap=null;customerRgbLayer=null;customerOverlays=[]}
  customerMap=L.map('customerMap',{zoomControl:false,attributionControl:false,zoomSnap:.25}).setView([52.1522,-106.6595],19);
+ if(attempt)attempt.outlineMap=customerMap;
  customerMap.on('click',reportOutlineClick);customerMap.on('moveend zoomend',layoutCustomerMeasurementLabels);
- await new Promise(r=>setTimeout(r,180));
+ await new Promise(r=>setTimeout(r,180));attempt?.check();
  customerMap.invalidateSize(true);
- let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadCustomerWideAerial(sessionToken,customerMap);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap)}catch(e){console.warn('AQ:wide-image-fallback');rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
- customerRgbLayer=rgb.layer;
+ let rgb;if(exactPinDisplay)rgb=await loadExactPinAerial(sessionToken,customerMap);else if(fallbackMode)rgb=await loadCustomerWideAerial(sessionToken,customerMap,attempt?.signal);else{try{rgb=await loadCustomerWideAerial(sessionToken,customerMap,attempt?.signal)}catch(e){attempt?.check();console.warn('AQ:wide-image-fallback');rgb=await loadRaster('/rgb/'+sessionToken,customerMap)}}
+ attempt?.check();customerRgbLayer=rgb.layer;
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
- await new Promise(r=>setTimeout(r,220));
+ await new Promise(r=>setTimeout(r,220));attempt?.check();
  customerMap.invalidateSize(true);
  frameAerial(customerMap,rgb.bounds,0);
  const snap=activeSavedDiagramSnapshot(quoteSnapshot||captureQuoteSnapshot());
